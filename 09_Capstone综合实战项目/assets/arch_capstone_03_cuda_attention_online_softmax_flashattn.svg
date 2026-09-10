@@ -1,0 +1,389 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-c3" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-c3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-c3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-c3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-c3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-c3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-c3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-c3" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-c3)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="310" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">CAPSTONE 03: CUDA ATTENTION &amp; SRAM</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      榨干片上 SRAM：CUDA Softmax 与 Attention 算子极致性能调优全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      传统 Attention 访存泥潭与 Roofline · Online Softmax 单趟流式数学证明 · SRAM 分块平铺与 32-way Bank Conflict 消除 · FlashAttention-2 巅峰演进
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">HBM TRAFFIC DROP</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">&gt; 10x Saved</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">KERNEL SPEEDUP</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">2x ~ 4x Boost</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">HBM INTERMEDIATE</text>
+      <text x="307" y="38" fill="#fbbf24" font-size="16" font-weight="800">O(N^2) ➔ O(1)</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">TENSOR CORE MFU</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">&gt; 55% Sustained</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-c3)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、标准 Attention 访存泥潭与 Roofline</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">O(N^2) 全局显存往返读写流量 · 算术强度严重倒挂 · 32K 崩溃复盘</text>
+
+    <!-- Subcard 1.1: 传统 Attention 读写流量账本 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">1.1 Naive Attention 的三次巨额 HBM 往返陷阱</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="370" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#f8fafc" font-size="9" font-weight="700">Step 1: S = Q · K^T / √d</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">从 HBM 读 Q 和 K (4Nd 字节) ➔ 写入庞大中间矩阵 S 到 HBM: 2N² 字节 ⚠️</text>
+      </g>
+
+      <g transform="translate(10, 82)">
+        <rect width="370" height="42" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">Step 2: P = Softmax(S)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">从 HBM 读出 S (2N² 字节) ➔ 执行 Softmax 归约 ➔ 再次写回 P: 2N² 字节 ⚠️</text>
+      </g>
+
+      <g transform="translate(10, 130)">
+        <rect width="370" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#f8fafc" font-size="9" font-weight="700">Step 3: O = P · V</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">从 HBM 读出 P (2N² 字节) 和 V (2Nd 字节) ➔ 乘加输出 O 到 HBM: 2Nd 字节</text>
+      </g>
+
+      <g transform="translate(10, 178)">
+        <rect width="370" height="46" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#ef4444" font-size="8.5" font-weight="700">总 HBM 显存访存量 = 4N² + 8Nd 字节！</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">当 N=32K 时，N² 项占据绝对主导：单层中间矩阵就高达 64 GB 显存！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 算力与访存严重倒挂 -->
+    <g transform="translate(15, 312)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">1.2 Roofline 算力模型穿透：为什么 Tensor Core 处于饥饿？</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="370" height="74" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">算术强度手算 (N=4096, d=128, FP16):</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 总计算量：4 × N² × d = 8.59 × 10^9 FLOPs</text>
+        <text x="10" y="46" fill="#cbd5e1" font-size="8.5">• 总访存量：4 × N² + 8 × N × d = 7.13 × 10^7 Bytes ≈ 71.3 MB</text>
+        <text x="10" y="60" fill="#38bdf8" font-size="8.5" font-weight="600">算术强度 I = 8.59×10^9 / 7.13×10^7 = 120.5 FLOP/Byte</text>
+      </g>
+
+      <g transform="translate(10, 118)">
+        <rect width="370" height="80" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#f87171" font-size="9" font-weight="700">H100 硬件分水岭：I_knee = 295 FLOP/Byte</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8">120.5 &lt; 295 ➔ 算子深陷于访存受限区 (Memory-Bound)！</text>
+        <text x="10" y="44" fill="#ef4444" font-size="8">Tensor Core 利用率不足 15%，96.8% 的时间在等待数据穿过 HBM 物理引脚！</text>
+        <text x="10" y="60" fill="#34d399" font-size="8" font-weight="600">唯一破局：将中间矩阵 S 和 P 彻底锁死在片上 SRAM，禁止写回 HBM！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 算子演进核心收益 -->
+    <g transform="translate(15, 534)">
+      <rect width="390" height="150" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.3 算子调优终极指标：从 Naive 到 FlashAttention</text>
+
+      <g transform="translate(10, 34)">
+        <text x="0" y="14" fill="#f87171" font-size="9" font-weight="700">Naive Attention：</text>
+        <text x="135" y="14" fill="#cbd5e1" font-size="8.5">HBM 访存 O(N^2) ➔ 32K 显存直接爆仓，耗时 11.2 秒</text>
+
+        <text x="0" y="34" fill="#fbbf24" font-size="9" font-weight="700">Tiled Attention：</text>
+        <text x="135" y="34" fill="#cbd5e1" font-size="8.5">分块计算，但仍需多趟全局同步更新 Softmax 分母</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">FlashAttention-2：</text>
+        <text x="135" y="54" fill="#34d399" font-size="8.5" font-weight="700">HBM 访存降为 O(N) ➔ 32K 仅耗时 1.8 秒，提速 6.2 倍！</text>
+
+        <text x="0" y="74" fill="#c084fc" font-size="9" font-weight="700">硬件算力释放：</text>
+        <text x="135" y="74" fill="#cbd5e1" font-size="8.5">Tensor Core 利用率从 12.4% 暴冲至 58.2%，榨干硬件极限！</text>
+      </g>
+
+      <rect x="10" y="118" width="370" height="24" rx="3" fill="#182234"/>
+      <text x="18" y="134" fill="#34d399" font-size="8.5" font-weight="600">💡 工业第一性原理：算法的时间复杂度没变，但数据流搬运距离缩短了！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-c3)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、数学突破：Online Softmax 单趟流式递推</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">打破三趟遍历全局同步枷锁 · 动态局部最大值修正 · 严格数学等价证明</text>
+
+    <!-- Subcard 2.1: 传统 Safe-Softmax 三趟遍历困境 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="230" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 传统 Safe-Softmax 必须全量遍历的三道枷锁</text>
+
+      <g transform="translate(12, 34)">
+        <rect width="406" height="46" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="18" fill="#f87171" font-size="9" font-weight="700">Pass 1: 扫描全行找出全局最大值 m = max_j(x_j)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">目的：数值防溢出 (减去最大值后 exp 结果不会溢出 FP16 65504)</text>
+      </g>
+
+      <g transform="translate(12, 88)">
+        <rect width="406" height="46" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="18" fill="#f87171" font-size="9" font-weight="700">Pass 2: 扫描全行计算指数求和分母 l = ∑ exp(x_j - m)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">困境：不扫完最后一个元素，根本不知道全局归一化分母到底是多少！</text>
+      </g>
+
+      <g transform="translate(12, 142)">
+        <rect width="406" height="46" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="18" fill="#f87171" font-size="9" font-weight="700">Pass 3: 扫描全行完成归一化除法 y_j = exp(x_j - m) / l</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">致命伤：被迫进行 3 次全行扫描与中间结果缓存，无法单趟流式计算！</text>
+      </g>
+
+      <g transform="translate(12, 196)">
+        <rect width="406" height="24" rx="3" fill="#1e293b"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="8" font-weight="600">🚨 痛点：GPU 片上 SRAM 只有几十 KB，根本放不下整行 32K 元素！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: Online Softmax 动态修正推导 -->
+    <g transform="translate(15, 305)">
+      <rect width="430" height="235" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 Online Softmax 递推数学公式五步穿透 (No Naked Formula)</text>
+
+      <g transform="translate(12, 34)">
+        <rect width="406" height="88" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">输入分块：旧块局部统计量 (m_prev, l_prev) 与 新块局部统计量 (m_cur, l_cur)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">1. 更新合并最大值：m_new = max(m_prev, m_cur)</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="8.5">2. 动态修正旧分母：l_prev_scaled = l_prev × exp(m_prev - m_new)</text>
+        <text x="10" y="64" fill="#38bdf8" font-size="8.5">3. 动态修正新分母：l_cur_scaled = l_cur × exp(m_cur - m_new)</text>
+        <text x="10" y="78" fill="#34d399" font-size="8.5" font-weight="600">4. 合并总分母递推式：l_new = l_prev_scaled + l_cur_scaled</text>
+      </g>
+
+      <g transform="translate(12, 130)">
+        <rect width="406" height="92" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">5. 输出向量 O 的无损动态热更新 (FlashAttention 核心秘密)：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">O_new = O_prev × (l_prev_scaled / l_new) + (P_cur · V_cur) × (1 / l_new)</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">每读入一个 KV 分块，就在寄存器中按权重比例“缩放旧值 + 叠加新值”！</text>
+        <text x="10" y="64" fill="#a855f7" font-size="8.5">算完最后一个分块时，寄存器里的 O 就是严格数学等价的全局精确解！</text>
+        <text x="10" y="80" fill="#34d399" font-size="8" font-weight="600">奇迹：整个过程只需要两个标量 (m, l) 记录状态，彻底消灭 O(N^2) 中间矩阵！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 数值稳定性保障 -->
+    <g transform="translate(15, 550)">
+      <rect width="430" height="135" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 数值溢出防线与寄存器级累加精度</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">指数差恒负性：</text>
+        <text x="110" y="14" fill="#cbd5e1" font-size="8.5">因为 m_new ≥ m_prev，所以 exp(m_prev - m_new) 恒 ≤ 1.0 (绝不溢出)</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">FP32 寄存器累加：</text>
+        <text x="110" y="34" fill="#cbd5e1" font-size="8.5">中间累加标量 (m, l) 与输出累加器 O 强制保持 FP32 浮点精度</text>
+
+        <text x="0" y="54" fill="#fbbf24" font-size="9" font-weight="700">FP16 降阶写回：</text>
+        <text x="110" y="54" fill="#cbd5e1" font-size="8.5">仅在算子最终输出时执行 __float2half 转换写回 HBM，杜绝精度漂移</text>
+
+        <text x="0" y="74" fill="#c084fc" font-size="9" font-weight="700">下溢截断鲁棒：</text>
+        <text x="110" y="74" fill="#94a3b8" font-size="8.5">极小负数 exp 直接为 0，符合 Attention 稀疏注意力物理直觉</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-c3)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#34d399"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、SRAM 分块平铺与 FlashAttn-2</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Tiling 平铺 · 32-way Bank Conflict 消除 · 循环重排与算子融合</text>
+
+    <!-- Subcard 3.1: SRAM 分块与 Bank Conflict 消除 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">3.1 SRAM 分块容量约束与 Bank Conflict 消除</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="350" height="56" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">SRAM 分块平铺 (Tiling: Br × d 与 Bc × d):</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">设定 Br=64, Bc=64, d=128 (FP16) ➔ Q, K, V 各占 16KB SRAM</text>
+        <text x="8" y="44" fill="#34d399" font-size="8">单 SM 仅消耗约 48KB 共享内存，完美适配 H100 228KB 片上限额！</text>
+      </g>
+
+      <g transform="translate(10, 98)">
+        <rect width="350" height="66" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">32-way Bank Conflict 消除 (Padding 跨步填充法)：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">共享内存由 32 个 4-byte 独立 Bank 组成。当同一 Warp 访问同一列时发生冲突</text>
+        <text x="8" y="44" fill="#fca5a5" font-size="8">在定义 SRAM 数组时人为增加 Padding：__shared__ half s_K[Bc][d + 8];</text>
+        <text x="8" y="58" fill="#34d399" font-size="8" font-weight="600">错开相邻行数据落入不同 Bank，访存串行化开销直降为 0！</text>
+      </g>
+
+      <g transform="translate(10, 172)">
+        <rect width="350" height="52" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">Warp Shuffle 寄存器级归约：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">使用 __shfl_xor_sync 原语在 32 线程内对偶折叠求局部最大值</text>
+        <text x="8" y="44" fill="#34d399" font-size="8">耗时仅需 5 个时钟周期，彻底消灭 __syncthreads() 慢速栅栏等待！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: FlashAttention-2 巅峰演进 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="205" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">3.2 FlashAttention-1 ➔ FlashAttention-2 核心演进</text>
+
+      <g transform="translate(8, 32)">
+        <rect width="354" height="22" fill="#1e293b" rx="3"/>
+        <text x="6" y="15" fill="#94a3b8" font-size="8" font-weight="700">优化维度</text>
+        <text x="85" y="15" fill="#94a3b8" font-size="8" font-weight="700">FlashAttention-1</text>
+        <text x="195" y="15" fill="#94a3b8" font-size="8" font-weight="700">FlashAttention-2 (巅峰)</text>
+
+        <text x="6" y="38" fill="#cbd5e1" font-size="8.5" font-weight="700">外层循环</text>
+        <text x="85" y="38" fill="#fbbf24" font-size="8">外层 KV 循环，内层 Q</text>
+        <text x="195" y="38" fill="#34d399" font-size="8">外层 Q 循环，内层 KV (保顺序)</text>
+
+        <text x="6" y="58" fill="#cbd5e1" font-size="8.5" font-weight="700">SRAM 写回</text>
+        <text x="85" y="58" fill="#ef4444" font-size="8">多步向 HBM 累加输出</text>
+        <text x="195" y="58" fill="#34d399" font-size="8">Q 块常驻寄存器，最后一次性写回</text>
+
+        <text x="6" y="78" fill="#cbd5e1" font-size="8.5" font-weight="700">非 GEMM 开销</text>
+        <text x="85" y="78" fill="#cbd5e1" font-size="8">Rescale 每步发生</text>
+        <text x="195" y="78" fill="#34d399" font-size="8">缩放因子外提，矩阵纯乘加拉满</text>
+
+        <text x="6" y="98" fill="#cbd5e1" font-size="8.5" font-weight="700">Warp 分布</text>
+        <text x="85" y="98" fill="#cbd5e1" font-size="8">按序列长度划分</text>
+        <text x="195" y="98" fill="#34d399" font-size="8">Warp 专攻 Head 维度，消除通信</text>
+      </g>
+
+      <g transform="translate(8, 134)">
+        <rect width="354" height="60" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">🚀 最终战果：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">FlashAttention-2 相比 v1 再提速 2 倍！达到理论峰值 TFLOPS 的 73%！</text>
+        <text x="8" y="46" fill="#38bdf8" font-size="8">成为全网所有主流大模型框架 (vLLM, Megatron, HuggingFace) 的绝对标准底座！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 算子调优生产 Checklist -->
+    <g transform="translate(15, 528)">
+      <rect width="370" height="156" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 CUDA 算子极致调优 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 消除中间全局写入：</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8.5">禁止任何 O(N^2) 张量脱离 SRAM 溢出到 HBM</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 强制 128 位对齐向量化：</text>
+        <text x="145" y="34" fill="#94a3b8" font-size="8.5">采用 float4 / uint4 单指令搬运 16 字节数据</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 共享内存动态填充：</text>
+        <text x="145" y="54" fill="#94a3b8" font-size="8.5">显式加入 Padding 列，彻底粉碎 32-way 冲突</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 双缓冲异步预取：</text>
+        <text x="145" y="74" fill="#94a3b8" font-size="8.5">使用 cuda::memcpy_async 将全局访存与计算重叠</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 寄存器压力监控：</text>
+        <text x="145" y="94" fill="#94a3b8" font-size="8.5">单线程寄存器不超过 128 个，防 Spill 溢出到本地内存</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ Nsight Compute 压测：</text>
+        <text x="145" y="114" fill="#94a3b8" font-size="8.5">确认 Tensor Core Active % > 50%，确认无停滞气泡</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝对不要让中间矩阵触碰 HBM：片外总线是极其宝贵的物理资源，O(N^2) 的 Attention 中间数据必须在片上 SRAM 中流式消化，出片即毁。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">数学推导是破除硬件限制的银弹：看似必须全局归约的 Softmax，凭借 Online Softmax 递推变成了局部可更新的流式算子，这就是算法的至高艺术。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">算子极致在于微架构与硬件对齐：消除 Bank 冲突、用 Warp Shuffle 替换线程同步、Q 循环外层重排，每一个字节的微调都在为物理芯片松绑！</text>
+    </g>
+  </g>
+</svg>

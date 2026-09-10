@@ -1,0 +1,429 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-29" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="card-grad-left-29" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-29" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-29" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-29" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-29" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-29" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-29" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-29)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="235" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#a855f7"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">ZERO-SHARDING &amp; PYTORCH FSDP</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      显存分片技术 ZeRO-1/2/3 与 PyTorch FSDP 深度剖析全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      静态显存 16Ψ 底账消除 · 前向/反向动态生命周期 · Prefetch 流水线 · 生产级 Hybrid Shard 拓扑
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Memory Reduction -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="135" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">静态显存降幅</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">16Ψ ➔ 16Ψ/N</text>
+      </g>
+      <!-- Badge 2: DDP/ZeRO-1/2 Comm -->
+      <g transform="translate(145, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">ZeRO-1/2 通信量</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">2Ψ (同 DDP)</text>
+      </g>
+      <!-- Badge 3: ZeRO-3/FSDP Comm -->
+      <g transform="translate(295, 0)">
+        <rect x="0" y="0" width="145" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">ZeRO-3/FSDP 通信量</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">3Ψ (增加 50%)</text>
+      </g>
+      <!-- Badge 4: Bandwidth Gap -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">带宽鸿沟 (机内/机间)</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">900 vs 50 GB/s</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-29)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">显存状态解构与 ZeRO-1/2/3 演进</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">从 16Ψ 静态冗余到底账线性切分的物理飞跃</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 静态显存 16Ψ 底账柱状解剖 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="150" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">混合精度 AdamW 静态显存剖析 (16Ψ Bytes)</text>
+
+      <!-- Memory Stack Bar -->
+      <g transform="translate(14, 38)">
+        <!-- Weights: 2Ψ -->
+        <rect x="0" y="0" width="44" height="38" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="1"/>
+        <text x="6" y="18" fill="#f0f9ff" font-size="10" font-weight="700">权重</text>
+        <text x="6" y="30" fill="#bae6fd" font-size="9">2Ψ (BF16)</text>
+
+        <!-- Gradients: 2Ψ -->
+        <rect x="48" y="0" width="44" height="38" rx="4" fill="#0d9488" stroke="#2dd4bf" stroke-width="1"/>
+        <text x="6" y="18" fill="#f0fdfa" font-size="10" font-weight="700">梯度</text>
+        <text x="6" y="30" fill="#99f6e4" font-size="9">2Ψ (BF16)</text>
+
+        <!-- Master Weights: 4Ψ -->
+        <rect x="96" y="0" width="84" height="38" rx="4" fill="#d97706" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="18" fill="#fffbeb" font-size="10" font-weight="700">Master 权重</text>
+        <text x="8" y="30" fill="#fde68a" font-size="9">4Ψ (FP32)</text>
+
+        <!-- Momentum m & Variance v: 8Ψ -->
+        <rect x="184" y="0" width="168" height="38" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="1"/>
+        <text x="12" y="18" fill="#faf5ff" font-size="10" font-weight="700">优化器动量 m 与 方差 v</text>
+        <text x="12" y="30" fill="#e9d5ff" font-size="9">8Ψ (FP32 各 4Ψ) ── 独占 50% 显存！</text>
+      </g>
+
+      <g transform="translate(14, 88)">
+        <rect x="0" y="0" width="352" height="48" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">传统 DDP 的结构性荒谬：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">全网 N 张 GPU 维护着完全相同的 12Ψ FP32 优化器状态！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: ZeRO 1/2/3 三阶切分矩阵对比 -->
+    <g transform="translate(20, 245)">
+      <rect x="0" y="0" width="380" height="440" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">ZeRO-1/2/3 状态切分与通信开销精算</text>
+
+      <!-- Stage 1 Card: ZeRO-1 -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="110" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">ZeRO-1 (Pos: 仅优化器状态分片)</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="10">· 静态显存: 2Ψ (W) + 2Ψ (G) + 12Ψ/N (Opt) = 4Ψ + 12Ψ/N</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="10">· N=64 时显存: 16Ψ ➔ 4.19Ψ (显存立减近 4 倍！)</text>
+        <text x="10" y="72" fill="#34d399" font-size="10" font-weight="600">· 通信开销: 保持 2Ψ (等同 DDP，无任何额外通信！)</text>
+        <text x="10" y="90" fill="#cbd5e1" font-size="9.5">· 原理: 反向后 AllGather 聚合更新后的局部权重分片</text>
+      </g>
+
+      <!-- Stage 2 Card: ZeRO-2 -->
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="352" height="110" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">ZeRO-2 (Pos+g: 优化器 + 梯度分片)</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="10">· 静态显存: 2Ψ (W) + (2Ψ + 12Ψ)/N = 2Ψ + 14Ψ/N</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="10">· N=64 时显存: 16Ψ ➔ 2.22Ψ (显存立减超 7 倍！)</text>
+        <text x="10" y="72" fill="#34d399" font-size="10" font-weight="600">· 通信开销: 保持 2Ψ (使用 ReduceScatter 替代 AllReduce)</text>
+        <text x="10" y="90" fill="#cbd5e1" font-size="9.5">· 原理: 反向算完一层立刻 ReduceScatter，立即释放该层梯度</text>
+      </g>
+
+      <!-- Stage 3 Card: ZeRO-3 -->
+      <g transform="translate(14, 280)">
+        <rect x="0" y="0" width="352" height="142" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">ZeRO-3 (Pos+g+p: 全状态分片 / 完整 FSDP)</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="10">· 静态显存: (2Ψ + 2Ψ + 12Ψ)/N = 16Ψ/N (随 N 严格线性下降!)</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="10">· N=64 时显存: 16Ψ ➔ 0.25Ψ (显存立减整整 64 倍！)</text>
+        <text x="10" y="72" fill="#fbbf24" font-size="10" font-weight="700">· 通信开销: 激增至 3Ψ (增加 50% 额外通信量！)</text>
+        <text x="10" y="90" fill="#cbd5e1" font-size="9.5">· 通信构成: 前向 AllGather (1Ψ) + 反向 AllGather (1Ψ)</text>
+        <text x="10" y="105" fill="#cbd5e1" font-size="9.5">           + 反向 ReduceScatter (1Ψ) = 3Ψ</text>
+        <text x="10" y="124" fill="#f87171" font-size="10" font-weight="700">核心代价: 以 50% 通信带宽为代价，打破单机显存容量墙！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-29)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">FSDP 单元生命周期与 Prefetch 流水线</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">动态重构 · 即用即抛 · Forward/Backward 双流预取</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 前向与反向单层 FSDP 单元生命周期 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="310" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">单个 FSDP Unit (Layer L) 运行时生命周期</text>
+
+      <!-- Forward Lifecycle -->
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#34d399" font-size="11" font-weight="700">前向阶段 (Forward Pass):</text>
+        
+        <!-- Step 1 -->
+        <g transform="translate(0, 24)">
+          <rect x="0" y="0" width="105" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">1. AllGather 拼装</text>
+          <text x="6" y="30" fill="#94a3b8" font-size="8.5">分片权重 ➔ 完整 W</text>
+        </g>
+        <path d="M 110 45 L 125 45" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-29)"/>
+
+        <!-- Step 2 -->
+        <g transform="translate(130, 24)">
+          <rect x="0" y="0" width="105" height="42" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#f0f9ff" font-size="9.5" font-weight="700">2. 计算 Forward</text>
+          <text x="6" y="30" fill="#bae6fd" font-size="8.5">Y = GEMM(X, W)</text>
+        </g>
+        <path d="M 240 45 L 255 45" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-29)"/>
+
+        <!-- Step 3 -->
+        <g transform="translate(260, 24)">
+          <rect x="0" y="0" width="92" height="42" rx="4" fill="#991b1b" stroke="#f87171" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fff1f2" font-size="9.5" font-weight="700">3. 瞬间 Free 释放</text>
+          <text x="6" y="30" fill="#fecaca" font-size="8.5">仅留 1/N 分片！</text>
+        </g>
+      </g>
+
+      <!-- Backward Lifecycle -->
+      <g transform="translate(14, 130)">
+        <text x="0" y="14" fill="#fbbf24" font-size="11" font-weight="700">反向阶段 (Backward Pass):</text>
+
+        <!-- Step 1: Re-AllGather -->
+        <g transform="translate(0, 24)">
+          <rect x="0" y="0" width="80" height="42" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fbbf24" font-size="9" font-weight="700">1. AllGather</text>
+          <text x="6" y="30" fill="#94a3b8" font-size="8">重新拉取 W</text>
+        </g>
+        <path d="M 85 45 L 95 45" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber-29)"/>
+
+        <!-- Step 2: Compute BWD -->
+        <g transform="translate(100, 24)">
+          <rect x="0" y="0" width="80" height="42" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#f0f9ff" font-size="9" font-weight="700">2. 计算 BWD</text>
+          <text x="6" y="30" fill="#bae6fd" font-size="8">算 dX 与 dW</text>
+        </g>
+        <path d="M 185 45 L 195 45" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber-29)"/>
+
+        <!-- Step 3: Free W -->
+        <g transform="translate(200, 24)">
+          <rect x="0" y="0" width="70" height="42" rx="4" fill="#991b1b" stroke="#f87171" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fff1f2" font-size="9" font-weight="700">3. Free W</text>
+          <text x="6" y="30" fill="#fecaca" font-size="8">释放权重</text>
+        </g>
+        <path d="M 275 45 L 285 45" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber-29)"/>
+
+        <!-- Step 4: ReduceScatter -->
+        <g transform="translate(290, 24)">
+          <rect x="0" y="0" width="62" height="42" rx="4" fill="#15803d" stroke="#4ade80" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#f0fdf4" font-size="8.5" font-weight="700">4. RS 规约</text>
+          <text x="6" y="30" fill="#bbf7d0" font-size="8">保留 1/N 梯</text>
+        </g>
+      </g>
+
+      <!-- Key Philosophy -->
+      <g transform="translate(14, 220)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">即用即抛（Ephemeral Parameters）物理本质：</text>
+        <text x="10" y="36" fill="#cbd5e1" font-size="10">任何层级的完整参数仅在计算发生的几十微秒内驻留显存！</text>
+        <text x="10" y="52" fill="#cbd5e1" font-size="10">计算一结束瞬间释放，确保全卡激活显存与权重显存永不叠加爆炸。</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: Forward & Backward Prefetch 异步重叠流水线 -->
+    <g transform="translate(20, 410)">
+      <rect x="0" y="0" width="380" height="275" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Prefetch 预取流水线：掩盖 50% 额外通信</text>
+
+      <!-- Timeline Diagram -->
+      <g transform="translate(14, 38)">
+        <!-- Stream 1: Compute -->
+        <text x="0" y="12" fill="#38bdf8" font-size="11" font-weight="700">Compute Stream:</text>
+        <g transform="translate(0, 18)">
+          <rect x="0" y="0" width="110" height="30" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="12" y="19" fill="#f0f9ff" font-size="10" font-weight="600">Forward(L1)</text>
+
+          <rect x="115" y="0" width="110" height="30" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="12" y="19" fill="#f0f9ff" font-size="10" font-weight="600">Forward(L2)</text>
+
+          <rect x="230" y="0" width="110" height="30" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="12" y="19" fill="#f0f9ff" font-size="10" font-weight="600">Forward(L3)</text>
+        </g>
+
+        <!-- Stream 2: Comm (Prefetch) -->
+        <g transform="translate(0, 68)">
+          <text x="0" y="12" fill="#a855f7" font-size="11" font-weight="700">Comm Stream (Prefetch):</text>
+          <g transform="translate(0, 18)">
+            <!-- AG L1 -->
+            <rect x="0" y="0" width="60" height="30" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="0.8"/>
+            <text x="6" y="19" fill="#faf5ff" font-size="9" font-weight="600">AG(L1)</text>
+
+            <!-- Prefetch AG L2 (Overlaps with Forward L1) -->
+            <rect x="65" y="0" width="110" height="30" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="0.8"/>
+            <text x="10" y="15" fill="#faf5ff" font-size="9" font-weight="700">Prefetch AG(L2)</text>
+            <text x="10" y="26" fill="#e9d5ff" font-size="8">重叠 Forward(L1)</text>
+
+            <!-- Prefetch AG L3 (Overlaps with Forward L2) -->
+            <rect x="180" y="0" width="110" height="30" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="0.8"/>
+            <text x="10" y="15" fill="#faf5ff" font-size="9" font-weight="700">Prefetch AG(L3)</text>
+            <text x="10" y="26" fill="#e9d5ff" font-size="8">重叠 Forward(L2)</text>
+          </g>
+        </g>
+
+        <path d="M 120 48 L 120 85" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2 2" marker-end="url(#arrow-amber-29)"/>
+        <path d="M 235 48 L 235 85" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="2 2" marker-end="url(#arrow-amber-29)"/>
+
+        <g transform="translate(0, 150)">
+          <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">Prefetch 开启收益：</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="10">算 L1 的同时，后台通信在 NVLink 上已全速拉取 L2 权重；</text>
+          <text x="10" y="48" fill="#cbd5e1" font-size="10">L1 算完时 L2 权重早已就绪，消除 GPU 空转气泡！</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-29)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">生产级 Hybrid Shard 拓扑与避坑指南</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">机内 NVLink FULL_SHARD + 机间 IB NO_SHARD</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 为什么纯 ZeRO-3 在千卡集群会引发“网络雪崩”？ -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="185" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">致命硬件断层：跨机 IB 带宽悬崖</text>
+
+      <g transform="translate(14, 36)">
+        <!-- Bandwidth Bar -->
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="10.5" font-weight="700">机内 8 卡 NVLink 聚合双工带宽：900 GB/s</text>
+        <text x="10" y="32" fill="#f87171" font-size="10.5" font-weight="700">跨机 400G InfiniBand 网络带宽：仅 50 GB/s (暴跌 18 倍!)</text>
+
+        <!-- Consequence -->
+        <g transform="translate(0, 52)">
+          <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">纯 ZeRO-3 跨机部署的灾难：</text>
+          <text x="0" y="30" fill="#94a3b8" font-size="10">每一层前向/反向都强行在 50 GB/s 的 IB 网络上跑全网 AllGather，</text>
+          <text x="0" y="44" fill="#94a3b8" font-size="10">网络拥塞瞬间打满，GPU 算力利用率 (MFU) 从 55% 断崖式跌落至 12%！</text>
+          <text x="0" y="62" fill="#ef4444" font-size="10.5" font-weight="700">➔ 生产铁律：跨节点绝对禁止盲目启用全量 ZeRO-3！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 生产首选架构 HYBRID_SHARD 原理解构 -->
+    <g transform="translate(20, 280)">
+      <rect x="0" y="0" width="380" height="230" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">终极解法：HYBRID_SHARD 双层拓扑映射</text>
+
+      <!-- Architecture Diagram -->
+      <g transform="translate(14, 38)">
+        <!-- Intra-node Box -->
+        <rect x="0" y="0" width="170" height="100" rx="6" fill="#1e293b" stroke="#0284c7" stroke-width="1"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">节点内 (8 卡 NVLink)</text>
+        <text x="10" y="36" fill="#f0f9ff" font-size="10">策略: FULL_SHARD</text>
+        <text x="10" y="52" fill="#94a3b8" font-size="9.5">· 显存下降 8 倍</text>
+        <text x="10" y="68" fill="#94a3b8" font-size="9.5">· 900 GB/s 跑 AllGather</text>
+        <text x="10" y="86" fill="#34d399" font-size="9.5" font-weight="600">通信耗时 &lt; 0.5 ms</text>
+
+        <!-- Inter-node Box -->
+        <g transform="translate(182, 0)">
+          <rect x="0" y="0" width="170" height="100" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+          <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">节点间 (跨机 IB 网络)</text>
+          <text x="10" y="36" fill="#faf5ff" font-size="10">策略: NO_SHARD (DP)</text>
+          <text x="10" y="52" fill="#94a3b8" font-size="9.5">· 跨机仅同步 1 次梯度</text>
+          <text x="10" y="68" fill="#94a3b8" font-size="9.5">· 前向 0 跨机通信！</text>
+          <text x="10" y="86" fill="#38bdf8" font-size="9.5" font-weight="600">通信量骤减 67%！</text>
+        </g>
+      </g>
+
+      <!-- Key Conclusion -->
+      <g transform="translate(14, 150)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">HYBRID_SHARD 架构战果：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">既享受到单机 8 卡 8 倍显存释放（70B 轻松单机装下），</text>
+        <text x="10" y="50" fill="#34d399" font-size="10" font-weight="600">又完全规避了跨机 IB 链路的前向/反向高频 AllGather 拥塞！</text>
+      </g>
+    </g>
+
+    <!-- Module 3.3: 工业生产选型与避坑 Checklist -->
+    <g transform="translate(20, 525)">
+      <rect x="0" y="0" width="380" height="160" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">FSDP 生产黄金配置最佳实践</text>
+
+      <g transform="translate(14, 34)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 自动换行: 必须指定 auto_wrap_policy (按 TransformerBlock)</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 预取开启: forward_prefetch=True + backward_prefetch</text>
+        <text x="0" y="46" fill="#cbd5e1" font-size="10.5">· 混合精度: MixedPrecision(param_dtype=bf16, reduce_dtype=fp32)</text>
+        <text x="0" y="64" fill="#f59e0b" font-size="10.5" font-weight="700">· 状态限制: limit_all_gathers=True (防止前向无节制突发爆显存)</text>
+        <text x="0" y="82" fill="#38bdf8" font-size="10" font-weight="600">· 选型法则: 7B~13B 首选 ZeRO-2; 70B 首选 HYBRID_SHARD</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[以通信换空间]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">ZeRO-3 用增加 50% 通信量的代价，换取了显存随卡数线性衰减的极限扩展能力。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[即用即抛法则]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">FSDP 的精髓在于动态拼装与瞬间释放，让万亿参数大模型像流水一样穿过显存。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[拓扑感知设计]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">永远不要在机间 IB 链路上跑全量 ZeRO-3；Hybrid Shard 是大厂 MFU 的定海神针。</text>
+    </g>
+  </g>
+</svg>

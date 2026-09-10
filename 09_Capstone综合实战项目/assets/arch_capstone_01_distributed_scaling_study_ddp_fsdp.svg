@@ -1,0 +1,392 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-c1" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-c1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-c1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-c1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-c1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-c1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-c1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-c1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-c1)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="300" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">CAPSTONE 01: SCALING STUDY &amp; MFU</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      扩展性悬崖之谜：分布式 LLM 训练 Scaling Study 综合实战全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      强弱扩展性第一性原理 · DDP 梯度分桶与反向重叠物理边界 · FSDP 显存与 1.5 倍通信税 · 64 卡跨机 18 倍网络断崖归因
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">SCALING CLIFF</text>
+      <text x="12" y="38" fill="#f87171" font-size="16" font-weight="800">52% ➔ 23.5%</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">BANDWIDTH GAP</text>
+      <text x="157" y="38" fill="#fbbf24" font-size="16" font-weight="800">18x (NVLink/RoCE)</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">FSDP COMM TAX</text>
+      <text x="307" y="38" fill="#c084fc" font-size="16" font-weight="800">1.5x DDP Traffic</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">TARGET MFU RECOVER</text>
+      <text x="467" y="38" fill="#34d399" font-size="16" font-weight="800">&gt; 46.5% Tuned</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-c1)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、扩展性第一性原理与 MFU 算盘</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">强扩展性 vs 弱扩展性 · MFU 物理数学推导 · 跨机 18 倍网络断崖</text>
+
+    <!-- Subcard 1.1: 强扩展 vs 弱扩展 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="215" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 强扩展性 (Strong) vs 弱扩展性 (Weak) 物理分水岭</text>
+
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="178" height="96" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">强扩展性 (Strong Scaling)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">• 固定全局总 Batch Size</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8.5">• 增加 GPU 卡数 N ➔ 单卡 Workload 变小</text>
+        <text x="8" y="60" fill="#fca5a5" font-size="8.5">• 计算时间线性缩短，通信量不变</text>
+        <text x="8" y="74" fill="#ef4444" font-size="8">• 致命痛点：计算/通信比恶化，极快撞墙</text>
+
+        <rect x="188" y="0" width="178" height="96" rx="4" fill="#182234" stroke="#10b981" stroke-width="1"/>
+        <text x="196" y="16" fill="#34d399" font-size="9" font-weight="700">弱扩展性 (Weak Scaling)</text>
+        <text x="196" y="32" fill="#cbd5e1" font-size="8.5">• 维持单卡 Local Batch Size 不变</text>
+        <text x="196" y="46" fill="#cbd5e1" font-size="8.5">• 增加 GPU 卡数 N ➔ 全局 Batch 线性扩张</text>
+        <text x="196" y="60" fill="#34d399" font-size="8.5">• 单卡计算时间恒定，隐藏网络开销</text>
+        <text x="196" y="74" fill="#94a3b8" font-size="8">• 算法挑战：大 Batch 导致学习率难收敛</text>
+      </g>
+
+      <g transform="translate(10, 140)">
+        <rect width="366" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">⚡ 工业大模型法则：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">预训练首保“弱扩展性”，维持单卡 Micro-Batch 撑满 HBM；配合梯度累积调节全局有效 Batch Size！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: MFU 物理数学推导 -->
+    <g transform="translate(15, 295)">
+      <rect width="390" height="195" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.2 MFU 生产级手算方程 (No Naked Formula 2.0)</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="370" height="60" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">理论有效 FLOPs (单步): C_step = 6 × P × B_global × S</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 前向 GEMM 矩阵乘法：2 × P × Tokens</text>
+        <text x="10" y="46" fill="#cbd5e1" font-size="8.5">• 反向求导与权重梯度：4 × P × Tokens ➔ 纯计算总计 6P FLOPs/Token</text>
+      </g>
+
+      <g transform="translate(10, 104)">
+        <rect width="370" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">MFU = 实际吞吐 FLOPs/s / (N × 单卡峰值 TFLOPS)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">7B 模型单卡 H100 (989 TFLOPS), 4200 Token/s ➔ 52.3% MFU (健康标杆)</text>
+        <text x="10" y="46" fill="#ef4444" font-size="8.5">64卡跌至 1890 Token/s ➔ 23.5% MFU (算力蒸发超 55%！)</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: NVLink vs RoCE 网络物理断崖 -->
+    <g transform="translate(15, 505)">
+      <rect width="390" height="175" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">1.3 物理互联鸿沟：机内 NVLink vs 跨机 RoCE 网络断崖</text>
+
+      <g transform="translate(10, 32)">
+        <rect width="370" height="48" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">机内 8 卡 NVLink 4.0 域：900 GB/s 双向带宽</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">7B 模型 14GB 梯度 AllReduce 耗时仅需 31 毫秒 ➔ 远小于反向计算 (280ms)</text>
+      </g>
+
+      <g transform="translate(10, 88)">
+        <rect width="370" height="66" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">跨机 64 卡 400 Gbps RoCE 域：仅 50 GB/s 物理带宽 (相差 18 倍！)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">跨机 14GB 梯度传输耗时激增至 560 毫秒 ➔ 彻底冲垮反向计算时间！</text>
+        <text x="8" y="46" fill="#ef4444" font-size="8" font-weight="600">计算被通信反向支配，GPU 产生 280ms 巨额等待气泡，MFU 直接斩半！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-c1)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、DDP 梯度分桶与反向重叠流水线</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Bucket 机制消灭碎包开销 · 异步 CUDA Stream · 算力掩盖失效临界点</text>
+
+    <!-- Subcard 2.1: DDP 分桶与反向重叠图解 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="260" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 DDP 反向传播与分桶通信重叠流水线 (Overlap)</text>
+
+      <!-- Timeline visual -->
+      <g transform="translate(12, 34)">
+        <!-- Layer N backward -->
+        <rect x="0" y="0" width="125" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="8.5" font-weight="700">Layer N Backward</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="7.5">梯度算完放入 Bucket</text>
+
+        <line x1="125" y1="21" x2="145" y2="21" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-c1)"/>
+
+        <!-- Bucket filled trigger AllReduce -->
+        <rect x="145" y="0" width="135" height="42" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">Bucket 满 (25MB)</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="7.5">发射异步 AllReduce</text>
+
+        <line x1="280" y1="21" x2="300" y2="21" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-emerald-c1)"/>
+
+        <!-- Stream overlap -->
+        <rect x="300" y="0" width="106" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">Comm Stream</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="7.5">网络后台极速传输</text>
+      </g>
+
+      <!-- Parallel Execution Visual -->
+      <g transform="translate(12, 88)">
+        <rect width="406" height="74" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#f8fafc" font-size="9" font-weight="700">计算流 (Default Stream) 与通信流 (Comm Stream) 并行重叠：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">当 Layer N-1 和 N-2 继续做反向求导时，Bucket N 正在通过 NCCL 在网卡传数据</text>
+        <text x="10" y="48" fill="#34d399" font-size="8.5">理想状态：T_comm(Bucket) &lt; T_comp(Next Layers) ➔ 通信耗时完全被掩盖，等同零开销！</text>
+        <text x="10" y="62" fill="#ef4444" font-size="8">跨机断崖：T_comm 膨胀 18 倍 ➔ 算力被迫等待网络同步锁（Wait Event），流水线坍塌</text>
+      </g>
+
+      <!-- Bucket Tuning Rules -->
+      <g transform="translate(12, 172)">
+        <rect width="406" height="74" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">💡 生产级 bucket_cap_mb 调优玄机：</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8">• 分桶过小 (&lt; 5MB)：触发成百上千次高频小包通信，NIC 软中断被打满，延迟爆炸</text>
+        <text x="10" y="44" fill="#cbd5e1" font-size="8">• 分桶过大 (&gt; 100MB)：需要等很久才填满 Bucket，错失与前序反向计算重叠的黄金窗口</text>
+        <text x="10" y="58" fill="#38bdf8" font-size="8">黄金配置：7B~13B 模型配 400G 网络，bucket_cap_mb 调至 50MB~64MB 吞吐最佳！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: DDP 显存瓶颈与失效边界 -->
+    <g transform="translate(15, 335)">
+      <rect width="430" height="205" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 DDP 显存死穴与 64 卡跨机崩溃根本原因剖析</text>
+
+      <g transform="translate(10, 32)">
+        <rect width="406" height="52" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="16" fill="#f87171" font-size="9" font-weight="700">死穴 1: 单卡必须塞下完整 16Ψ 静态状态</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8.5">70B 模型仅权重+梯度+AdamW 就需要 1.12 TB 显存，单张 80GB H100 根本起不来</text>
+        <text x="10" y="44" fill="#94a3b8" font-size="7.5">DDP 毫无参数分片能力，模型稍大就会当场 OOM 暴毙！</text>
+      </g>
+
+      <g transform="translate(10, 92)">
+        <rect width="406" height="64" rx="4" fill="#182234" stroke="#fbbf24" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">死穴 2: Ring-AllReduce 跨机跳数膨胀</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8.5">64 卡构筑跨机大逻辑环，每个 Rank 必须跟相邻节点经过物理交换机做 2(N-1) 步传输</text>
+        <text x="10" y="44" fill="#cbd5e1" font-size="8.5">跨机光纤微秒级时延被环路连乘放大，极易发生网络慢卡拖垮全群（Straggler）</text>
+        <text x="10" y="56" fill="#38bdf8" font-size="7.5">必须跃迁至 FSDP（ZeRO-3）或引入分层通信（Hierarchical AllReduce）！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 性能恢复实战方案 -->
+    <g transform="translate(15, 550)">
+      <rect width="430" height="135" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 64 卡扩展效率从 45% 救回 88% 架构改造三板斧</text>
+
+      <g transform="translate(10, 32)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">板斧 1: 梯度累积增大粒度</text>
+        <text x="155" y="14" fill="#cbd5e1" font-size="8.5">设 grad_accum=4，计算时间拉长 4 倍，将通信彻底掩盖</text>
+
+        <text x="0" y="34" fill="#38bdf8" font-size="9" font-weight="700">板斧 2: 调优分桶 bucket_cap</text>
+        <text x="155" y="34" fill="#cbd5e1" font-size="8.5">从 25MB 提高至 50MB，网卡发射大报文榨干 RoCE MTU 4096</text>
+
+        <text x="0" y="54" fill="#c084fc" font-size="9" font-weight="700">板斧 3: FSDP 跨机分片通信</text>
+        <text x="155" y="54" fill="#cbd5e1" font-size="8.5">前向重叠预取 (Prefetch) + 优化器状态跨机切分</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">拯救效果：</text>
+        <text x="155" y="74" fill="#34d399" font-size="8.5" font-weight="700">64 卡吞吐由 12.1万 暴涨至 23.6万 Tokens/s，MFU 恢复至 46.5%！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-c1)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#fbbf24"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、FSDP 显存通信博弈与生产治理</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">DDP 跃迁至 FSDP · 1.5 倍通信代价手算 · 生产性能 Checklist</text>
+
+    <!-- Subcard 3.1: DDP vs FSDP 机制对比矩阵 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">3.1 DDP vs FSDP (ZeRO-3) 显存与通信硬核对比</text>
+
+      <g transform="translate(8, 32)">
+        <rect width="354" height="22" fill="#1e293b" rx="3"/>
+        <text x="6" y="15" fill="#94a3b8" font-size="8" font-weight="700">对比维度</text>
+        <text x="80" y="15" fill="#94a3b8" font-size="8" font-weight="700">经典 DDP</text>
+        <text x="175" y="15" fill="#94a3b8" font-size="8" font-weight="700">PyTorch FSDP (ZeRO-3)</text>
+
+        <text x="6" y="38" fill="#cbd5e1" font-size="8.5" font-weight="700">显存切分</text>
+        <text x="80" y="38" fill="#f87171" font-size="8">全复制 (16Ψ)</text>
+        <text x="175" y="38" fill="#34d399" font-size="8">全切分 (16Ψ / N)</text>
+
+        <text x="6" y="58" fill="#cbd5e1" font-size="8.5" font-weight="700">通信原语</text>
+        <text x="80" y="58" fill="#38bdf8" font-size="8">Ring-AllReduce</text>
+        <text x="175" y="58" fill="#c084fc" font-size="8">AllGather + ReduceScatter</text>
+
+        <text x="6" y="78" fill="#cbd5e1" font-size="8.5" font-weight="700">总通信量</text>
+        <text x="80" y="78" fill="#34d399" font-size="8">2 × 参数量 Ψ</text>
+        <text x="175" y="78" fill="#fbbf24" font-size="8">3 × 参数量 Ψ (通信量增加 50%!)</text>
+
+        <text x="6" y="98" fill="#cbd5e1" font-size="8.5" font-weight="700">通信时机</text>
+        <text x="80" y="98" fill="#cbd5e1" font-size="8">仅在反向发生</text>
+        <text x="175" y="98" fill="#f87171" font-size="8">前向动态抓取 + 反向动态求和</text>
+      </g>
+
+      <g transform="translate(8, 136)">
+        <rect width="354" height="64" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">⚖️ 显存换通信的终极权衡：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">FSDP 以多付出 1.5 倍通信量为代价，换取了显存随卡数线性下降！</text>
+        <text x="8" y="44" fill="#34d399" font-size="8">如果单卡能塞得下模型（如 7B），优先选 DDP 或 FSDP-Stage2 (ZeRO-2)；</text>
+        <text x="8" y="58" fill="#c084fc" font-size="8">单卡装不下（如 70B）才必须开启完整 FSDP-FullShard (ZeRO-3)。</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 生产避坑决策树 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="205" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">3.2 分布式训练扩展性事故排查决策树</text>
+
+      <g transform="translate(10, 32)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="8.5" font-weight="700">1. 检查各卡 GPU 利用率是否出现阶梯锯齿波</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">若利用率频繁跌至 0，说明存在通信等待与反向气泡</text>
+      </g>
+
+      <g transform="translate(10, 80)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">2. 抓取 Nsight Systems 查看 Stream Overlap</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">确认 ncclKernel 是否与 反向 GEMM 处于不同 Stream 并行重叠</text>
+      </g>
+
+      <g transform="translate(10, 128)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="8.5" font-weight="700">3. 抓取 RoCE PFC 拥塞与慢节点 (Straggler)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">检查是否有某张卡因过温降频，导致整环所有卡被迫停滞等待</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 性能调优 Checklist -->
+    <g transform="translate(15, 528)">
+      <rect width="370" height="156" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 分布式训练性能调优 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 禁用 find_unused_params：</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8.5">坚决设为 False，消除动态图额外遍历开销</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 开启 FSDP 预取 (Prefetch)：</text>
+        <text x="145" y="34" fill="#94a3b8" font-size="8.5">提前异步拉取下一层参数，抹平 AllGather 延迟</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 开启 NCCL 异步报错：</text>
+        <text x="145" y="54" fill="#94a3b8" font-size="8.5">TORCH_NCCL_ASYNC_ERROR_HANDLING=1</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 拓扑感知亲和调度：</text>
+        <text x="145" y="74" fill="#94a3b8" font-size="8.5">跨机节点强制置于同一 Leaf 交换机下</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 绑定 GPU 与 NUMA 节点：</text>
+        <text x="145" y="94" fill="#94a3b8" font-size="8.5">消除跨 Socket 慢速 QPI 总线内存穿透</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 监控集群 MFU 基线：</text>
+        <text x="145" y="114" fill="#94a3b8" font-size="8.5">预训练 MFU 必须稳定在 45% 以上，低于 35% 必排障</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不允许无度量的盲目堆卡：强行把单机任务线性扩展到 64 卡而不调整梯度累积与分桶，多出来的卡不过是在给缓慢的网络协议栈当取暖器。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">永远敬畏跨机 18 倍带宽鸿沟：机内 NVLink 是极速高铁，跨机 RoCE 只是普通公路，必须用梯度累积与异步流水线把通信时间彻底压制在反向计算阴影下。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">显存与通信不可兼得：FSDP 换来了显存自由却增加了 50% 通信税，单机塞得下绝不用 ZeRO-3，找准你的 MFU 帕累托最优平衡点才是大厂真功夫。</text>
+    </g>
+  </g>
+</svg>

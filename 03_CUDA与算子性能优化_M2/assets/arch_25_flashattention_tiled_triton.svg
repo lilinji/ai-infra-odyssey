@@ -1,0 +1,337 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-25" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-card-25" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-25" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-25" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-25" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-25)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-25)"/>
+    
+    <text x="24" y="27" class="title-main">第25讲：FlashAttention IO 感知计算、Online Softmax 融合与 Triton 编译全景图</text>
+    <text x="24" y="47" class="title-sub">Standard Attention O(N²) Memory Wall · IO-Aware Tiling · Online Rescaling (O_new = α·O + PV) · FA-1/2/3 Evolution · Triton Compiler DSL</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(820, 13)">
+      <rect x="0" y="0" width="135" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="67" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">中间矩阵显存写回</text>
+      <text x="67" y="30" font-size="11" font-weight="800" fill="#4ade80" text-anchor="middle">彻底清零 (0 Bytes!)</text>
+
+      <rect x="145" y="0" width="135" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="212" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">显存占用复杂度</text>
+      <text x="212" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">O(N²) ➔ O(N) 线性</text>
+
+      <rect x="290" y="0" width="130" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="355" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">长文本加速比</text>
+      <text x="355" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">2.0x ~ 4.2x 提速</text>
+
+      <rect x="430" y="0" width="120" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="490" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">FA-3 Hopper 利用率</text>
+      <text x="490" y="30" font-size="11" font-weight="800" fill="#fde047" text-anchor="middle">&gt; 75% (TMA+WGMMA)</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: MEMORY WALL & IO-AWARE TILING ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-25)" stroke="#e11d48" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(136,19,55,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#fecdd3">💥 1. 标准 Attention 存储墙与 IO 感知分块破局</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#fda4af">存储之殇</text>
+
+    <!-- The 128K Disaster Box -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="136" rx="6" fill="rgba(136,19,55,0.3)" stroke="#fb7185" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="11" font-weight="800" fill="#fca5a5">128K 上下文下的“中间矩阵显存血崩”第一性原理</text>
+      <text x="14" y="38" font-size="8.5" fill="#fecdd3">注意力标准三部曲: S = QK^T ➔ P = softmax(S) ➔ O = PV</text>
+
+      <g transform="translate(10, 48)">
+        <rect x="0" y="0" width="392" height="50" rx="3" fill="#030712" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#ffffff">当 N = 128K (131,072), Head 维 d = 128, FP16 (2 Bytes) 时：</text>
+        <text x="10" y="30" font-size="8" font-weight="800" fill="#fde047">单个 Head 的 S 矩阵尺寸: N × N ≈ 171.8 亿元素 ➔ 占用 34.36 GB！</text>
+        <text x="10" y="44" font-size="8" font-weight="800" fill="#f87171">Softmax 后的 P 矩阵尺寸: 同样 N × N ➔ 又占用 34.36 GB！</text>
+      </g>
+      <text x="14" y="118" font-size="8" font-weight="700" fill="#fca5a5">★ 仅算 1 个 Head 就吞噬 68.7 GB 物理显存！80GB 显卡瞬间 OOM 熔断！</text>
+    </g>
+
+    <!-- IO Complexity Comparison Table -->
+    <g transform="translate(14, 192)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">IO 复杂度代数账本：标准 Attention vs FlashAttention</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">Dao 等人在体系结构上的降维打击：IO 访问量差异</text>
+
+      <g transform="translate(10, 44)">
+        <!-- Standard -->
+        <rect x="0" y="0" width="392" height="74" rx="4" fill="rgba(136,19,55,0.2)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">标准 Attention (IO 复杂度: O(N·d + N²))</text>
+        <text x="10" y="32" font-size="7.5" fill="#fecdd3">• HBM 访存次数随 N² 呈爆炸式二次方飙升；</text>
+        <text x="10" y="46" font-size="7.5" fill="#fecdd3">• 显卡绝大部分时间停滞在 2 TB/s 显存总线排队；</text>
+        <text x="10" y="60" font-size="8" font-weight="700" fill="#f87171">状态：严重的访存受限 (Memory-Bound)，ALU 长期饥饿！</text>
+
+        <!-- FlashAttention -->
+        <rect x="0" y="82" width="392" height="96" rx="4" fill="rgba(6,78,59,0.25)" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#34d399" transform="translate(0,82)">FlashAttention (IO 复杂度: O(N²·d² / M))</text>
+        <text x="10" y="32" font-size="7.5" fill="#a7f3d0" transform="translate(0,82)">• 其中 M 为 SM 片上高速 SRAM 容量 (~100 KB ~ 200 KB)；</text>
+        <text x="10" y="46" font-size="7.5" fill="#a7f3d0" transform="translate(0,82)">• 只要 d² 远小于 M，访存量相比标准 Attention 暴降 4x ~ 20x！</text>
+        <text x="10" y="60" font-size="7.5" fill="#ffffff" transform="translate(0,82)">• HBM 仅读取 Q, K, V 并写回最终结果 O，中间 Map 彻底清零；</text>
+        <text x="10" y="76" font-size="8" font-weight="700" fill="#fde047" transform="translate(0,82)">状态：成功逆转为计算受限 (Compute-Bound)，压满 Tensor Core！</text>
+      </g>
+    </g>
+
+    <!-- Visual SRAM Tiling Layout -->
+    <g transform="translate(14, 438)">
+      <rect x="0" y="0" width="412" height="286" rx="6" fill="#0f172a" stroke="#0e7490" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#38bdf8">IO 感知 SRAM 物理分块布局 (Tiled Attention)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">Q 切分成 Br 块，K、V 切分成 Bc 块，装入 SM 片上 SRAM</text>
+
+      <!-- Visual Blocks -->
+      <g transform="translate(10, 46)">
+        <!-- Q Block -->
+        <rect x="10" y="10" width="70" height="90" rx="3" fill="rgba(8,51,68,0.5)" stroke="#06b6d4" stroke-width="1"/>
+        <text x="45" y="50" font-size="9" font-weight="800" fill="#67e8f9" text-anchor="middle">Tile Q_i</text>
+        <text x="45" y="64" font-size="7" fill="#cbd5e1" text-anchor="middle">Br × d</text>
+
+        <!-- K Block Transpose -->
+        <rect x="110" y="10" width="90" height="70" rx="3" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+        <text x="155" y="40" font-size="9" font-weight="800" fill="#fdba74" text-anchor="middle">Tile K_j^T</text>
+        <text x="155" y="54" font-size="7" fill="#cbd5e1" text-anchor="middle">d × Bc</text>
+
+        <!-- V Block -->
+        <rect x="220" y="10" width="70" height="90" rx="3" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+        <text x="255" y="50" font-size="9" font-weight="800" fill="#e9d5ff" text-anchor="middle">Tile V_j</text>
+        <text x="255" y="64" font-size="7" fill="#cbd5e1" text-anchor="middle">Bc × d</text>
+
+        <!-- Output Block -->
+        <rect x="310" y="10" width="70" height="90" rx="3" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="345" y="50" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle">Tile O_i</text>
+        <text x="345" y="64" font-size="7" fill="#cbd5e1" text-anchor="middle">Br × d</text>
+      </g>
+
+      <g transform="translate(10, 160)">
+        <rect x="0" y="0" width="392" height="110" rx="4" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#67e8f9">SRAM 片上生命周期规则：</text>
+        <text x="10" y="32" font-size="7.5" fill="#cbd5e1">1. `Tile Q_i` 加载进 SRAM 并驻留整个内层循环；</text>
+        <text x="10" y="48" font-size="7.5" fill="#cbd5e1">2. 内层循环依次流式滑入 `Tile K_j` 与 `Tile V_j`；</text>
+        <text x="10" y="64" font-size="7.5" fill="#cbd5e1">3. `Tile S_ij` 与 `Tile P_ij` 完全在寄存器中生成并立即消费，绝不落盘；</text>
+        <text x="10" y="80" font-size="7.5" font-weight="700" fill="#fde047">4. 整个内层循环迭代完毕后，仅将唯一的 `Tile O_i` 写回全局显存 HBM！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: ONLINE RESCALING ENGINE ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-25)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(6,78,59,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#6ee7b7">🔄 2. Online Softmax 融合增量更新状态机</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#a7f3d0">状态机引擎</text>
+
+    <!-- Master Algebraic Equations -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="152" rx="6" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a7f3d0">FlashAttention 输出张量动态缩放代数递推公式</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">每一轮块迭代，不仅更新统计量 (m, l)，同时将已有输出 O 同步重缩放</text>
+
+      <g transform="translate(10, 42)">
+        <rect x="0" y="0" width="412" height="96" rx="3" fill="#030712" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" font-size="8.5" font-weight="700" fill="#6ee7b7">① 局部最大值更新:  m_new = max(m_old, rowmax(S_ij))</text>
+        <text x="10" y="36" font-size="8.5" font-weight="700" fill="#fde047">② 历史衰减因子:    α = exp(m_old - m_new)</text>
+        <text x="10" y="54" font-size="8.5" font-weight="700" fill="#38bdf8">③ 归一化分母递推:  l_new = α · l_old + rowsum(exp(S_ij - m_new))</text>
+        <text x="10" y="74" font-size="9.5" font-weight="800" fill="#ffffff">④ 输出累加矩阵更新: O_new = diag(α) · O_old + exp(S_ij - m_new) · V_j</text>
+        <text x="10" y="90" font-size="7.5" fill="#a7f3d0">（最终在块循环结束后，执行唯一一次全局标量除法: O_final = O / l_new）</text>
+      </g>
+    </g>
+
+    <!-- Pipeline State Machine Visual -->
+    <g transform="translate(14, 208)">
+      <rect x="0" y="0" width="432" height="344" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">SRAM 片上四步流水线状态转移图 (In-Register Pipeline)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">计算过程中的所有临时中间张量完全封印在 SM 寄存器与共享内存</text>
+
+      <!-- Step 1 -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="412" height="60" rx="3" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#67e8f9">Step 1: Tile GEMM-1 (S_ij = Q_i × K_j^T)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">• 输入: Q_i (从 Shared Mem) 与 K_j (从 Shared Mem)；</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• 计算: Tensor Core MMA 执行矩阵乘，得分矩阵 S_ij 产生于寄存器堆；</text>
+        <text x="10" y="56" font-size="7" fill="#fde047">★ 显存开销: 0 字节 (完全不向 HBM 写回一个浮点数！)</text>
+      </g>
+
+      <!-- Step 2 -->
+      <g transform="translate(10, 110)">
+        <rect x="0" y="0" width="412" height="64" rx="3" fill="rgba(6,78,59,0.4)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#34d399">Step 2: 片上 Online Softmax 统计量迭代更新</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">• 寄存器规约: Warp Shuffle 快速求出 S_ij 当前行的 rowmax；</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• 指数与缩放: 算出衰减因子 α，更新分母 l_new 并算出 P_tilde = exp(S_ij - m_new)；</text>
+        <text x="10" y="58" font-size="7" fill="#6ee7b7">★ 数值稳定性: 每一个指数项恒 ≤ 0，永不发生 +Inf 溢出！</text>
+      </g>
+
+      <!-- Step 3 -->
+      <g transform="translate(10, 180)">
+        <rect x="0" y="0" width="412" height="66" rx="3" fill="rgba(88,28,135,0.4)" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#d8b4fe">Step 3: Tile GEMM-2 与历史累加输出重缩放</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">• 缩放已有输出: O_i = O_i × α (单指令批量乘法)；</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• 乘加新特征: Tensor Core 计算 P_tilde × V_j，累加进入 O_i 寄存器；</text>
+        <text x="10" y="58" font-size="7" fill="#e9d5ff">★ 闭环完成: 准备进入下一个 K_j+1, V_j+1 循环！</text>
+      </g>
+
+      <!-- Step 4 -->
+      <g transform="translate(10, 252)">
+        <rect x="0" y="0" width="412" height="52" rx="3" fill="rgba(124,45,18,0.4)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fdba74">Step 4: 最终归一化与全局写回 (HBM Write Once)</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff">• 最终除法: O_final = O_i / l_final (通过乘倒数优化)；</text>
+        <text x="10" y="44" font-size="7.5" font-weight="700" fill="#fde047">★ 写回 HBM: 尺寸仅为 N × d (与输入一致)，显存占用降维至 O(N)！</text>
+      </g>
+    </g>
+
+    <!-- Mathematical Invariance Dictum -->
+    <g transform="translate(14, 562)">
+      <rect x="0" y="0" width="432" height="162" rx="6" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">💎 严密性背书：FlashAttention 输出与标准 Attention 严格等价</text>
+      <text x="14" y="38" font-size="8.5" fill="#e0f2fe">• 【代数等价】: 尽管计算顺序被分块彻底打乱，但根据结合律与重缩放因子：</text>
+      <text x="24" y="54" font-size="8" font-family="monospace" fill="#fde047">O_flash(i) ≡ Softmax(Q_i K^T) V ≡ Σ (exp(S_ij - m) / Σ exp) · V_j</text>
+      <text x="14" y="72" font-size="8.5" fill="#e0f2fe">• 【数值精度甚至更高】: 因为标准 Attention 在 FP16 下容易发生下溢或溢出，而 FlashAttention 在局部始终采用动态 Safe Max 保护，并在寄存器中以 FP32 累加，数值精度全面超越原生 PyTorch 实现！</text>
+      <text x="14" y="106" font-size="8.5" font-weight="700" fill="#6ee7b7">★ 既不损失精度，又消除 90% 显存读写，这是 AI Infra 史上最优雅的算子重构！</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: GENERATIONAL EVOLUTION & TRITON DSL ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-25)" stroke="#06b6d4" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">🚀 3. FlashAttention 演进与 Triton 工业实战</text>
+    <text x="360" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">演进与实战</text>
+
+    <!-- FA-1 vs FA-2 vs FA-3 Evolution Table -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="18" class="card-title" fill="#fef08a">FlashAttention 架构三代极致跃迁谱系</text>
+      
+      <g transform="translate(10, 28)">
+        <!-- FA-1 -->
+        <rect x="0" y="0" width="392" height="58" rx="3" fill="rgba(15,23,42,0.8)" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="8" font-weight="700" fill="#94a3b8">FA-1 (NeurIPS 2022 / Ampere): 破局开创者</text>
+        <text x="10" y="28" font-size="7.5" fill="#64748b">• 外层循环 K,V，内层循环 Q ➔ 导致不同块写回同个输出，需原子操作或额外显存；</text>
+        <text x="10" y="42" font-size="7.5" fill="#64748b">• 非矩阵乘开销占 30% (大量中间同步)，利用率约为 50% TFLOPS。</text>
+
+        <!-- FA-2 -->
+        <rect x="0" y="64" width="392" height="66" rx="3" fill="rgba(8,51,68,0.35)" stroke="#06b6d4" stroke-width="1"/>
+        <text x="10" y="15" font-size="8" font-weight="700" fill="#67e8f9">FA-2 (2023 / 算子成熟): 循环反转与流水极致优化</text>
+        <text x="10" y="28" font-size="7.5" fill="#cbd5e1">• **外层循环 Q，内层循环 K,V** ➔ 输出 O_i 私属于单个线程块，彻底消除原子锁！</text>
+        <text x="10" y="42" font-size="7.5" fill="#cbd5e1">• 规约指令大幅减少，Warp 级分块并行，算力利用率冲上 73% (230 TFLOPS)！</text>
+
+        <!-- FA-3 -->
+        <rect x="0" y="136" width="392" height="88" rx="3" fill="rgba(6,78,59,0.4)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="15" font-size="8.5" font-weight="800" fill="#a7f3d0">FA-3 (2024 / Hopper GH100): 硬件深度协同进化</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff">① **异步 TMA (Tensor Memory Accelerator)**: 专用硬件引擎 2D 搬运，零寄存器占用；</text>
+        <text x="10" y="44" font-size="7.5" fill="#ffffff">② **WGMMA 异步张量核**: 128 线程组直接从 Shared Mem 异步读取执行乘加；</text>
+        <text x="10" y="58" font-size="7.5" fill="#ffffff">③ **Ping-Pong Warp 特化**: 调度 Warp 专职发指令，计算 Warp 全速算 GEMM；</text>
+        <text x="10" y="74" font-size="7.5" font-weight="700" fill="#fde047">★ FP8 下实测算力逼近 750 TFLOPS，将 Hopper 压榨到物理极限！</text>
+      </g>
+    </g>
+
+    <!-- Triton Compiler Architecture Visual -->
+    <g transform="translate(14, 292)">
+      <rect x="0" y="0" width="412" height="264" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a7f3d0">Triton 编译器分块映射与自动化下发模型</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">为什么现代 AI 架构师更青睐用 OpenAI Triton 实现 FlashAttention？</text>
+
+      <!-- Python DSL to Hardware -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="54" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="7.5" font-family="monospace" fill="#2dd4bf"># Triton 核心循环伪代码 (极其清晰优雅)</text>
+        <text x="10" y="28" font-size="7.5" font-family="monospace" fill="#ffffff">for start_n in range(0, (start_m + 1) * BLOCK_M, BLOCK_N):</text>
+        <text x="20" y="40" font-size="7.5" font-family="monospace" fill="#ffffff">k = tl.load(K_block_ptr); v = tl.load(V_block_ptr)</text>
+        <text x="20" y="50" font-size="7.5" font-family="monospace" fill="#fde047">qk = tl.dot(q, k); qk = tl.where(mask, qk, -float('inf'))</text>
+      </g>
+
+      <g transform="translate(10, 106)">
+        <rect x="0" y="0" width="392" height="136" rx="4" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#f3e8ff">Triton 编译器替你做掉的“恶心”底层脏活：</text>
+        <text x="10" y="32" font-size="7.5" fill="#cbd5e1">1. **自动 Block Tiling**：无需手写 Thread 映射，Triton 自动将 Block 划分到 128 线程；</text>
+        <text x="10" y="48" font-size="7.5" fill="#cbd5e1">2. **自动消除 Bank Conflict**：编译期自动为共享内存加入 Swizzle 地址异或；</text>
+        <text x="10" y="64" font-size="7.5" fill="#cbd5e1">3. **自动生成异步软流水**：通过 `num_stages=3/4` 参数，自动注入 `cp.async` 双缓冲；</text>
+        <text x="10" y="80" font-size="7.5" fill="#cbd5e1">4. **自动分配寄存器**：通过 SASS 优化避免局部显存 Spilling，代码量减少 90%！</text>
+        <text x="10" y="104" font-size="8" font-weight="700" fill="#fde047">★ 生产实测: Triton 仅需 150 行代码即可达到官方 CUDA 实现 95% 的极致吞吐！</text>
+      </g>
+    </g>
+
+    <!-- Production Guidelines -->
+    <g transform="translate(14, 566)">
+      <rect x="0" y="0" width="412" height="158" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fed7aa">🛠️ Ringi 生产部署与算子调优黄金自检清单</text>
+      <text x="14" y="38" font-size="8" fill="#ffedd5">1. 【Head 维度选择】: 尽量选择 $d = 64$ 或 $128$（符合 Tensor Core 矩阵乘 16 对齐）；</text>
+      <text x="14" y="54" font-size="8" fill="#ffedd5">2. 【因果掩码剪枝 (Causal Mask)】: 对齐下三角分块，右上方全遮蔽块直接跳过，算力翻倍；</text>
+      <text x="14" y="70" font-size="8" fill="#ffedd5">3. 【序列长度 Padding 消除】: 推理时使用 FlashInfer / PagedAttention 变长序列拼接；</text>
+      <text x="14" y="86" font-size="8" fill="#ffedd5">4. 【KV Cache 访问模式】: 结合 PagedAttention 虚拟分页，消除显存物理碎片；</text>
+      <text x="14" y="106" font-size="8.5" font-weight="700" fill="#fde047">终极大杀招：</text>
+      <text x="14" y="122" font-size="8" fill="#fed7aa">预训练/全量微调坚决上 FA-2/FA-3，长文本推理必须开启算子融合与 KV 缓存量化！</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi FlashAttention 与注意力算子工业级优化箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **打破存储墙靠的不是更大带宽，而是算法重构**：IO 感知计算的核心哲学是用低成本的 SRAM 浮点乘法换取昂贵的 HBM 访存清零；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **Online Softmax 是长文本的引路人**：代数增量动态缩放输出，让 Attention 的显存占用从灾难性的 $O(N^2)$ 骤降为优雅的 $O(N)$；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **硬件演进的尽头是特化与异步**：从 FA-1 的朴素分块，到 FA-3 的 TMA 硬件搬运与 WGMMA 异步协同，算力架构正向全异步流水全速狂奔！</text>
+  </g>
+</svg>

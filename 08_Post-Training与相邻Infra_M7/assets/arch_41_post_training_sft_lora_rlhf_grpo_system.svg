@@ -1,0 +1,427 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-41" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-41" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-41" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-41" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-41" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-41" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-41" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-41" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-41)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="310" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">POST-TRAINING &amp; RL INFRASTRUCTURE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      SFT、LoRA 与 RLHF（PPO/DPO/GRPO）系统负载、算力显存与跨阶段调度全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      后训练三大范式显存账本 · PPO四模型绞肉机 vs GRPO群组相对优势 · 推训交替（Rollout ➔ SGD）调度撕裂 · Multi-LoRA 动态批处理
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">GRPO MEMORY SAVE</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">50% vs PPO</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">ROLLOUT TIME RATIO</text>
+      <text x="157" y="38" fill="#fbbf24" font-size="16" font-weight="800">70% ~ 80%</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">LORA TRAIN PARAMS</text>
+      <text x="307" y="38" fill="#34d399" font-size="16" font-weight="800">0.05% ~ 0.1%</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">MULTI-LORA ADAPTERS</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">&gt; 100 Active</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-41)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、后训练范式对比与显存物理账本</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Full SFT vs LoRA vs PPO 四模型 vs DPO vs DeepSeek-R1 GRPO</text>
+
+    <!-- Subcard 1.1: 5 范式显存模型矩阵 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 五大后训练范式显存底账与模型共存结构</text>
+
+      <!-- Table Matrix -->
+      <g transform="translate(10, 34)">
+        <rect width="370" height="20" fill="#1e293b" rx="3"/>
+        <text x="6" y="14" fill="#94a3b8" font-size="8" font-weight="700">范式</text>
+        <text x="65" y="14" fill="#94a3b8" font-size="8" font-weight="700">在场模型</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8" font-weight="700">静态显存消耗</text>
+        <text x="245" y="14" fill="#94a3b8" font-size="8" font-weight="700">KV Cache 依赖</text>
+
+        <!-- SFT -->
+        <text x="6" y="38" fill="#cbd5e1" font-size="8.5" font-weight="700">Full SFT</text>
+        <text x="65" y="38" fill="#cbd5e1" font-size="8.5">Base (1个)</text>
+        <text x="145" y="38" fill="#38bdf8" font-size="8.5">16Ψ ~ 20Ψ (AdamW)</text>
+        <text x="245" y="38" fill="#64748b" font-size="8.5">无 (Teacher Forcing)</text>
+
+        <!-- LoRA -->
+        <text x="6" y="60" fill="#34d399" font-size="8.5" font-weight="700">LoRA/QLoRA</text>
+        <text x="65" y="60" fill="#34d399" font-size="8.5">Base+Adapter</text>
+        <text x="145" y="60" fill="#34d399" font-size="8.5">2Ψ(4b)+0.01Ψ(Opt)</text>
+        <text x="245" y="60" fill="#64748b" font-size="8.5">无 (纯训练梯度更新)</text>
+
+        <!-- PPO -->
+        <text x="6" y="82" fill="#ef4444" font-size="8.5" font-weight="700">RLHF-PPO</text>
+        <text x="65" y="82" fill="#ef4444" font-size="8.5">4个 (A/C/R/RM)</text>
+        <text x="145" y="82" fill="#ef4444" font-size="8.5">16+16+2+2 = 36Ψ！</text>
+        <text x="245" y="82" fill="#ef4444" font-size="8.5">极高 (Rollout 采样)</text>
+
+        <!-- DPO -->
+        <text x="6" y="104" fill="#fbbf24" font-size="8.5" font-weight="700">DPO</text>
+        <text x="65" y="104" fill="#fbbf24" font-size="8.5">2个 (Actor+Ref)</text>
+        <text x="145" y="104" fill="#fbbf24" font-size="8.5">16 + 2 = 18Ψ</text>
+        <text x="245" y="104" fill="#64748b" font-size="8.5">无 (偏好对直训)</text>
+
+        <!-- GRPO -->
+        <text x="6" y="126" fill="#c084fc" font-size="8.5" font-weight="700">GRPO (R1)</text>
+        <text x="65" y="126" fill="#c084fc" font-size="8.5">Actor(+Ref可选)</text>
+        <text x="145" y="126" fill="#c084fc" font-size="8.5">16Ψ (砍掉 Critic!)</text>
+        <text x="245" y="126" fill="#c084fc" font-size="8.5">极高 (群组 G 条并行)</text>
+      </g>
+
+      <!-- Visual Callout -->
+      <g transform="translate(10, 172)">
+        <rect width="370" height="52" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="8.5" font-weight="700">🚨 PPO 显存绞肉机破局：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">70B 模型标准 PPO 静态权重+优化器高达 2.52 TB！哪怕 64 卡 ZeRO-3 单卡仍需 40GB</text>
+        <text x="8" y="45" fill="#34d399" font-size="8">DeepSeek-R1 GRPO 直接砍掉 Critic，节省 50% 显存，把算力留给海量 Rollout！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: LoRA 微结构与前向反向 -->
+    <g transform="translate(15, 312)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.2 LoRA / QLoRA 旁路低秩矩阵算力与内存解剖</text>
+
+      <!-- LoRA Math visual -->
+      <g transform="translate(10, 34)">
+        <rect width="370" height="74" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">h = W0 · x + (α / r) · (B · A · x)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• Base W0 [d, k]: 冻结不更新，反向传播无优化器状态 (可 4-bit NF4 量化)</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="8.5">• A [d, r] (高斯初始化) ➔ B [r, k] (全零初始化，保证训练初始增量为 0)</text>
+        <text x="10" y="66" fill="#fbbf24" font-size="8.5">• 算力税：增加两级微型 GEMM 分支；显存节省：优化器状态仅占 0.1%</text>
+      </g>
+
+      <!-- Gradient Flow diagram -->
+      <g transform="translate(10, 118)">
+        <rect width="370" height="78" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#c084fc" font-size="9" font-weight="700">梯度反向传播路径：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">∂L/∂x = ∂L/∂h · W0^T + (α/r) · ∂L/∂h · (B·A)^T  (Base 不存梯度)</text>
+        <text x="10" y="48" fill="#34d399" font-size="8">∂L/∂A = (α/r) · B^T · (∂L/∂h) · x^T ➔ 仅 A 与 B 参与 AdamW 动量更新</text>
+        <text x="10" y="64" fill="#94a3b8" font-size="8">跨卡通信：仅需 AllReduce 微型 A/B 梯度 (几 MB 极速收敛，无通信瓶颈)</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: GRPO 群组相对优势 -->
+    <g transform="translate(15, 534)">
+      <rect width="390" height="150" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">1.3 DeepSeek-R1 GRPO：群组采样消灭 Critic 核心机理</text>
+
+      <g transform="translate(10, 34)">
+        <text x="0" y="14" fill="#c084fc" font-size="9" font-weight="700">1. 群组采样 (Group Sampling)：</text>
+        <text x="160" y="14" fill="#cbd5e1" font-size="8.5">对每个 Prompt 连续采样 G 个回答 {o_1, o_2, ..., o_G}</text>
+
+        <text x="0" y="34" fill="#38bdf8" font-size="9" font-weight="700">2. 组内相对优势 (Advantage)：</text>
+        <text x="160" y="34" fill="#cbd5e1" font-size="8.5">A_i = (r_i - Mean(r)) / Std(r)  (自归一化，无需 Critic 估值)</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">3. 策略更新 (PPO-Clip Loss)：</text>
+        <text x="160" y="54" fill="#cbd5e1" font-size="8.5">基于 A_i 更新 Actor，并约束与参考模型的 KL 散度</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">4. 系统意义：</text>
+        <text x="160" y="74" fill="#94a3b8" font-size="8.5">彻底省去一个 70B Critic 模型与优化器，将集群卡数节省 50%！</text>
+      </g>
+
+      <rect x="10" y="118" width="370" height="24" rx="3" fill="#182234"/>
+      <text x="18" y="134" fill="#34d399" font-size="8.5" font-weight="600">💡 生产实战：大幅降低强化学习系统复杂度，大幅减少节点间死锁！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-41)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、推训交替调度撕裂与混合引擎闭环</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Rollout 访存密集型 vs SGD 训练计算密集型 · vLLM + Ray 协同流水线</text>
+
+    <!-- Subcard 2.1: 推训交替工作流循环 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="270" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 RLHF 推训交替全生命周期工作流 (The Alternating Loop)</text>
+
+      <!-- Stage 1: Rollout -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="56" rx="5" fill="#1e293b" stroke="#fbbf24" stroke-width="1.2"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="9.5" font-weight="700">Phase 1: Rollout 自回归批量采样 (耗时占比 70%~80%)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• 负载属性：Memory-Bound，动态变长序列自回归生成</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="8.5">• 核心引擎：vLLM / SGLang 连续批处理 + PagedAttention 显存管理</text>
+      </g>
+
+      <line x1="215" y1="90" x2="215" y2="100" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber-41)"/>
+
+      <!-- Stage 2: Evaluation / Reward -->
+      <g transform="translate(12, 100)">
+        <rect width="406" height="52" rx="5" fill="#1e293b" stroke="#c084fc" stroke-width="1"/>
+        <text x="10" y="18" fill="#c084fc" font-size="9.5" font-weight="700">Phase 2: 打分与相对优势计算 (Reward &amp; Advantage)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• Reward Model 规则评估 / 代码沙箱执行测试用例打分</text>
+        <text x="10" y="46" fill="#94a3b8" font-size="8.5">• 跨 Rank 数据收集与优势归一化：A_i = (r_i - Mean) / Std</text>
+      </g>
+
+      <line x1="215" y1="152" x2="215" y2="162" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-emerald-41)"/>
+
+      <!-- Stage 3: Train / SGD -->
+      <g transform="translate(12, 162)">
+        <rect width="406" height="56" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="18" fill="#34d399" font-size="9.5" font-weight="700">Phase 3: 策略模型梯度更新 (Compute-Bound SGD)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• 负载属性：Dense Compute-Bound，Megatron-LM 张量/流水并行</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="8.5">• 执行反向传播计算梯度 ➔ AdamW 动量更新 ➔ 产生新权重 θ_{new}</text>
+      </g>
+
+      <line x1="215" y1="218" x2="215" y2="228" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-41)"/>
+
+      <!-- Stage 4: Weight Sync -->
+      <g transform="translate(12, 228)">
+        <rect width="406" height="34" rx="4" fill="#182234" stroke="#38bdf8" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="8.5" font-weight="700">Phase 4: 权重秒级热重载 (Fast Weight Synchronization)</text>
+        <text x="10" y="27" fill="#94a3b8" font-size="8">NCCL Broadcast / 共享 GPU 显存指针将新权重实时灌回推理引擎</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: 传统共存 vs 异构混合引擎架构 -->
+    <g transform="translate(15, 346)">
+      <rect width="430" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 现代化混合引擎架构 (Ray + vLLM + Megatron)</text>
+
+      <!-- Architecture schematic -->
+      <g transform="translate(12, 34)">
+        <rect x="0" y="0" width="198" height="80" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">❌ 单一引擎同卡强转 (Colocated)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">• PyTorch 原生做生成：无 PagedAttention</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8">• 显存静态预分配，极易发生 OOM</text>
+        <text x="8" y="60" fill="#f87171" font-size="8">• 生成吞吐低，GPU MFU 跌至 5%</text>
+
+        <rect x="208" y="0" width="198" height="80" rx="4" fill="#182234" stroke="#10b981" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(208,0)" fill="#34d399" font-size="9" font-weight="700">✅ 混合引擎解耦 (Disaggregated)</text>
+        <text x="8" y="32" transform="translate(208,0)" fill="#cbd5e1" font-size="8">• Rollout 节点：vLLM TP=4 极速并发</text>
+        <text x="8" y="46" transform="translate(208,0)" fill="#cbd5e1" font-size="8">• Train 节点：Megatron 3D 并行</text>
+        <text x="8" y="60" transform="translate(208,0)" fill="#34d399" font-size="8">• Ray Actor 控制面高效流水线交叠</text>
+      </g>
+
+      <!-- Weight Synchronization Pipeline -->
+      <g transform="translate(12, 122)">
+        <rect width="406" height="78" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">⚡ 权重同步（Weight Sync）的三种物理境界：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">1. 磁盘落盘再加载：保存 safetensors 耗时 5 分钟 (已被现代架构废弃)</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="8">2. Host RAM 中转：GPU DtoH ➔ 网络 Socket ➔ HtoD 耗时约 5~10 秒</text>
+        <text x="10" y="64" fill="#34d399" font-size="8">3. 同卡显存指针共享 / NCCL P2P 直传：耗时 &lt; 200ms，无感秒级刷新！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 算力开销与天数手算 -->
+    <g transform="translate(15, 566)">
+      <rect width="430" height="118" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 后训练全流程算力手算账本 (70B 模型 64 卡)</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">Full SFT (1000万 Token):</text>
+        <text x="150" y="14" fill="#cbd5e1" font-size="8.5">FLOPs = 6 × 70B × 10^7 = 4.2×10^18 ➔ 64 卡 H100 耗时仅约 2.5 小时</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">LoRA (r=64, 1000万 Token):</text>
+        <text x="150" y="34" fill="#cbd5e1" font-size="8.5">反向参数仅 0.1%，显存占用从 80GB 降至 24GB，支持大 Batch 单卡飞跑</text>
+
+        <text x="0" y="54" fill="#f87171" font-size="9" font-weight="700">PPO 10万 Prompt (生成4K):</text>
+        <text x="150" y="54" fill="#cbd5e1" font-size="8.5">生成 FLOPs = 2×70B×4K×10^5 = 5.6×10^19 ➔ 占全流程总耗时 78%！</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">Infra 核心收益：</text>
+        <text x="150" y="74" fill="#cbd5e1" font-size="8.5">优化 Rollout 生成吞吐 2 倍，等价于后训练全流程总体提速 45%！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-41)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#c084fc"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、Multi-LoRA 并发与生产落地</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">S-LoRA / Punica 批处理内核 · 动态 Adapter 显存池 · 生产选型</text>
+
+    <!-- Subcard 3.1: Multi-LoRA Serving 架构 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">3.1 企业级 Multi-LoRA 高并发 Serving 机制 (S-LoRA)</text>
+
+      <!-- Multi-LoRA Batch Execution -->
+      <g transform="translate(10, 34)">
+        <rect width="350" height="62" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">1. 单一 Base Model 批处理计算：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">Batch 中包含 50 个来自不同租户的请求，统一执行 W0·x 大 GEMM</text>
+        <text x="8" y="46" fill="#94a3b8" font-size="8">基座权重仅在 HBM 驻留一份，显存利用率最大化</text>
+      </g>
+
+      <g transform="translate(10, 102)">
+        <rect width="350" height="64" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">2. 分块分段聚簇求和 (Segmented Gather GEMM)：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">Punica / S-LoRA 定制 CUDA Kernel：按 Adapter ID 对激活值聚类</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8.5">并发执行微型 [1, r] 矩阵乘法，最后跨通道就地累加加权输出</text>
+      </g>
+
+      <g transform="translate(10, 172)">
+        <rect width="350" height="52" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">3. 动态 Adapter 显存池（Unified Paging Pool）：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">像管理 KV Cache 一样按 Page 管理 LoRA 权重，冷门 Adapter 换出至内存</text>
+        <text x="8" y="44" fill="#34d399" font-size="8">单卡支撑 200+ 租户个性化模型同时在线，成本下降 95%！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 生产落地选型决策树 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="210" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">3.2 企业后训练技术路线决策全景指南</text>
+
+      <g transform="translate(10, 32)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">业务冷启动 / 算力极度匮乏：</text>
+        <text x="145" y="14" fill="#cbd5e1" font-size="8.5">坚决选 LoRA/QLoRA，单机 8 卡跑通验证</text>
+
+        <text x="0" y="36" fill="#34d399" font-size="9" font-weight="700">多租户 SaaS / 个性化模型：</text>
+        <text x="145" y="36" fill="#cbd5e1" font-size="8.5">坚决选 S-LoRA 动态微调与并发推理底座</text>
+
+        <text x="0" y="58" fill="#fbbf24" font-size="9" font-weight="700">对话风格对齐 / 基础偏好：</text>
+        <text x="145" y="58" fill="#cbd5e1" font-size="8.5">选 DPO（直接偏好优化），避开 PPO 复杂调度</text>
+
+        <text x="0" y="80" fill="#c084fc" font-size="9" font-weight="700">复杂推理 / 代码数学长链：</text>
+        <text x="145" y="80" fill="#cbd5e1" font-size="8.5">必上 DeepSeek-R1 GRPO，群组采样自验证</text>
+
+        <text x="0" y="102" fill="#f87171" font-size="9" font-weight="700">底座核心能力重塑：</text>
+        <text x="145" y="102" fill="#cbd5e1" font-size="8.5">选 Full SFT，采用 Megatron 配合 ZeRO-3 训练</text>
+      </g>
+
+      <g transform="translate(10, 142)">
+        <rect width="350" height="56" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">💡 Ringi 架构师黄金法则：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">“严禁把预训练的笨重调度直接搬到后训练。后训练本质是推理与训练的混合态，谁解决了 Rollout 吞吐与显存解耦，谁就掌控了对齐效率的命门！”</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 生产避坑 Checklist -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 后训练稳定性防线 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ Rollout 必须开分页：</text>
+        <text x="130" y="14" fill="#94a3b8" font-size="8.5">生成阶段强制集成 PagedAttention，消灭内存碎片</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 变长 Padding 消除：</text>
+        <text x="130" y="34" fill="#94a3b8" font-size="8.5">SFT 开启 Packing 样本打包，避免冗余 Pad 计算</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 权重热同步超时保护：</text>
+        <text x="130" y="54" fill="#94a3b8" font-size="8.5">NCCL Broadcast 设 Watchdog 超时，防卡死级联</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 沙箱执行配额隔离：</text>
+        <text x="130" y="74" fill="#94a3b8" font-size="8.5">代码奖励计算强制在轻量沙箱跑，防执行死循环</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 梯度范数实时裁剪：</text>
+        <text x="130" y="94" fill="#94a3b8" font-size="8.5">Clip Grad Norm 设为 1.0，防止强化学习策略漂移坍缩</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 显存静态头空间预留：</text>
+        <text x="130" y="114" fill="#94a3b8" font-size="8.5">预留 15% 物理 Headroom，抵御高熵长文本突发浪涌</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不允许四模型裸机共存：PPO 显存绞肉机必遭 OOM 惩罚，大模型推理对齐必须拥抱 Critic-Free 的 GRPO 或解耦混合引擎架构。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">后训练命门在 Rollout 吞吐：70% 以上时间消耗在自回归生成，优化 vLLM 采样与 PagedAttention 显存池是决定后训练天数的第一胜负手。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">多租户微调拒绝全量冗余：生产级 Serving 必须采用 S-LoRA 动态批处理分段内核，单一基座承载百级 Adapter，将算力成本彻底打穿！</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,351 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-31" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-31" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-31" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-31" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-31" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-31" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-31" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-31" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-31)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="250" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#f59e0b"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">HYBRID PARALLEL &amp; MOE OPERATIONS</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      3D 混合并行、MoE 专家并行与大规模训练排障全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      5D 并行正交张量积 · MoE All-to-All 路由瓶颈 · DeepEP 极致优化 · 千卡故障诊断雷达
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: World Size -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">世界规模物理约束</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="13" font-weight="700">DP·PP·TP·CP·EP</text>
+      </g>
+      <!-- Badge 2: MoE Comm -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">MoE 专家通信</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="13" font-weight="700">2·All-to-All/Block</text>
+      </g>
+      <!-- Badge 3: DeepEP Latency -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">DeepEP 通信延迟</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="13" font-weight="700">&lt; 5 μs (GPU RDMA)</text>
+      </g>
+      <!-- Badge 4: Diagnosis Radar -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#f87171" font-size="10" font-weight="600">集群故障定位</text>
+        <text x="12" y="42" fill="#fff1f2" font-size="13" font-weight="700">二分隔离 + SDC</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-31)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">3D/5D 混合并行正交编排</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">高维张量积解构 · Rank 进程组笛卡尔空间映射</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 5D 并行正交张量积方程 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="230" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">世界规模（World Size）正交投影方程</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Equation Box -->
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="26" fill="#34d399" font-size="12" font-weight="700">N_total = DP × PP × TP × CP × EP</text>
+
+        <!-- Rank Mapping Formula -->
+        <g transform="translate(0, 52)">
+          <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">任意全局 Rank 的笛卡尔空间坐标拆解：</text>
+          <text x="0" y="30" fill="#94a3b8" font-size="10">· r_TP = rank % TP (机内高速 NVLink 环)</text>
+          <text x="0" y="46" fill="#94a3b8" font-size="10">· r_CP = (rank / TP) % CP (长文本 Attention 通信组)</text>
+          <text x="0" y="62" fill="#94a3b8" font-size="10">· r_DP = (rank / (TP·CP)) % DP (全局数据梯度聚合组)</text>
+          <text x="0" y="78" fill="#94a3b8" font-size="10">· r_PP = rank / (TP·CP·DP) (流水线 Stage 纵向组)</text>
+          <text x="0" y="94" fill="#94a3b8" font-size="10">· r_EP = 专家分发组 (通常在 DP 维度内部细分)</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 180)">
+        <rect x="0" y="0" width="352" height="38" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="8" y="24" fill="#38bdf8" font-size="10" font-weight="600">数学正交性：每个维度只切分模型的一类张量轴，互不干扰！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: 405B 生产级千卡混合并行最佳实践 -->
+    <g transform="translate(20, 325)">
+      <rect x="0" y="0" width="380" height="360" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Meta Llama 3 405B 千卡生产配置实录</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="120" rx="6" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="11" font-weight="700">16,384 卡 H100 集群配置参数：</text>
+        <text x="10" y="36" fill="#cbd5e1" font-size="10">· TP = 8 (打满单机 8 卡 900 GB/s NVLink)</text>
+        <text x="10" y="52" fill="#cbd5e1" font-size="10">· CP = 4 (处理 128K 超长上下文，跨 4 台机器)</text>
+        <text x="10" y="68" fill="#cbd5e1" font-size="10">· PP = 16 (模型总深 126 层，切为 16 个 Stage)</text>
+        <text x="10" y="84" fill="#cbd5e1" font-size="10">· DP = 32 (FSDP-Stage 1 优化器状态分片)</text>
+        <text x="10" y="104" fill="#34d399" font-size="10.5" font-weight="700">验算: 8 (TP) × 4 (CP) × 16 (PP) × 32 (DP) = 16,384 GPUs</text>
+      </g>
+
+      <g transform="translate(14, 172)">
+        <rect x="0" y="0" width="352" height="145" rx="6" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="20" fill="#c084fc" font-size="11" font-weight="700">正交协同执行时序：</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="10">1. Stage 边界通过 IB P2P 传递当前 micro-batch 激活</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="10">2. 进入当前 Stage 后，机内 8 卡通过 NVLink 跑 TP/SP</text>
+        <text x="10" y="70" fill="#94a3b8" font-size="10">3. Attention 模块调用 CP All-to-All 聚合跨卡序列分片</text>
+        <text x="10" y="86" fill="#94a3b8" font-size="10">4. 反向计算结束后，32 个 DP 副本异步执行 ReduceScatter</text>
+        <text x="10" y="102" fill="#94a3b8" font-size="10">5. 优化器更新各自负责的 1/32 优化器状态并 AllGather 权重</text>
+        <text x="10" y="124" fill="#34d399" font-size="10" font-weight="600">最终全集群硬件利用率 MFU 稳定在 43% 以上！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-31)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">MoE 专家并行 (EP) 与 DeepEP 优化</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Top-K Gating · All-to-All 细粒度分发 · GPU-Initiated RDMA</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: MoE 数据流架构 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="320" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">MoE 专家并行完整数据流生命周期</text>
+
+      <!-- Step 1: Router -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">1. Gating 门控路由 (Top-K Routing)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">计算 Token 对各专家的亲和度评分，选取 Top-2 或 Top-8 专家</text>
+      </g>
+
+      <!-- Step 2: All-to-All Dispatch -->
+      <g transform="translate(14, 94)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="11" font-weight="700">2. 第一次 All-to-All: Dispatch (分发)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">将本卡 Token 按路由决策打包，跨网络发送给目标专家所在的 GPU</text>
+        <text x="10" y="48" fill="#f87171" font-size="9.5" font-weight="600">⚠ 通信痛点: 数据包细碎，N 卡多对多网络极度容易发生微突发拥塞！</text>
+      </g>
+
+      <!-- Step 3: Local Expert Computation -->
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">3. 局部专家计算 (Local Expert FFNs)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">各卡并发执行本卡所承载专家的 SwiGLU 前馈网络 GEMM 计算</text>
+      </g>
+
+      <!-- Step 4: All-to-All Combine -->
+      <g transform="translate(14, 214)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">4. 第二次 All-to-All: Combine (聚合)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">将各专家计算完毕的隐藏层激活原路返还源 GPU，按路由权重加权求和</text>
+        <text x="10" y="48" fill="#bae6fd" font-size="9.5">每个 MoE Block 引入 2 次 All-to-All 密集集合通信！</text>
+      </g>
+
+      <!-- Auxiliary loss note -->
+      <g transform="translate(14, 278)">
+        <rect x="0" y="0" width="352" height="32" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="8" y="20" fill="#38bdf8" font-size="10" font-weight="600">负载均衡秘诀: 引入 Auxiliary Loss 防止“网红专家”拖垮整网</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: DeepEP 极致低延迟通信库架构 -->
+    <g transform="translate(20, 415)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">DeepSeek-DeepEP 硬件级 MoE 通信加速</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">1. GPU-Initiated RDMA (旁路 CPU 调度)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">由 GPU SM 直接向 RoCE/IB 网卡提交通信请求，彻底剔除 CPU 唤醒开销，</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5">端到端 All-to-All 启动延迟压缩至 &lt; 5 微秒！</text>
+      </g>
+
+      <g transform="translate(14, 106)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">2. NVLink + IB 双级分层转发 (Hierarchical)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">同机内 Token 走 900 GB/s NVLink 极速交换；跨机 Token 在网关卡聚合后</text>
+        <text x="10" y="48" fill="#fbbf24" font-size="9.5">以大包形式冲击 400G IB 骨干网，避免千万级微碎片丢包！</text>
+      </g>
+
+      <g transform="translate(14, 174)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">3. 通信与计算细粒度双流重叠：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">在算专家 1 的 GEMM 时，后台通信已经在搬运专家 2 的 Token，</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="9.5">实现 DeepSeek-V3/R1 在千卡规模下依然跑出 60%+ 超高 MFU 的奇迹！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-31)" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#991b1b" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#f87171" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">千卡大规模训练排障雷达</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">NCCL Hang 死锁 · 静默损坏 SDC · 慢节点定位</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 三大灾难性故障现场剖析 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="230" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">生产四大灾难现场与根因分析</text>
+
+      <!-- Disaster 1: NCCL Hang -->
+      <g transform="translate(14, 36)">
+        <circle cx="6" cy="6" r="4" fill="#ef4444"/>
+        <text x="18" y="10" fill="#fecaca" font-size="10.5" font-weight="700">1. NCCL Hang (通信死锁停摆)</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9.5">现象: GPU 算力骤降为 0%，全员空等；根因: 单卡慢节点或丢包导致 Barrier 死等</text>
+      </g>
+
+      <!-- Disaster 2: SDC Silent Data Corruption -->
+      <g transform="translate(14, 76)">
+        <circle cx="6" cy="6" r="4" fill="#f59e0b"/>
+        <text x="18" y="10" fill="#fef08a" font-size="10.5" font-weight="700">2. 静默数据损坏 (SDC / Bit Flip)</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9.5">现象: Loss 突然 Spike 爆炸或 NaN，无硬件报错；根因: GPU SRAM 软错误翻转</text>
+      </g>
+
+      <!-- Disaster 3: Straggler -->
+      <g transform="translate(14, 116)">
+        <circle cx="6" cy="6" r="4" fill="#38bdf8"/>
+        <text x="18" y="10" fill="#bae6fd" font-size="10.5" font-weight="700">3. 慢节点 (Straggler) 拖垮全网</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9.5">现象: 每步时间从 800ms 随机漂移至 2500ms；根因: 显存降频、网卡重传或过温</text>
+      </g>
+
+      <!-- Disaster 4: Storage I/O Wall -->
+      <g transform="translate(14, 156)">
+        <circle cx="6" cy="6" r="4" fill="#a855f7"/>
+        <text x="18" y="10" fill="#e9d5ff" font-size="10.5" font-weight="700">4. Checkpoint 落盘存储墙</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9.5">现象: 保存权重阻塞 GPU 20分钟；解法: 启用 Async Checkpoint + 显存写出解耦</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 工业级排障排查雷达与排查四步法 -->
+    <g transform="translate(20, 325)">
+      <rect x="0" y="0" width="380" height="360" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">大厂千卡故障快速定位黄金四步法</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Step 1 -->
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">Step 1: 看门狗与心跳探测 (NCCL Watchdog)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">设置 TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC=120，超时自动 dump</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">全网各卡当前的 NCCL 通信堆栈，定位率先卡在哪个 Comm Primitive</text>
+      </g>
+
+      <!-- Step 2 -->
+      <g transform="translate(14, 112)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">Step 2: 二分隔离与硬件自检 (Binary Search Isolation)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">将集群机器一分为二独立执行 GEMM/AllReduce 基准测试，</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">在 5 次迭代内将故障精准锁定至特定机架、特定单机乃至特定 GPU 槽位！</text>
+      </g>
+
+      <!-- Step 3 -->
+      <g transform="translate(14, 186)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">Step 3: 步级激活范数探测 (Activation Norm Probing)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">在每层输出插入轻量级 L2 范数校验，一旦发现某卡激活突然激增 100x，</text>
+        <text x="10" y="48" fill="#f87171" font-size="9">立即阻断梯度回传，自动回滚至前一 Step 存档并隔离该硬件坏卡！</text>
+      </g>
+
+      <!-- Step 4 -->
+      <g transform="translate(14, 260)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">Step 4: 慢节点热替换与自愈平台 (Auto-Healing)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">Kubernetes 集群运维平台监听每步 execution_time_variance，</text>
+        <text x="10" y="48" fill="#a7f3d0" font-size="9">检测到长尾机器自动进行热剔除并拉起 Warm Standby 备用节点重组训练！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[正交法则]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">5D 混合并行是高维空间的因式分解，物理带宽的高低严格决定了并行维度的映射次序。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[稀疏代价]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">MoE 带来了参数与算力的解耦红利，但跨机 All-to-All 必须依靠 DeepEP 消除细碎开销。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1"/>
+      <text x="16" y="20" fill="#f87171" font-size="11" font-weight="700">[容错底线]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">万卡集群中单卡故障不是概率意外而是日常常态；快速热隔离与 SDC 校验是 MFU 终极守护。</text>
+    </g>
+  </g>
+</svg>

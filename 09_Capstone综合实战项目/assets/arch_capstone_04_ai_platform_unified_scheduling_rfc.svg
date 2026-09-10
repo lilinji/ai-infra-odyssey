@@ -1,0 +1,341 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="50%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#070a10" />
+    </linearGradient>
+
+    <!-- Card Background Gradient -->
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Sub-card Gradient -->
+    <linearGradient id="subcard-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#111827" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Header Accent Gradient -->
+    <linearGradient id="header-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="35%" stop-color="#3b82f6" />
+      <stop offset="70%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="shadow-main" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6" />
+    </pattern>
+  </defs>
+
+  <style>
+    .font-title { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 800; }
+    .font-subtitle { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 500; }
+    .font-mono { font-family: 'JetBrains Mono', monospace, Consolas, Courier; }
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+
+  <!-- Canvas Background -->
+  <rect width="1440" height="960" fill="url(#bg-gradient)" />
+  <rect width="1440" height="960" fill="url(#grid)" />
+
+  <!-- Outer Canvas Border -->
+  <rect x="16" y="16" width="1408" height="928" rx="16" fill="none" stroke="#334155" stroke-width="1.5" stroke-opacity="0.7" />
+
+  <!-- ========================================================================= -->
+  <!-- HEADER SECTION                                                            -->
+  <!-- ========================================================================= -->
+  <g id="header" transform="translate(60, 48)">
+    <!-- Main Title -->
+    <text class="font-title" x="0" y="36" font-size="30" fill="#f8fafc" letter-spacing="-0.5">万卡熔炉的定海神针：企业级 AI Platform 统一调度与集群架构全景图</text>
+    
+    <!-- Subtitle -->
+    <text class="font-subtitle" x="0" y="68" font-size="14.5" fill="#94a3b8" letter-spacing="0.2">
+      <tspan fill="#38bdf8">Kube-Scheduler 三大死穴</tspan> · 
+      <tspan fill="#818cf8">Kueue 弹性配额借用</tspan> · 
+      <tspan fill="#f43f5e">严格 Gang 调度状态机</tspan> · 
+      <tspan fill="#34d399">HAMi 动态劫持与 8x400G 双轨网络 RFC</tspan>
+    </text>
+
+    <!-- Top Accent Bar -->
+    <rect x="0" y="86" width="1320" height="3.5" rx="1.75" fill="url(#header-accent)" />
+
+    <!-- Top Right KPI Badges -->
+    <g transform="translate(730, 0)">
+      <!-- Badge 1: DEADLOCK -->
+      <rect x="0" y="8" width="135" height="52" rx="8" fill="#1e293b" stroke="#f43f5e" stroke-width="1.2" />
+      <text class="font-mono" x="67.5" y="28" font-size="9.5" fill="#fda4af" text-anchor="middle" font-weight="700">DEADLOCK RISK</text>
+      <text class="font-mono" x="67.5" y="48" font-size="14" fill="#f43f5e" text-anchor="middle" font-weight="800">0 (Strict Gang)</text>
+
+      <!-- Badge 2: ALLOCATION RATE -->
+      <rect x="145" y="8" width="140" height="52" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" />
+      <text class="font-mono" x="215" y="28" font-size="9.5" fill="#bae6fd" text-anchor="middle" font-weight="700">GPU ALLOCATION</text>
+      <text class="font-mono" x="215" y="48" font-size="14" fill="#38bdf8" text-anchor="middle" font-weight="800">&gt; 95% Active</text>
+
+      <!-- Badge 3: NETWORK SWITCH COST -->
+      <rect x="295" y="8" width="140" height="52" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.2" />
+      <text class="font-mono" x="365" y="28" font-size="9.5" fill="#e9d5ff" text-anchor="middle" font-weight="700">CORE SWITCH COST</text>
+      <text class="font-mono" x="365" y="48" font-size="14" fill="#c084fc" text-anchor="middle" font-weight="800">-40% Switches</text>
+
+      <!-- Badge 4: AUTO-HEAL MTTR -->
+      <rect x="445" y="8" width="145" height="52" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.2" />
+      <text class="font-mono" x="517.5" y="28" font-size="9.5" fill="#a7f3d0" text-anchor="middle" font-weight="700">AUTO-HEAL MTTR</text>
+      <text class="font-mono" x="517.5" y="48" font-size="14" fill="#34d399" text-anchor="middle" font-weight="800">&lt; 90s Rollback</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN 3-COLUMN CARDS CONTAINER                                             -->
+  <!-- ========================================================================= -->
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 1: 万卡集群四大硬核支柱与原生调度死穴 (Red / Rose Tint)             -->
+  <!-- ========================================================================= -->
+  <g id="col-1" transform="translate(60, 160)">
+    <!-- Column Card Base -->
+    <rect width="420" height="640" rx="12" fill="url(#card-grad)" stroke="#f43f5e" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow-main)" />
+    
+    <!-- Header Tag -->
+    <rect x="18" y="16" width="384" height="42" rx="8" fill="#f43f5e" fill-opacity="0.12" stroke="#f43f5e" stroke-width="1" />
+    <circle cx="34" cy="37" r="6" fill="#f43f5e" />
+    <text class="font-title" x="48" y="43" font-size="15" fill="#fda4af" font-weight="700">一、万卡集群调度四大硬核支柱与原生死穴</text>
+
+    <!-- Subcard 1.1: 逐 Pod 贪婪调度哲学家死锁 -->
+    <g transform="translate(18, 72)">
+      <rect width="384" height="152" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="152" rx="3" fill="#f43f5e" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#fda4af" font-weight="700">死穴 1: 逐 Pod 贪婪调度与死锁 (Deadlock)</text>
+      
+      <text class="font-sans" x="18" y="48" font-size="11.5" fill="#cbd5e1" font-weight="500">• 根本原因：Kube-Scheduler 是单一无状态 Pod 队列，无原子性</text>
+      <text class="font-sans" x="18" y="68" font-size="11.5" fill="#cbd5e1" font-weight="500">• 典型场景：两项 512 卡训练作业并发启动，各抢走 256 卡</text>
+      <rect x="18" y="80" width="348" height="34" rx="4" fill="#0f172a" stroke="#e11d48" stroke-width="1" />
+      <text class="font-mono" x="28" y="102" font-size="11" fill="#f43f5e">JobA(256/512) ⇋ JobB(256/512) ➔ 互相等待死锁，算力全卡死</text>
+      <text class="font-mono" x="18" y="138" font-size="11" fill="#fb7185">▶ 痛点代价值：空耗 512 卡每小时几千美元，产出为 0</text>
+    </g>
+
+    <!-- Subcard 1.2: 缺乏物理拓扑亲和性 -->
+    <g transform="translate(18, 238)">
+      <rect width="384" height="170" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="170" rx="3" fill="#fb923c" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#fdba74" font-weight="700">死穴 2: 缺乏物理拓扑亲和感知 (Topology-Blind)</text>
+      
+      <text class="font-sans" x="18" y="48" font-size="11.5" fill="#cbd5e1" font-weight="500">• 物理鸿沟：机内 NVLink 900GB/s vs 机间跨交换机 50GB/s (18x)</text>
+      <text class="font-sans" x="18" y="68" font-size="11.5" fill="#cbd5e1" font-weight="500">• 致命失误：Kubelet 随机打散 8 卡 TP 进程到跨机/跨 Spine 节点</text>
+      <rect x="18" y="80" width="348" height="50" rx="4" fill="#0f172a" stroke="#ea580c" stroke-width="1" />
+      <text class="font-mono" x="28" y="100" font-size="10.5" fill="#f97316">TP 通信跨机延迟暴涨 20 倍：0.5us ➔ 12us</text>
+      <text class="font-mono" x="28" y="118" font-size="10.5" fill="#fdba74">MFU 暴跌 60% ➔ 整机算力被跨机网络等待彻底吃光</text>
+      <text class="font-mono" x="18" y="152" font-size="11" fill="#ea580c">▶ 核心诉求：Pod 编排必须严格绑定 NVLink 导轨拓扑域</text>
+    </g>
+
+    <!-- Subcard 1.3: 静态硬配额缺乏弹性 -->
+    <g transform="translate(18, 422)">
+      <rect width="384" height="198" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="198" rx="3" fill="#f59e0b" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#fcd34d" font-weight="700">死穴 3: 静态硬配额割裂与潮汐利用率地下</text>
+      
+      <text class="font-sans" x="18" y="48" font-size="11.5" fill="#cbd5e1" font-weight="500">• 传统 ResourceQuota：强行给 NLP/CV 部门划分固定配额</text>
+      <text class="font-sans" x="18" y="68" font-size="11.5" fill="#cbd5e1" font-weight="500">• 典型恶果：NLP 排队 500 卡无卡可用，CV 闲置 800 卡白白浪费</text>
+      <rect x="18" y="80" width="348" height="66" rx="4" fill="#0f172a" stroke="#d97706" stroke-width="1" />
+      <text class="font-mono" x="28" y="98" font-size="10.5" fill="#fbbf24">① 缺乏 Cohort 弹性借调机制 (Borrowing &amp; Lending)</text>
+      <text class="font-mono" x="28" y="118" font-size="10.5" fill="#fde68a">② 缺乏按业务优先级优雅抢占 (Priority Preemption)</text>
+      <text class="font-mono" x="28" y="136" font-size="10.5" fill="#d97706">③ 算力碎片化严重：集群综合利用率常年徘徊在 40% 以下</text>
+      <text class="font-mono" x="18" y="172" font-size="11" fill="#fcd34d">▶ 架构升级目标：将利用率从 45% 压榨至 95% 以上</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 2: 现代云原生 AI 调度中枢 (Blue / Indigo Tint)                     -->
+  <!-- ========================================================================= -->
+  <g id="col-2" transform="translate(510, 160)">
+    <!-- Column Card Base -->
+    <rect width="420" height="640" rx="12" fill="url(#card-grad)" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow-main)" />
+    
+    <!-- Header Tag -->
+    <rect x="18" y="16" width="384" height="42" rx="8" fill="#38bdf8" fill-opacity="0.12" stroke="#38bdf8" stroke-width="1" />
+    <circle cx="34" cy="37" r="6" fill="#38bdf8" />
+    <text class="font-title" x="48" y="43" font-size="15" fill="#bae6fd" font-weight="700">二、现代云原生 AI 调度中枢 (Kueue + Coscheduling)</text>
+
+    <!-- Subcard 2.1: Kueue 弹性分层队列与借调机制 -->
+    <g transform="translate(18, 72)">
+      <rect width="384" height="175" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="175" rx="3" fill="#38bdf8" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#7dd3fc" font-weight="700">1. Kueue 弹性多层队列拓扑 (Hierarchical Queues)</text>
+      
+      <!-- Flow box -->
+      <g transform="translate(18, 38)">
+        <rect width="348" height="92" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="1" />
+        <rect x="10" y="10" width="90" height="32" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
+        <text class="font-mono" x="55" y="30" font-size="10" fill="#bae6fd" text-anchor="middle">LocalQueue</text>
+        <path d="M 100 26 L 126 26" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow)" />
+        
+        <rect x="128" y="10" width="96" height="32" rx="4" fill="#1e293b" stroke="#60a5fa" stroke-width="1" />
+        <text class="font-mono" x="176" y="30" font-size="10" fill="#bfdbfe" text-anchor="middle">ClusterQueue</text>
+        <path d="M 224 26 L 250 26" stroke="#60a5fa" stroke-width="1.5" />
+
+        <rect x="252" y="10" width="86" height="32" rx="4" fill="#1e293b" stroke="#a78bfa" stroke-width="1" />
+        <text class="font-mono" x="295" y="30" font-size="10" fill="#ddd6fe" text-anchor="middle">Cohort 池借调</text>
+
+        <!-- Rule Description inside box -->
+        <text class="font-mono" x="12" y="60" font-size="9.5" fill="#38bdf8">• Nominal Quota: 保底配额，所属部门享有绝对所有权</text>
+        <text class="font-mono" x="12" y="76" font-size="9.5" fill="#a78bfa">• Borrowing Limit: 潮汐借调上限，空闲算力全租户动态复用</text>
+      </g>
+      <text class="font-sans" x="18" y="152" font-size="11" fill="#94a3b8">✔ 原主 reclaim 召回时触发渐进优雅驱逐（优先通知 checkpoint）</text>
+    </g>
+
+    <!-- Subcard 2.2: 严格 Gang 调度状态机 (PodGroup) -->
+    <g transform="translate(18, 260)">
+      <rect width="384" height="205" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="205" rx="3" fill="#6366f1" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#a5b4fc" font-weight="700">2. 严格 Gang 调度原子状态机 (All-or-Nothing)</text>
+      
+      <!-- State Machine Flow -->
+      <g transform="translate(18, 38)">
+        <rect width="348" height="118" rx="6" fill="#0f172a" stroke="#4f46e5" stroke-width="1" />
+        
+        <!-- State 1: PENDING -->
+        <rect x="8" y="12" width="70" height="26" rx="4" fill="#312e81" stroke="#818cf8" stroke-width="1" />
+        <text class="font-mono" x="43" y="29" font-size="9.5" fill="#e0e7ff" text-anchor="middle">PENDING</text>
+        <path d="M 78 25 L 94 25" stroke="#818cf8" stroke-width="1.5" />
+
+        <!-- State 2: PRE_FILTER -->
+        <rect x="96" y="12" width="76" height="26" rx="4" fill="#1e1b4b" stroke="#a5b4fc" stroke-width="1" />
+        <text class="font-mono" x="134" y="29" font-size="9.5" fill="#c7d2fe" text-anchor="middle">GANG_WAIT</text>
+        <path d="M 172 25 L 188 25" stroke="#a5b4fc" stroke-width="1.5" />
+
+        <!-- State 3: ALL_READY -->
+        <rect x="190" y="12" width="74" height="26" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="1" />
+        <text class="font-mono" x="227" y="29" font-size="9.5" fill="#a7f3d0" text-anchor="middle">ALL_READY</text>
+        <path d="M 264 25 L 278 25" stroke="#34d399" stroke-width="1.5" />
+
+        <!-- State 4: RUNNING -->
+        <rect x="280" y="12" width="60" height="26" rx="4" fill="#022c22" stroke="#10b981" stroke-width="1" />
+        <text class="font-mono" x="310" y="29" font-size="9.5" fill="#6ee7b7" text-anchor="middle">BIND</text>
+
+        <!-- Rollback arrow -->
+        <path d="M 134 38 L 134 76 L 43 76 L 43 38" fill="none" stroke="#f43f5e" stroke-width="1.2" stroke-dasharray="3,3" />
+        <text class="font-mono" x="88" y="70" font-size="9" fill="#fda4af" text-anchor="middle">Wait Timeout ➔ 立即回滚释放已抢占资源</text>
+
+        <text class="font-mono" x="12" y="102" font-size="10" fill="#38bdf8">minMember=N: 必须凑齐全部 Pod 才能下发 Kubelet 绑定</text>
+      </g>
+      <text class="font-sans" x="18" y="180" font-size="11" fill="#cbd5e1">✔ 彻底根除哲学家就餐死锁：任何时候不产生半死不活的僵尸作业</text>
+    </g>
+
+    <!-- Subcard 2.3: Topology-Aware 导轨感知插件 -->
+    <g transform="translate(18, 478)">
+      <rect width="384" height="142" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="142" rx="3" fill="#818cf8" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#c7d2fe" font-weight="700">3. Topology-Aware 树状物理拓扑匹配</text>
+      
+      <text class="font-sans" x="18" y="48" font-size="11" fill="#cbd5e1">• Level 1: PCIe Switch / NVLink 域（同机 8 卡，TP 强制锁定）</text>
+      <text class="font-sans" x="18" y="66" font-size="11" fill="#cbd5e1">• Level 2: 同 Top-of-Rack (ToR) 交换机（同机柜，PP 优先对齐）</text>
+      <text class="font-sans" x="18" y="84" font-size="11" fill="#cbd5e1">• Level 3: 同 Spine 交换机 Pod 域（跨机柜，DP / ZeRO 通信跨域）</text>
+      <rect x="18" y="98" width="348" height="30" rx="4" fill="#0f172a" stroke="#6366f1" stroke-width="1" />
+      <text class="font-mono" x="28" y="118" font-size="10.5" fill="#a5b4fc">CRD TopologyTree + Scoring 插件 ➔ 保证跨机跳数最小化</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- COLUMN 3: 算力虚拟化与双轨无损算网落地 (Green / Emerald Tint)              -->
+  <!-- ========================================================================= -->
+  <g id="col-3" transform="translate(960, 160)">
+    <!-- Column Card Base -->
+    <rect width="420" height="640" rx="12" fill="url(#card-grad)" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow-main)" />
+    
+    <!-- Header Tag -->
+    <rect x="18" y="16" width="384" height="42" rx="8" fill="#10b981" fill-opacity="0.12" stroke="#10b981" stroke-width="1" />
+    <circle cx="34" cy="37" r="6" fill="#10b981" />
+    <text class="font-title" x="48" y="43" font-size="15" fill="#a7f3d0" font-weight="700">三、算力虚拟化与双轨无损算网 RFC 落地</text>
+
+    <!-- Subcard 3.1: HAMi 动态劫持与显存硬隔离 -->
+    <g transform="translate(18, 72)">
+      <rect width="384" height="175" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="175" rx="3" fill="#10b981" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#6ee7b7" font-weight="700">1. HAMi 动态劫持与显存物理硬隔离</text>
+      
+      <rect x="18" y="38" width="348" height="82" rx="6" fill="#0f172a" stroke="#059669" stroke-width="1" />
+      <text class="font-mono" x="28" y="58" font-size="10.5" fill="#34d399">LD_PRELOAD = libvgpu.so (零侵入用户容器)</text>
+      <text class="font-mono" x="28" y="78" font-size="10.5" fill="#a7f3d0">➔ 拦截 cuMemAlloc / cuLaunchKernel 底层调用</text>
+      <text class="font-mono" x="28" y="98" font-size="10.5" fill="#fbbf24">➔ 显存超额即返 CUDA_ERROR_OUT_OF_MEMORY (绝不侵蚀主显存)</text>
+      <text class="font-mono" x="28" y="114" font-size="10" fill="#6ee7b7">➔ 算力核心配额控制：硬件时间片与 Token 桶流控</text>
+
+      <text class="font-sans" x="18" y="146" font-size="11" fill="#cbd5e1">• 推理微服务共享整卡：支持 8 个 10GB Pod 稳定共存于单张 H100</text>
+      <text class="font-sans" x="18" y="164" font-size="11" fill="#cbd5e1">• 隔离等级：与 NVIDIA MPS 互补，兼具内存超分防护与硬隔离</text>
+    </g>
+
+    <!-- Subcard 3.2: 8x400G Rail-Optimized 双轨网络架构 -->
+    <g transform="translate(18, 260)">
+      <rect width="384" height="205" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="205" rx="3" fill="#06b6d4" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#67e8f9" font-weight="700">2. 8x400G Rail-Optimized 导轨无损网络 RFC</text>
+      
+      <rect x="18" y="38" width="348" height="95" rx="6" fill="#0f172a" stroke="#0891b2" stroke-width="1" />
+      <text class="font-mono" x="28" y="58" font-size="10.5" fill="#22d3ee">导轨设计 (Rail Topology) 第一原则：</text>
+      <text class="font-mono" x="28" y="78" font-size="10" fill="#e0f2fe">H100 Node 0 GPU[k] ➔ 仅直连 Leaf-Switch[k] (同轨汇聚)</text>
+      <text class="font-mono" x="28" y="96" font-size="10" fill="#a5f3fc">H100 Node 1 GPU[k] ➔ 同样直连 Leaf-Switch[k] (k ∈ 0..7)</text>
+      <text class="font-mono" x="28" y="116" font-size="10" fill="#34d399">✔ 彻底免除跨 Rail 核心交换机转发：网络跳数直接减半</text>
+
+      <text class="font-sans" x="18" y="156" font-size="11" fill="#cbd5e1">• 交换机投资骤降 40%：Spine 层仅需汇聚同序号 GPU 导轨流量</text>
+      <text class="font-sans" x="18" y="174" font-size="11" fill="#cbd5e1">• PFC + ECN 硬件级拥塞控制：消除网络微突发导致的丢包重传</text>
+      <text class="font-sans" x="18" y="192" font-size="11" fill="#cbd5e1">• NCCL_NET_GDR_LEVEL=5：GPU Direct RDMA 绕过 CPU 全速直通</text>
+    </g>
+
+    <!-- Subcard 3.3: 故障秒级嗅探与热备自愈 -->
+    <g transform="translate(18, 478)">
+      <rect width="384" height="142" rx="8" fill="url(#subcard-grad)" stroke="#475569" stroke-width="1" />
+      <rect x="0" y="0" width="6" height="142" rx="3" fill="#14b8a6" />
+      <text class="font-mono" x="18" y="24" font-size="12.5" fill="#5eead4" font-weight="700">3. 毫秒级故障嗅探与热备秒级自愈</text>
+      
+      <text class="font-sans" x="18" y="48" font-size="11" fill="#cbd5e1">• eBPF + NVML 探针：500ms 探测周期拦截 Xid 31/43/45 致命掉卡</text>
+      <text class="font-sans" x="18" y="66" font-size="11" fill="#cbd5e1">• 自动隔离与剔除：立即打上 node.kubernetes.io/unschedulable</text>
+      <rect x="18" y="78" width="348" height="50" rx="4" fill="#0f172a" stroke="#0d9488" stroke-width="1" />
+      <text class="font-mono" x="28" y="98" font-size="10.5" fill="#2dd4bf">DCP (Distributed Checkpoint) 显存异步流式刷盘</text>
+      <text class="font-mono" x="28" y="116" font-size="10.5" fill="#99f6e4">故障恢复 MTTR 从 45 分钟暴降至 90 秒内，万卡训推永不掉线</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER: RINGI ENGINEERING DICTUMS                                         -->
+  <!-- ========================================================================= -->
+  <g id="footer" transform="translate(60, 820)">
+    <rect width="1320" height="96" rx="10" fill="#1e293b" fill-opacity="0.8" stroke="#334155" stroke-width="1" />
+
+    <!-- Dictum 1 -->
+    <g transform="translate(24, 16)">
+      <rect width="400" height="64" rx="6" fill="#0f172a" stroke="#f43f5e" stroke-width="1" />
+      <text class="font-mono" x="14" y="24" font-size="11" fill="#fda4af" font-weight="700">① 独占大粒度 Gang，绝不逐 Pod 贪婪</text>
+      <text class="font-sans" x="14" y="44" font-size="10" fill="#94a3b8">万卡分布式训练调度必须将 PodGroup 作为原子调度单元，</text>
+      <text class="font-sans" x="14" y="58" font-size="10" fill="#f43f5e">缺 1 卡即刻整组撤回等待，彻底杜绝死锁与空转烧钱。</text>
+    </g>
+
+    <!-- Dictum 2 -->
+    <g transform="translate(460, 16)">
+      <rect width="400" height="64" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1" />
+      <text class="font-mono" x="14" y="24" font-size="11" fill="#7dd3fc" font-weight="700">② 拓扑感知不可妥协，跨机严禁乱切 TP</text>
+      <text class="font-sans" x="14" y="44" font-size="10" fill="#94a3b8">TP 必须锁定在 NVLink 域，PP/DP 跨 Rail 互联。</text>
+      <text class="font-sans" x="14" y="58" font-size="10" fill="#38bdf8">调度器若对物理网络拓扑失明，算力集群 MFU 必将折损过半。</text>
+    </g>
+
+    <!-- Dictum 3 -->
+    <g transform="translate(896, 16)">
+      <rect width="400" height="64" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1" />
+      <text class="font-mono" x="14" y="24" font-size="11" fill="#6ee7b7" font-weight="700">③ 生产自愈靠毫秒探针与热备秒级回滚</text>
+      <text class="font-sans" x="14" y="44" font-size="10" fill="#94a3b8">万卡规模下硬件故障是必然常态。必须建立 Xid 探针 +</text>
+      <text class="font-sans" x="14" y="58" font-size="10" fill="#34d399">自动节点隔离 + 分布式异步 DCP Checkpoint 闭环自愈。</text>
+    </g>
+  </g>
+</svg>

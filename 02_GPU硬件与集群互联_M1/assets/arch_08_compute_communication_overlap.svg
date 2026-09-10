@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="280" height="24" rx="6" fill="#065f46" fill-opacity="0.3" stroke="#10b981" stroke-width="1"/>
+    <text x="12" y="16" fill="#34d399" class="badge">CONCURRENCY &amp; PIPELINE ARCHITECTURE</text>
+    
+    <text x="0" y="60" class="title">计算与通信重叠 (Overlap) 物理微架构与流水线全景</text>
+    <text x="0" y="84" class="subtitle">CUDA Stream 异步双轨 · DDP 25MB 分桶与 1F1B 流水线 · 争抢惩罚因子 k 模型 · Hopper Warp Specialization 硬件解耦</text>
+  </g>
+
+  <!-- ================= TOP: STREAM CONCURRENCY & MULTI-LEVEL PIPELINE ================= -->
+  <!-- Left: CUDA Stream Concurrency & 3 Iron Rules -->
+  <g transform="translate(50, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#0284c7" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#38bdf8" class="card-title">① CUDA Stream 异步双轨机制与物理 Overlap 三大铁律</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Host vs Device Timeline -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="602" height="110" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">Host 发射流 vs Device 硬件执行流时空解耦</text>
+        
+        <!-- Stream 0 (Compute) -->
+        <g transform="translate(14, 34)">
+          <rect x="0" y="0" width="120" height="28" rx="4" fill="#0369a1"/>
+          <text x="8" y="18" fill="#bae6fd" class="mono" font-size="11">Compute Stream</text>
+          
+          <rect x="130" y="0" width="220" height="28" rx="4" fill="#0284c7"/>
+          <text x="140" y="18" fill="#ffffff" class="mono" font-size="11">GEMM Backward (50ms)</text>
+
+          <rect x="360" y="0" width="210" height="28" rx="4" fill="#0284c7"/>
+          <text x="370" y="18" fill="#ffffff" class="mono" font-size="11">Layer N-1 GEMM (50ms)</text>
+        </g>
+
+        <!-- Stream 1 (Comm) -->
+        <g transform="translate(14, 68)">
+          <rect x="0" y="0" width="120" height="28" rx="4" fill="#047857"/>
+          <text x="8" y="18" fill="#a7f3d0" class="mono" font-size="11">Comm Stream</text>
+
+          <rect x="130" y="0" width="80" height="28" rx="4" fill="#1e1e2e" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+          <text x="145" y="18" fill="#64748b" class="mono" font-size="10">Wait Event</text>
+
+          <rect x="220" y="0" width="240" height="28" rx="4" fill="#059669"/>
+          <text x="230" y="18" fill="#ffffff" class="mono" font-size="11">⚡ AllReduce Bucket (40ms) [重叠!]</text>
+        </g>
+      </g>
+
+      <!-- 3 Iron Rules of Overlap -->
+      <g transform="translate(0, 122)">
+        <rect x="0" y="0" width="602" height="145" rx="6" fill="#1e1e2e" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="24" fill="#fde68a" class="mono" font-size="12" font-weight="700">物理 Overlap 成立的“三大绝对铁律”：</text>
+        
+        <g transform="translate(14, 36)">
+          <rect x="0" y="0" width="570" height="30" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+          <text x="10" y="20" fill="#38bdf8" class="mono" font-size="11" font-weight="700">铁律 1: 必须发射至独立非默认 Stream</text>
+          <text x="310" y="20" fill="#94a3b8" class="text-xs">默认流 (Null Stream) 会强制全设备隐式同步！</text>
+
+          <rect x="0" y="36" width="570" height="30" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+          <text x="10" y="20" fill="#34d399" class="mono" font-size="11" font-weight="700">铁律 2: 绝无数据先后依赖 (No RAW Hazard)</text>
+          <text x="310" y="20" fill="#94a3b8" class="text-xs">通信输入张量必须已在显存中完全就绪落盘！</text>
+
+          <rect x="0" y="72" width="570" height="30" rx="4" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+          <text x="10" y="20" fill="#fb7185" class="mono" font-size="11" font-weight="700">铁律 3: 硬件单元零互斥 (Hardware Diversity)</text>
+          <text x="310" y="20" fill="#94a3b8" class="text-xs">计算占用 Tensor Core，通信占用 DMA/CE/空闲SM！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#0369a1" fill-opacity="0.25" stroke="#0ea5e9" stroke-width="1"/>
+    <text x="36" y="355" fill="#bae6fd" class="text-xs" font-weight="700">💡 关键警示：async_op=True 只是非阻塞发射，若违反三大铁律，底层依然串行死锁！</text>
+    <text x="36" y="374" fill="#38bdf8" class="mono" font-size="11">必须使用 Nsight Systems (nsys) 抓取真实时间轴确认是否存在两个流的垂直并行业务！</text>
+  </g>
+
+  <!-- Right: Multi-Level Pipelining (DDP / FSDP / TP Chunk) -->
+  <g transform="translate(740, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#059669" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#34d399" class="card-title">② 分布式框架四大 Overlap 流水线范式演进</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Level 1: DDP Gradient Bucketing -->
+      <rect x="0" y="0" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="130" height="20" rx="4" fill="#0369a1"/>
+      <text x="18" y="24" fill="#bae6fd" class="mono" font-size="11" font-weight="700">DDP 25MB 分桶</text>
+      <text x="150" y="24" fill="#f8fafc" class="card-title" font-size="13">反向计算与梯度聚合双轨流水线</text>
+      <text x="12" y="46" fill="#94a3b8" class="text-xs">• 机制: 倒序反向传播时，每攒满 25MB 梯度即刻发射该 Bucket 的 AllReduce</text>
+      <text x="12" y="62" fill="#34d399" class="mono" font-size="10">⚡ 效果: 在计算浅层 Layer 的反向 GEMM 时，深层梯度通信已在后台悄然完成！</text>
+
+      <!-- Level 2: FSDP Prefetch & Overlap -->
+      <rect x="0" y="82" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="140" height="20" rx="4" fill="#047857" transform="translate(0, 82)"/>
+      <text x="18" y="24" fill="#a7f3d0" class="mono" font-size="11" font-weight="700" transform="translate(0, 82)">FSDP 双向预取</text>
+      <text x="160" y="24" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 82)">权重拉取与梯度切片零暴露</text>
+      <text x="12" y="128" fill="#94a3b8" class="text-xs">• 前向预取: 计算 Layer N 前向的同时，异步 AllGather Layer N+1 的模型分片</text>
+      <text x="12" y="144" fill="#34d399" class="mono" font-size="10">⚡ 显存与通信平衡: 严格限制预取窗口为 1 个 Block，防止内存暴涨 OOM！</text>
+
+      <!-- Level 3: Megatron TP Comm Overlap -->
+      <rect x="0" y="164" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="150" height="20" rx="4" fill="#7c3aed" transform="translate(0, 164)"/>
+      <text x="18" y="24" fill="#ddd6fe" class="mono" font-size="11" font-weight="700" transform="translate(0, 164)">Megatron TP Chunk</text>
+      <text x="170" y="24" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 164)">细粒度 GEMM-Comm 交叉切片</text>
+      <text x="12" y="210" fill="#94a3b8" class="text-xs">• 机制: 将 Token 维度切为 2~4 个 Chunk，Chunk 0 算完立即通信，与 Chunk 1 计算重叠</text>
+      <text x="12" y="226" fill="#c084fc" class="mono" font-size="10">⚡ 关键指标: 将原本暴露在关键路径上的 AllGather / ReduceScatter 压缩 80%！</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#064e3b" fill-opacity="0.3" stroke="#059669" stroke-width="1"/>
+    <text x="36" y="355" fill="#a7f3d0" class="text-xs" font-weight="700">🎯 架构收敛：从粗粒度层级折叠 (DDP) ➔ 算子级双向折叠 (FSDP) ➔ Tile 级微切片 (TP)</text>
+    <text x="36" y="374" fill="#34d399" class="mono" font-size="11">切片越细通信暴露越小，但对硬件同步与资源争抢的要求呈指数级提升！</text>
+  </g>
+
+  <!-- ================= BOTTOM: RESOURCE CONTENTION & WARP SPECIALIZATION ================= -->
+  <!-- Left: Penalty Factor k Model & Bottlenecks -->
+  <g transform="translate(50, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#7f1d1d" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#fca5a5" class="card-title">物理争抢惩罚因子 k 模型（为什么并发会互相拖慢？）</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Formula Banner -->
+      <rect x="0" y="0" width="602" height="50" rx="6" fill="#1e1e2e" stroke="#ef4444" stroke-width="1"/>
+      <text x="16" y="32" fill="#f87171" class="mono" font-size="14" font-weight="700">T_total = max( k_comp × T_comp,  k_comm × T_comm )</text>
+      <text x="440" y="32" fill="#fca5a5" class="mono" font-size="12">(k ≥ 1.0 膨胀系数)</text>
+
+      <!-- 3 Contention Battlegrounds -->
+      <g transform="translate(0, 60)">
+        <rect x="0" y="0" width="190" height="120" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="22" fill="#fca5a5" class="mono" font-size="11" font-weight="700">战场 1: SM 计算核心</text>
+        <text x="12" y="42" fill="#94a3b8" class="text-xs">NCCL 通信 Kernel</text>
+        <text x="12" y="58" fill="#f87171" class="mono" font-size="10">霸占 4~8 个 SM 核心</text>
+        <text x="12" y="76" fill="#94a3b8" class="text-xs">导致 GEMM 计算网格</text>
+        <text x="12" y="92" fill="#fca5a5" class="text-xs">无法打满全卡并行度！</text>
+
+        <rect x="205" y="0" width="190" height="120" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="22" fill="#fca5a5" class="mono" font-size="11" font-weight="700">战场 2: L2 Cache 冲刷</text>
+        <text x="12" y="42" fill="#94a3b8" class="text-xs">巨量通信数据流穿透</text>
+        <text x="12" y="58" fill="#f87171" class="mono" font-size="10">把 GEMM Tile 冲洗殆尽</text>
+        <text x="12" y="76" fill="#94a3b8" class="text-xs">L2 命中率从 88% 骤降至 14%</text>
+        <text x="12" y="92" fill="#fca5a5" class="text-xs">计算时间恶化 1.4 倍！</text>
+
+        <rect x="410" y="0" width="192" height="120" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="22" fill="#fca5a5" class="mono" font-size="11" font-weight="700">战场 3: HBM 带宽打爆</text>
+        <text x="12" y="42" fill="#94a3b8" class="text-xs">若与 LayerNorm/Softmax</text>
+        <text x="12" y="58" fill="#f87171" class="mono" font-size="10">(AI &lt; 5 FLOP/B) 并发</text>
+        <text x="12" y="76" fill="#94a3b8" class="text-xs">访存带宽瞬间被干爆</text>
+        <text x="12" y="92" fill="#fca5a5" class="text-xs">惩罚系数 k 飙至 1.5+！</text>
+      </g>
+
+      <!-- Takeaway rule -->
+      <rect x="0" y="190" width="602" height="45" rx="6" fill="#450a0a" fill-opacity="0.4" stroke="#ef4444" stroke-width="1"/>
+      <text x="14" y="212" fill="#fca5a5" class="text-xs font-weight-bold">⚠️ 黄金法则：只跟 Compute-Bound 算子（GEMM）重叠，绝不跟 Memory-Bound 算子争带宽！</text>
+    </g>
+  </g>
+
+  <!-- Right: Warp Specialization (Hopper/Blackwell Hardware SM-Free) -->
+  <g transform="translate(740, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#c084fc" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#7e22ce" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#e9d5ff" class="card-title">Hopper/Blackwell Warp Specialization 硬件解耦 (SM-Free)</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Producer Warp Box -->
+      <rect x="0" y="0" width="602" height="85" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+      <rect x="14" y="10" width="150" height="22" rx="4" fill="#6b21a8"/>
+      <text x="20" y="26" fill="#f3e8ff" class="mono" font-size="11" font-weight="700">1 个 Producer Warp</text>
+      <text x="175" y="26" fill="#f8fafc" class="card-title" font-size="13">专职硬件搬运指挥官 (零计算开销)</text>
+      <text x="14" y="48" fill="#94a3b8" class="text-xs">• 核心职责: 发射 TMA 描述符直接触发全局显存与 SMem 的跨步张量传输</text>
+      <text x="14" y="66" fill="#d8b4fe" class="mono" font-size="11">⚡ 维护 mbarrier 硬件异步屏障，打卡递减计数，绝不触碰任何通用寄存器！</text>
+
+      <!-- Hardware Decoupling Arrow -->
+      <path d="M 300 85 L 300 105" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-violet)"/>
+
+      <!-- Consumer Warps Box -->
+      <rect x="0" y="105" width="602" height="85" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+      <rect x="14" y="10" width="160" height="22" rx="4" fill="#065f46" transform="translate(0, 105)"/>
+      <text x="20" y="26" fill="#a7f3d0" class="mono" font-size="11" font-weight="700" transform="translate(0, 105)">3 个 Consumer Warps</text>
+      <text x="185" y="26" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 105)">专职 Tensor Core 矩阵乘打工皇帝</text>
+      <text x="14" y="153" fill="#94a3b8" class="text-xs">• 核心职责: 等待 mbarrier 硬件唤醒信号，唤醒后直接驱动 Tensor Core 执行 MMA 运算</text>
+      <text x="14" y="171" fill="#34d399" class="mono" font-size="11">⚡ 绝不执行任何 ld/st 访存指令，纯享数据已就绪的 Shared Memory 高速缓存！</text>
+
+      <!-- Bottom takeaway -->
+      <rect x="0" y="200" width="602" height="42" rx="6" fill="#064e3b" fill-opacity="0.3" stroke="#047857" stroke-width="1"/>
+      <text x="14" y="224" fill="#34d399" class="text-xs font-weight-bold">🚀 体系结构终极飞跃：各司其职，消除线程间抢占，单卡 MFU 突破 70% 工业极限！</text>
+    </g>
+  </g>
+</svg>

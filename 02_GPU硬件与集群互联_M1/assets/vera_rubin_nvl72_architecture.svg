@@ -1,0 +1,458 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1020" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Subtle Dot Grid for Inset Panels -->
+    <pattern id="dot-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#334155" opacity="0.6"/>
+    </pattern>
+
+    <!-- Linear Gradients for Premium Look -->
+    <linearGradient id="grad-rack" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-gpu" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cpu" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-nvswitch" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.95)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-hbm4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-net" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(30, 58, 138, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-violet" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text {
+      font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, monospace;
+    }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .badge-text { font-size: 10px; font-weight: 700; fill: #ffffff; }
+    .sec-header { font-size: 12px; font-weight: 700; fill: #e2e8f0; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-subtitle { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .card-data { font-size: 10px; font-weight: 700; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <!-- Deep Dark Base Background -->
+  <rect width="1440" height="1020" fill="#0b0f19"/>
+  <rect width="1440" height="1020" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 24)">
+    <!-- Brand Logo / Badge -->
+    <rect x="0" y="0" width="1380" height="66" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    
+    <!-- Left Indicator Strip -->
+    <rect x="0" y="0" width="6" height="66" rx="3" fill="url(#grad-badge)"/>
+
+    <text x="24" y="28" class="title-main">NVIDIA VERA RUBIN NVL72 机架级超融合 AI 工厂架构全景图</text>
+    <text x="24" y="48" class="title-sub">TSMC 3nm Dual-Reticle Rubin GPU × 72 | Vera ARMv9 Olympus CPU × 36 | NVLink 6 (260 TB/s) | 288GB HBM4 @ 22 TB/s | 100% 直接芯片液冷</text>
+
+    <!-- Top Key Metrics Badges -->
+    <g transform="translate(860, 14)">
+      <!-- Badge 1: Compute -->
+      <rect x="0" y="0" width="115" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="57" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">机架聚合算力</text>
+      <text x="57" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">3.6 EFLOPS</text>
+
+      <!-- Badge 2: Memory -->
+      <rect x="125" y="0" width="125" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="187" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">HBM4 聚合显存</text>
+      <text x="187" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">20.7 TB / 1.6 PB/s</text>
+
+      <!-- Badge 3: NVLink 6 -->
+      <rect x="260" y="0" width="125" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="322" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">NVLink 6 对分带宽</text>
+      <text x="322" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">260 TB/s (全对全)</text>
+
+      <!-- Badge 4: Power/Cooling -->
+      <rect x="395" y="0" width="110" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="450" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">强制冷板直接液冷</text>
+      <text x="450" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">130 kW 额定功耗</text>
+    </g>
+  </g>
+
+  <!-- ================= MAIN LAYOUT (THREE COLUMNS) ================= -->
+  <!-- COLUMN 1: LEFT COMPUTE RACK (Trays 1~9: 36 Rubin GPUs + 18 Vera CPUs) -->
+  <!-- COLUMN 2: CENTER SPINE (9 NVLink 6 Switch Trays + Blind-Mate Copper Backplane) -->
+  <!-- COLUMN 3: RIGHT COMPUTE RACK (Trays 10~18: 36 Rubin GPUs + 18 Vera CPUs) -->
+
+  <!-- ================= 1. SCALE-OUT TOP-OF-RACK / FABRIC LAYER ================= -->
+  <g transform="translate(30, 105)">
+    <!-- Container -->
+    <rect x="0" y="0" width="1380" height="74" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" class="sec-header" fill="#60a5fa">🌐 Scale-Out 集群级互联层 (Cluster Spine &amp; Leaf Network · 1.6 Tb/s Rail-Optimized)</text>
+    
+    <!-- Switch Box 1: Quantum-X1600 InfiniBand -->
+    <g transform="translate(20, 32)">
+      <rect x="0" y="0" width="410" height="32" rx="4" fill="url(#grad-net)" stroke="#3b82f6" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="700" fill="#ffffff">Quantum-X1600 InfiniBand 交换机</text>
+      <text x="235" y="20" font-size="9" font-weight="500" fill="#93c5fd">144 端口 × 1.6 Tb/s (800G per rail) · SHARP v4</text>
+    </g>
+
+    <!-- Switch Box 2: Spectrum-X1600 Ethernet -->
+    <g transform="translate(450, 32)">
+      <rect x="0" y="0" width="410" height="32" rx="4" fill="url(#grad-net)" stroke="#3b82f6" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="700" fill="#ffffff">Spectrum-X1600 以太网交换机</text>
+      <text x="230" y="20" font-size="9" font-weight="500" fill="#93c5fd">RoCEv2 拥塞控制 · 自适应路由 (Adaptive Routing)</text>
+    </g>
+
+    <!-- SuperNIC & DPU Block -->
+    <g transform="translate(880, 32)">
+      <rect x="0" y="0" width="480" height="32" rx="4" fill="rgba(30,41,59,0.7)" stroke="#64748b" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="700" fill="#38bdf8">72× ConnectX-9 SuperNIC (800 Gb/s)</text>
+      <text x="270" y="20" font-size="9" font-weight="500" fill="#94a3b8">+ BlueField-4 DPU (AI 基础设施管控)</text>
+    </g>
+  </g>
+
+  <!-- Connection Lines from TOR to Compute Trays -->
+  <path d="M 235 180 L 235 210" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+  <path d="M 1205 180 L 1205 210" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+
+  <!-- ================= 2. LEFT COMPUTE RACK WING (TRAYS 1-9) ================= -->
+  <g transform="translate(30, 215)">
+    <!-- Group Frame -->
+    <rect x="0" y="0" width="420" height="665" rx="8" fill="url(#grad-rack)" stroke="#0e7490" stroke-width="1.5"/>
+    
+    <!-- Frame Header -->
+    <rect x="0" y="0" width="420" height="36" rx="8" fill="rgba(8, 51, 68, 0.7)"/>
+    <text x="16" y="23" font-size="12" font-weight="700" fill="#38bdf8">💻 计算托盘组 A (Compute Trays 1~9 · 上半区 36 GPU)</text>
+    <text x="350" y="23" font-size="10" font-weight="600" fill="#67e8f9">18× Vera / 36× Rubin</text>
+
+    <!-- Detailed Architecture of ONE Representative Compute Tray -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="392" height="246" rx="6" fill="#0f172a" stroke="#155e75" stroke-width="1.5"/>
+      <rect x="0" y="0" width="392" height="26" rx="6" fill="rgba(14, 116, 144, 0.4)"/>
+      <text x="12" y="17" font-size="10.5" font-weight="700" fill="#e0f2fe">单计算托盘微架构 (1U Tray: 2× Vera + 4× Rubin)</text>
+      <text x="320" y="17" font-size="9" font-weight="600" fill="#38bdf8">100% 液冷盲插</text>
+
+      <!-- Host Subsystem: 2x Vera CPU -->
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="372" height="64" rx="5" fill="url(#grad-cpu)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="18" class="card-title" fill="#a7f3d0">2× Vera 自研 ARM CPU (Host Subsystem)</text>
+        <text x="12" y="33" class="card-subtitle" fill="#6ee7b7">每颗集成 88 个 custom Armv9 "Olympus" 核心 · 176 核心/托盘</text>
+        <text x="12" y="47" class="code-tag" fill="#34d399">统一主存: 3 TB LPDDR5X (整机架 54 TB) · NVLink-C2C 900 GB/s 缓存一致</text>
+        <!-- Mini Chiplets -->
+        <rect x="304" y="8" width="28" height="48" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="1"/>
+        <text x="318" y="34" font-size="7.5" font-weight="700" fill="#6ee7b7" text-anchor="middle">CPU 1</text>
+        <rect x="336" y="8" width="28" height="48" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="1"/>
+        <text x="350" y="34" font-size="7.5" font-weight="700" fill="#6ee7b7" text-anchor="middle">CPU 2</text>
+      </g>
+
+      <!-- GPU Subsystem: 4x Rubin GPUs -->
+      <g transform="translate(10, 106)">
+        <rect x="0" y="0" width="372" height="130" rx="5" fill="url(#grad-gpu)" stroke="#06b6d4" stroke-width="1.2"/>
+        <text x="12" y="18" class="card-title" fill="#cffafe">4× Rubin GPU (VR200 · TSMC 3nm 双 Die Chiplet)</text>
+        <text x="12" y="33" class="card-subtitle" fill="#7dd3fc">3360 亿晶体管 · NV-HBI 2 (14 TB/s 跨 Die) · 4th Gen Transformer Engine</text>
+
+        <!-- 4 GPU Mini Blocks -->
+        <!-- GPU 1 -->
+        <g transform="translate(10, 42)">
+          <rect x="0" y="0" width="82" height="78" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="41" y="15" font-size="8.5" font-weight="700" fill="#e0f2fe" text-anchor="middle">Rubin GPU 0</text>
+          <!-- HBM4 Stacks -->
+          <rect x="4" y="22" width="74" height="24" rx="2" fill="url(#grad-hbm4)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="41" y="34" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">288GB HBM4</text>
+          <text x="41" y="43" font-size="6.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">22 TB/s 带宽</text>
+          <text x="41" y="58" font-size="7" font-weight="600" fill="#67e8f9" text-anchor="middle">NVFP4: 50 PFLOPS</text>
+          <text x="41" y="70" font-size="6.5" font-weight="500" fill="#94a3b8" text-anchor="middle">NVLink 6: 3.6TB/s</text>
+        </g>
+
+        <!-- GPU 2 -->
+        <g transform="translate(98, 42)">
+          <rect x="0" y="0" width="82" height="78" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="41" y="15" font-size="8.5" font-weight="700" fill="#e0f2fe" text-anchor="middle">Rubin GPU 1</text>
+          <rect x="4" y="22" width="74" height="24" rx="2" fill="url(#grad-hbm4)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="41" y="34" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">288GB HBM4</text>
+          <text x="41" y="43" font-size="6.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">22 TB/s 带宽</text>
+          <text x="41" y="58" font-size="7" font-weight="600" fill="#67e8f9" text-anchor="middle">NVFP4: 50 PFLOPS</text>
+          <text x="41" y="70" font-size="6.5" font-weight="500" fill="#94a3b8" text-anchor="middle">NVLink 6: 3.6TB/s</text>
+        </g>
+
+        <!-- GPU 3 -->
+        <g transform="translate(186, 42)">
+          <rect x="0" y="0" width="82" height="78" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="41" y="15" font-size="8.5" font-weight="700" fill="#e0f2fe" text-anchor="middle">Rubin GPU 2</text>
+          <rect x="4" y="22" width="74" height="24" rx="2" fill="url(#grad-hbm4)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="41" y="34" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">288GB HBM4</text>
+          <text x="41" y="43" font-size="6.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">22 TB/s 带宽</text>
+          <text x="41" y="58" font-size="7" font-weight="600" fill="#67e8f9" text-anchor="middle">NVFP4: 50 PFLOPS</text>
+          <text x="41" y="70" font-size="6.5" font-weight="500" fill="#94a3b8" text-anchor="middle">NVLink 6: 3.6TB/s</text>
+        </g>
+
+        <!-- GPU 4 -->
+        <g transform="translate(274, 42)">
+          <rect x="0" y="0" width="88" height="78" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="44" y="15" font-size="8.5" font-weight="700" fill="#e0f2fe" text-anchor="middle">Rubin GPU 3</text>
+          <rect x="7" y="22" width="74" height="24" rx="2" fill="url(#grad-hbm4)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="44" y="34" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">288GB HBM4</text>
+          <text x="44" y="43" font-size="6.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">22 TB/s 带宽</text>
+          <text x="44" y="58" font-size="7" font-weight="600" fill="#67e8f9" text-anchor="middle">NVFP4: 50 PFLOPS</text>
+          <text x="44" y="70" font-size="6.5" font-weight="500" fill="#94a3b8" text-anchor="middle">NVLink 6: 3.6TB/s</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Stack of Remaining 8 Trays (Visual Representation) -->
+    <g transform="translate(14, 302)">
+      <!-- Tray 2 to 9 stack items -->
+      <rect x="0" y="0" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="21" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 02 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="40" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="61" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 03 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="80" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="101" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 04 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="120" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="141" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 05 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="160" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="181" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 06 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="200" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="221" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 07 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="240" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="261" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 08 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="280" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="301" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 09 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <!-- Subtotal Indicator -->
+      <rect x="0" y="322" width="392" height="26" rx="4" fill="rgba(8,51,68,0.5)" stroke="#0e7490" stroke-width="1"/>
+      <text x="196" y="339" font-size="9" font-weight="700" fill="#38bdf8" text-anchor="middle">上半区汇总: 36× Rubin GPU · 10.36 TB HBM4 @ 792 TB/s · 1.8 EFLOPS</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. CENTER SPINE: SCALE-UP NVLINK 6 FABRIC ================= -->
+  <g transform="translate(480, 215)">
+    <!-- Container -->
+    <rect x="0" y="0" width="480" height="665" rx="8" fill="#030712" stroke="#ea580c" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="480" height="36" rx="8" fill="rgba(124, 45, 18, 0.7)"/>
+    <text x="20" y="23" font-size="12" font-weight="800" fill="#fdba74">⚡ NVLink 6 交换矩阵核心 (9 Switch Trays · 机架中心总线)</text>
+    <text x="390" y="23" font-size="9.5" font-weight="700" fill="#ffedd5">260 TB/s 对分</text>
+
+    <!-- Key Spec Callout Box -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="452" height="88" rx="6" fill="rgba(67, 20, 7, 0.5)" stroke="#c2410c" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="11" font-weight="700" fill="#fed7aa">机架级纯被动铜缆背板 (Passive Copper Blind-Mate Backplane)</text>
+      <text x="14" y="38" font-size="9" font-weight="500" fill="#fdba74">• 彻底去除光纤与有源光模块 (Zero Transceivers) · 故障率直降 90% · 节能 20kW</text>
+      <text x="14" y="54" font-size="9" font-weight="500" fill="#fdba74">• 18 颗 Dual-Die NVLink 6 NVSwitch · 200 Gb/s PAM4 极限物理 SerDes</text>
+      <text x="14" y="70" font-size="9" font-weight="500" fill="#fdba74">• 内置硬件 SHARP 引擎: 线速完成 NVFP4 / FP8 / BF16 机架级全互联 AllReduce</text>
+    </g>
+
+    <!-- 9 NVLink Switch Trays Visual Grid -->
+    <g transform="translate(14, 144)">
+      <!-- Switch Tray 1 Detailed -->
+      <rect x="0" y="0" width="452" height="58" rx="5" fill="url(#grad-nvswitch)" stroke="#f97316" stroke-width="1.2"/>
+      <text x="14" y="18" font-size="10.5" font-weight="700" fill="#ffedd5">NVLink 6 Switch Tray 01 (双芯片架构)</text>
+      <text x="14" y="33" font-size="8.5" font-weight="500" fill="#fed7aa">2× NVLink 6 NVSwitch (TSMC 3nm 双 Die) · 144 个 200Gbps 铜缆盲插端口</text>
+      <text x="14" y="47" class="code-tag" fill="#fdba74">硬件 SHARP v4 归约加速 · 单托盘聚合双向线速吞吐 28.8 TB/s</text>
+      <!-- Dual Switch Chiplets -->
+      <rect x="368" y="10" width="34" height="38" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+      <text x="385" y="33" font-size="7" font-weight="800" fill="#ffedd5" text-anchor="middle">SW-A</text>
+      <rect x="406" y="10" width="34" height="38" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+      <text x="423" y="33" font-size="7" font-weight="800" fill="#ffedd5" text-anchor="middle">SW-B</text>
+
+      <!-- Switch Trays 2 ~ 9 Stacks -->
+      <g transform="translate(0, 66)">
+        <rect x="0" y="0" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="23" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 02 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="44" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="67" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 03 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="88" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="111" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 04 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="132" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="155" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 05 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="176" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="199" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 06 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="220" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="243" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 07 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="264" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="287" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 08 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <rect x="0" y="308" width="452" height="38" rx="4" fill="#0f172a" stroke="#292524" stroke-width="1"/>
+        <text x="14" y="331" font-size="9.5" font-weight="600" fill="#fdba74">NVLink 6 Switch Tray 09 (2× NVSwitch 6 · 28.8 TB/s 线速)</text>
+
+        <!-- Total Copper Interconnect Metric -->
+        <rect x="0" y="354" width="452" height="34" rx="4" fill="rgba(124,45,18,0.4)" stroke="#ea580c" stroke-width="1"/>
+        <text x="226" y="375" font-size="10" font-weight="700" fill="#ffedd5" text-anchor="middle">全机架 72 颗 GPU 经铜缆背板无阻塞直连 · 单 GPU 双向 3.6 TB/s 独享带宽</text>
+      </g>
+    </g>
+
+    <!-- Bi-directional Copper Bus Indication Arrows -->
+    <path d="M -20 380 L -5 380" stroke="#f97316" stroke-width="3" marker-end="url(#arrow-orange)"/>
+    <path d="M 485 380 L 500 380" stroke="#f97316" stroke-width="3" marker-end="url(#arrow-orange)"/>
+    <path d="M -5 440 L -20 440" stroke="#f97316" stroke-width="3" marker-end="url(#arrow-orange)"/>
+    <path d="M 500 440 L 485 440" stroke="#f97316" stroke-width="3" marker-end="url(#arrow-orange)"/>
+  </g>
+
+  <!-- ================= 4. RIGHT COMPUTE RACK WING (TRAYS 10-18) ================= -->
+  <g transform="translate(990, 215)">
+    <!-- Group Frame -->
+    <rect x="0" y="0" width="420" height="665" rx="8" fill="url(#grad-rack)" stroke="#0e7490" stroke-width="1.5"/>
+    
+    <!-- Frame Header -->
+    <rect x="0" y="0" width="420" height="36" rx="8" fill="rgba(8, 51, 68, 0.7)"/>
+    <text x="16" y="23" font-size="12" font-weight="700" fill="#38bdf8">💻 计算托盘组 B (Compute Trays 10~18 · 下半区 36 GPU)</text>
+    <text x="350" y="23" font-size="10" font-weight="600" fill="#67e8f9">18× Vera / 36× Rubin</text>
+
+    <!-- Stack of Trays 10 to 17 -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="21" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 10 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="40" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="61" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 11 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="80" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="101" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 12 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="120" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="141" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 13 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="160" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="181" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 14 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="200" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="221" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 15 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="240" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="261" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 16 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+
+      <rect x="0" y="280" width="392" height="34" rx="4" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="301" font-size="9.5" font-weight="600" fill="#94a3b8">Compute Tray 17 (2× Vera CPU + 4× Rubin GPU · 1152GB HBM4)</text>
+    </g>
+
+    <!-- Tray 18 Detailed Highlight -->
+    <g transform="translate(14, 396)">
+      <rect x="0" y="0" width="392" height="236" rx="6" fill="#0f172a" stroke="#155e75" stroke-width="1.5"/>
+      <rect x="0" y="0" width="392" height="26" rx="6" fill="rgba(14, 116, 144, 0.4)"/>
+      <text x="12" y="17" font-size="10.5" font-weight="700" fill="#e0f2fe">托盘 18 物理拓扑微观透视 (Direct-to-Chip 铜缆盲插)</text>
+      <text x="320" y="17" font-size="9" font-weight="600" fill="#38bdf8">NVLink 6 线束</text>
+
+      <!-- Host Subsystem (Tray 18) -->
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="372" height="52" rx="4" fill="url(#grad-cpu)" stroke="#10b981" stroke-width="1"/>
+        <text x="12" y="17" class="card-title" fill="#a7f3d0">2× Vera CPU · 54V DC 母线供电</text>
+        <text x="12" y="32" class="card-subtitle" fill="#6ee7b7">Olympus 架构 · 零 Host 调度卡顿 · 支持大批量万亿 MoE 动态门控路由</text>
+        <text x="12" y="44" class="code-tag" fill="#34d399">NVLink-C2C 900 GB/s 低延迟连通 4 颗 Rubin GPU 显存池</text>
+      </g>
+
+      <!-- GPU Specs & Cooling Details -->
+      <g transform="translate(10, 94)">
+        <rect x="0" y="0" width="372" height="132" rx="4" fill="url(#grad-gpu)" stroke="#06b6d4" stroke-width="1"/>
+        <text x="12" y="18" class="card-title" fill="#cffafe">4× Rubin GPU · 纯液冷散热歧管 (Cold Plates)</text>
+        
+        <!-- Detailed Spec Grid inside Tray 18 -->
+        <g transform="translate(10, 26)">
+          <rect x="0" y="0" width="170" height="98" rx="4" fill="rgba(8,51,68,0.7)" stroke="#0891b2" stroke-width="0.8"/>
+          <text x="10" y="16" font-size="9" font-weight="700" fill="#67e8f9">【计算与微精度核心】</text>
+          <text x="10" y="32" font-size="8" fill="#e0f2fe">• NVFP4 稠密: 20 PFLOPS / GPU</text>
+          <text x="10" y="46" font-size="8" fill="#e0f2fe">• NVFP3 / NVFP2: 原生硬件缩放</text>
+          <text x="10" y="60" font-size="8" fill="#e0f2fe">• FP8 稠密: 10 PFLOPS / GPU</text>
+          <text x="10" y="74" font-size="8" fill="#e0f2fe">• FP16/BF16: 5,000 TFLOPS</text>
+          <text x="10" y="88" font-size="8" fill="#34d399">• 动态块缩放 (Block Scaling)</text>
+
+          <rect x="180" y="0" width="172" height="98" rx="4" fill="rgba(88,28,135,0.6)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="10" y="16" font-size="9" font-weight="700" fill="#d8b4fe">【显存与网络互联】</text>
+          <text x="10" y="32" font-size="8" fill="#f3e8ff">• 8 堆栈 HBM4: 288 GB / GPU</text>
+          <text x="10" y="46" font-size="8" fill="#f3e8ff">• 2048-bit 超宽接口: 22 TB/s</text>
+          <text x="10" y="60" font-size="8" fill="#f3e8ff">• NVLink 6: 3.6 TB/s 双向互联</text>
+          <text x="10" y="74" font-size="8" fill="#f3e8ff">• CX-9 SuperNIC: 800 Gb/s 口</text>
+          <text x="10" y="88" font-size="8" fill="#fb923c">• PCIe Gen 6 x16 全双工支持</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Subtotal Indicator -->
+    <rect x="14" y="636" width="392" height="20" rx="3" fill="rgba(8,51,68,0.5)" stroke="#0e7490" stroke-width="1"/>
+    <text x="210" y="650" font-size="9" font-weight="700" fill="#38bdf8" text-anchor="middle">下半区汇总: 36× Rubin GPU · 10.36 TB HBM4 @ 792 TB/s · 1.8 EFLOPS</text>
+  </g>
+
+  <!-- ================= 5. BOTTOM INFRASTRUCTURE: POWER & LIQUID COOLING ================= -->
+  <g transform="translate(30, 890)">
+    <!-- Container -->
+    <rect x="0" y="0" width="1380" height="106" rx="8" fill="#0a0f1d" stroke="#334155" stroke-width="1.5"/>
+    
+    <!-- Left: CDU Liquid Distribution System -->
+    <g transform="translate(20, 16)">
+      <rect x="0" y="0" width="440" height="74" rx="5" fill="rgba(6,78,59,0.4)" stroke="#059669" stroke-width="1.2"/>
+      <text x="16" y="22" font-size="11" font-weight="700" fill="#6ee7b7">❄️ CDU (Cooling Distribution Unit) 冷却液分配单元</text>
+      <text x="16" y="40" font-size="9" font-weight="500" fill="#a7f3d0">• 进水温度: 25°C 温水循环 · 出水温度: 45°C · 100% 芯片级冷板直接液冷 (零机柜风扇)</text>
+      <text x="16" y="58" font-size="9" font-weight="500" fill="#a7f3d0">• 全机架快换盲插接头 (Blind-Mate Quick Disconnect) · PUE 直降至 1.08 极限能效</text>
+    </g>
+
+    <!-- Center: 54V DC Busbar Power Architecture -->
+    <g transform="translate(480, 16)">
+      <rect x="0" y="0" width="450" height="74" rx="5" fill="rgba(120,53,15,0.4)" stroke="#d97706" stroke-width="1.2"/>
+      <text x="16" y="22" font-size="11" font-weight="700" fill="#fcd34d">⚡ 54V 直流铜排母线配电架构 (DC Busbar Power Delivery)</text>
+      <text x="16" y="40" font-size="9" font-weight="500" fill="#fef08a">• 整机架额定输入功耗: 130 kW ~ 140 kW · 双路冗余 (2N Redundant PSU)</text>
+      <text x="16" y="58" font-size="9" font-weight="500" fill="#fef08a">• 垂直铜排直通 18 个计算托盘与 9 个交换托盘，单 GPU 供电损耗降低 60%</text>
+    </g>
+
+    <!-- Right: Architecture Summary / Footprint -->
+    <g transform="translate(950, 16)">
+      <rect x="0" y="0" width="410" height="74" rx="5" fill="rgba(30,41,59,0.7)" stroke="#64748b" stroke-width="1.2"/>
+      <text x="16" y="22" font-size="11" font-weight="700" fill="#f8fafc">🏛️ “机架即超级计算机” 六芯片闭环生态</text>
+      <text x="16" y="40" font-size="9" font-weight="500" fill="#cbd5e1">Rubin GPU + Vera CPU + NVSwitch 6 + CX-9 + BF-4 + Spectrum-X1600</text>
+      <text x="16" y="58" font-size="8.5" font-weight="600" fill="#38bdf8">单机架支撑 100 万亿参数超大规模 MoE 模型单阶段无损预训练与超低延迟推理</text>
+    </g>
+  </g>
+</svg>

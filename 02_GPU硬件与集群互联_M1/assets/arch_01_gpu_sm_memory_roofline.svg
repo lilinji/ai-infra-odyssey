@@ -1,0 +1,440 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-01" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="grad-card-01" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-01" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-01" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.8)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-01" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.8)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-01" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-01" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <!-- Deep Dark Base Background -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-01)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-01)"/>
+    
+    <text x="24" y="27" class="title-main">第12讲：现代 GPU 微架构、分级存储体系与 Roofline 性能边界全景图</text>
+    <text x="24" y="47" class="title-sub">Streaming Multiprocessor (SM) · Warp Scheduler · Tensor Core MMA · Storage Pyramid · Bandwidth Cliff · Arithmetic Intensity</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(860, 13)">
+      <rect x="0" y="0" width="125" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="62" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">Dense FP16 峰值</text>
+      <text x="62" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">989 ~ 2250 TFLOPS</text>
+
+      <rect x="135" y="0" width="125" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="197" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">HBM3e 物理线速</text>
+      <text x="197" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">3.35 ~ 8.0 TB/s</text>
+
+      <rect x="270" y="0" width="120" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="330" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">SRAM 片上带宽</text>
+      <text x="330" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">&gt; 12.0 TB/s</text>
+
+      <rect x="400" y="0" width="110" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="455" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">Roofline 理论拐点</text>
+      <text x="455" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">~295 FLOP/Byte</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: SM MICROARCHITECTURE ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-01)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">⚡ 1. SM 流式多处理器微架构 (Compute Heart)</text>
+    <text x="375" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">132~160 SM/Chip</text>
+
+    <!-- Sub-Core Partitions Visual -->
+    <g transform="translate(14, 44)">
+      <rect x="0" y="0" width="432" height="236" rx="6" fill="#0f172a" stroke="#155e75" stroke-width="1.2"/>
+      <text x="12" y="18" class="card-title" fill="#e0f2fe">4× Sub-Core 分区结构 (Warp 调度与执行单元)</text>
+      <text x="12" y="32" class="card-sub" fill="#94a3b8">每个 SM 划分 4 个物理子核心，每时钟周期可并发发射 4 个就绪 Warp</text>
+
+      <!-- 4 Partitions Grid -->
+      <g transform="translate(10, 42)">
+        <!-- Partition 0 -->
+        <g transform="translate(0, 0)">
+          <rect x="0" y="0" width="98" height="178" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="49" y="16" font-size="9" font-weight="700" fill="#a5f3fc" text-anchor="middle">Partition 0</text>
+          
+          <rect x="6" y="24" width="86" height="26" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+          <text x="49" y="38" font-size="7.5" font-weight="600" fill="#a7f3d0" text-anchor="middle">Warp Scheduler</text>
+          <text x="49" y="46" font-size="6.5" fill="#6ee7b7" text-anchor="middle">+ Dispatch Unit</text>
+
+          <rect x="6" y="54" width="86" height="34" rx="3" fill="#581c87" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="49" y="68" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">Register File</text>
+          <text x="49" y="82" font-size="6.5" fill="#d8b4fe" text-anchor="middle">64KB (16K×32b)</text>
+
+          <rect x="6" y="92" width="86" height="42" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="0.8"/>
+          <text x="49" y="106" font-size="7.5" font-weight="700" fill="#bfdbfe" text-anchor="middle">CUDA Cores</text>
+          <text x="49" y="118" font-size="6.5" fill="#93c5fd" text-anchor="middle">32× FP32 / INT32</text>
+          <text x="49" y="128" font-size="6.5" fill="#93c5fd" text-anchor="middle">16× FP64 ALU</text>
+
+          <rect x="6" y="138" width="86" height="32" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="0.8"/>
+          <text x="49" y="152" font-size="7.5" font-weight="800" fill="#fed7aa" text-anchor="middle">1× Tensor Core</text>
+          <text x="49" y="163" font-size="6.5" fill="#f97316" text-anchor="middle">4th MMA 16x8x16</text>
+        </g>
+
+        <!-- Partition 1 -->
+        <g transform="translate(104, 0)">
+          <rect x="0" y="0" width="98" height="178" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="49" y="16" font-size="9" font-weight="700" fill="#a5f3fc" text-anchor="middle">Partition 1</text>
+          <rect x="6" y="24" width="86" height="26" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+          <text x="49" y="38" font-size="7.5" font-weight="600" fill="#a7f3d0" text-anchor="middle">Warp Scheduler</text>
+          <text x="49" y="46" font-size="6.5" fill="#6ee7b7" text-anchor="middle">+ Dispatch Unit</text>
+          <rect x="6" y="54" width="86" height="34" rx="3" fill="#581c87" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="49" y="68" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">Register File</text>
+          <text x="49" y="82" font-size="6.5" fill="#d8b4fe" text-anchor="middle">64KB (16K×32b)</text>
+          <rect x="6" y="92" width="86" height="42" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="0.8"/>
+          <text x="49" y="106" font-size="7.5" font-weight="700" fill="#bfdbfe" text-anchor="middle">CUDA Cores</text>
+          <text x="49" y="118" font-size="6.5" fill="#93c5fd" text-anchor="middle">32× FP32 / INT32</text>
+          <text x="49" y="128" font-size="6.5" fill="#93c5fd" text-anchor="middle">16× FP64 ALU</text>
+          <rect x="6" y="138" width="86" height="32" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="0.8"/>
+          <text x="49" y="152" font-size="7.5" font-weight="800" fill="#fed7aa" text-anchor="middle">1× Tensor Core</text>
+          <text x="49" y="163" font-size="6.5" fill="#f97316" text-anchor="middle">4th MMA 16x8x16</text>
+        </g>
+
+        <!-- Partition 2 -->
+        <g transform="translate(208, 0)">
+          <rect x="0" y="0" width="98" height="178" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="49" y="16" font-size="9" font-weight="700" fill="#a5f3fc" text-anchor="middle">Partition 2</text>
+          <rect x="6" y="24" width="86" height="26" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+          <text x="49" y="38" font-size="7.5" font-weight="600" fill="#a7f3d0" text-anchor="middle">Warp Scheduler</text>
+          <text x="49" y="46" font-size="6.5" fill="#6ee7b7" text-anchor="middle">+ Dispatch Unit</text>
+          <rect x="6" y="54" width="86" height="34" rx="3" fill="#581c87" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="49" y="68" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">Register File</text>
+          <text x="49" y="82" font-size="6.5" fill="#d8b4fe" text-anchor="middle">64KB (16K×32b)</text>
+          <rect x="6" y="92" width="86" height="42" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="0.8"/>
+          <text x="49" y="106" font-size="7.5" font-weight="700" fill="#bfdbfe" text-anchor="middle">CUDA Cores</text>
+          <text x="49" y="118" font-size="6.5" fill="#93c5fd" text-anchor="middle">32× FP32 / INT32</text>
+          <text x="49" y="128" font-size="6.5" fill="#93c5fd" text-anchor="middle">16× FP64 ALU</text>
+          <rect x="6" y="138" width="86" height="32" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="0.8"/>
+          <text x="49" y="152" font-size="7.5" font-weight="800" fill="#fed7aa" text-anchor="middle">1× Tensor Core</text>
+          <text x="49" y="163" font-size="6.5" fill="#f97316" text-anchor="middle">4th MMA 16x8x16</text>
+        </g>
+
+        <!-- Partition 3 -->
+        <g transform="translate(312, 0)">
+          <rect x="0" y="0" width="100" height="178" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+          <text x="50" y="16" font-size="9" font-weight="700" fill="#a5f3fc" text-anchor="middle">Partition 3</text>
+          <rect x="6" y="24" width="88" height="26" rx="3" fill="#064e3b" stroke="#34d399" stroke-width="0.8"/>
+          <text x="50" y="38" font-size="7.5" font-weight="600" fill="#a7f3d0" text-anchor="middle">Warp Scheduler</text>
+          <text x="50" y="46" font-size="6.5" fill="#6ee7b7" text-anchor="middle">+ Dispatch Unit</text>
+          <rect x="6" y="54" width="88" height="34" rx="3" fill="#581c87" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="50" y="68" font-size="7.5" font-weight="700" fill="#f3e8ff" text-anchor="middle">Register File</text>
+          <text x="50" y="82" font-size="6.5" fill="#d8b4fe" text-anchor="middle">64KB (16K×32b)</text>
+          <rect x="6" y="92" width="88" height="42" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="0.8"/>
+          <text x="50" y="106" font-size="7.5" font-weight="700" fill="#bfdbfe" text-anchor="middle">CUDA Cores</text>
+          <text x="50" y="118" font-size="6.5" fill="#93c5fd" text-anchor="middle">32× FP32 / INT32</text>
+          <text x="50" y="128" font-size="6.5" fill="#93c5fd" text-anchor="middle">16× FP64 ALU</text>
+          <rect x="6" y="138" width="88" height="32" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="0.8"/>
+          <text x="50" y="152" font-size="7.5" font-weight="800" fill="#fed7aa" text-anchor="middle">1× Tensor Core</text>
+          <text x="50" y="163" font-size="6.5" fill="#f97316" text-anchor="middle">4th MMA 16x8x16</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Async Movement & Memory Engines in SM -->
+    <g transform="translate(14, 290)">
+      <rect x="0" y="0" width="432" height="106" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="12" y="18" class="card-title" fill="#fdba74">数据搬运专职硬件 (Data Movement Engines)</text>
+      
+      <!-- TMA Engine -->
+      <g transform="translate(10, 28)">
+        <rect x="0" y="0" width="200" height="66" rx="4" fill="url(#grad-orange-01)" stroke="#f97316" stroke-width="1"/>
+        <text x="10" y="17" font-size="9" font-weight="700" fill="#fed7aa">TMA (Tensor Memory Accelerator)</text>
+        <text x="10" y="32" font-size="7.5" fill="#ffedd5">• 1D~5D 张量硬件自动跨步分块 (Tiling)</text>
+        <text x="10" y="44" font-size="7.5" fill="#ffedd5">• HBM ↔ Shared Mem 异步直传 (绕过 RF)</text>
+        <text x="10" y="56" class="code-tag" fill="#fdba74">零 SM 寄存器与指令发射消耗</text>
+      </g>
+
+      <!-- Legacy LSU -->
+      <g transform="translate(220, 28)">
+        <rect x="0" y="0" width="202" height="66" rx="4" fill="rgba(30,41,59,0.7)" stroke="#64748b" stroke-width="1"/>
+        <text x="10" y="17" font-size="9" font-weight="700" fill="#e2e8f0">Load / Store Units (LSU)</text>
+        <text x="10" y="32" font-size="7.5" fill="#94a3b8">• 32 线程合并访存 (Coalescing)</text>
+        <text x="10" y="44" font-size="7.5" fill="#94a3b8">• 128 Byte 缓存行物理事务映射</text>
+        <text x="10" y="56" class="code-tag" fill="#cbd5e1">容易诱发 Long Scoreboard 停顿</text>
+      </g>
+    </g>
+
+    <!-- Shared Memory & L1 Cache Block -->
+    <g transform="translate(14, 408)">
+      <rect x="0" y="0" width="432" height="150" rx="6" fill="#0f172a" stroke="#8b5cf6" stroke-width="1.2"/>
+      <text x="12" y="18" class="card-title" fill="#d8b4fe">L1 Data Cache / 可配置共享内存 (Shared Memory)</text>
+      <text x="12" y="33" class="card-sub" fill="#c4b5fd">单 SM 容量: 128 KB ~ 228 KB · 物理 SRAM 阵列 · 32 个 Banks (4-byte 跨度)</text>
+
+      <g transform="translate(10, 44)">
+        <!-- 32 Banks Illustration -->
+        <rect x="0" y="0" width="412" height="42" rx="4" fill="url(#grad-purple-01)" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="12" y="16" font-size="8.5" font-weight="700" fill="#ffffff">32-Bank 交叉开关总线 (Crossbar Switch · 带宽 &gt; 12 TB/s)</text>
+        <text x="12" y="30" font-size="7.5" fill="#e9d5ff">Bank 0 | Bank 1 | Bank 2 | ... | Bank 31 (若同一 Warp 线程打入同 Bank 不同地址 ➔ Bank Conflict 串行化)</text>
+      </g>
+
+      <!-- DSMEM Cluster Link -->
+      <g transform="translate(10, 94)">
+        <rect x="0" y="0" width="412" height="44" rx="4" fill="rgba(88,28,135,0.4)" stroke="#c084fc" stroke-width="0.8"/>
+        <text x="12" y="16" font-size="8.5" font-weight="700" fill="#e9d5ff">DSMEM (分布式共享内存 · SM Cluster 跨 SM 直访)</text>
+        <text x="12" y="30" font-size="7.5" fill="#d8b4fe">Thread Block Cluster 允许跨 SM 访问相邻 SM 的 Shared Mem · 硬件 mbarrier 协同</text>
+      </g>
+    </g>
+
+    <!-- SM Warp Latency Hiding Law -->
+    <g transform="translate(14, 570)">
+      <rect x="0" y="0" width="432" height="152" rx="6" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+      <text x="12" y="18" class="card-title" fill="#6ee7b7">💡 Warp 调度器第一性原理：延迟掩盖 (Latency Hiding)</text>
+      <text x="12" y="36" font-size="8.5" fill="#a7f3d0">• 当 Warp A 发起 HBM 访存 (陷入 200~400 时钟周期等待) 时：</text>
+      <text x="12" y="52" font-size="8.5" fill="#a7f3d0">• Warp Scheduler 在 0 开销下瞬时切换至 Warp B 发射 Tensor Core 计算；</text>
+      <text x="12" y="68" font-size="8.5" fill="#a7f3d0">• 【核心硬伤】: 若活跃 Warp 数过低或发生分支分歧 (Divergence)，延迟无法被掩盖！</text>
+      <text x="12" y="90" font-size="8.5" font-weight="700" fill="#fef08a">六大 Warp Stalls 生产真凶:</text>
+      <text x="12" y="106" font-size="8" fill="#cbd5e1">① Long Scoreboard (等显存) | ② Wait (分支等待) | ③ Barrier (同步栅栏)</text>
+      <text x="12" y="122" font-size="8" fill="#cbd5e1">④ Pipe Busy (计算管线塞满) | ⑤ MIO Throttle (内存指令节流) | ⑥ No Instruction</text>
+    </g>
+  </g>
+
+  <!-- ================= 2. MIDDLE SECTION: STORAGE PYRAMID & BANDWIDTH CLIFF ================= -->
+  <g transform="translate(510, 98)">
+    <rect x="0" y="0" width="420" height="740" rx="8" fill="url(#grad-card-01)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="420" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">📦 2. 存储金字塔与带宽断崖 (Memory Hierarchy)</text>
+    <text x="325" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">物理时延梯级</text>
+
+    <!-- Pyramid Tier 1: Registers -->
+    <g transform="translate(14, 46)">
+      <rect x="40" y="0" width="312" height="76" rx="6" fill="url(#grad-purple-01)" stroke="#c084fc" stroke-width="1.2"/>
+      <text x="196" y="20" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Level 1: 寄存器堆 (Register File)</text>
+      <text x="196" y="36" font-size="9" font-weight="600" fill="#f3e8ff" text-anchor="middle">容量: 33 MB (全卡) | 时延: ~0.5 ns (1 周期)</text>
+      <text x="196" y="52" font-size="10" font-weight="800" fill="#fde047" text-anchor="middle">物理聚合带宽: &gt; 30.0 TB/s</text>
+      <text x="196" y="66" font-size="7.5" fill="#e9d5ff" text-anchor="middle">单线程私有 · 溢出至 Local Mem (走显存) 性能将雪崩</text>
+    </g>
+
+    <!-- Down Arrow 1 -->
+    <path d="M 720 226 L 720 240" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+    <!-- Pyramid Tier 2: Shared Memory / L1 -->
+    <g transform="translate(14, 146)">
+      <rect x="25" y="0" width="342" height="76" rx="6" fill="url(#grad-cyan-01)" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="196" y="20" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Level 2: 片上 SRAM (Shared Mem / L1 Cache)</text>
+      <text x="196" y="36" font-size="9" font-weight="600" fill="#cffafe" text-anchor="middle">容量: 30 MB (全卡) | 时延: ~1.5 - 2.5 ns (15-30 周期)</text>
+      <text x="196" y="52" font-size="10" font-weight="800" fill="#67e8f9" text-anchor="middle">物理聚合带宽: ~14.0 TB/s</text>
+      <text x="196" y="66" font-size="7.5" fill="#a5f3fc" text-anchor="middle">Block 内线程共享 · 软件受控暂存器 (Tiling 核心底座)</text>
+    </g>
+
+    <!-- Down Arrow 2 -->
+    <path d="M 720 326 L 720 340" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+
+    <!-- Pyramid Tier 3: L2 Cache -->
+    <g transform="translate(14, 246)">
+      <rect x="15" y="0" width="362" height="84" rx="6" fill="rgba(30,58,138,0.7)" stroke="#3b82f6" stroke-width="1.2"/>
+      <text x="196" y="20" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Level 3: 全局统一 L2 Cache (SRAM 切片)</text>
+      <text x="196" y="36" font-size="9" font-weight="600" fill="#bfdbfe" text-anchor="middle">容量: 50 MB (H100) ~ 96 MB (B200) | 时延: ~15 - 25 ns</text>
+      <text x="196" y="52" font-size="10" font-weight="800" fill="#93c5fd" text-anchor="middle">物理聚合带宽: ~6.0 - 7.5 TB/s</text>
+      <text x="196" y="68" font-size="7.5" fill="#dbeafe" text-anchor="middle">跨所有 SM 共享一致性 · 支持 TMA 异步写与常驻持久化分区</text>
+    </g>
+
+    <!-- Down Arrow 3 -->
+    <path d="M 720 434 L 720 448" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+
+    <!-- Pyramid Tier 4: HBM3 / HBM3e -->
+    <g transform="translate(14, 354)">
+      <rect x="5" y="0" width="382" height="96" rx="6" fill="url(#grad-orange-01)" stroke="#f97316" stroke-width="1.5"/>
+      <text x="196" y="22" font-size="11.5" font-weight="800" fill="#ffedd5" text-anchor="middle">Level 4: 高带宽板载显存 (HBM3 / HBM3e)</text>
+      <text x="196" y="38" font-size="9" font-weight="600" fill="#fed7aa" text-anchor="middle">容量: 80 GB (H100) ~ 192 GB (B200) | 时延: ~60 - 100 ns</text>
+      <text x="196" y="56" font-size="11" font-weight="800" fill="#fde047" text-anchor="middle">物理线速带宽: 3.35 TB/s (H100) ~ 8.0 TB/s (B200)</text>
+      <text x="196" y="74" font-size="8" fill="#fed7aa" text-anchor="middle">1024-bit 接口通道 · 必须保证 128 Byte 合并访问 (Coalescing)</text>
+      <text x="196" y="86" font-size="7.5" font-weight="700" fill="#f87171" text-anchor="middle">⚠️ 未合并访存将导致总线利用率骤降至 1/4 以下！</text>
+    </g>
+
+    <!-- Down Arrow 4 (Bandwidth Cliff) -->
+    <path d="M 720 554 L 720 570" stroke="#f97316" stroke-width="2.5" stroke-dasharray="4,2" marker-end="url(#arrow-amber)"/>
+
+    <!-- Pyramid Tier 5: Host Memory / PCIe -->
+    <g transform="translate(14, 474)">
+      <rect x="0" y="0" width="392" height="84" rx="6" fill="rgba(30,41,59,0.7)" stroke="#64748b" stroke-width="1.2"/>
+      <text x="196" y="20" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Level 5: Host 主机内存 (CPU DRAM via PCIe)</text>
+      <text x="196" y="36" font-size="9" font-weight="600" fill="#cbd5e1" text-anchor="middle">容量: 1~2 TB DDR5 | 时延: &gt; 1,000 ns (微秒级长时延)</text>
+      <text x="196" y="52" font-size="10" font-weight="800" fill="#f87171" text-anchor="middle">传输带宽: 64 GB/s (PCIe Gen5 x16)</text>
+      <text x="196" y="68" font-size="7.5" fill="#94a3b8" text-anchor="middle">【物理带宽断崖】: 相比 HBM 显存带宽跌落 50 ~ 125 倍！</text>
+    </g>
+
+    <!-- Bandwidth Cliff Summary Box -->
+    <g transform="translate(14, 574)">
+      <rect x="0" y="0" width="392" height="148" rx="6" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fecdd3">📉 性能工程第一定律：数据搬运的“绝望代价”</text>
+      <text x="14" y="38" font-size="8.5" fill="#ffe4e6">1. 【时延跨度】: 寄存器 (0.5ns) ➔ 显存 (80ns) ➔ 内存 (1000ns) 膨胀 2000 倍！</text>
+      <text x="14" y="56" font-size="8.5" fill="#ffe4e6">2. 【能耗代价】: 算一次乘加消耗 ~1 pJ，从 HBM 读 1 字节消耗 &gt; 100 pJ；</text>
+      <text x="14" y="74" font-size="8.5" fill="#ffe4e6">3. 【吞吐短板】: Tensor Core 算力暴涨，而显存带宽增长落后，逼迫模型必须提高“算术强度”；</text>
+      <text x="14" y="96" font-size="8.5" font-weight="700" fill="#fde047">生产调优法则:</text>
+      <text x="14" y="112" font-size="8" fill="#fecdd3">• 尽可能把数据约束在 Shared Memory / L2 中完成多轮复用 (Fusion)；</text>
+      <text x="14" y="128" font-size="8" fill="#fecdd3">• 彻底消除冗余的中间激活值 (Intermediate Activations) 频繁落盘 HBM！</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: ROOFLINE MODEL BOUNDARY ================= -->
+  <g transform="translate(950, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-01)" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(120,53,15,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#fcd34d">📈 3. Roofline 性能模型与算子判决书</text>
+    <text x="345" y="22" font-size="9.5" font-weight="600" fill="#fef08a">几何边界判决</text>
+
+    <!-- Roofline Formula Callout -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="66" rx="6" fill="rgba(120,53,15,0.35)" stroke="#fbbf24" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fef08a">Roofline 第一性原理数学模型</text>
+      <text x="14" y="38" font-size="9.5" font-weight="700" fill="#ffffff">P = min( P_peak,  BW_HBM × I )</text>
+      <text x="14" y="54" font-size="8" fill="#fef3c7">P: 实测算力 (TFLOPS) | I: 算术强度 (FLOP/Byte) | BW: 显存带宽 (TB/s)</text>
+    </g>
+
+    <!-- Roofline Chart Area SVG drawing -->
+    <g transform="translate(14, 122)">
+      <rect x="0" y="0" width="432" height="360" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      
+      <!-- Axes -->
+      <line x1="50" y1="300" x2="400" y2="300" stroke="#64748b" stroke-width="1.5"/>
+      <line x1="50" y1="300" x2="50" y2="30" stroke="#64748b" stroke-width="1.5"/>
+
+      <!-- Axis Labels -->
+      <text x="400" y="320" font-size="8.5" font-weight="700" fill="#94a3b8" text-anchor="end">算术强度 I (FLOP/Byte · 对数尺度)</text>
+      <text x="25" y="30" font-size="8.5" font-weight="700" fill="#94a3b8" transform="rotate(-90 25 30)" text-anchor="end">可达算力 P (TFLOPS)</text>
+
+      <!-- Grid ticks -->
+      <text x="50" y="315" font-size="7.5" fill="#64748b" text-anchor="middle">0.1</text>
+      <text x="110" y="315" font-size="7.5" fill="#64748b" text-anchor="middle">1</text>
+      <text x="180" y="315" font-size="7.5" fill="#64748b" text-anchor="middle">10</text>
+      <text x="250" y="315" font-size="7.5" fill="#64748b" text-anchor="middle">100</text>
+      <text x="320" y="315" font-size="7.5" fill="#64748b" text-anchor="middle">1000</text>
+
+      <!-- Roofline Lines (H100 Baselines) -->
+      <!-- Tensor Core Peak Ceiling -->
+      <line x1="280" y1="70" x2="390" y2="70" stroke="#f43f5e" stroke-width="2.5"/>
+      <text x="390" y="64" font-size="8" font-weight="700" fill="#f43f5e" text-anchor="end">Tensor Core 峰值顶板 (989 TFLOPS)</text>
+
+      <!-- CUDA Core Peak Ceiling -->
+      <line x1="160" y1="180" x2="390" y2="180" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="390" y="174" font-size="7.5" fill="#38bdf8" text-anchor="end">CUDA Core FP32 顶板 (67 TFLOPS)</text>
+
+      <!-- Memory Bandwidth Slanted Line (Slope) -->
+      <line x1="50" y1="300" x2="280" y2="70" stroke="#f59e0b" stroke-width="3"/>
+      <text x="140" y="170" font-size="8.5" font-weight="700" fill="#f59e0b" transform="rotate(-40 140 170)">斜率 = HBM3 带宽 (3.35 TB/s)</text>
+
+      <!-- Turning Point Vertical Drop -->
+      <line x1="280" y1="70" x2="280" y2="300" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <circle cx="280" cy="70" r="5" fill="#ef4444"/>
+      <text x="280" y="55" font-size="8.5" font-weight="800" fill="#ef4444" text-anchor="middle">I* 理论拐点 (~295 FLOP/B)</text>
+
+      <!-- Shaded Regions Indication -->
+      <!-- Left: Memory-Bound -->
+      <rect x="55" y="75" width="220" height="220" fill="rgba(245, 158, 11, 0.08)"/>
+      <text x="120" y="240" font-size="10" font-weight="800" fill="#fbbf24">【访存受限区 (Memory-Bound)】</text>
+      <text x="120" y="255" font-size="7.5" fill="#fed7aa">算力过剩，瓶颈全在显存搬运！</text>
+      <text x="120" y="268" font-size="7.5" fill="#fed7aa">无论怎么加 SM 算力都无法提速</text>
+
+      <!-- Right: Compute-Bound -->
+      <rect x="285" y="75" width="110" height="220" fill="rgba(16, 185, 129, 0.08)"/>
+      <text x="340" y="240" font-size="10" font-weight="800" fill="#34d399" text-anchor="middle">【算力受限区】</text>
+      <text x="340" y="255" font-size="7.5" fill="#a7f3d0" text-anchor="middle">达到硬件天花板</text>
+
+      <!-- Real Operators Placed on Chart -->
+      <!-- Point A: Softmax / LayerNorm -->
+      <circle cx="110" cy="245" r="4" fill="#f87171"/>
+      <text x="115" y="235" font-size="7.5" font-weight="700" fill="#f87171">Softmax / Norm (I ≈ 1~2)</text>
+
+      <!-- Point B: FlashAttention -->
+      <circle cx="240" cy="110" r="4" fill="#38bdf8"/>
+      <text x="245" y="105" font-size="7.5" font-weight="700" fill="#38bdf8">FlashAttention (I ≈ 60~120)</text>
+
+      <!-- Point C: Standard GEMM -->
+      <circle cx="340" cy="70" r="4" fill="#34d399"/>
+      <text x="340" y="90" font-size="7.5" font-weight="700" fill="#34d399" text-anchor="middle">大矩阵 GEMM (I &gt; 300)</text>
+    </g>
+
+    <!-- Operational Takeaways -->
+    <g transform="translate(14, 492)">
+      <rect x="0" y="0" width="432" height="230" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">🎯 真实生产算子 Roofline 优化路线图</text>
+
+      <!-- Table of 3 Key Operators -->
+      <g transform="translate(10, 32)">
+        <rect x="0" y="0" width="412" height="52" rx="4" fill="rgba(8,51,68,0.5)" stroke="#0e7490" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#67e8f9">1. GEMM 矩阵乘法 (天生算力受限)</text>
+        <text x="10" y="30" font-size="7.5" fill="#e0f2fe">• 优化核心: 采用分块切片 (Tiling) 将 A/B 块驻留片上 Shared Memory；</text>
+        <text x="10" y="44" font-size="7.5" fill="#e0f2fe">• 目标: 提高数据复用次数，将算术强度推向 $I &gt; 300$，榨干 Tensor Core！</text>
+
+        <rect x="0" y="60" width="412" height="60" rx="4" fill="rgba(6,78,59,0.5)" stroke="#059669" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#6ee7b7">2. FlashAttention (跨越物理拐点的封神之作)</text>
+        <text x="10" y="30" font-size="7.5" fill="#a7f3d0">• 原始 Attention: $O(N^2)$ 中间矩阵频繁落入 HBM，困在 Memory-Bound 深渊；</text>
+        <text x="10" y="44" font-size="7.5" fill="#a7f3d0">• FA 突破: 片上 SRAM 分块 + 在线 Softmax 动态累加，不存 $S/P$ 矩阵；</text>
+        <text x="10" y="56" font-size="7.5" fill="#a7f3d0">• 效果: 访存量从 $O(N^2)$ 降至 $O(N)$，算术强度翻转，成功越过拐点！</text>
+
+        <rect x="0" y="128" width="412" height="58" rx="4" fill="rgba(136,19,55,0.4)" stroke="#e11d48" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#fca5a5">3. Norm / Softmax / GELU (顽疾级访存受限)</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffe4e6">• 特点: 逐元素或沿行归约，每个浮点数只计算 1~2 次，$I \approx 1$；</text>
+        <text x="10" y="44" font-size="7.5" fill="#ffe4e6">• 终极解法: 【算子融合 (Operator Fusion)】！将 Norm/GELU 熔接至前序 GEMM 的 Epilogue；</text>
+        <text x="10" y="56" font-size="7.5" fill="#ffe4e6">• 绝不在 HBM 显存单独为激活函数多跑一趟完整的 Load/Store！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi 性能工程第一性原理军规速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **`GPU-Util 100%` 只是采样的“假象”**：只要 SM 上有一个线程在喘气，利用率就显示 100%；必须看 **Tensor Core Active** 和 **SM Issue Slots**；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **算子调优先算算术强度**：判断当前算子位于 Roofline 的“斜坡”还是“顶棚”，Memory-Bound 优化通信与融合，Compute-Bound 调指令与数据排布；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **存储金字塔层层拦截**：HBM 是最后的退路，SRAM 是决战的主战场。让数据在寄存器与片上 SRAM 中多转 10 圈，训练速度就快 10 倍！</text>
+  </g>
+</svg>

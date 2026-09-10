@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="310" height="24" rx="6" fill="#4c0519" fill-opacity="0.5" stroke="#f43f5e" stroke-width="1"/>
+    <text x="12" y="16" fill="#fb7185" class="badge">CLUSTER OBSERVABILITY &amp; FAULT DIAGNOSTICS</text>
+    
+    <text x="0" y="60" class="title">AI 智算集群全栈监控与故障诊断决策全景</text>
+    <text x="0" y="84" class="subtitle">Step Time 三层漏斗下钻 · 慢节点 (Straggler) 逆向测谎法则 · NCCL Hang 四步排障决策树 · Xid 硬件病理图谱</text>
+  </g>
+
+  <!-- ================= TOP: STEP TIME FUNNEL & STRAGGLER INVERSION ================= -->
+  <!-- Left: Step Time 3-Tier Funnel Model -->
+  <g transform="translate(50, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#0284c7" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#38bdf8" class="card-title">① Step Time 三层分流漏斗模型（绝不跳步下钻）</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Tier 1 -->
+      <rect x="0" y="0" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="110" height="22" rx="4" fill="#0369a1"/>
+      <text x="18" y="26" fill="#bae6fd" class="mono" font-size="11" font-weight="700">第一层漏斗</text>
+      <text x="130" y="26" fill="#f8fafc" class="card-title" font-size="13">计算耗时 vs 暴露通信耗时</text>
+      <text x="12" y="46" fill="#94a3b8" class="text-xs">公式: T_step = T_compute + T_exposed_comm</text>
+      <text x="12" y="62" fill="#38bdf8" class="mono" font-size="10">分流准则: 暴露通信 &gt; 30% ➔ 进第三层查网络；纯计算 &gt; 80% ➔ 进第二层查算子</text>
+
+      <!-- Tier 2 -->
+      <rect x="0" y="82" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="110" height="22" rx="4" fill="#047857" transform="translate(0, 82)"/>
+      <text x="18" y="26" fill="#a7f3d0" class="mono" font-size="11" font-weight="700" transform="translate(0, 82)">第二层漏斗</text>
+      <text x="130" y="26" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 82)">Compute-bound vs Memory-bound</text>
+      <text x="12" y="128" fill="#94a3b8" class="text-xs">物理准则: 依据算子运算强度 I = FLOPs / Byte 对比硬件拐点 I* = 295 FLOP/B</text>
+      <text x="12" y="144" fill="#34d399" class="mono" font-size="10">分流手段: GEMM 查 Tensor Core 利用率，LayerNorm/Softmax 查 HBM 访存带宽</text>
+
+      <!-- Tier 3 -->
+      <rect x="0" y="164" width="602" height="74" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="110" height="22" rx="4" fill="#7c3aed" transform="translate(0, 164)"/>
+      <text x="18" y="24" fill="#ddd6fe" class="mono" font-size="11" font-weight="700" transform="translate(0, 164)">第三层漏斗</text>
+      <text x="130" y="26" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 164)">Latency-bound vs Bandwidth-bound</text>
+      <text x="12" y="210" fill="#94a3b8" class="text-xs">物理准则: T_comm = α + M / β (时延底噪 vs 网络线速)</text>
+      <text x="12" y="226" fill="#c084fc" class="mono" font-size="10">分流手段: 小包查 Ring/Tree 步数与协议开销；大包查网卡丢包、PFC 暂停与光模块衰减</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#0369a1" fill-opacity="0.25" stroke="#0ea5e9" stroke-width="1"/>
+    <text x="36" y="355" fill="#bae6fd" class="text-xs" font-weight="700">🎯 听诊器核心：拒绝盲目瞎调参数，每一层漏斗锁定一个物理边界，精准定点手术！</text>
+    <text x="36" y="374" fill="#38bdf8" class="mono" font-size="11">工具支持: PyTorch Profiler, Nsight Systems, dcgmi dmon 综合下钻</text>
+  </g>
+
+  <!-- Right: Straggler Inversion Law -->
+  <g transform="translate(740, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#f59e0b" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#fbbf24" class="card-title">② 慢节点（Straggler）木桶短板逆向测谎定理</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Victim Nodes -->
+      <rect x="0" y="0" width="602" height="95" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="160" height="22" rx="4" fill="#0369a1"/>
+      <text x="18" y="26" fill="#bae6fd" class="mono" font-size="11" font-weight="700">受害者卡群 (Rank 0~6)</text>
+      <text x="180" y="26" fill="#94a3b8" class="card-title" font-size="13">正常满血节点（替罪羊）</text>
+      
+      <g transform="translate(12, 40)">
+        <rect x="0" y="0" width="220" height="26" rx="4" fill="#059669"/>
+        <text x="10" y="18" fill="#ffffff" class="mono" font-size="11">计算: 80 ms (极速跑完)</text>
+
+        <rect x="230" y="0" width="340" height="26" rx="4" fill="#450a0a" stroke="#ef4444" stroke-width="1"/>
+        <text x="240" y="18" fill="#fca5a5" class="mono" font-size="11">⚠️ 通信等待: 50 ms (被迫死等慢卡!)</text>
+      </g>
+      <text x="12" y="85" fill="#fca5a5" class="text-xs">报警误导: 监控告警显示 Rank 0~6 通信耗时过长，初学者误以为是这些卡网络出现故障！</text>
+
+      <!-- Real Culprit Node -->
+      <g transform="translate(0, 105)">
+        <rect x="0" y="0" width="602" height="105" rx="6" fill="#1e1e2e" stroke="#ef4444" stroke-width="1.2"/>
+        <rect x="12" y="10" width="180" height="22" rx="4" fill="#7f1d1d"/>
+        <text x="18" y="26" fill="#fecaca" class="mono" font-size="11" font-weight="700">真凶慢节点 (Rank 7)</text>
+        <text x="200" y="26" fill="#f87171" class="card-title" font-size="13">过热降频 / PCIe 掉速 / 脏页停顿</text>
+
+        <g transform="translate(12, 40)">
+          <rect x="0" y="0" width="460" height="26" rx="4" fill="#dc2626"/>
+          <text x="10" y="18" fill="#ffffff" class="mono" font-size="11">🔥 计算拖慢: 130 ms (严重降频 40% 拖垮全网)</text>
+
+          <rect x="470" y="0" width="100" height="26" rx="4" fill="#059669"/>
+          <text x="478" y="18" fill="#ffffff" class="mono" font-size="11">通信: 0 ms</text>
+        </g>
+        <text x="12" y="86" fill="#fca5a5" class="mono" font-size="11" font-weight="700">★ 测谎铁律: 通信耗时为 0ms、计算耗时最长的那张卡，才是真正拖垮全集群的罪魁祸首！</text>
+      </g>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#78350f" fill-opacity="0.3" stroke="#b45309" stroke-width="1"/>
+    <text x="36" y="355" fill="#fde68a" class="text-xs" font-weight="700">💡 逆向定位方案：严禁按通信耗时排查！按算子纯计算耗时 TopK 倒序排序锁定真凶！</text>
+    <text x="36" y="374" fill="#fbbf24" class="mono" font-size="11">抓捕手段: 开启 PyTorch c10d 统计或巡检 dcgmi clocks -g 对比全集群 GPU 核心时钟偏离度</text>
+  </g>
+
+  <!-- ================= BOTTOM: NCCL HANG DECISION TREE & XID PATTERNS ================= -->
+  <!-- Left: 4-Step NCCL Hang Decision Tree -->
+  <g transform="translate(50, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#065f46" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#34d399" class="card-title">NCCL Hang 根因定位标准化四步决策树</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Step 1 -->
+      <rect x="0" y="0" width="602" height="52" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <circle cx="24" cy="26" r="14" fill="#ef4444"/>
+      <text x="19" y="31" fill="#ffffff" class="mono" font-size="12" font-weight="700">1</text>
+      <text x="50" y="22" fill="#f8fafc" class="card-title" font-size="13">Step 1: 扫描硬件物理 Xid (dmesg -T | grep NVRM)</text>
+      <text x="50" y="40" fill="#fca5a5" class="text-xs">若有 Xid 79 (掉卡) / Xid 31 (ECC坏道) / Xid 61 (NVLink断链) ➔ 物理硬件彻底损坏，立即隔离坏节点！</text>
+
+      <!-- Step 2 -->
+      <rect x="0" y="60" width="602" height="52" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <circle cx="24" cy="26" r="14" fill="#f59e0b" transform="translate(0, 60)"/>
+      <text x="19" y="31" fill="#ffffff" class="mono" font-size="12" font-weight="700" transform="translate(0, 60)">2</text>
+      <text x="50" y="22" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 60)">Step 2: 排查主机 CPU 进程与 DataLoader 死锁</text>
+      <text x="50" y="40" fill="#fde68a" class="text-xs" transform="translate(0, 60)">使用 py-spy dump 查看 Python 调用栈，排查是否因磁盘 IO 阻塞、GIL 锁死或单卡 OOM 崩溃退出</text>
+
+      <!-- Step 3 -->
+      <rect x="0" y="120" width="602" height="52" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <circle cx="24" cy="26" r="14" fill="#0284c7" transform="translate(0, 120)"/>
+      <text x="19" y="31" fill="#ffffff" class="mono" font-size="12" font-weight="700" transform="translate(0, 120)">3</text>
+      <text x="50" y="22" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 120)">Step 3: 追踪 NCCL 通信拓扑死锁 (NCCL_DEBUG=INFO)</text>
+      <text x="50" y="40" fill="#bae6fd" class="text-xs" transform="translate(0, 120)">检查各 Rank 是否因代码控制流分支导致调用的 Collective 原语顺序不一致（如 Rank 0 调 AllReduce，Rank 1 调 Broadcast）</text>
+
+      <!-- Step 4 -->
+      <rect x="0" y="180" width="602" height="52" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <circle cx="24" cy="26" r="14" fill="#7c3aed" transform="translate(0, 180)"/>
+      <text x="19" y="31" fill="#ffffff" class="mono" font-size="12" font-weight="700" transform="translate(0, 180)">4</text>
+      <text x="50" y="22" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 180)">Step 4: 探查无损以太网 PFC 死锁风暴与微突发丢包</text>
+      <text x="50" y="40" fill="#ddd6fe" class="text-xs" transform="translate(0, 180)">通过 ethtool -S 检查 rx_pauze 持续时长是否 &gt; 100ms，交换机端口是否因队列反压形成闭环风暴</text>
+
+      <!-- Action -->
+      <rect x="0" y="240" width="602" height="36" rx="4" fill="#064e3b" fill-opacity="0.5" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="262" fill="#a7f3d0" class="mono" font-size="11">止血工程: 开启 c10d Watchdog 线程，心跳超时 600s 自动触发 CoreDump 并优雅重启</text>
+    </g>
+  </g>
+
+  <!-- Right: Critical Xid Hardware Fault Matrix -->
+  <g transform="translate(740, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#7f1d1d" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#fca5a5" class="card-title">GPU 致命硬件病理图谱（Xid 核心代码与处置预案）</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Xid 79 -->
+      <rect x="0" y="0" width="602" height="60" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+      <rect x="12" y="10" width="70" height="22" rx="4" fill="#7f1d1d"/>
+      <text x="18" y="26" fill="#fecaca" class="mono" font-size="11" font-weight="700">Xid 79</text>
+      <text x="90" y="25" fill="#f8fafc" class="card-title" font-size="13">GPU fallen off the bus (显卡跌落总线)</text>
+      <text x="12" y="48" fill="#fca5a5" class="text-xs">物理诱因: PCIe 链路彻底掉电或主板供电烧毁 | 处置: 操作系统完全无法识别，必须冷重启机器或更换整机底板</text>
+
+      <!-- Xid 31 / 48 -->
+      <rect x="0" y="68" width="602" height="60" rx="6" fill="#1e293b" stroke="#d97706" stroke-width="1"/>
+      <rect x="12" y="10" width="70" height="22" rx="4" fill="#78350f" transform="translate(0, 68)"/>
+      <text x="18" y="26" fill="#fde68a" class="mono" font-size="11" font-weight="700" transform="translate(0, 68)">Xid 31</text>
+      <text x="90" y="25" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 68)">Double-bit ECC Memory Error (HBM 物理双比特坏道)</text>
+      <text x="12" y="116" fill="#fde68a" class="text-xs">物理诱因: 高能宇宙射线击中显存物理单元，无法自动纠错 | 处置: 立即隔离节点，执行显存行替换 (Row Remap)</text>
+
+      <!-- Xid 61 / 62 -->
+      <rect x="0" y="136" width="602" height="60" rx="6" fill="#1e293b" stroke="#7c3aed" stroke-width="1"/>
+      <rect x="12" y="10" width="70" height="22" rx="4" fill="#4c1d95" transform="translate(0, 136)"/>
+      <text x="18" y="26" fill="#ddd6fe" class="mono" font-size="11" font-weight="700" transform="translate(0, 136)">Xid 61</text>
+      <text x="90" y="25" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 136)">NVLink Fatal Error (NVLink 致命互联断开)</text>
+      <text x="12" y="184" fill="#ddd6fe" class="text-xs">物理诱因: NVSwitch 物理金手指松动或信号完整性恶化 | 处置: 检查 dcgmi nvlink -s 误码率，重插拔或更换计算板卡</text>
+
+      <!-- PFC Deadlock -->
+      <rect x="0" y="204" width="602" height="60" rx="6" fill="#1e293b" stroke="#0284c7" stroke-width="1"/>
+      <rect x="12" y="10" width="70" height="22" rx="4" fill="#0369a1" transform="translate(0, 204)"/>
+      <text x="18" y="26" fill="#bae6fd" class="mono" font-size="11" font-weight="700" transform="translate(0, 204)">PFC Lock</text>
+      <text x="90" y="25" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 204)">PFC Deadlock Storm (无损以太网死锁风暴)</text>
+      <text x="12" y="252" fill="#bae6fd" class="text-xs">物理诱因: 交换机队列环形反压死锁，端口全部持续发射 Pause 帧 | 处置: 启用 PFC Watchdog 硬件看门狗秒级强行丢包破圈</text>
+    </g>
+  </g>
+</svg>

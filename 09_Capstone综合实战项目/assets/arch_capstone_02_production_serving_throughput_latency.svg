@@ -1,0 +1,394 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-c2" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-c2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-c2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-c2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-c2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-c2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-c2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-c2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-c2)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="310" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">CAPSTONE 02: PRODUCTION SERVING &amp; SLO</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      时延与吞吐的双面博弈：生产级 LLM Serving 性能极限调优全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      Prefill/Decode 算术强度鸿沟 · PagedAttention 物理分页碎片治理 · 连续批处理调度 · Chunked Prefill 削平 TTFT 长尾与 Pareto 边界
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">TTFT P99 SLA</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">&lt; 500 ms</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">PAGE FRAGMENTATION</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">&lt; 3.8% Ratio</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">TPOT (DECODE SPEED)</text>
+      <text x="307" y="38" fill="#fbbf24" font-size="16" font-weight="800">&lt; 25 ms/Tkn</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">PARETO FRONTIER</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">Sweet Spot</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-c2)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、推理指标穿透与算术强度鸿沟</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Prefill (计算受限) vs Decode (访存受限) · Roofline 物理断层</text>
+
+    <!-- Subcard 1.1: Prefill vs Decode 物理矛盾 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 Prefill 与 Decode 核心物理特性对比矩阵</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="178" height="116" rx="4" fill="#182234" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">阶段一: Prefill (预填充)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">• 目标：产出第 1 个 Token (TTFT)</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8.5">• 属性：计算密集型 (Compute-Bound)</text>
+        <text x="8" y="60" fill="#38bdf8" font-size="8.5">• 算术强度：高 (数百 FLOP/Byte)</text>
+        <text x="8" y="74" fill="#cbd5e1" font-size="8">• 硬件瓶颈：Tensor Core 矩阵乘峰值</text>
+        <text x="8" y="88" fill="#94a3b8" font-size="7.5">• 序列特征：一次性并行吃下整段 Prompt</text>
+        <text x="8" y="102" fill="#34d399" font-size="7.5" font-weight="600">SLA 目标：TTFT P99 &lt; 500 ms</text>
+
+        <rect x="188" y="0" width="178" height="116" rx="4" fill="#182234" stroke="#fbbf24" stroke-width="1"/>
+        <text x="196" y="16" fill="#fbbf24" font-size="9" font-weight="700">阶段二: Decode (自回归生成)</text>
+        <text x="196" y="32" fill="#cbd5e1" font-size="8.5">• 目标：逐字流式输出 (TPOT)</text>
+        <text x="196" y="46" fill="#cbd5e1" font-size="8.5">• 属性：访存密集型 (Memory-Bound)</text>
+        <text x="196" y="60" fill="#fbbf24" font-size="8.5">• 算术强度：极低 (&lt; 1 FLOP/Byte)</text>
+        <text x="196" y="74" fill="#cbd5e1" font-size="8">• 硬件瓶颈：HBM 物理读写带宽</text>
+        <text x="196" y="88" fill="#94a3b8" font-size="7.5">• 序列特征：每步只读全量 KV，产出 1 字</text>
+        <text x="196" y="102" fill="#34d399" font-size="7.5" font-weight="600">SLA 目标：TPOT &lt; 25 ms/Token</text>
+      </g>
+
+      <g transform="translate(10, 160)">
+        <rect width="366" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#ef4444" font-size="8.5" font-weight="700">🚨 生产致命冲突：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">当 Prefill 与 Decode 混部时，一个超大 4K Prompt 的 Prefill 强占 GPU 800ms，会导致正处于流式输出的几十个用户发生严重卡顿与抖动（ITL 飙升）！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: Roofline 算术强度手算 -->
+    <g transform="translate(15, 312)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.2 Decode 算术强度手算 (为什么 nvidia-smi 撒谎？)</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="370" height="68" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">Decode 单步 FLOPs 与访存量计算 (70B, Batch=1):</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 计算量：2 × 70B × 1 Token = 1.4 × 10^11 FLOPs</text>
+        <text x="10" y="46" fill="#cbd5e1" font-size="8.5">• 访存量：读取完整 70B 模型权重 = 140 GB 显存数据！</text>
+        <text x="10" y="60" fill="#f87171" font-size="8.5" font-weight="600">算术强度 I = 1.4×10^11 / 1.4×10^11 Bytes = 1.0 FLOP/Byte！</text>
+      </g>
+
+      <g transform="translate(10, 112)">
+        <rect width="370" height="84" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9" font-weight="700">H100 硬件拐点算力比：</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8">I_knee = 989 TFLOPS / 3.35 TB/s = 295 FLOP/Byte！</text>
+        <text x="10" y="44" fill="#ef4444" font-size="8">实际算术强度仅为 1.0 ➔ 距离硬件拐点相差近 300 倍！</text>
+        <text x="10" y="58" fill="#94a3b8" font-size="8">结论：Decode 算力空载超 99%，无论你怎么发 Kernel，物理吞吐完全被 HBM 带宽卡死！</text>
+        <text x="10" y="72" fill="#34d399" font-size="8">破局：增大 Batch Size 摊薄权重读取，把多个请求的 KV 聚合运算。</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 语义延迟度量衡 -->
+    <g transform="translate(15, 534)">
+      <rect width="390" height="150" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">1.3 生产级四大语义延迟度量衡定义</text>
+
+      <g transform="translate(10, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">TTFT (首字延迟)：</text>
+        <text x="135" y="14" fill="#cbd5e1" font-size="8.5">用户发送 ➔ 输出第 1 个字（队列时延 + Prefill 耗时）</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">TPOT (单字延迟)：</text>
+        <text x="135" y="34" fill="#cbd5e1" font-size="8.5">Decode 阶段生成每个 Token 平均耗时（决定阅读流利度）</text>
+
+        <text x="0" y="54" fill="#fbbf24" font-size="9" font-weight="700">ITL (字间抖动)：</text>
+        <text x="135" y="54" fill="#cbd5e1" font-size="8.5">相邻两 Token 输出间隔时间瞬时方差（防卡顿感）</text>
+
+        <text x="0" y="74" fill="#c084fc" font-size="9" font-weight="700">E2E Latency (总时延)：</text>
+        <text x="135" y="74" fill="#cbd5e1" font-size="8.5">E2E = TTFT + (N_out - 1) × TPOT</text>
+      </g>
+
+      <rect x="10" y="118" width="370" height="24" rx="3" fill="#182234"/>
+      <text x="18" y="134" fill="#34d399" font-size="8.5" font-weight="600">💡 铁律：不要拿纯吞吐邀功，P99 TTFT 才是保住用户不流失的生命线！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-c2)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、显存分页与连续批处理调度中枢</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">PagedAttention 消除显存碎片 · Continuous Batching 消除迭代气泡 · Chunked Prefill</text>
+
+    <!-- Subcard 2.1: PagedAttention 虚拟内存映射 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="245" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 PagedAttention 显存虚拟分页微架构图解</text>
+
+      <!-- Logical vs Physical Table Visual -->
+      <g transform="translate(12, 34)">
+        <!-- Logical Blocks -->
+        <rect x="0" y="0" width="165" height="76" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">客户端逻辑上下文 (连续空间)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">Logical Block 0: Token 0~15</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8">Logical Block 1: Token 16~31</text>
+        <text x="8" y="64" fill="#cbd5e1" font-size="8">Logical Block 2: Token 32~47</text>
+
+        <!-- Mapping Arrow -->
+        <line x1="165" y1="38" x2="225" y2="38" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-emerald-c2)"/>
+        <text x="172" y="32" fill="#34d399" font-size="8" font-weight="600">Block Table</text>
+
+        <!-- Physical Blocks -->
+        <rect x="235" y="0" width="171" height="76" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" transform="translate(235,0)" fill="#34d399" font-size="9" font-weight="700">GPU 物理显存池 (离散碎片空间)</text>
+        <text x="8" y="32" transform="translate(235,0)" fill="#cbd5e1" font-size="8">Physical Block #84 (零外部碎片)</text>
+        <text x="8" y="48" transform="translate(235,0)" fill="#cbd5e1" font-size="8">Physical Block #12 (动态按需申请)</text>
+        <text x="8" y="64" transform="translate(235,0)" fill="#cbd5e1" font-size="8">Physical Block #93 (写时复制 COW)</text>
+      </g>
+
+      <!-- Fragmentation analysis -->
+      <g transform="translate(12, 120)">
+        <rect width="406" height="106" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">⚡ 显存浪费与碎片率根治对比：</text>
+        <text x="10" y="32" fill="#f87171" font-size="8.5">• 传统静态预分配：按 max_model_len (如 8K) 预占空间 ➔ 实际跑 200 字浪费 97%！</text>
+        <text x="10" y="48" fill="#34d399" font-size="8.5">• PagedAttention 分页：按 Block Size (16 或 32 Token) 细粒度分片，随生成动态分配</text>
+        <text x="10" y="64" fill="#cbd5e1" font-size="8.5">• 内部碎片率理论上限：仅最后一个未填满的 Block 存在浪费 ➔ 浪费率 &lt; 3.8%</text>
+        <text x="10" y="80" fill="#38bdf8" font-size="8.5">• 共享前缀复用：支持 Parallel Sampling 与 Prefix Caching 物理块无缝指针共享</text>
+        <text x="10" y="96" fill="#34d399" font-size="8" font-weight="600">显存利用率冲上 96% 以上，同等 GPU 支持的并发请求数暴增 2~4 倍！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: Chunked Prefill 削平队头阻塞 -->
+    <g transform="translate(15, 320)">
+      <rect width="430" height="220" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 Chunked Prefill：终结队头阻塞 (Head-of-Line Blocking)</text>
+
+      <g transform="translate(12, 34)">
+        <rect width="406" height="66" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="16" fill="#f87171" font-size="9" font-weight="700">❌ 传统调度：长 Prompt 垄断执行 (HOL Blocking)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">• 请求 A (4K Prompt) 到达 ➔ GPU 独占 800ms 执行完整 Prefill</text>
+        <text x="10" y="46" fill="#cbd5e1" font-size="8">• 正在运行的 50 个 Decode 请求全部停滞等待 ➔ ITL 抖动超过 800ms</text>
+        <text x="10" y="58" fill="#ef4444" font-size="8">• 后面排队的几百个短请求 TTFT 严重恶化至数秒</text>
+      </g>
+
+      <g transform="translate(12, 110)">
+        <rect width="406" height="92" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="9" font-weight="700">✅ Chunked Prefill：时间片分块打散与混合调度</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">• 将 4K Prompt 切分为 8 个 512-Token 的 Chunk 片段</text>
+        <text x="10" y="46" fill="#cbd5e1" font-size="8">• 每个 Step 调度器打包：[1 个 512-Token Chunk] + [40 个 Decode Tokens]</text>
+        <text x="10" y="60" fill="#38bdf8" font-size="8">• 算子执行时间平滑稳定在 25ms 左右，Tensor Core 与 HBM 负载完美均衡</text>
+        <text x="10" y="76" fill="#34d399" font-size="8" font-weight="600">TTFT P99 从 12.4 秒骤降至 420 毫秒，Decode 抖动降为零！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 调度核心状态机 -->
+    <g transform="translate(15, 550)">
+      <rect width="430" height="135" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">2.3 连续批处理 (Continuous Batching) 动态准入状态机</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">Waiting 队列：</text>
+        <text x="110" y="14" fill="#cbd5e1" font-size="8.5">新请求到达，按 FCFS 或优先级排队，等待空闲物理 Block</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">Running 集合：</text>
+        <text x="110" y="34" fill="#cbd5e1" font-size="8.5">动态分配 KV Cache，每 Step 产出一个 Token，完成则立即释放</text>
+
+        <text x="0" y="54" fill="#f87171" font-size="9" font-weight="700">Swapped 抢占：</text>
+        <text x="110" y="54" fill="#cbd5e1" font-size="8.5">显存打满且无 Block 可借时，将最低优先级序列换出至 Host RAM</text>
+
+        <text x="0" y="74" fill="#c084fc" font-size="9" font-weight="700">Recompute 降级：</text>
+        <text x="110" y="74" fill="#94a3b8" font-size="8.5">内存不足时丢弃长序列尾部 KV Cache，等待后续重新做 Prefill 计算</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-c2)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#c084fc"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、容量规划与 Pareto 最优调优</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">已知 QPS 与 SLO 反推集群卡数 · Pareto 拐点 · 生产 Checklist</text>
+
+    <!-- Subcard 3.1: 生产级容量规划方程 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">3.1 核心容量规划方程：从业务 QPS 反推 GPU 数量</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="350" height="56" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">并发序列数公式：Concurrency = QPS × E2E Latency</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">例：QPS=50，Prompt=1K，Output=500字，TPOT=20ms ➔ E2E = 10 秒</text>
+        <text x="8" y="46" fill="#34d399" font-size="8">集群需要同时承载的并发连接数 = 50 × 10 = 500 个并发序列！</text>
+      </g>
+
+      <g transform="translate(10, 98)">
+        <rect width="350" height="64" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">KV Cache 显存容量测算 (70B, TP=4):</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">单 Token KV 大小 = 2 × 2B × 80层 × 8头 × 128维 / 4 = 100 KB</text>
+        <text x="8" y="44" fill="#cbd5e1" font-size="8">500 并发 × 1.5K Token = 750,000 Token ➔ 需 75 GB 纯 KV 显存</text>
+        <text x="8" y="56" fill="#94a3b8" font-size="7.5">加模型权重 (140GB/4=35GB) ➔ 单节点 8 卡可轻松稳吃 50 QPS！</text>
+      </g>
+
+      <g transform="translate(10, 170)">
+        <rect width="350" height="52" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">💡 算力与吞吐校验：</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">总吐字吞吐需达到 50 × 500 = 25,000 Tokens/s，单卡需支撑 3,125 Tokens/s</text>
+        <text x="8" y="44" fill="#34d399" font-size="8">通过连续批处理 + Chunked Prefill，该吞吐在 H100 处于黄金负荷区</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 帕累托最优边界调优 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="210" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">3.2 帕累托前沿：max_num_seqs 调参黄金法则</text>
+
+      <g transform="translate(10, 32)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#ef4444" font-size="8.5" font-weight="700">区间 A: max_num_seqs 过大 (&gt; 256)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">吞吐边际递减，但 TTFT 发生雪崩式长尾（P99 恶化超 10 倍！）</text>
+      </g>
+
+      <g transform="translate(10, 80)">
+        <rect width="350" height="46" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">区间 B: 黄金帕累托拐点 (Sweet Spot: 64~128)</text>
+        <text x="8" y="30" fill="#34d399" font-size="8">榨干 HBM 访存带宽 85%，TTFT 压制在 400ms 内，吞吐达峰值 92%</text>
+        <text x="8" y="42" fill="#38bdf8" font-size="7.5">业务高并发与极致响应体感的最佳工程交汇点！</text>
+      </g>
+
+      <g transform="translate(10, 134)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">区间 C: max_num_seqs 过小 (&lt; 32)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">TTFT 极短（&lt; 100ms），但 GPU 算力严重饥饿，机器成本飙升 3 倍</text>
+      </g>
+
+      <g transform="translate(10, 182)">
+        <rect width="350" height="24" rx="3" fill="#182234"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8" font-weight="600">💡 铁律：生产严格设定 max_num_batched_tokens=2048 限制单步计算</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 生产避坑 Checklist -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 生产级 Serving 稳定性防线 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 必开 Chunked Prefill：</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8.5">彻底粉碎长文本霸占 GPU 引起的队头阻塞</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 预留显存水线 (0.90)：</text>
+        <text x="145" y="34" fill="#94a3b8" font-size="8.5">gpu_memory_utilization 设 0.9，留 10% 抵御碎片</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 网关自适应背压降级：</text>
+        <text x="145" y="54" fill="#94a3b8" font-size="8.5">队列积压超标时，立即在入口返回 HTTP 429</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 开启 Prefix Caching：</text>
+        <text x="145" y="74" fill="#94a3b8" font-size="8.5">多轮对话与知识库 Prompt 复用已有物理页</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 禁用过长超时重试：</text>
+        <text x="145" y="94" fill="#94a3b8" font-size="8.5">客户端重试加抖动退避，切断二次雪崩链路</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 优雅停机长请求排空：</text>
+        <text x="145" y="114" fill="#94a3b8" font-size="8.5">设 180s 宽限期，保证在途用户连接不被斩断</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不允许未切分的超长 Prefill 裸奔：长请求独占 GPU 800ms 是摧毁大促在线服务的头号元凶，必须用 Chunked Prefill 将算力切碎流转。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">不要被高吞吐蒙蔽双眼：单纯调大并发只能换来好看的 Token 计数，但 P99 TTFT 穿底会让真实用户弃你而去，时刻紧盯 Pareto 最优边界。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">显存就是在线推理的命根子：PagedAttention 物理分页彻底终结了静态预留浪费，把显存利用率推上 96%，才是算力平民化的根本基石！</text>
+    </g>
+  </g>
+</svg>

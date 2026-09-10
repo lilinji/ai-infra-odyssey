@@ -1,0 +1,350 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-36" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-36" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-36" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-36" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-36" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-36" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-36" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-36" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-36)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="260" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#ef4444"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">CAPACITY PLANNING &amp; SLO GOVERNANCE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      大模型在线推理容量规划、SLO 治理与生产故障诊断全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      静态显存与动态 KV 算盘 · 帕累托吞吐延迟权衡曲线 · 自适应背压与降级 · 生产死锁与长尾故障诊断雷达
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Headroom -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#f87171" font-size="10" font-weight="600">显存安全水位红线</text>
+        <text x="12" y="42" fill="#fff1f2" font-size="14" font-weight="700">Headroom ≥ 15%</text>
+      </g>
+      <!-- Badge 2: SLO Target -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">P99 SLO 达成率</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">≥ 99.5% (生产级)</text>
+      </g>
+      <!-- Badge 3: Knee Point -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">帕累托黄金拐点</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">Max Goodput</text>
+      </g>
+      <!-- Badge 4: Prefix Affinity -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">网关路由命中率</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">&gt; 80% (Affinity)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-36)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">容量规划与显存底账方程</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">利特尔法则失效 · 显存四大组分 · 安全并发算盘</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 经典公式失效根因 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="150" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">为什么经典微服务公式 (N=QPS·L/C) 彻底失效？</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 传统无状态服务: 单请求内存恒定，随用随扔；</text>
+        <text x="0" y="30" fill="#f87171" font-size="10.5" font-weight="600">· LLM 推理三大特异性:</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="9.5">  1. 请求有状态且随时间持续膨胀（KV Cache 随 Step 线性累加）</text>
+        <text x="0" y="60" fill="#94a3b8" font-size="9.5">  2. 输入 Prompt 与输出 Output 长度呈现极端双峰长尾分布</text>
+        <text x="0" y="74" fill="#94a3b8" font-size="9.5">  3. 算力开销呈现二次方与线性的两阶段剧烈错配</text>
+        <text x="0" y="92" fill="#38bdf8" font-size="10" font-weight="700">➔ 必须建立以“物理显存容量”为绝对约束的第一性原理模型！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: 显存四大组分精算 -->
+    <g transform="translate(20, 245)">
+      <rect x="0" y="0" width="380" height="260" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">单卡 GPU 显存底账精算（80GB HBM 示例）</text>
+
+      <!-- Memory Stack -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="8" y="16" fill="#f0f9ff" font-size="10" font-weight="700">1. 权重 (Weight): 70B (FP16/TP=8) ➔ 17.5 GB</text>
+        <text x="8" y="28" fill="#94a3b8" font-size="8.5">占 22%，固定不可压缩（若切 FP8 可降至 8.75 GB）</text>
+
+        <g transform="translate(0, 44)">
+          <rect x="0" y="0" width="352" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="8" y="16" fill="#f0f9ff" font-size="10" font-weight="700">2. 运行时与激活峰值 (Activation): 约 4.5 GB</text>
+          <text x="8" y="28" fill="#94a3b8" font-size="8.5">包含 CUDA Context 显存底噪 + 长 Prompt Prefill 瞬时张量</text>
+        </g>
+
+        <g transform="translate(0, 88)">
+          <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="1"/>
+          <text x="8" y="16" fill="#34d399" font-size="10" font-weight="700">3. 动态 KV Cache 内存池 (KV Pool): 约 50.0 GB</text>
+          <text x="8" y="30" fill="#cbd5e1" font-size="8.5">占总显存 62.5%！系统的全部并发上限完全由该池大小决定</text>
+        </g>
+
+        <g transform="translate(0, 136)">
+          <rect x="0" y="0" width="352" height="36" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+          <text x="8" y="16" fill="#f87171" font-size="10" font-weight="700">4. 安全裕度缓冲区 (Safety Headroom): 8.0 GB (10%)</text>
+          <text x="8" y="28" fill="#cbd5e1" font-size="8.5">坚决不分配！防御长尾突发导致的物理 OOM 崩溃</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 1.3: 最大并发数推导方程 -->
+    <g transform="translate(20, 520)">
+      <rect x="0" y="0" width="380" height="165" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">最大安全并发容量计算方程</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">单 Token KV 容量: M_token = 2 · 2 · L · h_kv · sizeof(fp16) / TP</text>
+        <text x="0" y="28" fill="#34d399" font-size="10">以 70B (L=80, h_kv=1024, TP=8) 为例 ➔ 40 KB / Token</text>
+        
+        <rect x="0" y="38" width="352" height="52" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="8" y="18" fill="#34d399" font-size="10.5" font-weight="700">并发算盘: C_max = M_kv_pool / (Avg_Len · M_token) · η</text>
+        <text x="8" y="34" fill="#f0fdf4" font-size="9.5">设平均序列长度 2000，可用 KV 池 50GB ➔ 最大并发容量 ≈ 625 请求！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-36)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">帕累托曲线与全链路 SLO 治理</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">吞吐延迟权衡 · 黄金拐点 · 四道纵深防御防线</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 帕累托曲线图解 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="260" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">吞吐 vs 延迟：帕累托前沿曲线</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Graph representation -->
+        <rect x="0" y="0" width="352" height="130" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <!-- Axes -->
+        <line x1="40" y1="105" x2="330" y2="105" stroke="#64748b" stroke-width="1"/>
+        <line x1="40" y1="105" x2="40" y2="15" stroke="#64748b" stroke-width="1"/>
+        <text x="260" y="120" fill="#94a3b8" font-size="8.5">并发负载 / 吞吐 ➔</text>
+        <text x="10" y="22" fill="#94a3b8" font-size="8.5" transform="rotate(-90 20 22)">P99 延迟 ➔</text>
+
+        <!-- Pareto Curve Path -->
+        <path d="M 45 95 Q 160 92 210 75 T 270 25" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+        
+        <!-- Knee point dot -->
+        <circle cx="210" cy="75" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+        <text x="165" y="65" fill="#fbbf24" font-size="9" font-weight="700">拐点 (Knee Point)</text>
+        <text x="165" y="77" fill="#cbd5e1" font-size="8">最优 Goodput 运营区</text>
+
+        <!-- Danger zone -->
+        <rect x="250" y="15" width="70" height="90" fill="#ef4444" fill-opacity="0.15"/>
+        <text x="255" y="32" fill="#f87171" font-size="8" font-weight="700">过载崩溃区</text>
+        <text x="255" y="44" fill="#fca5a5" font-size="7.5">排队雪崩/抢占</text>
+      </g>
+
+      <g transform="translate(14, 180)">
+        <text x="0" y="14" fill="#38bdf8" font-size="10" font-weight="600">· 低并发区: 延迟极佳 (20ms)，但算力严重闲置浪费；</text>
+        <text x="0" y="28" fill="#34d399" font-size="10" font-weight="700">· 拐点区 (Sweet Spot): 算力打满且 P99 刚好处在 SLO 阈值内；</text>
+        <text x="0" y="42" fill="#f87171" font-size="10" font-weight="600">· 过载区: 盲目加压导致频繁驱逐重算，延迟指数爆炸！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: 全链路四道防御防线 -->
+    <g transform="translate(20, 355)">
+      <rect x="0" y="0" width="380" height="330" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">大厂高并发四道纵深防御工程防线</text>
+
+      <!-- Line 1 -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">防线 1: 前缀亲和性与水位感知路由 (Gateway)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">相同 Prompt 前缀打至同一机器，复用 KV 减少 80% Prefill 算力；</text>
+        <text x="10" y="48" fill="#a7f3d0" font-size="9">实时结合各实例的 Free Block 显存水位做加权分流。</text>
+      </g>
+
+      <!-- Line 2 -->
+      <g transform="translate(14, 104)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">防线 2: 调度器自适应 Token Budget 装箱 (Engine)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">单步批次严格锁死 max_num_batched_tokens=2048；</text>
+        <text x="10" y="48" fill="#bae6fd" font-size="9">动态调配 Prefill 与 Decode 比例，杜绝算力挤占。</text>
+      </g>
+
+      <!-- Line 3 -->
+      <g transform="translate(14, 170)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">防线 3: 积极背压与断连探测 (Load Shedding)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">排队等待时间超过 2 秒时，HTTP 网关直接返回 429 快速失败；</text>
+        <text x="10" y="48" fill="#f87171" font-size="9">客户端断开连接（如用户关闭网页）瞬间掐断 GPU 继续生成！</text>
+      </g>
+
+      <!-- Line 4 -->
+      <g transform="translate(14, 236)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">防线 4: 极端洪峰多级优雅降级 (Degradation)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">动态临时调小 max_new_tokens 上限，或关闭投机采样释放显存，</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9">全力保全核心业务会话的存活率。</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-36)" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#991b1b" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#f87171" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">生产故障诊断雷达与典型现场</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">OOM 踩踏 · 队头阻塞 · TP 卡死 · 静默数据异常</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 四大事故现场定位 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="360" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">线上四大经典事故现场排查指南</text>
+
+      <!-- Case 1: OOM -->
+      <g transform="translate(14, 38)">
+        <circle cx="6" cy="6" r="4" fill="#ef4444"/>
+        <text x="18" y="10" fill="#fecaca" font-size="10.5" font-weight="700">事故 1: 显存踩踏 OOM（CUDA Out Of Memory）</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9">· 根因: gpu_memory_utilization 设到 0.98，未留足 Activation 缓冲区</text>
+        <text x="18" y="38" fill="#34d399" font-size="9">· 防御: 强制调低至 0.90，预留 10% Headroom，严禁跑满！</text>
+      </g>
+
+      <!-- Case 2: Head-of-line blocking -->
+      <g transform="translate(14, 94)">
+        <circle cx="6" cy="6" r="4" fill="#f59e0b"/>
+        <text x="18" y="10" fill="#fef08a" font-size="10.5" font-weight="700">事故 2: 超长文本霸占引发队头阻塞 (HoL Blocking)</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9">· 根因: 64K 长文档请求进入未切片的单卡，Decode 瞬间停等 3 秒</text>
+        <text x="18" y="38" fill="#34d399" font-size="9">· 防御: 开启 Chunked Prefill (512)，或在物理上落地 PD 分离架构</text>
+      </g>
+
+      <!-- Case 3: TP NCCL Hang -->
+      <g transform="translate(14, 150)">
+        <circle cx="6" cy="6" r="4" fill="#38bdf8"/>
+        <text x="18" y="10" fill="#bae6fd" font-size="10.5" font-weight="700">事故 3: 分布式 TP 卡死与 NCCL Hang 假死</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9">· 根因: 某张 GPU 偶发过温降频，导致 TP 组 AllReduce 死锁等候</text>
+        <text x="18" y="38" fill="#34d399" font-size="9">· 防御: 启用微服务 3 秒健康探针，超时自动剔除坏实例拉起备卡</text>
+      </g>
+
+      <!-- Case 4: SDC / Silent NaN -->
+      <g transform="translate(14, 206)">
+        <circle cx="6" cy="6" r="4" fill="#a855f7"/>
+        <text x="18" y="10" fill="#e9d5ff" font-size="10.5" font-weight="700">事故 4: 模型生成胡言乱语 / 静默 NaN 毒化</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="9">· 根因: FP8 动态量化缩放因子溢出，或 KV Cache Block 引用计数错位</text>
+        <text x="18" y="38" fill="#34d399" font-size="9">· 防御: 部署 Logit 范数探针，检测异常立即阻断并触发重启恢复</text>
+      </g>
+
+      <g transform="translate(14, 268)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="8" y="18" fill="#38bdf8" font-size="10" font-weight="700">诊断命令行速查手册：</text>
+        <text x="8" y="34" fill="#cbd5e1" font-size="9" font-family="'JetBrains Mono', monospace">nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv -l 1</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="9" font-family="'JetBrains Mono', monospace">curl http://localhost:8000/metrics | grep vllm:num_requests_waiting</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 生产巡检 Checklist -->
+    <g transform="translate(20, 455)">
+      <rect x="0" y="0" width="380" height="225" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">生产上线前必查五大黄金标准</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10">✔ 1. gpu_memory_utilization ≤ 0.90 留出足够 Headroom</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10">✔ 2. enable_chunked_prefill 必须开启并压测合适预算</text>
+        <text x="0" y="46" fill="#cbd5e1" font-size="10">✔ 3. 启用 Automatic Prefix Caching 并配置会话亲和性</text>
+        <text x="0" y="62" fill="#cbd5e1" font-size="10">✔ 4. 网关配置客户端连接中断监听，禁止为幽灵请求算力</text>
+        <text x="0" y="78" fill="#cbd5e1" font-size="10">✔ 5. Prometheus 建立 P99 TTFT / TPOT 告警水位线</text>
+        <text x="0" y="98" fill="#fbbf24" font-size="10" font-weight="700">铭记: 稳定是 1，吞吐是后面的 0；没有稳定性，高并发毫无意义！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[算盘先行]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">不算清动态 KV Cache 的容量上限，任何在线服务的部署都不过是裸奔下海。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[长尾治理]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">P99 的断崖恶化往往源自极少数超长请求对共享资源的掠夺；切片是唯一解药。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1"/>
+      <text x="16" y="20" fill="#f87171" font-size="11" font-weight="700">[生产敬畏]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">在高并发洪峰面前，优雅降级与快速熔断是保全集群命脉的最高美德。</text>
+    </g>
+  </g>
+</svg>

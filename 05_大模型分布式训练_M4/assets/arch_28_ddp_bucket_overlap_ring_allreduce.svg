@@ -1,0 +1,430 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions: Gradients & Markers -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="grad-purple-pink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ec4899" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="grad-emerald-teal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#14b8a6" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="grad-amber-orange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers for arrows -->
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="220" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">DISTRIBUTED DATA PARALLEL</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      DDP 分布式数据并行通信计算重叠与 Ring-AllReduce 全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      集合通信数学推导 · 双 CUDA Stream 异步流水线 · C++ Reducer 桶排序重叠 · Tree vs Ring 物理拓扑
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: AllReduce Comm Volume -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">AllReduce 通信量</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">2·(N-1)/N · S</text>
+      </g>
+      <!-- Badge 2: Cost Formulation -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">Ring 耗时公式</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="13" font-weight="700">2(N-1)α + 2S/B</text>
+      </g>
+      <!-- Badge 3: Bucket Capacity -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="135" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">默认桶容量</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">25 MB (Optimal)</text>
+      </g>
+      <!-- Badge 4: Overlap Ratio -->
+      <g transform="translate(445, 0)">
+        <rect x="0" y="0" width="145" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">通信计算重叠率</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">&gt; 88% (Pipelined)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+    
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">集合通信与 Ring-AllReduce 数学</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">从 Broadcast/Scatter 到环形规约两阶段代数</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 5 大集合通信原语拓扑速览 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="110" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">集合通信原语拓扑特征矩阵</text>
+      
+      <!-- Mini table rows -->
+      <g transform="translate(14, 34)">
+        <text x="0" y="14" fill="#94a3b8" font-size="10.5">· Broadcast (广播): 1对多全量分发，通信量 S</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="10.5">· Scatter (分散): 1对多切片分发，每卡分发 S/N</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10.5">· Reduce (单点规约): 多对1聚合求和，耗时随卡数剧增</text>
+        <text x="0" y="62" fill="#38bdf8" font-weight="600" font-size="10.5">· AllReduce (全局规约): DDP 核心，所有卡持有相同全局和</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: Ring-AllReduce 两阶段代数详解 -->
+    <g transform="translate(20, 205)">
+      <rect x="0" y="0" width="380" height="230" rx="8" fill="#0f172a" stroke="#0369a1" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Ring-AllReduce 核心两阶段拆解 (N=4 示例)</text>
+
+      <!-- Stage 1: Scatter-Reduce -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="74" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">阶段一：Scatter-Reduce (规约分散)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10.5">· 循环 N-1 次，每次各卡向右发送 S/N 数据块并累加</text>
+        <text x="10" y="49" fill="#cbd5e1" font-size="10.5">· 最终每张卡持有一块全局规约的梯度分片！</text>
+        <text x="10" y="64" fill="#38bdf8" font-size="10" font-weight="600">传输量: (N-1) · (S/N) = (N-1)/N · S Bytes</text>
+      </g>
+
+      <!-- Stage 2: AllGather -->
+      <g transform="translate(14, 120)">
+        <rect x="0" y="0" width="352" height="74" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">阶段二：AllGather (全局收集)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10.5">· 循环 N-1 次，将规约好的结果沿环依次传递并拼装</text>
+        <text x="10" y="49" fill="#cbd5e1" font-size="10.5">· 最终所有卡均拥有完整的全局平均梯度张量！</text>
+        <text x="10" y="64" fill="#c084fc" font-size="10" font-weight="600">传输量: (N-1) · (S/N) = (N-1)/N · S Bytes</text>
+      </g>
+
+      <text x="14" y="214" fill="#f59e0b" font-size="11" font-weight="700">总传输量: 2 · (N-1)/N · S ≈ 2S (与卡数 N 几乎无关!)</text>
+    </g>
+
+    <!-- Module 1.3: Tree vs Ring 物理拓扑权衡 -->
+    <g transform="translate(20, 450)">
+      <rect x="0" y="0" width="380" height="235" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">拓扑之辨：Tree-AllReduce vs Ring-AllReduce</text>
+
+      <!-- Comparison Cards -->
+      <g transform="translate(14, 36)">
+        <!-- Ring Box -->
+        <rect x="0" y="0" width="170" height="110" rx="6" fill="#1e293b" fill-opacity="0.7" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="10" y="20" fill="#38bdf8" font-size="11" font-weight="700">Ring 环拓扑</text>
+        <text x="10" y="40" fill="#94a3b8" font-size="10">· 延迟: 2(N-1)α (高)</text>
+        <text x="10" y="58" fill="#94a3b8" font-size="10">· 带宽利用率: 100% (打满)</text>
+        <text x="10" y="76" fill="#94a3b8" font-size="10">· 适用场景: 大数据包</text>
+        <text x="10" y="94" fill="#34d399" font-size="9.5" font-weight="600">&gt; 10MB 梯度密集体</text>
+
+        <!-- Tree Box -->
+        <g transform="translate(182, 0)">
+          <rect x="0" y="0" width="170" height="110" rx="6" fill="#1e293b" fill-opacity="0.7" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="10" y="20" fill="#c084fc" font-size="11" font-weight="700">Tree 二叉/双叉树</text>
+          <text x="10" y="40" fill="#94a3b8" font-size="10">· 延迟: 2 log₂(N)α (极低)</text>
+          <text x="10" y="58" fill="#94a3b8" font-size="10">· 带宽利用率: 50% (非全双工)</text>
+          <text x="10" y="76" fill="#94a3b8" font-size="10">· 适用场景: 小数据包</text>
+          <text x="10" y="94" fill="#c084fc" font-size="9.5" font-weight="600">&lt; 1MB 低延迟同步</text>
+        </g>
+      </g>
+
+      <!-- Key Conclusion -->
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" fill-opacity="0.5"/>
+        <text x="10" y="20" fill="#cbd5e1" font-size="10.5">NCCL 自适应切换决策：</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="10">小包走 Tree（规避 N 步线性延迟累加）</text>
+        <text x="10" y="52" fill="#38bdf8" font-size="10" font-weight="600">DDP 梯度分桶大包走 Ring（完全榨干网卡全双工带宽）</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">DDP 核心引擎与双流重叠流水线</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Default Stream (Compute) vs NCCL Stream (Comm)</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 双 CUDA Stream 异步时间线流水图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">时间轴：反向计算与网络通信完全重叠</text>
+
+      <!-- Stream 1: Default Compute Stream -->
+      <g transform="translate(14, 38)">
+        <text x="0" y="12" fill="#38bdf8" font-size="11" font-weight="700">Compute Stream (计算流):</text>
+        <!-- Timeline Blocks -->
+        <g transform="translate(0, 20)">
+          <!-- Layer 3 BWD -->
+          <rect x="0" y="0" width="95" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+          <text x="12" y="21" fill="#f0f9ff" font-size="10" font-weight="600">BWD (Layer 3)</text>
+          
+          <!-- Layer 2 BWD -->
+          <rect x="100" y="0" width="95" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+          <text x="12" y="21" fill="#f0f9ff" font-size="10" font-weight="600">BWD (Layer 2)</text>
+
+          <!-- Layer 1 BWD -->
+          <rect x="200" y="0" width="95" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="1"/>
+          <text x="12" y="21" fill="#f0f9ff" font-size="10" font-weight="600">BWD (Layer 1)</text>
+
+          <!-- Optimizer Step -->
+          <rect x="300" y="0" width="52" height="34" rx="4" fill="#15803d" stroke="#4ade80" stroke-width="1"/>
+          <text x="8" y="21" fill="#f0fdf4" font-size="9.5" font-weight="700">AdamW</text>
+        </g>
+      </g>
+
+      <!-- Event Sync Arrows between streams -->
+      <path d="M 110 100 L 110 120" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2 2" marker-end="url(#arrow-amber)"/>
+      <path d="M 210 100 L 210 120" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2 2" marker-end="url(#arrow-amber)"/>
+      <path d="M 310 100 L 310 120" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2 2" marker-end="url(#arrow-amber)"/>
+
+      <!-- Stream 2: Dedicated NCCL Comm Stream -->
+      <g transform="translate(14, 130)">
+        <text x="0" y="12" fill="#c084fc" font-size="11" font-weight="700">NCCL Comm Stream (通信流):</text>
+        <!-- Timeline Blocks -->
+        <g transform="translate(0, 20)">
+          <!-- Idle Slot -->
+          <rect x="0" y="0" width="95" height="34" rx="4" fill="#1e293b" stroke="#475569" stroke-dasharray="2 2" stroke-width="1"/>
+          <text x="16" y="21" fill="#64748b" font-size="9.5">等待成桶...</text>
+
+          <!-- Bucket 2 AllReduce (Overlaps with Layer 2 BWD) -->
+          <rect x="100" y="0" width="95" height="34" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="1"/>
+          <text x="8" y="16" fill="#faf5ff" font-size="9" font-weight="700">AR(Bucket 2)</text>
+          <text x="8" y="28" fill="#e9d5ff" font-size="8">重叠 BWD L2</text>
+
+          <!-- Bucket 1 AllReduce (Overlaps with Layer 1 BWD) -->
+          <rect x="200" y="0" width="95" height="34" rx="4" fill="#7e22ce" stroke="#c084fc" stroke-width="1"/>
+          <text x="8" y="16" fill="#faf5ff" font-size="9" font-weight="700">AR(Bucket 1)</text>
+          <text x="8" y="28" fill="#e9d5ff" font-size="8">重叠 BWD L1</text>
+
+          <!-- Bucket 0 Tail AllReduce -->
+          <rect x="300" y="0" width="52" height="34" rx="4" fill="#9d174d" stroke="#f43f5e" stroke-width="1"/>
+          <text x="6" y="21" fill="#fff1f2" font-size="8.5" font-weight="700">AR(B0)</text>
+        </g>
+      </g>
+
+      <!-- Sync Barrier at end -->
+      <g transform="translate(14, 205)">
+        <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" fill-opacity="0.5"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">重叠收益模型：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">总耗时 T ≈ max(T_compute, T_comm) + T_tail</text>
+        <text x="10" y="47" fill="#34d399" font-size="10" font-weight="600">只有尾部 Bucket 0 的通信暴露在外，其余 88%+ 通信完全隐形！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: C++ Reducer 内部架构与事件驱动 -->
+    <g transform="translate(20, 365)">
+      <rect x="0" y="0" width="380" height="320" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">PyTorch C++ Reducer 架构剖析</text>
+
+      <!-- Step 1: Autograd Hook -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">1. Autograd Hook 拦截 (MarkVariableReady)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">反向计算产生梯度瞬间触发，记录该张量就绪状态并拷贝至连续内存</text>
+      </g>
+
+      <!-- Step 2: Bucket Ordering -->
+      <g transform="translate(14, 100)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#a855f7" font-size="11" font-weight="700">2. 拓扑倒序分桶 (Reverse Parameter Order)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">最早反向计算的 Layer 处于网络顶层，分配至最先触发的 Bucket</text>
+      </g>
+
+      <!-- Step 3: Stream Event Sync -->
+      <g transform="translate(14, 162)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">3. 跨流同步 (cudaEventRecord &amp; StreamWaitEvent)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">Compute 流记录就绪事件，NCCL 流无阻塞等待该事件就绪后启动 AllReduce</text>
+      </g>
+
+      <!-- Step 4: Scatter back -->
+      <g transform="translate(14, 224)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f59e0b" font-size="11" font-weight="700">4. 结果写回与优化器步进 (Scatter to Grads)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="10">通信完成后将平均梯度拆回各 param.grad 存储空间，供 AdamW 消费</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">分桶调优、千卡扩展瓶颈与踩坑防御</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Bucket Size 黄金算盘 · 慢节点排查 · 512+ 卡死局</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: bucket_cap_mb 调优折线与决策算盘 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="185" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">分桶容量（bucket_cap_mb）物理平衡算盘</text>
+
+      <!-- Case 1: Too Small -->
+      <g transform="translate(14, 34)">
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="16" fill="#f87171" font-size="10.5" font-weight="700">极端 1: 桶太小 (如 1MB ~ 5MB)</text>
+        <text x="10" y="32" fill="#94a3b8" font-size="10">网络通信切碎，无法打满带宽，受制于 2(N-1)α 延迟累加</text>
+      </g>
+
+      <!-- Case 2: Optimal -->
+      <g transform="translate(14, 82)">
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="10.5" font-weight="700">黄金区间: 25MB ~ 50MB (PyTorch 默认)</text>
+        <text x="10" y="32" fill="#e2e8f0" font-size="10">完美平衡延迟与带宽，确保通信流与前一层计算完全对齐</text>
+      </g>
+
+      <!-- Case 3: Too Large -->
+      <g transform="translate(14, 130)">
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="10.5" font-weight="700">极端 2: 桶太大 (如 100MB ~ 250MB)</text>
+        <text x="10" y="32" fill="#94a3b8" font-size="10">长时间等待成桶，计算已全部结束通信才启动，重叠率暴跌</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 为什么 DDP 无法扩展到千卡（512+ GPUs 坍塌） -->
+    <g transform="translate(20, 280)">
+      <rect x="0" y="0" width="380" height="175" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">DDP 扩展性物理极限：为何 512+ 卡必死？</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">1. Ring 延迟线性爆炸：</text>
+        <text x="0" y="28" fill="#94a3b8" font-size="10">2(N-1)α 项在 N=1024 时延迟高达数十毫秒，小分桶被延迟淹没</text>
+
+        <text x="0" y="48" fill="#cbd5e1" font-size="10.5" font-weight="600">2. 全局 Batch Size 膨胀极限：</text>
+        <text x="0" y="62" fill="#94a3b8" font-size="10">Global Batch = N · Local Batch；单卡若设为 1，千卡 Global Batch 达几千</text>
+
+        <text x="0" y="82" fill="#cbd5e1" font-size="10.5" font-weight="600">3. 静态显存 16Ψ 纹丝不动：</text>
+        <text x="0" y="96" fill="#94a3b8" font-size="10">每张卡仍然必须存全量模型权重与 AdamW 优化器，单卡 80GB 很快 OOM</text>
+
+        <text x="0" y="118" fill="#38bdf8" font-size="10" font-weight="700">➔ 历史分水岭：千亿模型必须让渡给 ZeRO/FSDP 与模型并行 (TP/PP)</text>
+      </g>
+    </g>
+
+    <!-- Module 3.3: 生产踩坑防范 Checklist -->
+    <g transform="translate(20, 470)">
+      <rect x="0" y="0" width="380" height="215" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#10b981" font-size="12" font-weight="700">工业生产三大避坑指南</text>
+
+      <!-- Checklist Item 1 -->
+      <g transform="translate(14, 36)">
+        <circle cx="6" cy="6" r="4" fill="#ef4444"/>
+        <text x="18" y="10" fill="#f1f5f9" font-size="11" font-weight="600">死穴 1: find_unused_parameters=True</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="10">强制全图回溯，彻底破坏拓扑倒序建桶，引发严重停顿！</text>
+      </g>
+
+      <!-- Checklist Item 2 -->
+      <g transform="translate(14, 76)">
+        <circle cx="6" cy="6" r="4" fill="#f59e0b"/>
+        <text x="18" y="10" fill="#f1f5f9" font-size="11" font-weight="600">死穴 2: 跨 NUMA 节点与 PCIe 漫游</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="10">GPU 与 RoCE/IB 网卡绑定在不同 CPU Socket，带宽减半！</text>
+      </g>
+
+      <!-- Checklist Item 3 -->
+      <g transform="translate(14, 116)">
+        <circle cx="6" cy="6" r="4" fill="#38bdf8"/>
+        <text x="18" y="10" fill="#f1f5f9" font-size="11" font-weight="600">死穴 3: 慢节点 (Straggler) 拖死全网</text>
+        <text x="18" y="26" fill="#94a3b8" font-size="10">Ring-AllReduce 遵循木桶原理，单卡降频导致集群 GPU 全体死等！</text>
+      </g>
+
+      <!-- Rule of thumb -->
+      <g transform="translate(14, 160)">
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10" font-weight="700">生产排查指令速查：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="9.5" font-family="'JetBrains Mono', monospace">NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=COLL,ENV</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[通信解耦]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">Ring 拓扑的本质是把带宽利用率做到极限，使网卡在每一步都打满全双工。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[流间重叠]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">DDP 的极速并非由于通信更快，而是通过倒序分桶将通信完全隐藏在反向计算内。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[工程戒律]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">25MB 是延迟与带宽的精妙平衡；千卡禁用 find_unused_parameters 是保活底线。</text>
+    </g>
+  </g>
+</svg>

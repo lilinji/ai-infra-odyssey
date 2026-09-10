@@ -1,0 +1,330 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-38" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-38" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-38" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-38" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-38" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-38" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-38" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-38" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-38)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="250" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#a855f7"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">AI WORKLOAD SCHEDULING</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      AI 任务调度与多租户隔离：Gang Scheduling、Kueue 队列与 HAMi 虚拟化全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      All-or-Nothing 拓扑死锁破解 · Volcano PodGroup · Kueue 队列弹性借调 · HAMi 用户态显存切分
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Gang Principle -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">Gang 调度原则</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">All-or-Nothing</text>
+      </g>
+      <!-- Badge 2: Queue Engine -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">K8s 原生队列治理</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">Kueue Cohort 借调</text>
+      </g>
+      <!-- Badge 3: Virtualization -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">GPU 细粒度切分</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">HAMi 动态劫持</text>
+      </g>
+      <!-- Badge 4: Utilization -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">集群 MFU 利用率跃升</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">40% ➔ 85%+</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-38)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">Gang 调度第一性原理与死锁破局</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">NCCL 环网闭环 · 抢跑死锁 · PodGroup 状态机</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 抢跑死锁根因剖析 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="185" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">K8s 默认逐 Pod 调度的致命死锁现场</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 场景: 集群仅剩 8 张卡，两个作业 Job A 与 Job B 各需 8 张卡；</text>
+        <text x="0" y="30" fill="#f87171" font-size="10.5" font-weight="600">· 抢跑灾难 (Race Condition):</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10">  K8s 默认调度器逐个绑定 Pod ➔ Job A 抢到 4 卡，Job B 抢到 4 卡；</text>
+        <text x="0" y="60" fill="#94a3b8" font-size="10">  Job A 缺 4 卡等待 Job B 释放，Job B 缺 4 卡等待 Job A 释放！</text>
+        
+        <rect x="0" y="74" width="352" height="56" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">死锁本质：集合通信要求拓扑收敛</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">NCCL 握手协议要求全网节点同时在线建立 Ring/Tree；</text>
+        <text x="10" y="48" fill="#fca5a5" font-size="9">部分启动等于零启动！成百上千张 GPU 陷入无限期停摆挂死！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: Volcano PodGroup 状态机 -->
+    <g transform="translate(20, 280)">
+      <rect x="0" y="0" width="380" height="295" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Volcano / Coscheduling 状态机全貌</text>
+
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. Pending ➔ Inqueue (准入排队)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">解析 `PodGroup.spec.minMember = 8`，作业整体验证配额入队</text>
+      </g>
+
+      <g transform="translate(14, 94)">
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">2. Inqueue ➔ Reserved (预留锁定)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">调度器逐个为 Pod 预留资源但暂不触发真正的 Bind 操作，</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">只有当成功预留的 Pod 数 ≥ minMember 时才放行！</text>
+      </g>
+
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">3. Reserved ➔ Running (原子批量绑定)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">触发原子级 Batch Bind，所有 Pod 同时在宿主机落地启动！</text>
+      </g>
+
+      <g transform="translate(14, 218)">
+        <rect x="0" y="0" width="352" height="64" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">4. 超时回滚自愈 (Schedule Timeout Rollback)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">若在 scheduleTimeout (如 30s) 内未能集齐 minMember，</text>
+        <text x="10" y="48" fill="#f87171" font-size="9.5">立即释放全部已预留资源，重新回滚入队，彻底杜绝霸凌死锁！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.3: 箴言小结 -->
+    <g transform="translate(20, 590)">
+      <rect x="0" y="0" width="380" height="95" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="11" font-weight="700">Gang 调度的核心价值：</text>
+      <text x="14" y="42" fill="#cbd5e1" font-size="9.5">以整组原子性（All-or-Nothing）对抗分布式初始化的非对称性，</text>
+      <text x="14" y="58" fill="#94a3b8" font-size="9">使千卡训练任务的启动成功率从 65% 跃升至 99.9% 稳定可靠。</text>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-38)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">Kueue 队列管理与弹性借调</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">LocalQueue ➔ ClusterQueue · Cohort 配额跨租户借用</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: Kueue 层次模型架构 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="320" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Kueue 多租户两级队列与 Cohort 联邦</text>
+
+      <!-- Architecture Flow -->
+      <g transform="translate(14, 38)">
+        <!-- LocalQueue Tier -->
+        <rect x="0" y="0" width="165" height="70" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="10" font-weight="700">LocalQueue (租户 A)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">Namespace: team-algo</text>
+        <text x="8" y="46" fill="#94a3b8" font-size="8">配额名额: 32 GPUs</text>
+        <text x="8" y="60" fill="#34d399" font-size="8">当前负载: 8 GPUs (闲置 24)</text>
+
+        <g transform="translate(185, 0)">
+          <rect x="0" y="0" width="165" height="70" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="8" y="16" fill="#a855f7" font-size="10" font-weight="700">LocalQueue (租户 B)</text>
+          <text x="8" y="32" fill="#cbd5e1" font-size="8.5">Namespace: team-nlp</text>
+          <text x="8" y="46" fill="#94a3b8" font-size="8">配额名额: 32 GPUs</text>
+          <text x="8" y="60" fill="#f87171" font-size="8">超额需求: 56 GPUs (排队中)</text>
+        </g>
+      </g>
+
+      <!-- Arrows to ClusterQueues -->
+      <path d="M 96 115 L 96 135" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-38)"/>
+      <path d="M 281 115 L 281 135" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arrow-purple-38)"/>
+
+      <!-- ClusterQueue Tier -->
+      <g transform="translate(14, 140)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f0f9ff" font-size="10.5" font-weight="700">ClusterQueue (集群全局队列层)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">负责全局资源配额审批 (FlavorFungibility) 与多作业排队排序</text>
+        <text x="10" y="48" fill="#a7f3d0" font-size="9">实现严格 FIFO、优先级抢占或公平共享 (Fair Sharing)</text>
+      </g>
+
+      <!-- Cohort Box -->
+      <g transform="translate(14, 215)">
+        <rect x="0" y="0" width="352" height="85" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">Cohort 动态弹性借调池 (Cohort Borrowing)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 租户 A 空闲的 24 张 GPU 自动被 Cohort 调度借调给租户 B；</text>
+        <text x="10" y="48" fill="#fef08a" font-size="9.5">· 租户 B 瞬间获得 32 + 24 = 56 张 GPU 冲锋，作业即刻启动！</text>
+        <text x="10" y="66" fill="#34d399" font-size="9.5" font-weight="700">· 借还守恒: 一旦租户 A 提交新任务，调度器触发优雅抢占收回配额！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: 抢占式借调与回收时序 -->
+    <g transform="translate(20, 415)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">抢占与优雅驱逐（Preemption Lifecycle）</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">当借出方（租户 A）有高优先级训练作业涌入时：</text>
+
+        <rect x="0" y="24" width="352" height="66" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">Step 1: 标记借调 Pod 并发送 SIGTERM 预警</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">给予被借用 Pod 预留宽限期（如 terminationGracePeriod=60s），</text>
+        <text x="10" y="48" fill="#bae6fd" font-size="9">训练框架感知到信号后立即触发 Checkpoint 存档落盘！</text>
+
+        <g transform="translate(0, 98)">
+          <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">Step 2: 资源瞬间归还与主作业起飞</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">借调 Pod 平滑退出释放 GPU ➔ 租户 A 作业以 Gang 形式完整入场！</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-38)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">GPU 细粒度切分与虚拟化多租户</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">MIG 硬件硬核 vs MPS 共享 vs HAMi 动态劫持</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 三大技术方案全景天平对比 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="350" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">三大 GPU 共享与切分技术选型矩阵</text>
+
+      <!-- Scheme 1: MIG -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. NVIDIA MIG (物理硬件硬切分)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 原理: 在硅片物理上切分独立的 SM、显存控制器与 crossbar 总线；</text>
+        <text x="10" y="48" fill="#34d399" font-size="9">· 优势: 极致安全隔离与确定性 QoS，单实例挂掉完全不影响他人；</text>
+        <text x="10" y="62" fill="#f87171" font-size="9">· 缺点: 仅高端卡(A100/H100)支持，且规格固定(1g.10gb等)，缺乏弹性。</text>
+      </g>
+
+      <!-- Scheme 2: MPS -->
+      <g transform="translate(14, 120)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">2. NVIDIA MPS (多进程服务上下文共享)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 原理: 所有容器进程共享单一由 Control Daemon 管理的 CUDA Context；</text>
+        <text x="10" y="48" fill="#34d399" font-size="9">· 优势: 消除上下文切换开销，支持任意 % SM 核心动态限制；</text>
+        <text x="10" y="62" fill="#f87171" font-size="9">· 缺点: 内存保护较弱，单容器 OOM 或非法内存访问可能拖死整卡！</text>
+      </g>
+
+      <!-- Scheme 3: HAMi -->
+      <g transform="translate(14, 202)">
+        <rect x="0" y="0" width="352" height="85" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">3. HAMi / cGPU (用户态 LD_PRELOAD 劫持)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 原理: 动态劫持 `libcuda.so` 的核心 API (如 `cuMemAlloc`, `cuLaunch`)；</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">· 优势: 细粒度显存(MB级)与算力(1%级)任意切分，无需硬件重启；</text>
+        <text x="10" y="64" fill="#38bdf8" font-size="9">· 跨生态: 支持 NVIDIA、华为昇腾 Ascend、寒武纪等多芯片架构！</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 生产混部黄金实践 -->
+    <g transform="translate(20, 445)">
+      <rect x="0" y="0" width="380" height="240" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">生产环境混部落地黄金法则</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 大模型在线 Serving: 严格整卡独占 (或 MIG 硬隔离) 确保 P99；</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 开发机调试与小模型微调: 采用 HAMi 切分为 4GB/8GB 小算力卡；</text>
+        <text x="0" y="46" fill="#cbd5e1" font-size="10.5">· 夜间算力潮汐复用: 自动化调度离线评测与蒸馏任务填补空白；</text>
+        
+        <rect x="0" y="60" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">资产回报率 (ROI) 算盘：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">通过 Gang + Kueue + HAMi 三重组合拳，某大厂 2000 卡 GPU 集群</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="700">综合硬件利用率从 38% 暴涨至 82%，每年直接节省硬件租金超千万元！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[成团契约]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">分布式训练的命脉是通信闭环；Gang 调度的本质是拒绝部分就绪引发的集体殉葬。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[潮汐红利]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">静态配额是算力利用率的枷锁；Kueue 的 Cohort 弹性借调让算力资产全速流动。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[因地制宜]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">严苛场景选 MIG 物理硬隔离，高并发选 MPS 共享，碎片治理选 HAMi 动态劫持。</text>
+    </g>
+  </g>
+</svg>

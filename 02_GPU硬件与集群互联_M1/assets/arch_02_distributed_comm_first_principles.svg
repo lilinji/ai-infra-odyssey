@@ -1,0 +1,366 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <pattern id="grid-02" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <linearGradient id="grad-card-02" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-02" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-02" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-02" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-02" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-02" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-02)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-02)"/>
+    
+    <text x="24" y="27" class="title-main">第13讲：分布式通信第一性原理、Alpha-Beta 性能建模与分层带宽阶梯全景图</text>
+    <text x="24" y="47" class="title-sub">Parallelism Cost · Impossible Triangle · Alpha-Beta (α + S/β) Model · Bandwidth Cliff (900G ➔ 50G) · Ring AllReduce Algebra</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(860, 13)">
+      <rect x="0" y="0" width="125" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="62" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">机内 NVLink 带宽</text>
+      <text x="62" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">900 ~ 1800 GB/s</text>
+
+      <rect x="135" y="0" width="125" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="197" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">机间 RDMA 带宽</text>
+      <text x="197" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">50 ~ 100 GB/s</text>
+
+      <rect x="270" y="0" width="120" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="330" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">跨机带宽跌落</text>
+      <text x="330" y="30" font-size="11" font-weight="800" fill="#f87171" text-anchor="middle">断崖骤降 94%！</text>
+
+      <rect x="400" y="0" width="110" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="455" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">通信优化准则</text>
+      <text x="455" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">五层阶梯法则</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: PHYSICAL BANDWIDTH CLIFF ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-02)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">🌐 1. 通信物理介质阶梯与 94% 带宽断崖</text>
+    <text x="350" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">物理分层</text>
+
+    <!-- Tier 0: On-Chip SRAM -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="66" rx="5" fill="url(#grad-purple-02)" stroke="#c084fc" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#ffffff">Tier 0: 片上 SRAM (L1/Shared/DSMEM)</text>
+      <text x="14" y="36" font-size="9" fill="#e9d5ff">跨度: 毫米级 (On-Die) | 传输时延: 0.5 ~ 2 ns</text>
+      <text x="14" y="52" font-size="10" font-weight="800" fill="#fde047">物理吞吐带宽: &gt; 12.0 ~ 30.0 TB/s (零网络损耗)</text>
+    </g>
+
+    <!-- Tier 1: HBM3e -->
+    <g transform="translate(14, 122)">
+      <rect x="0" y="0" width="412" height="66" rx="5" fill="url(#grad-cyan-02)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#ffffff">Tier 1: 板载高带宽显存 (HBM3 / HBM3e)</text>
+      <text x="14" y="36" font-size="9" fill="#cffafe">跨度: 厘米级 (CoWoS 中介层) | 传输时延: 60 ~ 100 ns</text>
+      <text x="14" y="52" font-size="10" font-weight="800" fill="#67e8f9">物理线速带宽: 3.35 TB/s (H100) ~ 8.0 TB/s (B200)</text>
+    </g>
+
+    <!-- Tier 2: NVLink Mesh -->
+    <g transform="translate(14, 198)">
+      <rect x="0" y="0" width="412" height="74" rx="5" fill="url(#grad-orange-02)" stroke="#f97316" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#ffedd5">Tier 2: 机内超高速互联 (NVLink 4.0 / 5.0)</text>
+      <text x="14" y="36" font-size="9" fill="#fed7aa">跨度: 几十厘米 (SXM 底板/NVSwitch) | 传输时延: 1.0 ~ 1.5 μs</text>
+      <text x="14" y="54" font-size="10.5" font-weight="800" fill="#fde047">双向全双工带宽: 900 GB/s (H100) ~ 1800 GB/s (B200)</text>
+      <text x="14" y="67" font-size="7.5" fill="#fdba74">硬件 NVSwitch 全无阻塞交叉开关 · 原生支持 NVLS 硬件归约</text>
+    </g>
+
+    <!-- CLIFF WARNING CALLOUT (94% DROP) -->
+    <g transform="translate(14, 282)">
+      <rect x="0" y="0" width="412" height="42" rx="4" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1.2"/>
+      <text x="206" y="18" font-size="10.5" font-weight="800" fill="#fecdd3" text-anchor="middle">⚠️ 物理带宽断崖：从机内 NVLink 跨越至机间 RDMA</text>
+      <text x="206" y="33" font-size="9" font-weight="700" fill="#fca5a5" text-anchor="middle">带宽瞬间暴跌 94.4%！时延膨胀 10 倍！(900 GB/s ➔ 50 GB/s)</text>
+    </g>
+
+    <!-- Tier 3: PCIe Switch -->
+    <g transform="translate(14, 334)">
+      <rect x="0" y="0" width="412" height="66" rx="5" fill="rgba(30,41,59,0.7)" stroke="#64748b" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#ffffff">Tier 3: 节点总线 (PCIe Gen5 / Gen6 x16)</text>
+      <text x="14" y="36" font-size="9" fill="#cbd5e1">跨度: 主板 PCB 走线 | 传输时延: 3.0 ~ 5.0 μs</text>
+      <text x="14" y="52" font-size="10" font-weight="800" fill="#cbd5e1">传输带宽: 64 GB/s (Gen5) ~ 128 GB/s (Gen6)</text>
+    </g>
+
+    <!-- Tier 4: InfiniBand / RoCE -->
+    <g transform="translate(14, 410)">
+      <rect x="0" y="0" width="412" height="74" rx="5" fill="rgba(30,58,138,0.7)" stroke="#3b82f6" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#ffffff">Tier 4: 机间高速无损网络 (InfiniBand NDR / RoCEv2)</text>
+      <text x="14" y="36" font-size="9" fill="#bfdbfe">跨度: 几米至几十米 (光纤/AOC) | 传输时延: 10 ~ 15 μs</text>
+      <text x="14" y="54" font-size="10.5" font-weight="800" fill="#93c5fd">单卡专享网卡带宽: 50 GB/s (400Gbps) ~ 100 GB/s (800Gbps)</text>
+      <text x="14" y="67" font-size="7.5" fill="#bfdbfe">必须严格配置 PFC / ECN 无损队列，防止丢包引发重传雪崩</text>
+    </g>
+
+    <!-- Tier 5: DCI / WAN -->
+    <g transform="translate(14, 494)">
+      <rect x="0" y="0" width="412" height="66" rx="5" fill="rgba(15,23,42,0.8)" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#94a3b8">Tier 5: 跨数据中心园区 / WAN 广域网</text>
+      <text x="14" y="36" font-size="9" fill="#64748b">跨度: 数十公里至数千公里 | 传输时延: 5 ~ 50 ms (毫秒级抖动)</text>
+      <text x="14" y="52" font-size="10" font-weight="700" fill="#f87171">传输带宽: 1 ~ 10 GB/s (只能用于异地双活与异步容灾复制)</text>
+    </g>
+
+    <!-- Architectural Dictum -->
+    <g transform="translate(14, 572)">
+      <rect x="0" y="0" width="412" height="150" rx="6" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#6ee7b7">🏛️ 智算系统架构铁律：拓扑与并行切分的共振</text>
+      <text x="14" y="38" font-size="8.5" fill="#a7f3d0">1. **TP (张量并行) 严禁跨出单机 NVLink 域**：</text>
+      <text x="14" y="52" font-size="8" fill="#e0f2fe">TP 每一层前向/反向均需执行 All-Reduce/All-Gather，通信频次极高；一旦跨出机箱打入 50GB/s 的 RDMA 网卡，通信耗时将暴增 18 倍，计算单元彻底饥饿！</text>
+      <text x="14" y="74" font-size="8.5" fill="#a7f3d0">2. **PP (流水线并行) 与 DP (数据并行) 跨机**：</text>
+      <text x="14" y="88" font-size="8" fill="#e0f2fe">PP 仅在阶段边界传输 Activation 张量（点对点 P2P），DP 则可通过梯度分桶与反向计算流水线重叠，容忍机间较低带宽。</text>
+      <text x="14" y="112" font-size="8.5" font-weight="700" fill="#fef08a">3. MoE 专家路由 (EP) 的物理大考：</text>
+      <text x="14" y="126" font-size="8" fill="#a7f3d0">跨机 All-to-All 交换成为现代千亿 MoE 的最大瓶颈，催生 DeepEP 等新技术。</text>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: ALPHA-BETA MODEL & IMPOSSIBLE TRIANGLE ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-02)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">📐 2. Alpha-Beta (α + S/β) 性能模型与不可能三角</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">数学建模</text>
+
+    <!-- Master Formula Box -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="84" rx="6" fill="rgba(8,51,68,0.5)" stroke="#0891b2" stroke-width="1.2"/>
+      <text x="14" y="22" font-size="11" font-weight="800" fill="#67e8f9">Alpha-Beta 基础点对点传输耗时公式</text>
+      <text x="14" y="44" font-size="13" font-weight="800" fill="#ffffff">T(S) = α + S / β</text>
+      <text x="14" y="64" font-size="8.5" fill="#e0f2fe">α: 链路建立与固定启动时延 (Latency) | S: 消息尺寸 (Bytes) | β: 链路有效传输带宽 (Bandwidth)</text>
+      <text x="14" y="76" font-size="7.5" fill="#a5f3fc">临界拐点消息尺寸: S* = α × β (当 S &lt; S* 时为延迟受限，S &gt; S* 时为带宽受限)</text>
+    </g>
+
+    <!-- Latency-Bound vs Bandwidth-Bound Chart Area -->
+    <g transform="translate(14, 140)">
+      <rect x="0" y="0" width="432" height="230" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      
+      <!-- Chart Axes -->
+      <line x1="50" y1="180" x2="400" y2="180" stroke="#64748b" stroke-width="1.2"/>
+      <line x1="50" y1="180" x2="50" y2="25" stroke="#64748b" stroke-width="1.2"/>
+
+      <text x="400" y="196" font-size="8" font-weight="700" fill="#94a3b8" text-anchor="end">消息大小 S (Bytes)</text>
+      <text x="25" y="25" font-size="8" font-weight="700" fill="#94a3b8" transform="rotate(-90 25 25)" text-anchor="end">通信耗时 T</text>
+
+      <!-- Curve T = alpha + S/beta -->
+      <line x1="50" y1="130" x2="180" y2="128" stroke="#f43f5e" stroke-width="3"/>
+      <line x1="180" y1="128" x2="380" y2="40" stroke="#38bdf8" stroke-width="3"/>
+
+      <!-- Alpha intercept -->
+      <line x1="45" y1="130" x2="55" y2="130" stroke="#f43f5e" stroke-width="1.5"/>
+      <text x="38" y="133" font-size="8.5" font-weight="800" fill="#f43f5e" text-anchor="end">α</text>
+
+      <!-- Critical S* point -->
+      <line x1="180" y1="128" x2="180" y2="180" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <circle cx="180" cy="128" r="4" fill="#fbbf24"/>
+      <text x="180" y="194" font-size="8" font-weight="700" fill="#fbbf24" text-anchor="middle">S* = α·β</text>
+
+      <!-- Regions -->
+      <rect x="52" y="30" width="126" height="148" fill="rgba(244,63,94,0.08)"/>
+      <text x="115" y="70" font-size="9" font-weight="800" fill="#f87171" text-anchor="middle">【延迟受限区】</text>
+      <text x="115" y="85" font-size="7.5" fill="#fecdd3" text-anchor="middle">S &lt;&lt; S*</text>
+      <text x="115" y="100" font-size="7" fill="#cbd5e1" text-anchor="middle">耗时 ≈ α (常数)</text>
+      <text x="115" y="112" font-size="7" fill="#fca5a5" text-anchor="middle">提升网卡带宽无效！</text>
+
+      <rect x="182" y="30" width="215" height="148" fill="rgba(56,189,248,0.08)"/>
+      <text x="290" y="70" font-size="9" font-weight="800" fill="#38bdf8" text-anchor="middle">【带宽受限区】</text>
+      <text x="290" y="85" font-size="7.5" fill="#bae6fd" text-anchor="middle">S &gt;&gt; S*</text>
+      <text x="290" y="100" font-size="7" fill="#cbd5e1" text-anchor="middle">耗时 ≈ S / β (斜率主导)</text>
+      <text x="290" y="112" font-size="7" fill="#67e8f9" text-anchor="middle">提升带宽直接线性加速！</text>
+    </g>
+
+    <!-- The Impossible Triangle of AI Communication -->
+    <g transform="translate(14, 380)">
+      <rect x="0" y="0" width="432" height="184" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">🔺 通信“不可能三角”架构权衡理论</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">大模型智算集群中，任何通信架构不可能同时完美兼顾三者：</text>
+
+      <!-- Triangle Visual -->
+      <g transform="translate(216, 115)">
+        <!-- Triangle lines -->
+        <polygon points="0,-55 -95,35 95,35" fill="rgba(88,28,135,0.2)" stroke="#a855f7" stroke-width="1.5"/>
+
+        <!-- Vertex 1: Top (High Bandwidth) -->
+        <circle cx="0" cy="-55" r="5" fill="#f97316"/>
+        <text x="0" y="-64" font-size="9" font-weight="800" fill="#fdba74" text-anchor="middle">极高有效带宽 (High Bandwidth)</text>
+        <text x="0" y="10" font-size="7.5" fill="#94a3b8" text-anchor="middle">系统设计必须在三者间妥协</text>
+
+        <!-- Vertex 2: Bottom Left (Low Latency) -->
+        <circle cx="-95" cy="35" r="5" fill="#22d3ee"/>
+        <text x="-95" y="52" font-size="8.5" font-weight="800" fill="#67e8f9" text-anchor="middle">超低延迟 (Low Latency)</text>
+        <text x="-95" y="64" font-size="7" fill="#a5f3fc" text-anchor="middle">亚微秒级小包快速响应</text>
+
+        <!-- Vertex 3: Bottom Right (Zero SM Overhead) -->
+        <circle cx="95" cy="35" r="5" fill="#10b981"/>
+        <text x="95" y="52" font-size="8.5" font-weight="800" fill="#6ee7b7" text-anchor="middle">零 SM 占用 (Zero SM)</text>
+        <text x="95" y="64" font-size="7" fill="#a7f3d0" text-anchor="middle">纯 DMA/TMA 不占计算算力</text>
+      </g>
+    </g>
+
+    <!-- Practical Decode Pitfall Box -->
+    <g transform="translate(14, 574)">
+      <rect x="0" y="0" width="432" height="148" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fed7aa">💥 生产现场测谎：为什么大模型推理加网卡测不出提速？</text>
+      <text x="14" y="38" font-size="8.5" fill="#ffedd5">• 【现象】: 在 LLM Decode 阶段，单步生成的通信量只有几 KB (甚至几百字节)；</text>
+      <text x="14" y="54" font-size="8.5" fill="#ffedd5">• 【数据】: $S \approx 2 \text{ KB}$，远小于临界尺寸 $S^* \approx 50 \text{ KB} \sim 200 \text{ KB}$；</text>
+      <text x="14" y="70" font-size="8.5" fill="#ffedd5">• 【结论】: 此时通信耗时完全被固化网络时延 $\alpha \approx 10\mu s$ 统治！</text>
+      <text x="14" y="92" font-size="8.5" font-weight="700" fill="#fde047">正解路径:</text>
+      <text x="14" y="108" font-size="8" fill="#fed7aa">① 减少通信频次 (增大 Micro-Batch 或投机采样 Speculative Decoding)；</text>
+      <text x="14" y="124" font-size="8" fill="#fed7aa">② 降低物理跳数 (单机内 TP，跨机走流水线 PP 或短连接)；</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: RING & TREE COLLECTIVE ALGORITHMS ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-02)" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(120,53,15,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#fcd34d">🔄 3. 集合通信几何拓扑与总线带宽折算</text>
+    <text x="350" y="22" font-size="9.5" font-weight="600" fill="#fef08a">算法几何</text>
+
+    <!-- Ring AllReduce Two-Phase Diagram -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="18" class="card-title" fill="#fef08a">Ring AllReduce 双阶段状态机推导 (环形拓扑)</text>
+      <text x="14" y="32" class="card-sub" fill="#94a3b8">将数据切分为 P 块，所有卡沿单向逻辑环并发流动，带宽利用率逼近 100%</text>
+
+      <!-- 4-GPU Ring Visual -->
+      <g transform="translate(206, 110)">
+        <!-- Circular arrows -->
+        <ellipse cx="0" cy="0" rx="90" ry="45" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+        <!-- GPU 0 -->
+        <rect x="-125" y="-20" width="40" height="40" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="-105" y="4" font-size="9" font-weight="700" fill="#e0f2fe" text-anchor="middle">GPU 0</text>
+
+        <!-- GPU 1 -->
+        <rect x="-20" y="-60" width="40" height="40" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="0" y="-36" font-size="9" font-weight="700" fill="#e0f2fe" text-anchor="middle">GPU 1</text>
+
+        <!-- GPU 2 -->
+        <rect x="85" y="-20" width="40" height="40" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="105" y="4" font-size="9" font-weight="700" fill="#e0f2fe" text-anchor="middle">GPU 2</text>
+
+        <!-- GPU 3 -->
+        <rect x="-20" y="20" width="40" height="40" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="0" y="44" font-size="9" font-weight="700" fill="#e0f2fe" text-anchor="middle">GPU 3</text>
+
+        <path d="M -60 -45 L -35 -50" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+        <path d="M 35 -50 L 65 -35" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+        <path d="M 65 35 L 35 48" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+        <path d="M -35 48 L -65 35" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+      </g>
+
+      <!-- Ring Formulas -->
+      <g transform="translate(10, 172)">
+        <rect x="0" y="0" width="392" height="54" rx="4" fill="rgba(124,45,18,0.3)" stroke="#c2410c" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#fed7aa">阶段 1: Scatter-Reduce ($P-1$ 步) ➔ 单卡搬运 $\frac{P-1}{P} S$</text>
+        <text x="10" y="30" font-size="8.5" font-weight="700" fill="#fed7aa">阶段 2: All-Gather ($P-1$ 步) ➔ 单卡广播 $\frac{P-1}{P} S$</text>
+        <text x="10" y="46" font-size="8.5" font-weight="800" fill="#fde047">总通信时间: $T_{\text{ring}} = 2(P-1)\alpha + 2\frac{P-1}{P} \frac{S}{\beta}$ (大包与节点数 P 解耦！)</text>
+      </g>
+    </g>
+
+    <!-- Bus Bandwidth vs Algorithm Bandwidth -->
+    <g transform="translate(14, 290)">
+      <rect x="0" y="0" width="412" height="126" rx="6" fill="#0f172a" stroke="#059669" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#6ee7b7">💎 大厂白板金律：Bus 带宽与算法带宽折算</text>
+      <text x="14" y="38" font-size="9" fill="#a7f3d0">在 NCCL 测试 (`all_reduce_perf`) 中，你看到的往往是 Bus 带宽：</text>
+      
+      <g transform="translate(10, 48)">
+        <rect x="0" y="0" width="392" height="36" rx="4" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="196" y="22" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">B_bus = 2 × (P - 1) / P × B_algo</text>
+      </g>
+      <text x="14" y="104" font-size="7.5" fill="#cbd5e1">• $B_{\text{algo}} = S / T$ (算法有效吞吐)；当 $P=8$ 时，系数为 $2 \times 7/8 = 1.75$；</text>
+      <text x="14" y="118" font-size="7.5" fill="#cbd5e1">• 8 卡 NVLink 单向线速 450 GB/s ➔ 测得 Bus 带宽最高为 900 GB/s 满速！</text>
+    </g>
+
+    <!-- Hierarchical AllReduce Architecture -->
+    <g transform="translate(14, 424)">
+      <rect x="0" y="0" width="412" height="142" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
+      <text x="14" y="18" class="card-title" fill="#93c5fd">🌲 分层集合通信 (Hierarchical AllReduce / Tree)</text>
+      
+      <g transform="translate(10, 28)">
+        <rect x="0" y="0" width="392" height="48" rx="4" fill="rgba(30,58,138,0.4)" stroke="#3b82f6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#bfdbfe">Tree AllReduce: 延迟降维利器</text>
+        <text x="10" y="30" font-size="7.5" fill="#dbeafe">• 启动时延从 $2(P-1)\alpha$ 骤降至 $2 \log_2(P) \alpha$；</text>
+        <text x="10" y="42" font-size="7.5" fill="#dbeafe">• 专治千卡规模下小包（几 KB~几 MB）通信被 $\alpha$ 锁死的问题！</text>
+      </g>
+
+      <g transform="translate(10, 82)">
+        <rect x="0" y="0" width="392" height="48" rx="4" fill="rgba(6,78,59,0.4)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#a7f3d0">Hierarchical 三段式: 机内 NVLink + 机间 RDMA</text>
+        <text x="10" y="30" font-size="7.5" fill="#e0f2fe">• Step 1: 机内 8 卡通过 NVLink 执行 Reduce-Scatter (900GB/s 极速)；</text>
+        <text x="10" y="42" font-size="7.5" fill="#e0f2fe">• Step 2: 机间单卡代理 AllReduce (50GB/s) ➔ Step 3: 机内 All-Gather！</text>
+      </g>
+    </g>
+
+    <!-- 5-Level Optimization Hierarchy -->
+    <g transform="translate(14, 574)">
+      <rect x="0" y="0" width="412" height="148" rx="6" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#f3e8ff">🚀 分布式通信优化的五层黄金阶梯</text>
+      <text x="14" y="38" font-size="8.5" fill="#e9d5ff">Level 0: 【不搬】 算子融合与重计算 (以微弱算力换零通信)</text>
+      <text x="14" y="54" font-size="8.5" fill="#e9d5ff">Level 1: 【少搬】 梯度量化 (FP16 ➔ FP8/INT8) 与 ZeRO-DP 切分</text>
+      <text x="14" y="70" font-size="8.5" fill="#e9d5ff">Level 2: 【走近路】 亲和性绑定与机内两跳聚合 (死守 NVLink)</text>
+      <text x="14" y="86" font-size="8.5" fill="#e9d5ff">Level 3: 【提效率】 无损网络构建 (PFC/ECN) 与多 QP 并发打满网卡</text>
+      <text x="14" y="102" font-size="8.5" fill="#fde047">Level 4: 【藏起来】 Compute-Communication Overlap (流与分桶掩盖)</text>
+      <text x="14" y="126" font-size="8" font-weight="600" fill="#d8b4fe">最高境界是让通信耗时彻底消失在反向计算的帷幕之下！</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi 分布式通信第一性原理箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **“加机器不能线性加速”是常态**：并行必然打破空间局部性，通信是并行计算必须缴纳的“物理熵增税”；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **消息尺寸定策略**：大包拼有效带宽 $\beta$（跑满 NVLink 与网卡 Line-Rate），小包拼启动时延 $\alpha$（拼跳数、拼树拓扑、拼 Speculative）；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **跨机通信如渡劫**：94% 的物理带宽断崖决定了 TP 必须留在机内，机间只留给粗粒度的 PP 与分桶异步的 DP！</text>
+  </g>
+</svg>

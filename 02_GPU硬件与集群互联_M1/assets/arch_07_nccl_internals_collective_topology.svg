@@ -1,0 +1,256 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="270" height="24" rx="6" fill="#1e1b4b" fill-opacity="0.5" stroke="#818cf8" stroke-width="1"/>
+    <text x="12" y="16" fill="#c084fc" class="badge">NCCL INTERNALS &amp; COLLECTIVE ROUTING</text>
+    
+    <text x="0" y="60" class="title">NCCL 集合通信内部微架构与拓扑算法全景</text>
+    <text x="0" y="84" class="subtitle">Channel 多通道切片 · Proxy 线程 vs GPU Kernel 协作 · Ring 流水线 vs Double Binary Tree · NVLS 网内计算硬件加速</text>
+  </g>
+
+  <!-- ================= TOP: NCCL EXECUTION ENGINE & ALGORITHM BATTLE ================= -->
+  <!-- Left: NCCL Execution Microarchitecture -->
+  <g transform="translate(50, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#818cf8" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#4338ca" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#a5b4fc" class="card-title">① NCCL 内部执行微架构：Proxy 线程与 Channel 多通道并发</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Top Half: Host CPU Proxy Thread vs GPU Kernel -->
+      <g transform="translate(0, 0)">
+        <!-- Host Side -->
+        <rect x="0" y="0" width="280" height="110" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="14" y="24" fill="#f8fafc" class="card-title" font-size="13">Host CPU Proxy 线程 (每卡 1 个)</text>
+        <text x="14" y="44" fill="#94a3b8" class="text-xs">• 负责跨机 RDMA 资源初始化与 QP 维护</text>
+        <text x="14" y="62" fill="#94a3b8" class="text-xs">• 异步监听网卡 CQ 完成队列 (ibv_poll_cq)</text>
+        <text x="14" y="80" fill="#38bdf8" class="mono" font-size="10">• 驱动跨机数据的发送与接收工单提交</text>
+
+        <!-- Circular FIFO Buffer Bridge -->
+        <rect x="290" y="25" width="40" height="60" rx="4" fill="#312e81" stroke="#818cf8" stroke-width="1"/>
+        <text x="296" y="50" fill="#e0e7ff" class="mono" font-size="9">FIFO</text>
+        <text x="296" y="65" fill="#a5b4fc" class="mono" font-size="9">Slots</text>
+
+        <!-- GPU Side -->
+        <rect x="340" y="0" width="262" height="110" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+        <text x="14" y="24" fill="#a7f3d0" class="card-title" font-size="13" transform="translate(340, 0)">GPU CUDA 通信 Kernel</text>
+        <text x="14" y="44" fill="#94a3b8" class="text-xs" transform="translate(340, 0)">• 驻留 SM 核心，多线程块并发规约</text>
+        <text x="14" y="62" fill="#94a3b8" class="text-xs" transform="translate(340, 0)">• 纯 GPU 寄存器与 SMem 完成本地加法</text>
+        <text x="14" y="80" fill="#34d399" class="mono" font-size="10" transform="translate(340, 0)">• 驱动 NVLink 跨卡无锁直写 (P2P)</text>
+      </g>
+
+      <!-- Bottom Half: Multi-Channel Decomposition & Protocols -->
+      <g transform="translate(0, 122)">
+        <rect x="0" y="0" width="602" height="135" rx="6" fill="#1e1e2e" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">Channel 通道切片并发机制 (典型 16 ~ 32 Channels)</text>
+        
+        <!-- Channels visual -->
+        <g transform="translate(14, 34)">
+          <rect x="0" y="0" width="135" height="32" rx="4" fill="#0369a1"/>
+          <text x="10" y="20" fill="#e0f2fe" class="mono" font-size="11">Channel 0 (SM 0)</text>
+
+          <rect x="145" y="0" width="135" height="32" rx="4" fill="#0369a1"/>
+          <text x="10" y="20" fill="#e0f2fe" class="mono" font-size="11">Channel 1 (SM 1)</text>
+
+          <rect x="290" y="0" width="40" height="32" rx="4" fill="#1e293b"/>
+          <text x="12" y="20" fill="#94a3b8" class="mono" font-size="12">...</text>
+
+          <rect x="340" y="0" width="145" height="32" rx="4" fill="#0369a1"/>
+          <text x="10" y="20" fill="#e0f2fe" class="mono" font-size="11">Channel 15 (SM 15)</text>
+        </g>
+
+        <!-- Protocols -->
+        <g transform="translate(14, 76)">
+          <rect x="0" y="0" width="180" height="42" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+          <text x="8" y="18" fill="#38bdf8" class="mono" font-size="11" font-weight="700">Simple 协议</text>
+          <text x="8" y="34" fill="#94a3b8" class="text-xs">适合大包 (>10MB)，100% 满带宽</text>
+
+          <rect x="195" y="0" width="180" height="42" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+          <text x="8" y="18" fill="#fb923c" class="mono" font-size="11" font-weight="700">LL (Low Latency) 协议</text>
+          <text x="8" y="34" fill="#94a3b8" class="text-xs">4B数据+4B标志，极速亚微秒</text>
+
+          <rect x="390" y="0" width="185" height="42" rx="4" fill="#0f172a" stroke="#059669" stroke-width="1"/>
+          <text x="8" y="18" fill="#34d399" class="mono" font-size="11" font-weight="700">LL128 协议</text>
+          <text x="8" y="34" fill="#a7f3d0" class="text-xs">120B+8B，NVLink 专属甜点区</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#1e1b4b" fill-opacity="0.4" stroke="#4338ca" stroke-width="1"/>
+    <text x="36" y="355" fill="#c7d2fe" class="text-xs" font-weight="700">💡 架构核心：多通道切分打破单流水线瓶颈，根据消息尺寸在三大协议间自适应跃迁</text>
+    <text x="36" y="374" fill="#a5b4fc" class="mono" font-size="11">Channel 并发: 打满多个 SM 访存单元 | Ring Buffer: 消除系统调用开销，实现无锁轮询</text>
+  </g>
+
+  <!-- Right: Ring vs Double Binary Tree Battle -->
+  <g transform="translate(740, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#0284c7" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#38bdf8" class="card-title">② 拓扑路由算法对决：Ring 环形 vs Double Binary Tree 双二叉树</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Ring Algorithm Card -->
+      <rect x="0" y="0" width="290" height="260" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="90" height="22" rx="4" fill="#0369a1"/>
+      <text x="18" y="25" fill="#bae6fd" class="mono" font-size="11" font-weight="700">Ring 环形</text>
+      <text x="110" y="26" fill="#f8fafc" class="card-title" font-size="13">高吞吐的国王</text>
+
+      <text x="14" y="52" fill="#cbd5e1" class="text-xs">• 步数: 2(P - 1) 步串行接力传输</text>
+      <text x="14" y="70" fill="#34d399" class="mono" font-size="11">• 单卡通信量: 2 * (P-1)/P * M ≈ 2M</text>
+      <text x="14" y="90" fill="#38bdf8" class="text-xs font-weight-bold">✅ 优势: 带宽利用率 100% 完美打满线速</text>
+      <text x="14" y="110" fill="#f87171" class="text-xs font-weight-bold">❌ 劣势: 跨机延迟随节点数线性激增！</text>
+      
+      <!-- Formula Alert -->
+      <rect x="14" y="125" width="262" height="50" rx="4" fill="#450a0a" fill-opacity="0.5" stroke="#ef4444" stroke-width="1"/>
+      <text x="22" y="145" fill="#fca5a5" class="mono" font-size="11">T_ring = 2(P-1)α + 2M(P-1)/(P·B)</text>
+      <text x="22" y="163" fill="#f87171" class="text-xs">万卡集群下 α 累加导致时延爆炸！</text>
+
+      <rect x="14" y="185" width="262" height="60" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="22" y="205" fill="#94a3b8" class="text-xs">最佳适用场景:</text>
+      <text x="22" y="222" fill="#cbd5e1" class="text-xs font-weight-bold">单机 8 卡内部、中小规模集群大张量 AllReduce</text>
+
+      <!-- Double Binary Tree Card -->
+      <rect x="310" y="0" width="290" height="260" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+      <rect x="322" y="10" width="130" height="22" rx="4" fill="#047857"/>
+      <text x="328" y="25" fill="#a7f3d0" class="mono" font-size="11" font-weight="700">Double Binary Tree</text>
+      <text x="460" y="26" fill="#f8fafc" class="card-title" font-size="13">万卡降维打击</text>
+
+      <text x="324" y="52" fill="#cbd5e1" class="text-xs">• 步数: 2 * log2(P) 对数级步长</text>
+      <text x="324" y="70" fill="#34d399" class="mono" font-size="11">• 1024 卡规模仅需 20 步 (vs Ring 2046 步!)</text>
+      <text x="324" y="90" fill="#34d399" class="text-xs font-weight-bold">✅ 优势: 双树互补架构彻底消灭叶子节点闲置</text>
+      <text x="324" y="110" fill="#fbbf24" class="text-xs font-weight-bold">⚠️ 劣势: 带宽利用率 ~80-85% (略逊于Ring)</text>
+
+      <!-- Formula Alert -->
+      <rect x="324" y="125" width="262" height="50" rx="4" fill="#064e3b" fill-opacity="0.5" stroke="#10b981" stroke-width="1"/>
+      <text x="332" y="145" fill="#6ee7b7" class="mono" font-size="11">T_tree = 2·log2(P)·α + 2M/B_tree</text>
+      <text x="332" y="163" fill="#a7f3d0" class="text-xs">将通信步数从 O(P) 暴力压缩至 O(log P)</text>
+
+      <rect x="324" y="185" width="262" height="60" rx="4" fill="#0f172a" stroke="#059669" stroke-width="1"/>
+      <text x="332" y="205" fill="#a7f3d0" class="text-xs">最佳适用场景:</text>
+      <text x="332" y="222" fill="#6ee7b7" class="text-xs font-weight-bold">万卡超大规模集群、小中尺寸张量集合通信</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#0369a1" fill-opacity="0.3" stroke="#0ea5e9" stroke-width="1"/>
+    <text x="36" y="355" fill="#bae6fd" class="text-xs" font-weight="700">⚡ 工业选型金标准：小规模大包跑 Ring，超大规模万卡跑 Double Binary Tree</text>
+    <text x="36" y="374" fill="#38bdf8" class="mono" font-size="11">NCCL 调度策略: 依据 NCCL_ALGO 环境变量或内部调优查找表自动无感切换</text>
+  </g>
+
+  <!-- ================= BOTTOM: NVLS IN-NETWORK COMPUTING & BENCHMARK INVARIANT ================= -->
+  <!-- Left: NVLS In-Network Computing -->
+  <g transform="translate(50, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#047857" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#34d399" class="card-title">NVSwitch 硬件网内计算 (NVLS / In-Network Computing)</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Contrast comparison -->
+      <g transform="translate(0, 0)">
+        <!-- Traditional Reduction -->
+        <rect x="0" y="0" width="290" height="180" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="14" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">传统模式：GPU SM 读回本地做加法</text>
+        <text x="14" y="48" fill="#94a3b8" class="text-xs">1. 每张卡必须通过 NVLink 把数据拉回显存</text>
+        <text x="14" y="66" fill="#94a3b8" class="text-xs">2. SM 核心发射 MMA/ALU 指令执行规约累加</text>
+        <text x="14" y="84" fill="#94a3b8" class="text-xs">3. 再次通过 NVLink 广播出去 (两倍总线开销)</text>
+        <rect x="14" y="105" width="262" height="60" rx="4" fill="#450a0a" fill-opacity="0.4" stroke="#ef4444" stroke-width="1"/>
+        <text x="22" y="125" fill="#fca5a5" class="mono" font-size="11">总线占用: 2x 数据量</text>
+        <text x="22" y="145" fill="#f87171" class="text-xs">⚠️ 挤占宝贵的 GPU SM 计算资源</text>
+
+        <!-- NVLS In-Network Reduction -->
+        <rect x="310" y="0" width="290" height="180" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+        <text x="324" y="24" fill="#a7f3d0" class="mono" font-size="12" font-weight="700">NVLS 模式：NVSwitch 片上硬件在途加法</text>
+        <text x="324" y="48" fill="#6ee7b7" class="text-xs">1. 8 张 GPU 同时向 NVSwitch 物理端口推数据</text>
+        <text x="324" y="66" fill="#6ee7b7" class="text-xs">2. NVSwitch 内部硬件 ALU 边流过边累加！</text>
+        <text x="324" y="84" fill="#6ee7b7" class="text-xs">3. 规约结果由交换机硬件多播直接原路打回</text>
+        <rect x="324" y="105" width="262" height="60" rx="4" fill="#064e3b" fill-opacity="0.5" stroke="#10b981" stroke-width="1"/>
+        <text x="332" y="125" fill="#a7f3d0" class="mono" font-size="11">总线占用: 1x 极简直达</text>
+        <text x="332" y="145" fill="#34d399" class="text-xs">✅ 100% SM-Free，通信时延砍半 (50% Off)!</text>
+      </g>
+
+      <!-- Bottom takeaway -->
+      <rect x="0" y="195" width="600" height="54" rx="6" fill="#064e3b" fill-opacity="0.3" stroke="#059669" stroke-width="1"/>
+      <text x="14" y="217" fill="#6ee7b7" class="text-xs font-weight-bold">🎯 Hopper/Blackwell NVLS 飞跃：</text>
+      <text x="14" y="235" fill="#cbd5e1" class="text-xs">配合 NVSHMEM 与 SHARP 网内计算，单机与跨机跨交换机层级实现无感硬件全加速！</text>
+    </g>
+  </g>
+
+  <!-- Right: nccl-tests BusBW Invariant & Benchmark Drill -->
+  <g transform="translate(740, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#d97706" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#fbbf24" class="card-title">nccl-tests 性能验收与 BusBW 测谎黄金公式</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Golden Formula Box -->
+      <rect x="0" y="0" width="602" height="95" rx="6" fill="#1e1e2e" stroke="#d97706" stroke-width="1.2"/>
+      <text x="16" y="26" fill="#fde68a" class="mono" font-size="14" font-weight="700">总线带宽黄金测谎公理 (Bus Bandwidth Equation)</text>
+      
+      <g transform="translate(16, 38)">
+        <rect x="0" y="0" width="570" height="44" rx="4" fill="#78350f" fill-opacity="0.5"/>
+        <text x="14" y="28" fill="#ffffff" class="mono" font-size="16" font-weight="800">BusBW = AlgBW × [ 2(P - 1) / P ]</text>
+      </g>
+
+      <!-- Why BusBW Matters -->
+      <g transform="translate(0, 108)">
+        <rect x="0" y="0" width="602" height="142" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="14" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">为什么必须以 BusBW 为准，绝不能看 AlgBW？</text>
+        <text x="14" y="46" fill="#94a3b8" class="text-xs">• <tspan fill="#fbbf24" class="mono">AlgBW (算法带宽)</tspan> = 消息尺寸 / 耗时。随着卡数 P 激增，因归约数据量放大，其数值会虚假膨胀！</text>
+        <text x="14" y="66" fill="#94a3b8" class="text-xs">• <tspan fill="#34d399" class="mono">BusBW (总线带宽)</tspan> 剔除了集合通信算法与卡数放大的影响，真实对应物理硬件线速！</text>
+        
+        <g transform="translate(14, 82)">
+          <rect x="0" y="0" width="270" height="46" rx="4" fill="#0f172a" stroke="#059669" stroke-width="1"/>
+          <text x="10" y="20" fill="#a7f3d0" class="mono" font-size="11">单机 8 卡 H100 验收线速:</text>
+          <text x="10" y="36" fill="#34d399" class="mono" font-size="11" font-weight="700">BusBW &gt; 400 GB/s (NVLink 线速 90%)</text>
+
+          <rect x="290" y="0" width="280" height="46" rx="4" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+          <text x="10" y="20" fill="#bae6fd" class="mono" font-size="11">跨机 8×400G RoCE/IB 验收线速:</text>
+          <text x="10" y="36" fill="#38bdf8" class="mono" font-size="11" font-weight="700">BusBW &gt; 360 GB/s (跨机线速 90%)</text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

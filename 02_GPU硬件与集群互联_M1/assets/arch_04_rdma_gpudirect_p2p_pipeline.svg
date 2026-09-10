@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+      .step-num { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 13px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="220" height="24" rx="6" fill="#0369a1" fill-opacity="0.3" stroke="#0ea5e9" stroke-width="1"/>
+    <text x="12" y="16" fill="#38bdf8" class="badge">PROTOCOL &amp; HARDWARE INTERCONNECT</text>
+    
+    <text x="0" y="60" class="title">RDMA 与 GPUDirect RDMA 物理架构与零拷贝流水线全景</text>
+    <text x="0" y="84" class="subtitle">传统 TCP/IP 协议栈四重拷贝原罪 vs 传统 RDMA 旁路 vs GPUDirect RDMA P2P 直通与 QP/WQE/CQE 硬件状态机</text>
+  </g>
+
+  <!-- ================= TOP: 3-WAY ARCHITECTURE COMPARISON ================= -->
+  <!-- 1. Traditional TCP/IP (Red / Danger) -->
+  <g transform="translate(50, 140)">
+    <rect width="420" height="380" rx="12" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="420" height="42" rx="12" fill="#ef4444" fill-opacity="0.12"/>
+    <text x="20" y="27" fill="#f87171" class="card-title">① 传统 TCP/IP：四重内存拷贝地狱</text>
+    
+    <!-- Path blocks -->
+    <g transform="translate(20, 56)">
+      <!-- Block 1: GPU VRAM -->
+      <rect x="0" y="0" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">GPU VRAM (显存张量数据)</text>
+      <text x="16" y="38" fill="#94a3b8" class="text-xs">源数据存放于显卡物理显存中</text>
+
+      <!-- Arrow 1: DtoH -->
+      <path d="M 190 44 L 190 62" stroke="#fb7185" stroke-width="2" marker-end="url(#arrow-rose)"/>
+      <text x="202" y="56" fill="#fb7185" class="mono" font-size="10">① DtoH Copy (PCIe)</text>
+
+      <!-- Block 2: Host User Memory -->
+      <rect x="0" y="64" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="88" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">Host RAM (用户态内存 User Buffer)</text>
+      <text x="16" y="102" fill="#94a3b8" class="text-xs">cudaMemcpy 拉取至主机 CPU 内存空间</text>
+
+      <!-- Arrow 2: Syscall -->
+      <path d="M 190 108 L 190 126" stroke="#fb7185" stroke-width="2" marker-end="url(#arrow-rose)"/>
+      <text x="202" y="120" fill="#fb7185" class="mono" font-size="10">② Syscall send() [陷态切换]</text>
+
+      <!-- Block 3: Kernel Socket Buffer -->
+      <rect x="0" y="128" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="152" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">Kernel Socket Buffer (sk_buff)</text>
+      <text x="16" y="166" fill="#94a3b8" class="text-xs">CPU 计算 Checksum、拆包与封装 TCP/IP 报头</text>
+
+      <!-- Arrow 3: Driver Queue -->
+      <path d="M 190 172 L 190 190" stroke="#fb7185" stroke-width="2" marker-end="url(#arrow-rose)"/>
+      <text x="202" y="184" fill="#fb7185" class="mono" font-size="10">③ Driver Enqueue [软中断/加锁]</text>
+
+      <!-- Block 4: NIC TX Ring & PHY -->
+      <rect x="0" y="192" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="216" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">NIC TX Ring Buffer ➔ 物理光纤</text>
+      <text x="16" y="230" fill="#94a3b8" class="text-xs">④ 网卡 DMA 拉取数据帧发射至物理网络</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="306" width="380" height="60" rx="6" fill="#450a0a" fill-opacity="0.4" stroke="#7f1d1d" stroke-width="1"/>
+    <text x="32" y="326" fill="#fca5a5" class="text-xs" font-weight="700">❌ 致命瓶颈：CPU 深度包办，4次拷贝挤爆总线</text>
+    <text x="32" y="342" fill="#f87171" class="mono" font-size="11">CPU利用率: 100% (中断风暴) | 端到端延时: 50~100 μs</text>
+    <text x="32" y="356" fill="#fca5a5" class="mono" font-size="11">内存搬运开销: 4x 数据量 | 400G 吞吐达成率: &lt; 40%</text>
+  </g>
+
+  <!-- 2. Traditional RDMA (Host-Mediated) (Amber / Orange) -->
+  <g transform="translate(510, 140)">
+    <rect width="420" height="380" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="420" height="42" rx="12" fill="#f59e0b" fill-opacity="0.12"/>
+    <text x="20" y="27" fill="#fbbf24" class="card-title">② 传统 RDMA：Host 中转双跳模式</text>
+    
+    <g transform="translate(20, 56)">
+      <!-- Block 1: GPU VRAM -->
+      <rect x="0" y="0" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">GPU VRAM (显存张量数据)</text>
+      <text x="16" y="38" fill="#94a3b8" class="text-xs">数据生成于 GPU 端显存空间</text>
+
+      <!-- Arrow 1: DtoH PCIe -->
+      <path d="M 190 44 L 190 74" stroke="#fb923c" stroke-width="2" marker-end="url(#arrow-orange)"/>
+      <text x="202" y="62" fill="#fb923c" class="mono" font-size="10">cudaMemcpy (DtoH 经 PCIe 总线)</text>
+
+      <!-- Block 2: Host Pinned MR -->
+      <rect x="0" y="76" width="380" height="74" rx="6" fill="#1e293b" stroke="#d97706" stroke-width="1"/>
+      <text x="16" y="98" fill="#fde68a" class="mono" font-size="12" font-weight="700">Host Pinned Memory (注册 MR)</text>
+      <text x="16" y="116" fill="#94a3b8" class="text-xs">内核锁页防止换页，分配 lkey/rkey 硬件令牌</text>
+      <rect x="16" y="124" width="220" height="18" rx="4" fill="#78350f" fill-opacity="0.5"/>
+      <text x="24" y="137" fill="#fef3c7" class="mono" font-size="10">⚡ Kernel-Bypass &amp; Zero-Copy</text>
+
+      <!-- Arrow 2: PCIe DMA to NIC -->
+      <path d="M 190 150 L 190 190" stroke="#fb923c" stroke-width="2" marker-end="url(#arrow-orange)"/>
+      <text x="202" y="174" fill="#fb923c" class="mono" font-size="10">网卡 DMA 直接抓取 (无需CPU干预)</text>
+
+      <!-- Block 3: NIC DMA Engine & Fabric -->
+      <rect x="0" y="192" width="380" height="44" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="16" y="216" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">NIC DMA Engine ➔ 物理光纤</text>
+      <text x="16" y="230" fill="#94a3b8" class="text-xs">硬件直接打包 RoCEv2/IB 报文发射入网</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="306" width="380" height="60" rx="6" fill="#78350f" fill-opacity="0.3" stroke="#b45309" stroke-width="1"/>
+    <text x="32" y="326" fill="#fde68a" class="text-xs" font-weight="700">⚠️ 阶段性妥协：绕过了 OS，仍困于 Host 内存中转</text>
+    <text x="32" y="342" fill="#fbbf24" class="mono" font-size="11">CPU利用率: &lt; 5% (旁路成功) | 端到端延时: 8~15 μs</text>
+    <text x="32" y="356" fill="#fde68a" class="mono" font-size="11">局限性: 额外占据 Host DDR 带宽，产生 2 次总线往返</text>
+  </g>
+
+  <!-- 3. GPUDirect RDMA (Cyan / Emerald) -->
+  <g transform="translate(970, 140)">
+    <rect width="420" height="380" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="420" height="42" rx="12" fill="#10b981" fill-opacity="0.12"/>
+    <text x="20" y="27" fill="#34d399" class="card-title">③ GPUDirect RDMA：PCIe P2P 任意门</text>
+    
+    <g transform="translate(20, 56)">
+      <!-- Block 1: GPU VRAM with BAR1 -->
+      <rect x="0" y="0" width="380" height="74" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+      <text x="16" y="24" fill="#a7f3d0" class="mono" font-size="12" font-weight="700">GPU VRAM (BAR1 物理基址寄存器映射)</text>
+      <text x="16" y="42" fill="#94a3b8" class="text-xs">显存地址通过 nvidia-peermem 驱动注册为网卡可见 MR</text>
+      <rect x="16" y="50" width="280" height="18" rx="4" fill="#064e3b" fill-opacity="0.6"/>
+      <text x="24" y="63" fill="#6ee7b7" class="mono" font-size="10">🚀 Zero-Copy + Kernel-Bypass + CPU-Bypass</text>
+
+      <!-- Massive Direct Arrow through PCIe Switch -->
+      <path d="M 190 74 L 190 190" stroke="#10b981" stroke-width="4" stroke-dasharray="6,3" marker-end="url(#arrow-emerald)"/>
+      <rect x="70" y="112" width="240" height="38" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1"/>
+      <text x="82" y="128" fill="#34d399" class="mono" font-size="11" font-weight="700">PCIe Switch P2P Direct DMA</text>
+      <text x="82" y="142" fill="#94a3b8" class="text-xs">完全绕过 Host CPU &amp; DDR 内存总线！</text>
+
+      <!-- Block 2: NIC DMA Engine & Optical Network -->
+      <rect x="0" y="192" width="380" height="44" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="216" fill="#a7f3d0" class="mono" font-size="12" font-weight="700">NIC DMA Engine ➔ 400G/800G IB/RoCE</text>
+      <text x="16" y="230" fill="#94a3b8" class="text-xs">网卡直接向对端 GPU 显存物理地址实施远程写入</text>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="306" width="380" height="60" rx="6" fill="#064e3b" fill-opacity="0.4" stroke="#047857" stroke-width="1"/>
+    <text x="32" y="326" fill="#6ee7b7" class="text-xs" font-weight="700">✅ 终极演进：真正的物理直连，微秒级极速直达</text>
+    <text x="32" y="342" fill="#34d399" class="mono" font-size="11">CPU利用率: 0% (完全脱手) | 端到端延时: 3 ~ 5 μs</text>
+    <text x="32" y="356" fill="#a7f3d0" class="mono" font-size="11">物理拷贝: 0次 (纯直通) | 网络带宽利用率: 98% 线速</text>
+  </g>
+
+  <!-- ================= BOTTOM: RDMA 4 ABSTRACTIONS & HARDWARE PIPELINE ================= -->
+  <!-- Left Side: Four Pillars of RDMA (QP, WQE, CQ, MR) -->
+  <g transform="translate(50, 540)">
+    <rect width="450" height="390" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="450" height="40" rx="12" fill="#0284c7" fill-opacity="0.15"/>
+    <text x="20" y="26" fill="#38bdf8" class="card-title">RDMA 底层四大硬件抽象架构</text>
+    
+    <!-- Pillar 1: QP -->
+    <g transform="translate(20, 52)">
+      <rect width="410" height="70" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="32" height="20" rx="4" fill="#0369a1"/>
+      <text x="18" y="24" fill="#bae6fd" class="mono" font-size="11" font-weight="700">QP</text>
+      <text x="52" y="24" fill="#f8fafc" class="card-title" font-size="14">Queue Pair (队列对：SQ + RQ)</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs">通信专属车道抽象，硬件维护状态机 (RESET ➔ INIT ➔ RTR ➔ RTS)</text>
+      <text x="14" y="60" fill="#38bdf8" class="mono" font-size="11">模式: RC (可靠连接), UD (不可靠数据报), DC (动态连接)</text>
+    </g>
+
+    <!-- Pillar 2: WQE & Doorbell -->
+    <g transform="translate(20, 132)">
+      <rect width="410" height="70" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="40" height="20" rx="4" fill="#047857"/>
+      <text x="17" y="24" fill="#a7f3d0" class="mono" font-size="11" font-weight="700">WQE</text>
+      <text x="60" y="24" fill="#f8fafc" class="card-title" font-size="14">Work Queue Element (工作队列元素/任务订单)</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs">应用程序填写的快递运单：描述本地缓冲地址、长度、对端 rkey 及操作码</text>
+      <text x="14" y="60" fill="#34d399" class="mono" font-size="11">触发机制: 用户态直写网卡 MMIO 寄存器 Ring Doorbell 鸣钟</text>
+    </g>
+
+    <!-- Pillar 3: CQ & CQE -->
+    <g transform="translate(20, 212)">
+      <rect width="410" height="70" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="32" height="20" rx="4" fill="#7c3aed"/>
+      <text x="18" y="24" fill="#ddd6fe" class="mono" font-size="11" font-weight="700">CQ</text>
+      <text x="52" y="24" fill="#f8fafc" class="card-title" font-size="14">Completion Queue &amp; CQE (完成队列/签收回执)</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs">网卡完成硬件 DMA 传输并收到对端 ACK 后，硬件写入 CQE 回执条目</text>
+      <text x="14" y="60" fill="#c084fc" class="mono" font-size="11">获取方式: ibv_poll_cq() 用户态极速无锁轮询 (零系统调用开销)</text>
+    </g>
+
+    <!-- Pillar 4: MR & Keys -->
+    <g transform="translate(20, 292)">
+      <rect width="410" height="84" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="10" width="32" height="20" rx="4" fill="#c2410c"/>
+      <text x="18" y="24" fill="#ffedd5" class="mono" font-size="11" font-weight="700">MR</text>
+      <text x="52" y="24" fill="#f8fafc" class="card-title" font-size="14">Memory Region (内存注册与保护密钥)</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs">1. 物理锁页 (Pinning)：锁定物理页框，严禁 OS Swap 换页</text>
+      <text x="14" y="58" fill="#94a3b8" class="text-xs">2. 地址转换：把虚拟地址 VA 映射为物理地址 PA 并写入网卡硬件表</text>
+      <text x="14" y="74" fill="#fb923c" class="mono" font-size="11">安全隔离: 本地校验 lkey 阻断越界 | 远端凭 rkey 直通读写</text>
+    </g>
+  </g>
+
+  <!-- Right Side: Hardware Asynchronous Execution Timeline -->
+  <g transform="translate(520, 540)">
+    <rect width="870" height="390" rx="12" fill="#0f172a" stroke="#818cf8" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="870" height="40" rx="12" fill="#4338ca" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#a5b4fc" class="card-title">GPUDirect RDMA 硬件异步无锁执行流水线时序</text>
+
+    <!-- 6 Sequential Pipeline Steps -->
+    <!-- Step 1 -->
+    <g transform="translate(24, 55)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#0284c7"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 1</text>
+      <text x="84" y="27" fill="#f8fafc" class="mono" font-size="13" font-weight="700">Post Send WQE (写入工作队列)</text>
+      <text x="360" y="27" fill="#94a3b8" class="text-sm">用户进程/GPU Kernel 准备好传输描述符 (源地址/目标地址/长度/Opcode) 放入 SQ</text>
+      <text x="760" y="27" fill="#38bdf8" class="mono" font-size="11">~20 ns</text>
+    </g>
+
+    <!-- Step 2 -->
+    <g transform="translate(24, 108)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#059669"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 2</text>
+      <text x="84" y="27" fill="#f8fafc" class="mono" font-size="13" font-weight="700">Ring Doorbell (敲击网卡门铃)</text>
+      <text x="360" y="27" fill="#94a3b8" class="text-sm">通过 PCIe MMIO 寄存器直写 8 字节更新网卡内部 SQ Tail 游标，唤醒网卡调度器</text>
+      <text x="760" y="27" fill="#34d399" class="mono" font-size="11">~50 ns</text>
+    </g>
+
+    <!-- Step 3 -->
+    <g transform="translate(24, 161)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#10b981"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 3</text>
+      <text x="84" y="27" fill="#34d399" class="mono" font-size="13" font-weight="700">P2P DMA Fetch (硬件直接拉取显存)</text>
+      <text x="360" y="27" fill="#a7f3d0" class="text-sm">网卡 DMA 引擎解析 WQE，跨 PCIe 交换机直发 P2P TLP 读写 GPU BAR1 空间，CPU 0% 介入</text>
+      <text x="760" y="27" fill="#10b981" class="mono" font-size="11">线速打满</text>
+    </g>
+
+    <!-- Step 4 -->
+    <g transform="translate(24, 214)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#d97706"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 4</text>
+      <text x="84" y="27" fill="#f8fafc" class="mono" font-size="13" font-weight="700">Network Transport (线缆光速飞跃)</text>
+      <text x="360" y="27" fill="#94a3b8" class="text-sm">以太网 RoCEv2 (UDP/IP) 或 InfiniBand 报文，穿过交换机网络直达远端网卡 ASIC</text>
+      <text x="760" y="27" fill="#fbbf24" class="mono" font-size="11">1~2 μs</text>
+    </g>
+
+    <!-- Step 5 -->
+    <g transform="translate(24, 267)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#7c3aed"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 5</text>
+      <text x="84" y="27" fill="#f8fafc" class="mono" font-size="13" font-weight="700">Remote GPU P2P Write &amp; ACK</text>
+      <text x="360" y="27" fill="#94a3b8" class="text-sm">远端网卡通过 PCIe P2P 直接写入目标 GPU 显存物理地址，校验 rkey 并原路返回 ACK</text>
+      <text x="760" y="27" fill="#c084fc" class="mono" font-size="11">远端零拷贝</text>
+    </g>
+
+    <!-- Step 6 -->
+    <g transform="translate(24, 320)">
+      <rect width="820" height="46" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="12" y="11" width="60" height="24" rx="4" fill="#0284c7"/>
+      <text x="20" y="27" fill="#ffffff" class="step-num">Step 6</text>
+      <text x="84" y="27" fill="#f8fafc" class="mono" font-size="13" font-weight="700">Write CQE &amp; User-Space Polling</text>
+      <text x="360" y="27" fill="#94a3b8" class="text-sm">本地网卡 DMA 写回 CQE 完成凭证，CUDA Stream / CPU 线程调用无锁 Poll CQ 确认交付</text>
+      <text x="760" y="27" fill="#38bdf8" class="mono" font-size="11">~15 ns</text>
+    </g>
+  </g>
+</svg>

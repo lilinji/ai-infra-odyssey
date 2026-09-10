@@ -1,0 +1,356 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-33" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-33" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-33" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-33" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-33" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-33" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-33" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-33" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-33)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="245" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#10b981"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">KV CACHE VIRTUAL MEMORY</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      KV Cache 内存管理演进：PagedAttention 虚拟化与 Continuous Batching 全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      内部碎片消除 · 逻辑块到物理块动态映射 · 迭代步级调度 · 显存超卖与 Swapping/重算抢占
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Fragmentation Reduction -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">显存碎片浪费</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">80% ➔ &lt; 4%</text>
+      </g>
+      <!-- Badge 2: Throughput Gain -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">系统吞吐提升</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">2.5x ~ 4.0x</text>
+      </g>
+      <!-- Badge 3: Block Size -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">物理块 Token 大小</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">16 / 32 Tokens</text>
+      </g>
+      <!-- Badge 4: Batching Evolution -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">调度粒度进化</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">Step-level Inflight</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-33)" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#991b1b" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#f87171" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">连续预分配原罪与碎片深渊</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">“餐厅十人桌”困局 · 内部/外部/预留碎片解剖</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 餐厅十人桌预留困局 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="150" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">经典原生 PyTorch 连续张量死结</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 算法盲区: 模型生成前无法预知真实输出长度</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 原生约束: 注意力算子强行要求张量在物理显存上完全连续</text>
+        <text x="0" y="48" fill="#fbbf24" font-size="10.5" font-weight="600">➔ 唯一选择: 按照最坏打算预分配最大长度空间！</text>
+        <text x="0" y="64" fill="#94a3b8" font-size="10">例如用户设置 max_tokens=2048，系统必须立刻预留 2048 的连续显存！</text>
+        <text x="0" y="82" fill="#ef4444" font-size="10.5" font-weight="700">若该请求仅生成 20 个词便退出，整整 99% 的显存被强行锁死浪费！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: 三大显存碎片黑洞解剖 -->
+    <g transform="translate(20, 245)">
+      <rect x="0" y="0" width="380" height="250" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">吞噬 60%~80% 显存的三大碎片杀手</text>
+
+      <!-- Killer 1: Internal -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">1. 内部碎片 (Internal Fragmentation): 占 50%~70%</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">预分配的 2048 空间与实际生成的几百词之间的巨大落差，霸占不放</text>
+      </g>
+
+      <!-- Killer 2: Reservation -->
+      <g transform="translate(14, 100)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f59e0b" font-size="10.5" font-weight="700">2. 预留碎片 (Reservation Fragmentation): 占 10%~20%</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">为了未来可能生成的下一个 Token 预先占住坑位，哪怕当前并不使用</text>
+      </g>
+
+      <!-- Killer 3: External -->
+      <g transform="translate(14, 162)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">3. 外部碎片 (External Fragmentation): 占 5%~15%</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">不同请求交错退出的空洞，导致剩余物理空间碎片化，无法装下大请求</text>
+      </g>
+
+      <text x="14" y="234" fill="#ef4444" font-size="11" font-weight="700">结果: 80GB A100/H100 显存，实际只能跑 8~16 个并发请求！</text>
+    </g>
+
+    <!-- Module 1.3: 静态批处理短板 -->
+    <g transform="translate(20, 510)">
+      <rect x="0" y="0" width="380" height="175" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">静态批处理（Static Batching）的死等悲剧</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 批次整进整出（Run to Completion）模式：</text>
+        <text x="0" y="28" fill="#94a3b8" font-size="10">8 个请求一起入队，其中 7 个请求在 100 词时就已经结束；</text>
+        <text x="0" y="44" fill="#94a3b8" font-size="10">但这 7 个请求无法释放显存，更不能退出，必须陪跑死等最后 1 个</text>
+        <text x="0" y="60" fill="#94a3b8" font-size="10">长文本请求生成到第 2000 词！</text>
+        <text x="0" y="80" fill="#f87171" font-size="10.5" font-weight="600">木桶效应: 昂贵的 GPU 在后面 90% 的时间里，都在为空白填补 Padding！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-33)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">PagedAttention 虚拟化与页表映射</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">操作系统页式内存降临 · 逻辑块到物理块 · 非连续 Gather</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 逻辑块到物理块映射网格 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="320" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">页表（Block Table）地址转换模型</text>
+
+      <!-- Logical Blocks of Request 1 -->
+      <g transform="translate(14, 38)">
+        <text x="0" y="12" fill="#38bdf8" font-size="10.5" font-weight="700">请求 1 的逻辑块 (Logical Blocks, 连续序列):</text>
+        <g transform="translate(0, 18)">
+          <rect x="0" y="0" width="105" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fff" font-size="9" font-weight="700">Block 0 (0~15)</text>
+          <text x="6" y="28" fill="#bae6fd" font-size="8">已满 (16 tok)</text>
+
+          <rect x="115" y="0" width="105" height="34" rx="4" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fff" font-size="9" font-weight="700">Block 1 (16~31)</text>
+          <text x="6" y="28" fill="#bae6fd" font-size="8">已满 (16 tok)</text>
+
+          <rect x="230" y="0" width="105" height="34" rx="4" fill="#047857" stroke="#34d399" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#fff" font-size="9" font-weight="700">Block 2 (32~47)</text>
+          <text x="6" y="28" fill="#a7f3d0" font-size="8">动态写入中 (4/16)</text>
+        </g>
+      </g>
+
+      <!-- Arrows to Physical Pages -->
+      <path d="M 66 94 L 66 125" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-33)"/>
+      <path d="M 181 94 L 235 125" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-33)"/>
+      <path d="M 296 94 L 330 125" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald-33)"/>
+
+      <!-- Block Table Map Box -->
+      <g transform="translate(14, 130)">
+        <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="8" y="16" fill="#c084fc" font-size="10" font-weight="700">Block Table 映射条目: [0 ➔ #7, 1 ➔ #3, 2 ➔ #12]</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="9">内核根据页表动态将非连续物理块拼装成逻辑上连续的注意力上下文</text>
+      </g>
+
+      <!-- Physical Memory Pool (Non-contiguous) -->
+      <g transform="translate(14, 185)">
+        <text x="0" y="12" fill="#fbbf24" font-size="10.5" font-weight="700">GPU 物理显存页池 (Physical Pages Pool, 离散不连续):</text>
+        <g transform="translate(0, 18)">
+          <!-- Page 7 -->
+          <rect x="0" y="0" width="75" height="34" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+          <text x="6" y="16" fill="#38bdf8" font-size="9" font-weight="700">Page #7</text>
+          <text x="6" y="28" fill="#cbd5e1" font-size="8">Req1-Blk0</text>
+
+          <!-- Page 3 -->
+          <rect x="85" y="0" width="75" height="34" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+          <text x="6" y="16" fill="#38bdf8" font-size="9" font-weight="700">Page #3</text>
+          <text x="6" y="28" fill="#cbd5e1" font-size="8">Req1-Blk1</text>
+
+          <!-- Page 9 (Req 2) -->
+          <rect x="170" y="0" width="75" height="34" rx="4" fill="#1e293b" stroke="#475569" stroke-width="0.8"/>
+          <text x="6" y="16" fill="#64748b" font-size="9">Page #9</text>
+          <text x="6" y="28" fill="#64748b" font-size="8">Req2-Blk0</text>
+
+          <!-- Page 12 -->
+          <rect x="255" y="0" width="75" height="34" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="1"/>
+          <text x="6" y="16" fill="#34d399" font-size="9" font-weight="700">Page #12</text>
+          <text x="6" y="28" fill="#cbd5e1" font-size="8">Req1-Blk2</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 255)">
+        <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="8" y="18" fill="#34d399" font-size="10" font-weight="700">零内存浪费奇迹：</text>
+        <text x="8" y="34" fill="#cbd5e1" font-size="9.5">只有在最后一个 Block 内部存在极小碎片（最多 15 个 Token 空间，&lt; 4%）；</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="9.5">彻底粉碎预留碎片与外部碎片，显存利用率冲上 96%！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: PagedAttention Kernel 执行内幕 -->
+    <g transform="translate(20, 415)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">PagedAttention CUDA Kernel 执行机制</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· Warp 级别并行规约：每个 Thread Block 负责一个 Query Head；</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 查表物理寻址: `physical_block_id = block_table[logical_idx]`；</text>
+        <text x="0" y="46" fill="#cbd5e1" font-size="10.5">· 共享内存 (Shared Memory) 分块搬运：将散落在不同 HBM 物理块中的</text>
+        <text x="0" y="60" fill="#94a3b8" font-size="10">  KV 向量以 Block 粒度流式载入 SM 内部进行点积计算；</text>
+        
+        <rect x="0" y="74" width="352" height="60" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="20" fill="#34d399" font-size="10.5" font-weight="700">在线 Softmax (Online Softmax) 动态融合：</text>
+        <text x="10" y="36" fill="#f0fdf4" font-size="9.5">无需等待全部物理块读完即可一边累加局部指数和，一边维护当前最大值 m，</text>
+        <text x="10" y="50" fill="#bae6fd" font-size="9.5">做到了零内存重拷贝，单步计算延迟完全对齐甚至超越未分页的连续算子！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-33)" stroke="#38bdf8" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">Continuous Batching 与抢占自愈</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">迭代级装箱 · 随到随补 · Swapping vs Recompute</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 连续批处理迭代调度图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="235" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">迭代步级调度（Iteration-level / In-flight）</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 核心突破: 调度器不再按“请求”组织批次，而是按“Token Step”！</text>
+        <text x="0" y="30" fill="#34d399" font-size="10.5" font-weight="700">· 完成即退: 请求生成 EOS 瞬间释放其拥有的所有物理 Block；</text>
+        <text x="0" y="46" fill="#38bdf8" font-size="10.5" font-weight="700">· 随到随补: 队列中处于排队状态的新请求立刻补位插入批次；</text>
+
+        <!-- Visual Table -->
+        <g transform="translate(0, 58)">
+          <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#f0f9ff" font-size="9.5">Step t:   [Req A (Decode), Req B (Decode), Req C (Decode)]</text>
+          <text x="10" y="34" fill="#f87171" font-size="9.5">Step t+1: Req A 命中 EOS 退出 ➔ 释放显存 ➔ Req D (Prefill) 插队！</text>
+          <text x="10" y="52" fill="#34d399" font-size="9.5">Step t+2: [Req D (Decode), Req B (Decode), Req C (Decode)] 满载运转</text>
+        </g>
+
+        <text x="0" y="142" fill="#38bdf8" font-size="10" font-weight="600">效果: 消除木桶等待效应，GPU 张量核心利用率从 15% 跃升至 75%+！</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 显存超卖与抢占降级机制 -->
+    <g transform="translate(20, 330)">
+      <rect x="0" y="0" width="380" height="345" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">显存超卖（Overcommit）与防御性抢占</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">为了打满并发，系统必须超卖显存（总规划容量 &gt; 物理显存）</text>
+        <text x="0" y="30" fill="#ef4444" font-size="10.5" font-weight="600">极端并发激增导致物理 Block 耗尽时，如何避免 OOM 崩溃？</text>
+
+        <!-- Strategy 1: Swapping -->
+        <g transform="translate(0, 42)">
+          <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">策略 1: 内存交换 (Swapping to CPU RAM)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 将被抢占请求的 Block 沿 PCIe 4.0/5.0 传送到 CPU 内存中暂存；</text>
+          <text x="10" y="48" fill="#cbd5e1" font-size="9.5">· 待 GPU 显存水位回落安全后，再将 Block 换回继续吐字；</text>
+          <text x="10" y="64" fill="#94a3b8" font-size="9">缺点: 受制于 PCIe 32~64 GB/s 带宽，换入换出引入几百毫秒延迟。</text>
+        </g>
+
+        <!-- Strategy 2: Recomputation -->
+        <g transform="translate(0, 126)">
+          <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">策略 2: 重新计算 (Recomputation)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 直接就地丢弃被抢占请求的全部已生成 KV Block，显存瞬间清零；</text>
+          <text x="10" y="48" fill="#cbd5e1" font-size="9.5">· 待资源充裕时，将历史上下文作为长 Prompt 重新走一次 Prefill；</text>
+          <text x="10" y="64" fill="#34d399" font-size="9" font-weight="600">以算力换带宽！对于算力强劲的 H100，重算速度甚至反超 PCIe 换入！</text>
+        </g>
+
+        <g transform="translate(0, 212)">
+          <rect x="0" y="0" width="352" height="42" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="8" y="18" fill="#38bdf8" font-size="10" font-weight="600">生产选型铁律: short context 选重算，extreme long context 选 Swap！</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[虚拟破局]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">PagedAttention 用虚拟页表击碎了连续显存的锁链，将碎片浪费瞬间压至 4% 以下。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[步级调度]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">Continuous Batching 打破了请求生命周期的刚性绑定，让算力像流水一样充盈空隙。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="16" y="20" fill="#fbbf24" font-size="11" font-weight="700">[超卖自愈]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">极致吞吐源于适度显存超卖；完善的重算与换入抢占降级是防止死锁崩盘的安全网。</text>
+    </g>
+  </g>
+</svg>

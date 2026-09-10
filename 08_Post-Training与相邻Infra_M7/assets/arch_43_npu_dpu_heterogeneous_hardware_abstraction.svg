@@ -1,0 +1,412 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-43" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-43" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-43" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-43" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-43" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-43" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-43" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-43" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-43)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="310" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">HETEROGENEOUS COMPUTING &amp; HAL</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      打破单一 CUDA 锁死：NPU、DPU 与异构加速器硬件抽象全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      底层微架构图谱 · PyTorch PrivateUse1 / HAL 统一分发 · NZ/NC1HWC0 分形转换税消除 · DPU 网络存储卸载与在网计算
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">HAL DISPATCH</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">&lt; 0.5 µs Hook</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">TRANSDATA TAX</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">0 (Fused IR)</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">DPU CPU OFFLOAD</text>
+      <text x="307" y="38" fill="#fbbf24" font-size="16" font-weight="800">&gt; 90% Freed</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">IN-NET REDUCTION</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">2x Comm Speed</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-43)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、异构加速芯片物理微架构图谱</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">SIMT vs 达芬奇 3D Cube vs 脉动阵列 vs DPU 硬件加速器流水</text>
+
+    <!-- Subcard 1.1: 四大微架构物理组织 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="260" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 主流加速器核心微架构物理组织对比</text>
+
+      <g transform="translate(10, 34)">
+        <!-- 1: NVIDIA GPU -->
+        <rect x="0" y="0" width="178" height="102" rx="4" fill="#182234" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">1. NVIDIA GPU (H100)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">• SIMT 执行模型：Warp 动态调度</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8.5">• Tensor Core 4th Gen (FP8/FP16)</text>
+        <text x="8" y="60" fill="#94a3b8" font-size="8">• 共享显存/L1 Cache (高达 228KB/SM)</text>
+        <text x="8" y="74" fill="#94a3b8" font-size="8">• 极其成熟的 JIT 动态内核生态</text>
+        <text x="8" y="88" fill="#38bdf8" font-size="7.5" font-weight="600">优势：通用性极强，动态控制流极佳</text>
+
+        <!-- 2: Huawei Ascend NPU -->
+        <rect x="188" y="0" width="178" height="102" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="196" y="16" fill="#f87171" font-size="9" font-weight="700">2. 华为昇腾 NPU (910B)</text>
+        <text x="196" y="32" fill="#cbd5e1" font-size="8.5">• 达芬奇 DaVinci 3D 解耦架构</text>
+        <text x="196" y="46" fill="#cbd5e1" font-size="8.5">• 16×16×16 FP16 3D Cube 矩阵单元</text>
+        <text x="196" y="60" fill="#fca5a5" font-size="8">• 片上高速紧致缓存 (L0A/L0B/L0C)</text>
+        <text x="196" y="74" fill="#94a3b8" font-size="8">• 向量 (Vector) 与标量 (Scalar) 分立</text>
+        <text x="196" y="88" fill="#f87171" font-size="7.5" font-weight="600">优势：单位面积矩阵计算密度极高</text>
+
+        <!-- 3: Google TPU -->
+        <rect x="0" y="110" width="178" height="102" rx="4" fill="#182234" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="126" fill="#fbbf24" font-size="9" font-weight="700">3. Google TPU (v5p)</text>
+        <text x="8" y="142" fill="#cbd5e1" font-size="8.5">• 128×128 2D 硬件脉动阵列 (MXU)</text>
+        <text x="8" y="156" fill="#cbd5e1" font-size="8.5">• 数据在相邻寄存器网格流动</text>
+        <text x="8" y="170" fill="#94a3b8" font-size="8">• VMEM 向量内存显式软件编排</text>
+        <text x="8" y="184" fill="#94a3b8" font-size="8">• 纯确定性流水线，无乱序执行</text>
+        <text x="8" y="198" fill="#fbbf24" font-size="7.5" font-weight="600">优势：能效比顶峰，但必须全图 AOT</text>
+
+        <!-- 4: DPU -->
+        <rect x="188" y="110" width="178" height="102" rx="4" fill="#182234" stroke="#10b981" stroke-width="1"/>
+        <text x="196" y="126" fill="#34d399" font-size="9" font-weight="700">4. DPU 数据处理器 (BF3)</text>
+        <text x="196" y="142" fill="#cbd5e1" font-size="8.5">• 多核 64-bit Arm CPU 独立控制面</text>
+        <text x="196" y="156" fill="#cbd5e1" font-size="8.5">• 硬件 RoCEv2/RDMA 协议栈引擎</text>
+        <text x="196" y="170" fill="#94a3b8" font-size="8">• NVMe-oF 硬件加速存储直通</text>
+        <text x="196" y="184" fill="#94a3b8" font-size="8">• P4 可编程线速包过滤与安全隔离</text>
+        <text x="196" y="198" fill="#34d399" font-size="7.5" font-weight="600">优势：解放 Host CPU，基础设施卸载</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 数据排布与隐式转换陷阱 -->
+    <g transform="translate(15, 335)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">1.2 物理内存排布冲突与“隐式 TransData 转换税”</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="370" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9" font-weight="700">GPU / CPU 内存排布习惯：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• NCHW / NHWC 连续线性存储，访存跨步（Stride）灵活</text>
+        <text x="10" y="46" fill="#94a3b8" font-size="8">• 任意非对齐尺寸均可由 Warp 线程分支轻松吞下</text>
+      </g>
+
+      <g transform="translate(10, 102)">
+        <rect width="370" height="96" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#f87171" font-size="9" font-weight="700">🚨 NPU 专有 NZ 分形 (Fractal-Z) 与 NC1HWC0 陷阱：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">• 达芬奇 Cube 每次必须吞入 16×16 矩阵，数据必须强制切块重组</text>
+        <text x="10" y="48" fill="#fca5a5" font-size="8">• 缺乏编译器支持时，每算一个 GEMM 前后自动插入 TransData 算子</text>
+        <text x="10" y="64" fill="#cbd5e1" font-size="8">• 单步插入上百个转置算子 ➔ 消耗 80% 显存带宽，MFU 从 45% 暴跌至 8%！</text>
+        <text x="10" y="80" fill="#34d399" font-size="8" font-weight="600">破解之道：张量编译器自动算子融合与权重离线预分形转置</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 算力第一性原理思考 -->
+    <g transform="translate(15, 555)">
+      <rect width="390" height="130" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="24" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="12" r="4" fill="#34d399"/>
+      <text x="28" y="16" fill="#a7f3d0" font-size="10.5" font-weight="700">1.3 异构加速器评价物理量纲：Roofline 模型</text>
+
+      <text x="12" y="44" fill="#38bdf8" font-size="9" font-weight="700">算力上限 (P_peak)：</text>
+      <text x="125" y="44" fill="#94a3b8" font-size="8.5">Cube 脉动阵列总吞吐 (TFLOPS)</text>
+
+      <text x="12" y="64" fill="#34d399" font-size="9" font-weight="700">访存带宽 (BW)：</text>
+      <text x="125" y="64" fill="#94a3b8" font-size="8.5">片上 SRAM + HBM3 物理带宽 (TB/s)</text>
+
+      <text x="12" y="84" fill="#fbbf24" font-size="9" font-weight="700">拐点算力强度 (I)：</text>
+      <text x="125" y="84" fill="#cbd5e1" font-size="8.5">I = P_peak / BW ➔ 决定算子是访存受限还是计算受限</text>
+
+      <text x="12" y="104" fill="#c084fc" font-size="9" font-weight="700">统一抽象目标：</text>
+      <text x="125" y="104" fill="#cbd5e1" font-size="8.5">屏蔽底层指令差异，将任意算子推至 Roofline 物理天花板！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-43)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、统一软件抽象栈 (HAL) 与跨端编译器</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">PyTorch C10 Dispatcher + PrivateUse1 · Triton/OpenXLA 跨端融合</text>
+
+    <!-- Subcard 2.1: PyTorch PrivateUse1 架构 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="270" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 PyTorch 原生硬件抽象枢纽：PrivateUse1 挂载架构</text>
+
+      <!-- Layer 1: Python API -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="9" font-weight="700">用户层统一代码：tensor.to("npu") / tensor.to("cuda") / tensor.to("xpu")</text>
+        <text x="10" y="32" fill="#34d399" font-size="8">算法层零脏代码侵入，完全消灭 if-else 硬件分支判断</text>
+      </g>
+
+      <line x1="215" y1="76" x2="215" y2="86" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-43)"/>
+
+      <!-- Layer 2: C10 Dispatcher -->
+      <g transform="translate(12, 86)">
+        <rect width="406" height="66" rx="5" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.2"/>
+        <text x="10" y="18" fill="#0ea5e9" font-size="9.5" font-weight="700">PyTorch C10 Dispatcher (动态分发器)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• 内置预留设备键：DispatchKey::PrivateUse1 (专为国产/第三方芯片预留)</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">• 注册机制：TORCH_LIBRARY_IMPL(aten, PrivateUse1, m) 绑定实现表</text>
+        <text x="10" y="60" fill="#38bdf8" font-size="8">分发延迟仅约 0.3 微秒，完全等同于 CUDA 原生调用性能！</text>
+      </g>
+
+      <line x1="215" y1="152" x2="215" y2="162" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-emerald-43)"/>
+
+      <!-- Layer 3: Third-party HAL Plugins -->
+      <g transform="translate(12, 162)">
+        <rect width="406" height="96" rx="5" fill="#182234" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9" font-weight="700">第三方厂商适配层 (Hardware Abstraction Plugins)</text>
+
+        <!-- Sub-boxes -->
+        <g transform="translate(6, 26)">
+          <rect x="0" y="0" width="125" height="58" rx="3" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+          <text x="6" y="14" fill="#f87171" font-size="8" font-weight="700">torch_npu (华为昇腾)</text>
+          <text x="6" y="28" fill="#94a3b8" font-size="7.5">CANN Runtime API</text>
+          <text x="6" y="40" fill="#cbd5e1" font-size="7">DaVinci 算子库调用</text>
+          <text x="6" y="52" fill="#34d399" font-size="7">HCCL 集合通信驱动</text>
+
+          <rect x="135" y="0" width="125" height="58" rx="3" fill="#1e293b" stroke="#c084fc" stroke-width="1"/>
+          <text x="6" y="14" transform="translate(135,0)" fill="#c084fc" font-size="8" font-weight="700">torch_rocm (AMD)</text>
+          <text x="6" y="28" transform="translate(135,0)" fill="#94a3b8" font-size="7.5">HIP 源码级兼容层</text>
+          <text x="6" y="40" transform="translate(135,0)" fill="#cbd5e1" font-size="7">MIOpen 矩阵加速</text>
+          <text x="6" y="52" transform="translate(135,0)" fill="#34d399" font-size="7">RCCL 通信驱动</text>
+
+          <rect x="270" y="0" width="124" height="58" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+          <text x="6" y="14" transform="translate(270,0)" fill="#fbbf24" font-size="8" font-weight="700">torch_xla (Google)</text>
+          <text x="6" y="28" transform="translate(270,0)" fill="#94a3b8" font-size="7.5">OpenXLA 编译后端</text>
+          <text x="6" y="40" transform="translate(270,0)" fill="#cbd5e1" font-size="7">HLO 中间图表示</text>
+          <text x="6" y="52" transform="translate(270,0)" fill="#34d399" font-size="7">TPU 脉动阵列映射</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: 统一编译器后端与算子融合 -->
+    <g transform="translate(15, 346)">
+      <rect width="430" height="205" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 跨芯片统一编译器体系 (Triton IR / OpenXLA)</text>
+
+      <!-- Compiler Pipeline -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">统一高层源码编写：OpenAI Triton / JAX / PyTorch 2.0 Inductor</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">只需手写一次 Python 块级分块算法，无需为每款芯片手工编写专有汇编/C++</text>
+        <text x="10" y="46" fill="#94a3b8" font-size="7.5">输出中间表达：Triton-IR / StableHLO (跨平台中立算子计算图)</text>
+      </g>
+
+      <g transform="translate(12, 98)">
+        <rect width="406" height="96" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9" font-weight="700">⚡ 编译器后端硬件专有生成与极速融合 (Fusion)：</text>
+        <text x="10" y="32" fill="#38bdf8" font-size="8">• 对 NVIDIA：编译为 PTX ➔ 驱动发射至 Tensor Core 执行</text>
+        <text x="10" y="48" fill="#f87171" font-size="8">• 对华为昇腾：自动映射为 CANN CCE 代码，并自动将数据编排为 NZ 分形</text>
+        <text x="10" y="64" fill="#c084fc" font-size="8">• 自动融合 TransData：将数据排布转置与 GEMM 内核直接融合，消除显存拷贝</text>
+        <text x="10" y="80" fill="#34d399" font-size="8" font-weight="600">一次编写，全跨端高性能运行，跨芯片算力迁移成本降低 90%！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 统一集合通信抽象 -->
+    <g transform="translate(15, 562)">
+      <rect width="430" height="122" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 集合通信统一抽象 (PyTorch c10d ProcessGroup)</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#c084fc" font-size="9" font-weight="700">抽象通信原语：</text>
+        <text x="120" y="14" fill="#cbd5e1" font-size="8.5">AllReduce, AllGather, ReduceScatter, P2P Send/Recv</text>
+
+        <text x="0" y="34" fill="#38bdf8" font-size="9" font-weight="700">后端驱动接入：</text>
+        <text x="120" y="34" fill="#cbd5e1" font-size="8.5">通过 ProcessGroupHCCL / ProcessGroupNCCL 动态插件加载</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">拓扑感知映射：</text>
+        <text x="120" y="54" fill="#cbd5e1" font-size="8.5">适配昇腾板内全互联与机间双平面 RoCE，防环网死锁</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">通信计算重叠：</text>
+        <text x="120" y="74" fill="#94a3b8" font-size="8.5">统一 CUDA Stream / NPU Stream 异步流水线重叠模型</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-43)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#34d399"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、DPU 硬件卸载与在网计算</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">网络/存储/安全硬件级卸载 · SHARP 在网通信 AllReduce</text>
+
+    <!-- Subcard 3.1: DPU 四大卸载能力 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="240" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">3.1 现代 DPU 基础设施四项硬件全卸载能力</text>
+
+      <!-- 1: Net Offload -->
+      <g transform="translate(10, 34)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">1. 网络协议栈卸载 (Hardware RoCEv2 / IB)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">硬件 QP 队列管理、拥塞控制 (DCQCN) 与丢包重传，CPU 零软中断</text>
+      </g>
+
+      <!-- 2: Storage Offload -->
+      <g transform="translate(10, 82)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">2. 存储虚拟化直通 (NVMe-oF SNAP 加速)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">宿主机裸暴露硬件 NVMe 控制器，底层网络存储直通，零内核 VFS 拷贝</text>
+      </g>
+
+      <!-- 3: Security & Virt -->
+      <g transform="translate(10, 130)">
+        <rect width="350" height="46" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="9" font-weight="700">3. 集群安全与租户物理隔离 (OVS / P4 线速流表)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">多租户 VPC 隔离、IPSec 硬件加密，宿主机即便被破，网络底座固若金汤</text>
+      </g>
+
+      <!-- 4: CPU Relief -->
+      <g transform="translate(10, 182)">
+        <rect width="350" height="44" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#c084fc" font-size="8.5" font-weight="700">💥 架构价值：Host CPU 彻底解放</text>
+        <text x="8" y="32" fill="#34d399" font-size="8">Host CPU 核心利用率从 95%（频繁网络轮询）降至 &lt; 5%，彻底消灭通信抖动！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 在网计算与通信提速 -->
+    <g transform="translate(15, 315)">
+      <rect width="370" height="205" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">3.2 在网计算 (In-Network Computing, SHARP)</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="350" height="76" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9" font-weight="700">传统 AllReduce 通信：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">每个 GPU 节点必须相互传输完整梯度并由 GPU 核心执行规约求和</text>
+        <text x="10" y="46" fill="#ef4444" font-size="8">环路通信量 2(N-1)/N · S，网络链路反复占满，交换机仅负责转发</text>
+      </g>
+
+      <g transform="translate(10, 118)">
+        <rect width="350" height="76" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="9" font-weight="700">SHARP 在网计算 (In-Network AllReduce)：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">数据包进入交换机 / DPU 时，网络 ASIC 芯片就地直接执行加法规约！</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="8">仅向下游发送已求和的结果包，网络总通信量减半 (50% Bandwidth Free)</text>
+        <text x="10" y="64" fill="#34d399" font-size="8" font-weight="600">超万卡集群大规模训练跨交换机时延降低 40%！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 异构生产落地 Checklist -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 异构算力集群生产避坑 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 严禁硬编码 cuda()：</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8.5">统一使用 device 对象与 PrivateUse1 分发</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 监控 TransData 算子：</text>
+        <text x="145" y="34" fill="#94a3b8" font-size="8.5">Profiler 持续告警，发现频繁转置必排查对齐</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 异构通信拓扑校准：</text>
+        <text x="145" y="54" fill="#94a3b8" font-size="8.5">严防跨板 NVLink 拓扑盲目照搬至 HCCL</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 跨端算子精度对齐：</text>
+        <text x="145" y="74" fill="#94a3b8" font-size="8.5">校验 FP16 累加模式，防溢出导致的 Loss NaN</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ DPU 流表快照防挂：</text>
+        <text x="145" y="94" fill="#94a3b8" font-size="8.5">固件热升级需维持持久连接，防掉网导致任务挂死</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 动态 JIT 内核预热：</text>
+        <text x="145" y="114" fill="#94a3b8" font-size="8.5">上线前预编译生成全部 Shape 的二进制缓存</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不在业务层写硬件分支：算法代码必须与具体芯片解耦，借助 PyTorch PrivateUse1 与统一张量编译器实现零成本算力跨端迁移。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">谨防隐式 TransData 搬砖税：NPU 的 NZ 分形虽好，未经融合的疯狂转置会打爆内存带宽，必须通过编译器端到端融合把转置开销彻底抹平。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">万卡集群必须引入 DPU 硬件卸载：把 CPU 从协议栈轮询软中断中解放出来，借助在网计算将网络总流量减半，才是千卡高效扩展的正道。</text>
+    </g>
+  </g>
+</svg>

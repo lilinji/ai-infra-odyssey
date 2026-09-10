@@ -1,0 +1,419 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-42" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-42" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-42" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-42" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-42" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-42" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-42" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-42" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-42)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="310" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">RAG &amp; AGENT INFRASTRUCTURE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      RAG 与 Agent 基础设施：高并发 VectorDB、Radix Context 缓存与安全沙箱全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      百万级高维向量检索 (HNSW/IVF-PQ/RRF) · Radix Tree 动态前缀缓存与 TTFT 毫秒级治理 · 多租户 Agent 代码沙箱 (Landlock/gVisor/Firecracker)
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">TTFT REDUCTION</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">85% Faster</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">HNSW RECALL@10</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">&gt; 98.5%</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">SANDBOX COLD START</text>
+      <text x="307" y="38" fill="#fbbf24" font-size="16" font-weight="800">&lt; 15 ms</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">CONTEXT HIT RATE</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">&gt; 75% M-Turn</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-42)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、高并发 VectorDB 底座与混合检索</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">高维稠密向量与稀疏关键词协同 · HNSW/IVF-PQ 与 RRF 融合重排</text>
+
+    <!-- Subcard 1.1: 向量索引内部结构 (HNSW + IVF-PQ) -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 核心向量索引微架构：HNSW 图索引 vs IVF-PQ 压缩</text>
+
+      <!-- HNSW Hierarchy Visual -->
+      <g transform="translate(10, 34)">
+        <rect width="370" height="88" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">HNSW (Hierarchical Navigable Small World) 分层小世界图</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• Layer 2 (顶层稀疏图)：超长步长跳跃，快速定位近邻候选区域</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">• Layer 1 (中间过渡图)：逐级收敛搜索半径，过滤绝大部分无关簇</text>
+        <text x="10" y="64" fill="#cbd5e1" font-size="8.5">• Layer 0 (底层致密图)：贪婪搜索（Greedy Search）收敛至精确 Top-K</text>
+        <text x="10" y="78" fill="#34d399" font-size="8" font-weight="600">性能：QPS 极高（单核 &gt; 5000 QPS），召回率 &gt; 98.5%；缺点：内存开销大</text>
+      </g>
+
+      <!-- IVF-PQ Visual -->
+      <g transform="translate(10, 130)">
+        <rect width="370" height="90" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">IVF-PQ (倒排文件 + 乘积量化压缩)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 倒排聚类 (Inverted File)：K-Means 将空间聚为 nlist 个 Voronoi 质心</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">• 乘积量化 (PQ)：1024 维切分成 64 个子向量，各用 1 字节 Codebook 编码</text>
+        <text x="10" y="64" fill="#cbd5e1" font-size="8.5">• 内存收益：1024D FP32 向量由 4096 字节骤降至 64 字节（压缩比 64:1）！</text>
+        <text x="10" y="78" fill="#38bdf8" font-size="8">生产经验：亿级向量优先用 DiskANN / IVF-PQ 驻留 SSD，百万人脸/知识库用 HNSW</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 混合检索与重排链路 -->
+    <g transform="translate(15, 312)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.2 多路召回、RRF 排名融合与 Cross-Encoder 精排</text>
+
+      <!-- Search Flow Pipeline -->
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="175" height="52" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">路 1: 稠密语义召回 (Dense)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">Embedding 模型编码 (1024D)</text>
+        <text x="8" y="44" fill="#94a3b8" font-size="7.5">捕获概念关联与多义语义</text>
+
+        <rect x="195" y="0" width="175" height="52" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(195,0)" fill="#fbbf24" font-size="9" font-weight="700">路 2: 稀疏精确匹配 (Sparse)</text>
+        <text x="8" y="30" transform="translate(195,0)" fill="#cbd5e1" font-size="8">BM25 / SPLADE 倒排检索</text>
+        <text x="8" y="44" transform="translate(195,0)" fill="#94a3b8" font-size="7.5">捕获专有名词、错误码与型号</text>
+      </g>
+
+      <!-- RRF Formula -->
+      <g transform="translate(10, 96)">
+        <rect width="370" height="50" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#c084fc" font-size="9" font-weight="700">RRF (Reciprocal Rank Fusion) 倒数排名融合：</text>
+        <text x="10" y="32" fill="#34d399" font-size="9">RRF_Score(d) = ∑ [ 1 / ( k + Rank_i(d) ) ] ,  k = 60</text>
+        <text x="10" y="44" fill="#94a3b8" font-size="8">无需归一化分数，抗长尾分布极佳，有效消除两路检索量纲不一致痛点</text>
+      </g>
+
+      <!-- Cross-Encoder Rerank -->
+      <g transform="translate(10, 154)">
+        <rect width="370" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#f87171" font-size="8.5" font-weight="700">Cross-Encoder 深度重排 (BGE-Reranker)：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">对 Top-50 候选执行 Query-Doc 全交互 Attention 打分，输出最终 Top-5 注入 Prompt</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 内存与 QPS 白板算盘 -->
+    <g transform="translate(15, 534)">
+      <rect width="390" height="150" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">1.3 向量存储硬件资源白板手算 (千万级 1000万 向量)</text>
+
+      <g transform="translate(10, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">原始向量大小：</text>
+        <text x="120" y="14" fill="#cbd5e1" font-size="8.5">10^7 × 1024 × 4B = 40.96 GB (纯浮点数据)</text>
+
+        <text x="0" y="34" fill="#ef4444" font-size="9" font-weight="700">HNSW 索引内存：</text>
+        <text x="120" y="34" fill="#cbd5e1" font-size="8.5">M=32 邻接图额外增加 1.5~2 倍 ➔ 物理内存需 &gt; 90 GB！</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">SQ8 / PQ 压缩后：</text>
+        <text x="120" y="54" fill="#cbd5e1" font-size="8.5">标量量化 SQ8 仅需 10.24 GB，配合分段图索引单机 32GB 即可承载</text>
+
+        <text x="0" y="74" fill="#c084fc" font-size="9" font-weight="700">生产选型：</text>
+        <text x="120" y="74" fill="#94a3b8" font-size="8.5">百亿向量必上 Milvus/Qdrant 分布式集群 + NVMe-oF 向量倒排缓存</text>
+      </g>
+
+      <rect x="10" y="118" width="370" height="24" rx="3" fill="#182234"/>
+      <text x="18" y="134" fill="#fbbf24" font-size="8.5" font-weight="600">💡 生产铁律：严禁生产跑纯暴力余弦搜索，P99 延迟会随数据线性暴死！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-42)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、动态上下文引擎与 Radix 前缀缓存</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">消灭长上下文 Prefill 算力黑洞 · Radix Tree 状态机与 TTFT 毫秒治理</text>
+
+    <!-- Subcard 2.1: 传统 RAG Prefill 算力黑洞 vs Radix 缓存 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="235" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 传统长上下文 Prefill 算力黑洞 vs Radix 前缀缓存</text>
+
+      <!-- Flow comparison -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="76" rx="4" fill="#182234" stroke="#ef4444" stroke-width="1"/>
+        <text x="10" y="16" fill="#f87171" font-size="9.5" font-weight="700">❌ 传统无状态 Serving (每次请求独立计算)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 检索出 32K Token 知识库文档 ➔ 每次提问全量计算 GEMM Prefill</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">• 70B 模型 32K Prefill 消耗 FLOPs = 2 × 70B × 32K ≈ 4.5×10^15 次计算！</text>
+        <text x="10" y="64" fill="#ef4444" font-size="8.5">• 首字延迟 (TTFT) 飙升至 8~15 秒，GPU 算力被大量重复冗余计算吞噬</text>
+      </g>
+
+      <g transform="translate(12, 120)">
+        <rect width="406" height="96" rx="4" fill="#182234" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">✅ Radix Tree 前缀缓存 (RadixAttention / APC)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 将系统 Prompt 与已检索文档作为公共前缀，KV Cache 缓存在 GPU HBM</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8.5">• 新请求到达：Radix Tree 最长前缀匹配 ➔ 命中 31.8K Token 缓存物理块</text>
+        <text x="10" y="64" fill="#38bdf8" font-size="8.5">• 仅对新增的 200 Token 用户 Query 执行极小 GEMM 计算 (Chunked Prefill)</text>
+        <text x="10" y="80" fill="#34d399" font-size="8.5" font-weight="600">TTFT 从 12 秒暴降至 150 毫秒 (提速 80 倍！)，单请求 GPU 计算成本归零</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: Radix Tree 状态机与物理块复用 -->
+    <g transform="translate(15, 312)">
+      <rect width="430" height="230" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 Radix Tree 状态机与物理 Block 动态编排</text>
+
+      <!-- Tree Topology Visualization -->
+      <g transform="translate(12, 34)">
+        <!-- Root -->
+        <rect x="148" y="0" width="110" height="34" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="10" y="16" transform="translate(148,0)" fill="#38bdf8" font-size="8.5" font-weight="700">Root (System Prompt)</text>
+        <text x="10" y="27" transform="translate(148,0)" fill="#94a3b8" font-size="7.5">Token Block: #1~#16</text>
+
+        <!-- Branches -->
+        <line x1="165" y1="34" x2="90" y2="54" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-42)"/>
+        <line x1="240" y1="34" x2="315" y2="54" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arrow-purple-42)"/>
+
+        <!-- Branch 1: Doc A -->
+        <rect x="30" y="54" width="125" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="8.5" font-weight="700">Doc A (企业财报 2025)</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="7.5">Block: #17~#200 (共享只读)</text>
+        <text x="8" y="39" fill="#34d399" font-size="7">Ref Count = 12 (活跃使用)</text>
+
+        <!-- Branch 2: Doc B -->
+        <rect x="250" y="54" width="125" height="42" rx="4" fill="#1e293b" stroke="#c084fc" stroke-width="1"/>
+        <text x="8" y="16" fill="#c084fc" font-size="8.5" font-weight="700">Doc B (技术规范文档)</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="7.5">Block: #201~#350 (共享只读)</text>
+        <text x="8" y="39" fill="#fbbf24" font-size="7">Ref Count = 0 (待 LRU 驱逐)</text>
+      </g>
+
+      <!-- Memory Management Rules -->
+      <g transform="translate(12, 142)">
+        <rect width="406" height="78" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">⚡ Radix 缓存驱逐与锁保护机制：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8">• 引用计数 (Ref Count)：正在推理的请求对路径加读锁，防止物理块被回收</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="8">• 显存紧张时：自动从叶子节点按 LRU 优先级驱逐 Ref Count = 0 的冷分支</text>
+        <text x="10" y="64" fill="#34d399" font-size="8">• 分层换出：将冷节点写至 Host DRAM 或 3FS 共享存储 (LMCache)，避免重算</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: Prompt 模板工程与命中率治理 -->
+    <g transform="translate(15, 554)">
+      <rect width="430" height="130" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">2.3 生产 RAG Prompt 组装范式：确保前缀命中率 &gt; 80%</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#ef4444" font-size="9" font-weight="700">❌ 错误拼接：</text>
+        <text x="95" y="14" fill="#cbd5e1" font-size="8.5">[Timestamp] + [User Query] + [Doc A] ➔ 动态时间戳导致缓存 100% 击穿失效！</text>
+
+        <text x="0" y="36" fill="#34d399" font-size="9" font-weight="700">✅ 黄金组装结构：</text>
+        <text x="95" y="36" fill="#34d399" font-size="8.5">[Fixed System Prompt] ➔ [Doc 字典序排列] ➔ [User Query 放在最末尾]</text>
+
+        <text x="0" y="58" fill="#38bdf8" font-size="9" font-weight="700">网关路由亲和性：</text>
+        <text x="95" y="58" fill="#cbd5e1" font-size="8.5">一致性哈希将同一知识库 ID 的请求路由到固定 Pod，显存命中率冲上 90%</text>
+
+        <text x="0" y="80" fill="#c084fc" font-size="9" font-weight="700">动态变量剥离：</text>
+        <text x="95" y="80" fill="#94a3b8" font-size="8.5">严禁在 System Prompt 头部注入动态随机 UUID、当前毫秒时间戳与用户 IP</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-42)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#f87171"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、多租户 Agent 代码沙箱体系</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">纵深防御安全隔离 · gVisor/Landlock · 拦截 Prompt 注入逃逸</text>
+
+    <!-- Subcard 3.1: 纵深防御沙箱分层 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">3.1 Agent 不可信代码执行：四层纵深防御防线</text>
+
+      <!-- Layer 1: Landlock / Seccomp -->
+      <g transform="translate(10, 34)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">防线 1: Landlock LSM + seccomp-bpf (系统调用白名单)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">禁止 socket/ptrace/reboot，仅允许 /tmp 只读与安全标准输入输出</text>
+      </g>
+
+      <!-- Layer 2: gVisor Sentry -->
+      <g transform="translate(10, 82)">
+        <rect width="350" height="46" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">防线 2: 用户态微内核拦截 (gVisor runsc Sentry)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">独立 Go 实现的虚拟 Linux 内核，宿主机真正的 Linux Kernel 零直接暴露！</text>
+        <text x="8" y="42" fill="#94a3b8" font-size="7.5">冷启动 &lt; 15ms，彻底阻断利用宿主机内核 CVE 漏洞逃逸</text>
+      </g>
+
+      <!-- Layer 3: Cgroups v2 -->
+      <g transform="translate(10, 134)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="9" font-weight="700">防线 3: 严格资源硬配额 (cgroups v2 + Timeout)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">限制 CPU=1.0核，内存上限 256MB，超时强杀 5 秒，防死循环与 Fork 炸弹</text>
+      </g>
+
+      <!-- Layer 4: Network Egress Proxy -->
+      <g transform="translate(10, 182)">
+        <rect width="350" height="44" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="9" font-weight="700">防线 4: L7 出向隔离代理 (OPA Policy Proxy)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">默认切断所有外部公网访问，严格白名单过滤，彻底粉碎反弹 Shell 勒索</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 隔离方案技术对比矩阵 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="210" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">3.2 企业级代码沙箱核心方案横向选型决策</text>
+
+      <g transform="translate(8, 32)">
+        <rect width="354" height="22" fill="#1e293b" rx="3"/>
+        <text x="6" y="15" fill="#94a3b8" font-size="8" font-weight="700">方案</text>
+        <text x="75" y="15" fill="#94a3b8" font-size="8" font-weight="700">隔离级别</text>
+        <text x="155" y="15" fill="#94a3b8" font-size="8" font-weight="700">冷启动时延</text>
+        <text x="235" y="15" fill="#94a3b8" font-size="8" font-weight="700">内存底噪与评价</text>
+
+        <text x="6" y="38" fill="#f87171" font-size="8" font-weight="700">标准 Docker</text>
+        <text x="75" y="38" fill="#f87171" font-size="8">弱 (共享内核)</text>
+        <text x="155" y="38" fill="#34d399" font-size="8">50 ~ 200 ms</text>
+        <text x="235" y="38" fill="#f87171" font-size="8">极低，但逃逸风险致命</text>
+
+        <text x="6" y="58" fill="#34d399" font-size="8" font-weight="700">gVisor runsc</text>
+        <text x="75" y="58" fill="#34d399" font-size="8">强 (虚拟内核)</text>
+        <text x="155" y="58" fill="#34d399" font-size="8">15 ~ 30 ms</text>
+        <text x="235" y="58" fill="#34d399" font-size="8">约 20MB，Agent 首选王道</text>
+
+        <text x="6" y="78" fill="#c084fc" font-size="8" font-weight="700">Firecracker</text>
+        <text x="75" y="78" fill="#34d399" font-size="8">极强 (硬件 KVM)</text>
+        <text x="155" y="78" fill="#fbbf24" font-size="8">150 ~ 300 ms</text>
+        <text x="235" y="78" fill="#cbd5e1" font-size="8">约 5MB，需裸金属物理机</text>
+
+        <text x="6" y="98" fill="#38bdf8" font-size="8" font-weight="700">Landlock 进程</text>
+        <text x="75" y="98" fill="#38bdf8" font-size="8">中等 (LSM沙盒)</text>
+        <text x="155" y="98" fill="#34d399" font-size="8">&lt; 1 ms (免容器)</text>
+        <text x="235" y="98" fill="#38bdf8" font-size="8">零底噪，轻量函数最佳</text>
+      </g>
+
+      <g transform="translate(8, 142)">
+        <rect width="354" height="60" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">💡 生产安全定式：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">企业级 Agent 执行环境 = gVisor runsc 隔离容器 + cgroups 内存 256MB 限额</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8">+ 预热沙箱缓冲池 (Warm Pool 秒开) + 拦截所有未授权外网通信！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 生产避坑 Checklist -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#ef4444"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">3.3 RAG &amp; Agent 生产安全避坑 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 严禁裸机 Docker 跑 Tool：</text>
+        <text x="145" y="14" fill="#94a3b8" font-size="8.5">必须配置 gVisor runsc 或 Kata 隔离</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 动态前缀格式防失效：</text>
+        <text x="145" y="34" fill="#94a3b8" font-size="8.5">Prompt 模版中禁止在头部插入时间戳变量</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 向量分块元数据校验：</text>
+        <text x="145" y="54" fill="#94a3b8" font-size="8.5">Chunk 严格校验哈希，防投毒恶意指令注入</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 强制执行超时终止：</text>
+        <text x="145" y="74" fill="#94a3b8" font-size="8.5">沙箱进程设 5 秒硬超时与 SIGKILL 双保洁</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 混合搜索动态调优：</text>
+        <text x="145" y="94" fill="#94a3b8" font-size="8.5">根据领域调整 RRF k 权重与 Cross-Encoder 阈值</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 预热沙箱常驻缓冲：</text>
+        <text x="145" y="114" fill="#94a3b8" font-size="8.5">常驻 20 个温热沙箱，消除虚拟机冷启动体感</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不允许无缓存的重复长 Prefill：32K 知识库文档是 GEMM 吞噬黑洞，必须依靠 Radix Tree 前缀缓存把 TTFT 压制在百毫秒内。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">向量检索拒绝单打独斗：纯语义稠密向量必在精确型号与专有名词上失真，Dense + BM25 配合 RRF 融合重排才是工业级准召保证。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">永远不要信任大模型生成的代码：Prompt 注入诱发容器逃逸绝非危言耸听，gVisor 独立内核拦截与出向网络封锁是不可逾越的底线。</text>
+    </g>
+  </g>
+</svg>

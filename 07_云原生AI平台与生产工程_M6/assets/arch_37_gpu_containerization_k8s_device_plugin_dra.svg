@@ -1,0 +1,333 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-37" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-37" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-37" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-37" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-37" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-37" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-37" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-37" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-37)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="250" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">GPU CONTAINERIZATION &amp; DRA</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      GPU 容器化与 Kubernetes Device Plugin / DRA 调度体系全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      Linux 容器 Cgroups 盲区 · NVIDIA Container Toolkit 注入链路 · Device Plugin v1beta1 gRPC 状态机 · DRA 动态资源分配演进
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Linux Blind Spot -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">Linux 内核盲区</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="13" font-weight="700">Char Dev (Major 195)</text>
+      </g>
+      <!-- Badge 2: OCI Hook -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">OCI 动态注入管道</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="13" font-weight="700">Prestart Hook + CDI</text>
+      </g>
+      <!-- Badge 3: DP Model -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">传统 Device Plugin</text>
+        <text x="12" y="42" fill="#fefce8" font-size="13" font-weight="700">Scalar 标量整数卡</text>
+      </g>
+      <!-- Badge 4: DRA Revolution -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">新代代际调度演进</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="13" font-weight="700">DRA (KEP-3063)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-37)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">Linux 容器物理盲区与设备注入</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Cgroups 缺失 · 字符设备特异性 · OCI Hook 管道</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: Cgroups 盲区与硬件本质 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="175" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Cgroups/Namespaces 的天然硬件偏见</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· Linux 隔离体系局限: 仅原生抽象 CPU 与主机 Memory；</text>
+        <text x="0" y="30" fill="#f87171" font-size="10.5" font-weight="600">· GPU 的内核物理真身:</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10">  PCIe 挂载的外设，通过字符设备（Major 195）向用户态暴露：</text>
+        <text x="0" y="62" fill="#94a3b8" font-size="10">  `/dev/nvidiactl` (全局控制), `/dev/nvidia-uvm` (统一内存), `/dev/nvidia[0-7]`</text>
+        <text x="0" y="82" fill="#fbbf24" font-size="10.5" font-weight="600">致命痛点: 普通容器即使执行 docker run，内部完全看不见 GPU；</text>
+        <text x="0" y="98" fill="#ef4444" font-size="10">cgroups 无法记账显存，更无法对 SM 流处理器核心做 CFS 时间片配额！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: NVIDIA Container Toolkit 注入管道 -->
+    <g transform="translate(20, 270)">
+      <rect x="0" y="0" width="380" height="300" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">NVIDIA Container Toolkit 注入全链路</text>
+
+      <!-- Step 1: Hook trigger -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. OCI Prestart Hook 拦截与环境变量解析</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">containerd 启动容器时触发 Hook，读取 NVIDIA_VISIBLE_DEVICES</text>
+      </g>
+
+      <!-- Step 2: Cgroups allow -->
+      <g transform="translate(14, 94)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#a855f7" font-size="10.5" font-weight="700">2. Cgroups Devices 白名单放行 (devices.allow)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">向容器写入权限白名单: c 195:* rwm, 允许访问特定主次设备号</text>
+      </g>
+
+      <!-- Step 3: Bind Mount & mknod -->
+      <g transform="translate(14, 152)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">3. 驱动用户态动态链接库挂载 (Bind Mount)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">将宿主机 libcuda.so, libnvidia-ml.so 与 nvidia-smi 挂载入容器</text>
+      </g>
+
+      <!-- Step 4: Device Creation -->
+      <g transform="translate(14, 210)">
+        <rect x="0" y="0" width="352" height="68" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">4. 容器内设备节点创建 (mknod / CDI Spec)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">在容器内 `/dev` 目录动态 mknod 对应显卡设备节点；</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">新代演进: 逐步转向云原生标准容器设备接口 CDI (Container Device Interface)！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.3: 驱动版本匹配红线 -->
+    <g transform="translate(20, 585)">
+      <rect x="0" y="0" width="380" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="20" fill="#f87171" font-size="11" font-weight="700">生产避坑第一定律：驱动版本严格向前兼容</text>
+      <text x="14" y="38" fill="#cbd5e1" font-size="9.5">· 宿主机 Kernel Driver (`nvidia.ko`) 版本 ≥ 容器内 CUDA Toolkit 要求；</text>
+      <text x="14" y="54" fill="#cbd5e1" font-size="9.5">· 镜像内只需预装 `libcudart.so`，绝对不要把驱动二进制打包进镜像！</text>
+      <text x="14" y="70" fill="#38bdf8" font-size="9.5" font-weight="600">· 违背此法则将直接抛出著名的 driver/library version mismatch 崩溃。</text>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-37)" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#b45309" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#fbbf24" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">K8s Device Plugin 体系与局限</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Kubelet Device Manager · v1beta1 gRPC · 标量分配之殇</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: Device Plugin gRPC 交互时序 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="320" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="14" y="22" fill="#fbbf24" font-size="12" font-weight="700">Kubelet 与 Device Plugin 交互管道</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Step A: Register -->
+        <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. Plugin 向 Kubelet 注册 (Unix Domain Socket)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">DaemonSet 启动，连接 `/var/lib/kubelet/device-plugins/kubelet.sock`，</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">声明资源名 `nvidia.com/gpu` 并上报自身监听的 Socket 路径</text>
+
+        <!-- Step B: ListAndWatch -->
+        <g transform="translate(0, 66)">
+          <rect x="0" y="0" width="352" height="58" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">2. 状态长连接心跳 (ListAndWatch gRPC)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">Plugin 持续流式推送健康列表: `[GPU-0: Healthy, GPU-1: Healthy...]`</text>
+          <text x="10" y="48" fill="#94a3b8" font-size="9">Kubelet 收到后汇总并更新 Node Capacity 与 Allocatable 字段</text>
+        </g>
+
+        <!-- Step C: Allocate -->
+        <g transform="translate(0, 132)">
+          <rect x="0" y="0" width="352" height="68" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">3. 容器创建设备分配 (Allocate gRPC)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">调度器绑定 Pod ➔ Kubelet 调用 Allocate(request=[GPU-0, GPU-1])；</text>
+          <text x="10" y="48" fill="#cbd5e1" font-size="9.5">Plugin 返回设备环境变量与 MountSpec ➔ 传给 CRI 创建容器沙箱！</text>
+        </g>
+
+        <!-- Step D: PreStartContainer -->
+        <g transform="translate(0, 208)">
+          <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">4. 容器启动前钩子 (PreStartContainer)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9">可选调用，用于在容器主进程跑起来前重置 GPU 状态或初始化驱动环境</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 2.2: 传统标量架构的三大致命短板 -->
+    <g transform="translate(20, 415)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#f87171" font-size="12" font-weight="700">传统 Device Plugin 标量架构三大死穴</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">死穴 1: 只能按整卡整数计数 (Scalar Integer)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9">声明 `nvidia.com/gpu: 1`，无法原生表达 4GB 显存或 30% 算力，造成巨额浪费</text>
+      </g>
+
+      <g transform="translate(14, 100)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">死穴 2: 硬件拓扑完全盲盒 (Topology Blind)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9">调度器只看节点剩余卡数，随机分配 GPU-0 与 GPU-7（跨 NUMA 且无 NVLink）；</text>
+        <text x="10" y="48" fill="#fca5a5" font-size="8.5">导致原本 900 GB/s 的全互联通信降级为 32 GB/s 的 PCIe 龟速！</text>
+      </g>
+
+      <g transform="translate(14, 168)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">死穴 3: 无法联合异构设备协同调度 (No Co-allocation)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9">GPU、RoCE/IB 网卡与 NVMe 本地盘各自为政，无法表达“网卡必须与这台 GPU</text>
+        <text x="10" y="48" fill="#fca5a5" font-size="8.5">直连在同一个 PCIe Switch 下”的强拓扑亲和约束！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-37)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">动态资源分配 (DRA) 范式革命</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">KEP-3063 · 结构化参数 · 拓扑图匹配与联合分配</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: DRA 核心模型抽象 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="310" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">K8s 1.30+ DRA 核心对象抽象模型</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Claim -->
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. ResourceClaim (资源声明凭证)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">类似存储中的 PVC，生命周期可独立于 Pod；</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">定义 Pod 所需的 GPU 硬件类型、显存容量、互联带宽与拓扑约束</text>
+      </g>
+
+      <!-- Slice -->
+      <g transform="translate(0, 74)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">2. ResourceSlice (节点多维资源图谱切片)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">驱动在节点侧动态上报复杂的结构化硬件图谱；</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">包含显卡型号、PCIe 亲和性、NUMA 归属与 NVLink 矩阵互联拓扑</text>
+      </g>
+
+      <!-- Structured Params -->
+      <g transform="translate(0, 148)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">3. Structured Parameters 结构化参数匹配</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">Kube-scheduler 原生调度框架内嵌图匹配（Graph Matching）算法；</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9.5">无需第三方调度器介入，直接根据 CEL 表达式筛选最佳互联硬件组合！</text>
+        <text x="10" y="64" fill="#34d399" font-size="9" font-weight="600">调度延迟比早期 DRA 控制器模式下降 10 倍以上！</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 拓扑联合分配收益 -->
+    <g transform="translate(20, 410)">
+      <rect x="0" y="0" width="380" height="275" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">DRA 拓扑联合分配实录（Co-Allocation）</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">大模型训练黄金组分配（完美拓扑亲和）：</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="9.5">· 请求: 4 张 GPU + 1 张 400G IB 网卡</text>
+
+        <rect x="0" y="38" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10" font-weight="700">DRA 原生图匹配决策结果：</text>
+        <text x="10" y="34" fill="#f0fdf4" font-size="9">✔ 精准分配: [GPU-0, GPU-1, GPU-2, GPU-3] (同处于 NVSwitch 环)</text>
+        <text x="10" y="48" fill="#f0fdf4" font-size="9">✔ 伴随网卡: ib0 (与这 4 张卡直连同一 PCIe Switch，位于 NUMA Node 0)</text>
+        <text x="10" y="64" fill="#bae6fd" font-size="8.5">零跨 NUMA 穿透，GPUDirect RDMA 打满 400 Gbps 线路全速！</text>
+
+        <g transform="translate(0, 120)">
+          <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">工业代际结论：</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">Device Plugin 是云原生对 GPU 的粗暴适配；</text>
+          <text x="10" y="50" fill="#34d399" font-size="9.5" font-weight="600">DRA 才是 Kubernetes 真正面向 AI 超级计算打造的原生资源调度基础设施。</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[内核盲区]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">容器不会天然拥有 GPU；字符设备挂载与动态库注入是贯通内核与 OCI 的精密工程。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="16" y="20" fill="#fbbf24" font-size="11" font-weight="700">[标量之殇]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">整数标量计数的 Device Plugin 难以表达复杂硬件，拓扑感知的缺失是性能波动的祸根。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[DRA 范式]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">动态资源分配将硬件图谱提升为一等公民，赋能 K8s 原生调度万卡超算算力网格。</text>
+    </g>
+  </g>
+</svg>

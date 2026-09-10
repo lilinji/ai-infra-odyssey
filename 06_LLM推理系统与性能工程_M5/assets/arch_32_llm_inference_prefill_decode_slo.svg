@@ -1,0 +1,351 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-32" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-32" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-32" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-32" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-32" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-32" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-32" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-32" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-32)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="235" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">INFERENCE TWO-PHASE DYNAMICS</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      LLM 在线推理两阶段（Prefill vs Decode）物理本质与核心 SLO 全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      计算密集 GEMM vs 访存密集 GEMV · Roofline 硬件错配 · 核心 SLO 黄金三角 · Chunked Prefill 破局
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: Prefill Feature -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">Prefill 阶段特性</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="13" font-weight="700">Compute-Bound</text>
+      </g>
+      <!-- Badge 2: Decode Feature -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">Decode 阶段特性</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="13" font-weight="700">Memory-Bound</text>
+      </g>
+      <!-- Badge 3: Target TPOT -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">人类舒适流速 (TPOT)</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="13" font-weight="700">20 ~ 40 ms/tok</text>
+      </g>
+      <!-- Badge 4: Solution -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">破局平抑机制</text>
+        <text x="12" y="42" fill="#fefce8" font-size="13" font-weight="700">Chunked Prefill</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-32)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">两阶段物理本质与硬件错配</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">自回归因果律 · GEMM vs GEMV · Roofline 冲突</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: Prefill 阶段微观机理 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="155" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Prefill 阶段 (预填充 / 上下文处理)</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 物理输入: 整段 Prompt (如 1024 Tokens 一次性送入)</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 计算形态: 密集通用矩阵乘 (GEMM)</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10">  Q [1024, h] × K^T [h, 1024] ➔ Attention [1024, 1024]</text>
+        <text x="0" y="64" fill="#34d399" font-size="10.5" font-weight="700">· 硬件特性: 极高算术强度 (Arithmetic Intensity &gt;&gt; 150)</text>
+        <text x="0" y="80" fill="#bae6fd" font-size="10">  完全落在 Roofline 算力平台期，打满 GPU Tensor Core</text>
+        <text x="0" y="98" fill="#f87171" font-size="10" font-weight="600">⚠ 瓶颈: GPU FLOPS 极限峰值算力与 O(s²) 显存增长</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: Decode 阶段微观机理 -->
+    <g transform="translate(20, 250)">
+      <rect x="0" y="0" width="380" height="155" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Decode 阶段 (自回归逐字生成)</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 物理输入: 仅 1 个新 Token 向量 [1, h]</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10.5">· 计算形态: 矩阵向量乘 (GEMV)</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10">  必须全量读出历史全量 KV Cache 与全部模型权重</text>
+        <text x="0" y="64" fill="#f59e0b" font-size="10.5" font-weight="700">· 硬件特性: 极低算术强度 (Arithmetic Intensity &lt; 2)</text>
+        <text x="0" y="80" fill="#fef08a" font-size="10">  深陷 Roofline 左侧斜坡，算力利用率 MFU 常常 &lt; 5%！</text>
+        <text x="0" y="98" fill="#ef4444" font-size="10" font-weight="600">⚠ 瓶颈: HBM 显存访存带宽 (Memory Bandwidth)</text>
+      </g>
+    </g>
+
+    <!-- Module 1.3: 硬件错配深渊对比 -->
+    <g transform="translate(20, 420)">
+      <rect x="0" y="0" width="380" height="265" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">同卡混跑的硬件灾难（Resource Contention）</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">灾难 1: 算力踩踏与长尾突刺 (ITL Spike)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">长 Prompt 突发进入执行 Prefill，强行抢占全部 SM 核心，</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">导致并发的几十个 Decode 任务停摆几百毫秒，打字机卡顿！</text>
+      </g>
+
+      <g transform="translate(14, 114)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">灾难 2: 显存带宽与空间挤压</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">Decode 依赖高并发摊薄模型权重搬运开销，但长 Prefill</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">产生庞大的瞬时激活显存，逼迫调度器大幅调低 Batch Size！</text>
+      </g>
+
+      <g transform="translate(14, 190)">
+        <rect x="0" y="0" width="352" height="56" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="20" fill="#34d399" font-size="10.5" font-weight="700">系统工程推论：</text>
+        <text x="10" y="38" fill="#cbd5e1" font-size="10">大模型推理系统的一切调度器优化，本质上都是在调和两阶段矛盾。</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-32)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">核心 SLO 黄金三角度量体系</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">TTFT · TPOT/ITL · E2E Latency · Goodput 有效吞吐</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 4 大核心指标时序拆解 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="285" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">用户感知体验与 SLO 物理时延拆解</text>
+
+      <!-- Metric 1: TTFT -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. TTFT (Time To First Token, 首字延迟)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">TTFT = T_queue (排队耗时) + T_prefill (预填充耗时)</text>
+        <text x="10" y="46" fill="#34d399" font-size="9">生产目标: P99 ≤ 500 ms (首屏交互不卡顿的基准线)</text>
+      </g>
+
+      <!-- Metric 2: TPOT / ITL -->
+      <g transform="translate(14, 94)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">2. TPOT (Time Per Output Token, 字间延迟 / ITL)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">TPOT = T_decode_step (单步生成耗时)，衡量打字机流式顺畅度</text>
+        <text x="10" y="46" fill="#34d399" font-size="9">生产目标: P99 ≤ 30~50 ms (对应流速 20~33 tokens/s，人类阅读极度舒适)</text>
+      </g>
+
+      <!-- Metric 3: E2E Latency -->
+      <g transform="translate(14, 152)">
+        <rect x="0" y="0" width="352" height="52" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">3. E2E Latency (端到端总延迟)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">E2E = TTFT + TPOT × (Tokens_out - 1)</text>
+        <text x="10" y="46" fill="#94a3b8" font-size="9">衡量非流式接口 (如批处理/Agent 代码调用) 的总任务耗时</text>
+      </g>
+
+      <!-- Metric 4: P99 Jitter -->
+      <g transform="translate(14, 210)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">4. 抖动度 (Latency Jitter, P99 vs P50)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">P99 / P50 比例：反映长尾长 Prompt 插入时的系统脆弱性</text>
+        <text x="10" y="48" fill="#f87171" font-size="9" font-weight="600">⚠ 传统混跑系统 P99 经常达到 P50 的 10~20 倍，体验崩塌！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: Throughput vs Goodput -->
+    <g transform="translate(20, 380)">
+      <rect x="0" y="0" width="380" height="305" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Throughput (粗吞吐) vs Goodput (有效吞吐)</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Equation Box -->
+        <rect x="0" y="0" width="352" height="50" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="20" fill="#f0f9ff" font-size="10.5" font-weight="700">Goodput = 严格满足 SLO 阈值的有效生成 Token / 秒</text>
+        <text x="10" y="38" fill="#bae6fd" font-size="9.5">Goodput = Σ (Valid_Tokens_i) / T_total (违约请求算力被判无效)</text>
+      </g>
+
+      <g transform="translate(14, 98)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">工程警示：吞吐量自嗨陷阱</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="10">将 Batch Size 强行拉大到 256，总吞吐量可能高达 4000 tokens/s，</text>
+        <text x="0" y="44" fill="#94a3b8" font-size="10">但 TPOT 恶化到 300ms/tok，TTFT 超过 8 秒！</text>
+        <text x="0" y="60" fill="#f87171" font-size="10" font-weight="600">从业务角度看，95% 以上的用户体验已被判定为不可用超时，</text>
+        <text x="0" y="76" fill="#f87171" font-size="10" font-weight="600">此时系统的 Goodput 实际接近于 0！</text>
+      </g>
+
+      <g transform="translate(14, 185)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">架构师黄金评估法则：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">脱离延迟约束去谈吞吐量是伪命题；</text>
+        <text x="10" y="50" fill="#34d399" font-size="10" font-weight="600">所有大厂推理压测必须以“在 P99 SLO 达标下的最大 QPS”作为唯一指标！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-32)" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#b45309" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#fbbf24" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">Chunked Prefill 动态破局机制</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">切片化解 · Token Budget 预算编排 · 长尾抹平</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: Chunked Prefill 调度原理 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="235" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="14" y="22" fill="#fbbf24" font-size="12" font-weight="700">Chunked Prefill 统一预算编排机制</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 原理: 将一个巨型 Prompt (如 4096 Tokens) 强行切碎成</text>
+        <text x="0" y="28" fill="#cbd5e1" font-size="10.5">  若干个固定大小的 Chunk (如 chunk_size = 512)</text>
+
+        <rect x="0" y="38" width="352" height="74" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">单步调度组装 (Step-level Batching):</text>
+        <text x="10" y="34" fill="#f0f9ff" font-size="9.5">Token Budget = 2048 Tokens 物理配额：</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5">· 消费 64 个 Token 用于 64 个并发 Decode 任务</text>
+        <text x="10" y="62" fill="#c084fc" font-size="9.5">· 剩余 1984 配额用于执行 3~4 个请求的 Prefill Chunks！</text>
+
+        <text x="0" y="126" fill="#34d399" font-size="10" font-weight="700">双赢局面：</text>
+        <text x="0" y="140" fill="#cbd5e1" font-size="9.5">1. GPU SM 算力被 2048 个 Token 的 GEMM 充分打满；</text>
+        <text x="0" y="154" fill="#cbd5e1" font-size="9.5">2. Decode 请求每步都能稳定推进 1 个 Token，TPOT 长尾被彻底抹平！</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 传统混跑 vs Chunked Prefill 延迟时序对比 -->
+    <g transform="translate(20, 330)">
+      <rect x="0" y="0" width="380" height="195" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#fbbf24" font-size="12" font-weight="700">时序对比：长尾突刺消除实录</text>
+
+      <!-- Case 1: Naive Overlap -->
+      <g transform="translate(14, 38)">
+        <text x="0" y="12" fill="#f87171" font-size="10" font-weight="700">传统混跑 (Naive Interleaving):</text>
+        <g transform="translate(0, 18)">
+          <rect x="0" y="0" width="30" height="18" rx="2" fill="#0369a1"/>
+          <rect x="34" y="0" width="30" height="18" rx="2" fill="#0369a1"/>
+          <rect x="68" y="0" width="220" height="18" rx="2" fill="#b91c1c"/>
+          <text x="110" y="13" fill="#fff" font-size="8">巨型 Prefill 霸占 600ms (Decode 挂起!)</text>
+          <rect x="292" y="0" width="30" height="18" rx="2" fill="#0369a1"/>
+        </g>
+      </g>
+
+      <!-- Case 2: Chunked Prefill -->
+      <g transform="translate(14, 98)">
+        <text x="0" y="12" fill="#34d399" font-size="10" font-weight="700">开启 Chunked Prefill:</text>
+        <g transform="translate(0, 18)">
+          <rect x="0" y="0" width="75" height="22" rx="2" fill="#047857"/>
+          <text x="6" y="15" fill="#fff" font-size="7.5">D + Chunk1 (35ms)</text>
+          <rect x="80" y="0" width="75" height="22" rx="2" fill="#047857"/>
+          <text x="6" y="15" fill="#fff" font-size="7.5">D + Chunk2 (35ms)</text>
+          <rect x="160" y="0" width="75" height="22" rx="2" fill="#047857"/>
+          <text x="6" y="15" fill="#fff" font-size="7.5">D + Chunk3 (35ms)</text>
+          <rect x="240" y="0" width="75" height="22" rx="2" fill="#047857"/>
+          <text x="6" y="15" fill="#fff" font-size="7.5">D + Chunk4 (35ms)</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 155)">
+        <text x="0" y="14" fill="#38bdf8" font-size="10" font-weight="600">战果: P99 ITL 从 650ms 压制到 35ms，降幅达 94.6%！</text>
+        <text x="0" y="28" fill="#94a3b8" font-size="9">打字机流式输出丝滑如水，完全消除“偶发性顿挫感”。</text>
+      </g>
+    </g>
+
+    <!-- Module 3.3: 生产参数推荐速查 -->
+    <g transform="translate(20, 540)">
+      <rect x="0" y="0" width="380" height="145" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">vLLM 生产推荐启动参数</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10">--enable-chunked-prefill=True (强制开启分块)</text>
+        <text x="0" y="30" fill="#cbd5e1" font-size="10">--max-num-batched-tokens=2048 (单步 Token 预算总上限)</text>
+        <text x="0" y="46" fill="#cbd5e1" font-size="10">--max-num-seqs=256 (最大并发序列数)</text>
+        <text x="0" y="66" fill="#fbbf24" font-size="10" font-weight="600">核心约束: 预算设太小（如 512）算力不饱满；设太大（如 8192）</text>
+        <text x="0" y="80" fill="#fbbf24" font-size="10" font-weight="600">又会轻微拉长单步 TPOT；2048~4096 为黄金平衡点！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[硬件错配]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">Prefill 吃算力、Decode 吃带宽，两阶段的物理异构是推理工程的根本源头。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[SLO铁律]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">不谈 P99 的吞吐都是数字自嗨；在真实生产中，违背 SLO 的算力产出等于零。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="16" y="20" fill="#fbbf24" font-size="11" font-weight="700">[切片破局]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">Chunked Prefill 赋予了调度器切片主动权，将失控巨浪平抑为受控溪流。</text>
+    </g>
+  </g>
+</svg>

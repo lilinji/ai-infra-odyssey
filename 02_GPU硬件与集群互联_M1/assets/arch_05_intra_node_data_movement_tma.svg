@@ -1,0 +1,264 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="260" height="24" rx="6" fill="#065f46" fill-opacity="0.3" stroke="#059669" stroke-width="1"/>
+    <text x="12" y="16" fill="#34d399" class="badge">INTRA-NODE MICROARCHITECTURE &amp; SM-FREE</text>
+    
+    <text x="0" y="60" class="title">机内数据搬运微架构与 SM-Free 硬件加速全景</text>
+    <text x="0" y="84" class="subtitle">传统 LSU 寄存器挤爆 vs TMA 多维张量直通 · mbarrier 硬件同步与 Phase 翻转 · Copy Engine &amp; CUDA IPC 900GB/s 跨进程直连</text>
+  </g>
+
+  <!-- ================= TOP: LSU vs TMA MICROARCHITECTURE BATTLE ================= -->
+  <!-- Left: Traditional LSU (Red / Rose) -->
+  <g transform="translate(50, 135)">
+    <rect width="650" height="395" rx="12" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#ef4444" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#f87171" class="card-title">传统 SM LSU 模式：通用寄存器中转与指令管线全阻塞</text>
+
+    <!-- Content Diagram -->
+    <g transform="translate(24, 60)">
+      <!-- Global VRAM -->
+      <rect x="0" y="0" width="160" height="250" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="20" y="32" fill="#e2e8f0" class="mono" font-size="13" font-weight="700">Global VRAM</text>
+      <text x="20" y="52" fill="#94a3b8" class="text-xs">(HBM3e 3.35TB/s)</text>
+      <rect x="16" y="70" width="128" height="160" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="26" y="94" fill="#94a3b8" class="mono" font-size="11">Tensor A [M, K]</text>
+      <text x="26" y="114" fill="#94a3b8" class="mono" font-size="11">Tensor B [K, N]</text>
+      <text x="26" y="145" fill="#f87171" class="mono" font-size="10">ld.global.v4</text>
+      <text x="26" y="165" fill="#f87171" class="mono" font-size="10">逐 16 字节发射</text>
+
+      <!-- Arrow 1: To Register File -->
+      <path d="M 160 110 L 230 110" stroke="#fb7185" stroke-width="2.5" marker-end="url(#arrow-rose)"/>
+      <text x="165" y="100" fill="#fb7185" class="mono" font-size="10">LSU 抓取</text>
+
+      <!-- SM Core Box -->
+      <rect x="235" y="0" width="220" height="250" rx="8" fill="#1e1e2e" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,2"/>
+      <text x="250" y="26" fill="#fca5a5" class="mono" font-size="12" font-weight="700">SM Compute Engine</text>
+
+      <!-- Bottleneck 1: Register File -->
+      <rect x="250" y="42" width="190" height="85" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.2"/>
+      <text x="262" y="64" fill="#fecaca" class="mono" font-size="12" font-weight="700">Register File (RF)</text>
+      <text x="262" y="82" fill="#fca5a5" class="text-xs">⚠️ 寄存器挤爆 (Spilling)</text>
+      <text x="262" y="98" fill="#f87171" class="mono" font-size="10">单线程占用 > 128 regs</text>
+      <text x="262" y="114" fill="#fca5a5" class="text-xs">活跃 Warp 数断崖腰斩！</text>
+
+      <!-- Bottleneck 2: Warp Scheduler Stalled -->
+      <rect x="250" y="145" width="190" height="90" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+      <text x="262" y="168" fill="#fecaca" class="mono" font-size="11" font-weight="700">Tensor Core MMA 管线</text>
+      <text x="262" y="188" fill="#f87171" class="text-xs">❌ 算力饥饿 (Starvation)</text>
+      <text x="262" y="206" fill="#94a3b8" class="text-xs">发射槽全在等数据就绪</text>
+      <text x="262" y="222" fill="#fb7185" class="mono" font-size="10">MMA 算力利用率 &lt; 45%</text>
+
+      <!-- Arrow 2: To Shared Memory -->
+      <path d="M 455 85 L 485 85" stroke="#fb7185" stroke-width="2.5" marker-end="url(#arrow-rose)"/>
+      <text x="456" y="75" fill="#fb7185" class="mono" font-size="10">st.shared</text>
+
+      <!-- Shared Memory -->
+      <rect x="490" y="0" width="135" height="250" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="502" y="32" fill="#e2e8f0" class="mono" font-size="12" font-weight="700">Shared Mem</text>
+      <text x="502" y="52" fill="#94a3b8" class="text-xs">(228 KB/SM)</text>
+      <rect x="500" y="70" width="115" height="160" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+      <text x="510" y="110" fill="#94a3b8" class="text-xs">数据终于入驻</text>
+      <text x="510" y="130" fill="#f87171" class="mono" font-size="11">__syncthreads</text>
+      <text x="510" y="150" fill="#fca5a5" class="text-xs">软件显式打卡</text>
+    </g>
+
+    <!-- Bottom summary -->
+    <rect x="24" y="325" width="602" height="52" rx="6" fill="#450a0a" fill-opacity="0.4" stroke="#7f1d1d" stroke-width="1"/>
+    <text x="36" y="345" fill="#fca5a5" class="text-xs" font-weight="700">❌ 核心弊端：每拷贝 1 个元素发射 1 次指令，消耗 1 个寄存器，SM 变成“全职搬运工”</text>
+    <text x="36" y="364" fill="#f87171" class="mono" font-size="11">指令开销: 32条/Warp | 寄存器污染: 极重 | 硬件同步: 软件轮询耗时 300~500 周期</text>
+  </g>
+
+  <!-- Right: Hopper/Blackwell TMA (Cyan / Emerald) -->
+  <g transform="translate(740, 135)">
+    <rect width="650" height="395" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#10b981" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#34d399" class="card-title">Hopper/Blackwell TMA 革命：硬件异步张量直通 (SM-Free)</text>
+
+    <!-- Content Diagram -->
+    <g transform="translate(24, 60)">
+      <!-- Global VRAM -->
+      <rect x="0" y="0" width="160" height="250" rx="8" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+      <text x="20" y="32" fill="#a7f3d0" class="mono" font-size="13" font-weight="700">Global VRAM</text>
+      <text x="20" y="52" fill="#94a3b8" class="text-xs">(多维 Tensor 布局)</text>
+      <rect x="16" y="70" width="128" height="160" rx="6" fill="#064e3b" fill-opacity="0.4" stroke="#047857" stroke-width="1"/>
+      <text x="26" y="96" fill="#a7f3d0" class="mono" font-size="11">5D Tensor Tile</text>
+      <text x="26" y="116" fill="#6ee7b7" class="text-xs">支持非连续跨步</text>
+      <text x="26" y="136" fill="#6ee7b7" class="text-xs">边界自动补零 (OOB)</text>
+      <text x="26" y="165" fill="#34d399" class="mono" font-size="10">cp.async.bulk</text>
+      <text x="26" y="182" fill="#a7f3d0" class="text-xs">单条指令下单</text>
+
+      <!-- TMA Hardware Accelerator in Middle -->
+      <rect x="200" y="15" width="220" height="90" rx="8" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+      <text x="215" y="42" fill="#6ee7b7" class="mono" font-size="13" font-weight="700">⚡ TMA 硬件加速引擎</text>
+      <text x="215" y="60" fill="#a7f3d0" class="text-xs">专用芯片逻辑，直接寻址跨步张量</text>
+      <text x="215" y="80" fill="#34d399" class="mono" font-size="10">100% 旁路通用寄存器堆 (Bypass RF)</text>
+
+      <!-- Direct Data Highway from VRAM to Shared Mem -->
+      <path d="M 144 110 L 200 60" stroke="#34d399" stroke-width="3" stroke-dasharray="6,3"/>
+      <path d="M 420 60 L 490 100" stroke="#34d399" stroke-width="3" stroke-dasharray="6,3" marker-end="url(#arrow-emerald)"/>
+
+      <!-- SM Core Box (Freed!) -->
+      <rect x="200" y="125" width="220" height="125" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <text x="215" y="148" fill="#38bdf8" class="mono" font-size="12" font-weight="700">SM Compute Engine (释放!)</text>
+      <rect x="210" y="160" width="200" height="75" rx="6" fill="#0369a1" fill-opacity="0.25" stroke="#0ea5e9" stroke-width="1"/>
+      <text x="220" y="180" fill="#bae6fd" class="mono" font-size="11" font-weight="700">Tensor Core 4th Gen</text>
+      <text x="220" y="198" fill="#38bdf8" class="text-xs">🔥 算力完全打满 (0% 搬运耗时)</text>
+      <text x="220" y="218" fill="#a5f3fc" class="mono" font-size="10">MMA 算力利用率 &gt; 92% (MFU极高)</text>
+
+      <!-- Shared Memory & DSMEM -->
+      <rect x="490" y="0" width="135" height="250" rx="8" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+      <text x="500" y="32" fill="#a7f3d0" class="mono" font-size="12" font-weight="700">SMem &amp; DSMEM</text>
+      <text x="500" y="52" fill="#94a3b8" class="text-xs">(跨 SM 集群直连)</text>
+      <rect x="500" y="70" width="115" height="160" rx="6" fill="#064e3b" fill-opacity="0.3" stroke="#059669" stroke-width="1"/>
+      <text x="510" y="100" fill="#a7f3d0" class="mono" font-size="11">mbarrier</text>
+      <text x="510" y="118" fill="#6ee7b7" class="text-xs">硬件自动递减</text>
+      <text x="510" y="140" fill="#a7f3d0" class="text-xs">数据落盘即就绪</text>
+      <text x="510" y="160" fill="#34d399" class="mono" font-size="10">Phase 翻转通知</text>
+    </g>
+
+    <!-- Bottom summary -->
+    <rect x="24" y="325" width="602" height="52" rx="6" fill="#064e3b" fill-opacity="0.4" stroke="#047857" stroke-width="1"/>
+    <text x="36" y="345" fill="#a7f3d0" class="text-xs" font-weight="700">✅ 极致革新：1条指令触发大块数据自主飞跃，SM 彻底转型“甩手掌柜”</text>
+    <text x="36" y="364" fill="#34d399" class="mono" font-size="11">指令开销: 仅1条/Block | 寄存器占用: 0 (零污染) | 硬件同步: mbarrier 硬件微秒通知</text>
+  </g>
+
+  <!-- ================= BOTTOM: MBARRIER & CUDA IPC HIGHWAYS ================= -->
+  <!-- Left: mbarrier Hardware Primitive -->
+  <g transform="translate(50, 550)">
+    <rect width="650" height="380" rx="12" fill="#0f172a" stroke="#c084fc" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#7e22ce" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#d8b4fe" class="card-title">mbarrier 硬件级异步屏障原理（64-bit 原子状态机）</text>
+
+    <g transform="translate(24, 55)">
+      <!-- 64-bit register visualization -->
+      <rect x="0" y="0" width="602" height="60" rx="6" fill="#1e1e2e" stroke="#a855f7" stroke-width="1.2"/>
+      <text x="16" y="22" fill="#e9d5ff" class="mono" font-size="12" font-weight="700">64-bit Hardware Shared Memory Object</text>
+      
+      <!-- Partition: Phase Bit vs Counter -->
+      <rect x="16" y="28" width="120" height="24" rx="4" fill="#7e22ce"/>
+      <text x="24" y="44" fill="#ffffff" class="mono" font-size="11" font-weight="700">Phase Bit [bit 63]</text>
+
+      <rect x="146" y="28" width="220" height="24" rx="4" fill="#581c87"/>
+      <text x="156" y="44" fill="#e9d5ff" class="mono" font-size="11">Arrive Count (待抵达线程/字节)</text>
+
+      <rect x="376" y="28" width="210" height="24" rx="4" fill="#3b0764"/>
+      <text x="386" y="44" fill="#d8b4fe" class="mono" font-size="11">Expected Count (预期基准数)</text>
+
+      <!-- Execution steps -->
+      <g transform="translate(0, 75)">
+        <rect x="0" y="0" width="602" height="54" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <circle cx="24" cy="27" r="14" fill="#7e22ce"/>
+        <text x="19" y="32" fill="#ffffff" class="mono" font-size="12" font-weight="700">1</text>
+        <text x="50" y="24" fill="#f8fafc" class="card-title" font-size="13">mbarrier.init: 初始化预期基准 (Expected Count)</text>
+        <text x="50" y="42" fill="#94a3b8" class="text-xs">主线程一次性注入参与该阶段的线程总数或 TMA 预取总字节数 (arrive_bytes)</text>
+
+        <rect x="0" y="64" width="602" height="54" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <circle cx="24" cy="91" r="14" fill="#047857"/>
+        <text x="19" y="96" fill="#ffffff" class="mono" font-size="12" font-weight="700">2</text>
+        <text x="50" y="88" fill="#f8fafc" class="card-title" font-size="13">TMA Hardware 自动递减: `mbarrier.arrive_tx`</text>
+        <text x="50" y="106" fill="#a7f3d0" class="text-xs">TMA 引擎每从 HBM 灌入一部分字节，硬件自动递减计数器，无需任何软件代码介入</text>
+
+        <rect x="0" y="128" width="602" height="54" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <circle cx="24" cy="155" r="14" fill="#c026d3"/>
+        <text x="19" y="160" fill="#ffffff" class="mono" font-size="12" font-weight="700">3</text>
+        <text x="50" y="152" fill="#f8fafc" class="card-title" font-size="13">Phase 翻转与休眠唤醒: `mbarrier.test_wait` / `try_wait`</text>
+        <text x="50" y="170" fill="#e879f9" class="text-xs">计数器清零瞬间，硬件翻转 Phase Bit (0 ➔ 1)，挂起的计算 Warp 单周期被硬件唤醒！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Right: Copy Engine & CUDA IPC -->
+  <g transform="translate(740, 550)">
+    <rect width="650" height="380" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#0284c7" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#38bdf8" class="card-title">机内多卡搬运：Copy Engine 与 CUDA IPC 跨进程 900GB/s 直通</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Panel 1: Copy Engine DMA Controller -->
+      <rect x="0" y="0" width="602" height="115" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="14" y="12" width="130" height="22" rx="4" fill="#0369a1"/>
+      <text x="22" y="27" fill="#bae6fd" class="mono" font-size="11" font-weight="700">Copy Engine (CE)</text>
+      <text x="154" y="28" fill="#f8fafc" class="card-title" font-size="14">完全独立于 SM 计算核心的板载 DMA 硬件</text>
+      <text x="14" y="52" fill="#94a3b8" class="text-xs">物理特性: 位于 SM 阵列外围的专用独立引擎，负责显卡与外部总线（NVLink / PCIe）的大块搬砖</text>
+      <text x="14" y="70" fill="#38bdf8" class="mono" font-size="11">调度方式: 由 Host CPU 提交 cudaMemcpyAsync()，在独立的 Copy Engine 队列中异步执行</text>
+      <text x="14" y="90" fill="#a5f3fc" class="text-xs font-weight-bold">🎯 核心价值: 100% 绝对零 SM 消耗，但只能在 Kernel 外部执行，无法参与卡内 Tile 级流水线！</text>
+
+      <!-- Panel 2: CUDA IPC Shared Memory -->
+      <g transform="translate(0, 130)">
+        <rect x="0" y="0" width="602" height="135" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+        <rect x="14" y="12" width="100" height="22" rx="4" fill="#047857"/>
+        <text x="22" y="27" fill="#a7f3d0" class="mono" font-size="11" font-weight="700">CUDA IPC</text>
+        <text x="124" y="28" fill="#f8fafc" class="card-title" font-size="14">跨进程显存零拷贝互通（突破单机 8 卡进程隔离壁垒）</text>
+        
+        <g transform="translate(14, 45)">
+          <!-- Process 0 -->
+          <rect x="0" y="0" width="170" height="42" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+          <text x="10" y="18" fill="#94a3b8" class="mono" font-size="10">Rank 0 Process</text>
+          <text x="10" y="34" fill="#38bdf8" class="mono" font-size="10">cudaIpcGetMemHandle</text>
+
+          <!-- IPC Channel -->
+          <path d="M 170 21 L 230 21" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-emerald)"/>
+          <text x="175" y="14" fill="#6ee7b7" class="mono" font-size="9">Unix Domain</text>
+
+          <!-- Process 1 -->
+          <rect x="235" y="0" width="170" height="42" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+          <text x="10" y="18" fill="#94a3b8" class="mono" font-size="10">Rank 1 Process</text>
+          <text x="10" y="34" fill="#34d399" class="mono" font-size="10">cudaIpcOpenMemHandle</text>
+
+          <!-- Physical Direct Bus -->
+          <rect x="420" y="0" width="150" height="42" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="1"/>
+          <text x="10" y="18" fill="#6ee7b7" class="mono" font-size="10">NVLink 4/5 900GB/s</text>
+          <text x="10" y="34" fill="#a7f3d0" class="text-xs">硬件直接直连打满线速</text>
+        </g>
+
+        <text x="14" y="112" fill="#a7f3d0" class="text-xs">物理本质: MMU 虚拟页表重映射，让 Rank 1 进程直接获得 Rank 0 GPU 物理显存页的访问权，0 次数据拷贝！</text>
+      </g>
+    </g>
+  </g>
+</svg>

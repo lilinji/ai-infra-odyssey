@@ -1,0 +1,404 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-30" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-30" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-30" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-30" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-30" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-30" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-30" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-30" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-30)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="235" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">MODEL PARALLELISM SUITE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      模型并行技术 TP / PP / SP / CP 与硬件物理拓扑映射全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      Megatron-LM GEMM 矩阵切分 · 1F1B 调度气泡推导 · 序列/上下文并行 · 3D 物理硬件拓扑映射
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: TP Comm -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">TP 通信开销</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="13" font-weight="700">2·AllReduce/Block</text>
+      </g>
+      <!-- Badge 2: SP Activation -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">SP 激活显存节省</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="13" font-weight="700">降低 TP 倍</text>
+      </g>
+      <!-- Badge 3: PP Bubble Rate -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">PP 1F1B 气泡率</text>
+        <text x="12" y="42" fill="#fefce8" font-size="13" font-weight="700">(P-1)/(M+P-1)</text>
+      </g>
+      <!-- Badge 4: Topology Mapping -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">硬件拓扑隔离</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="13" font-weight="700">NVLink ➔ TP/SP</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-30)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">张量并行 (TP) 与序列并行 (SP)</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">列行 GEMM 配对闭环 · RS/AG 替代 AR 激活消除</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: Column Parallel + Row Parallel 组合图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="310" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">Megatron-LM MLP 双层 GEMM 并行组合</text>
+
+      <!-- Step A: Column Parallel -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="110" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">第一层：列切分 (Column Parallel Linear)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">· 权重按列拆解: W₁ = [W₁₁, W₁₂]；输入 X 广播到各卡</text>
+        <text x="10" y="49" fill="#cbd5e1" font-size="10">· 各卡计算局部投影: Y₁ = X · W₁₁,  Y₂ = X · W₁₂</text>
+        <text x="10" y="66" fill="#34d399" font-size="10.5" font-weight="700">绝妙设计: 输出沿列分片，直接进入 GeLU 激活！</text>
+        <text x="10" y="82" fill="#bae6fd" font-size="9.5">GeLU(concat(Y₁, Y₂)) = concat(GeLU(Y₁), GeLU(Y₂)) ➔ 0 通信！</text>
+      </g>
+
+      <!-- Step B: Row Parallel -->
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="352" height="118" rx="6" fill="#1e293b" fill-opacity="0.6" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">第二层：行切分 (Row Parallel Linear)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="10">· 权重按行拆解: W₂ = [W₂₁; W₂₂]；直接消费局部激活</text>
+        <text x="10" y="49" fill="#cbd5e1" font-size="10">· 各卡计算局部偏和: Z₁ = GeLU(Y₁) · W₂₁,  Z₂ = GeLU(Y₂) · W₂₂</text>
+        <text x="10" y="66" fill="#f59e0b" font-size="10.5" font-weight="700">通信汇聚点: 插入 AllReduce 规约全局和！</text>
+        <text x="10" y="82" fill="#fef08a" font-size="9.5">Z_final = AllReduce(Z₁ + Z₂) ➔ 每个 Block 仅需 2 次 AllReduce！</text>
+        <text x="10" y="98" fill="#94a3b8" font-size="9">(Self-Attention 模块 1 次 + MLP 模块 1 次)</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: Megatron-SP 序列并行拆解 -->
+    <g transform="translate(20, 410)">
+      <rect x="0" y="0" width="380" height="275" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Megatron-SP (序列并行) 极致显存优化</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">为什么传统 TP 会有激活显存冗余？</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="10">LayerNorm 与 Dropout 不被 TP 切分，所有卡存放相同激活副本！</text>
+
+        <!-- SP Architecture -->
+        <g transform="translate(0, 44)">
+          <rect x="0" y="0" width="352" height="95" rx="6" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">SP 破解法：将 AllReduce 拆解为 RS + AG</text>
+          <text x="10" y="34" fill="#94a3b8" font-size="9.5">1. Row Parallel 后不调 AllReduce，改调 ReduceScatter 切分 Sequence 维</text>
+          <text x="10" y="50" fill="#94a3b8" font-size="9.5">2. LayerNorm 与 Dropout 沿 Sequence 维度各自计算局部 1/TP 激活</text>
+          <text x="10" y="66" fill="#94a3b8" font-size="9.5">3. 进入下一层 Column Parallel 前，调用 AllGather 拼回完整序列</text>
+          <text x="10" y="84" fill="#38bdf8" font-size="9.5" font-weight="700">通信总量完全守恒 (RS+AG = AR)，激活显存直接立省 TP 倍！</text>
+        </g>
+
+        <g transform="translate(0, 150)">
+          <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">工程成效：</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="10">在 70B/405B 大模型训练中，开启 SP 可释放 30%~45% 动态激活显存，</text>
+          <text x="10" y="48" fill="#34d399" font-size="10" font-weight="600">为 Batch Size 翻倍或上下文翻倍腾出宝贵的物理显存空间！</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-30)" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#b45309" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#fbbf24" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">流水线并行 (PP) 调度与气泡消除</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">1F1B 稳态编排 · 气泡率数学推导 · 显存峰值边界</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: 1F1B 调度流水线时空网格图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="330" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="14" y="22" fill="#fbbf24" font-size="12" font-weight="700">1F1B 调度时空流水 (Stage P=4, Micro-batch M=8)</text>
+
+      <!-- Grid Visualization of 1F1B -->
+      <g transform="translate(14, 38)">
+        <!-- Stage 3 (Top) -->
+        <text x="0" y="14" fill="#94a3b8" font-size="9.5">Stage 3</text>
+        <g transform="translate(50, 2)">
+          <!-- Bubble slot -->
+          <rect x="0" y="0" width="42" height="18" rx="2" fill="#1e293b" stroke="#475569" stroke-dasharray="1 1"/>
+          <!-- F1 -->
+          <rect x="44" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="48" y="13" fill="#fff" font-size="8">F1</text>
+          <!-- B1 -->
+          <rect x="68" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="72" y="13" fill="#fff" font-size="8">B1</text>
+          <!-- F2 B2 ... -->
+          <rect x="92" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="96" y="13" fill="#fff" font-size="8">F2</text>
+          <rect x="116" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="120" y="13" fill="#fff" font-size="8">B2</text>
+          <rect x="140" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="144" y="13" fill="#fff" font-size="8">F3</text>
+          <rect x="164" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="168" y="13" fill="#fff" font-size="8">B3</text>
+        </g>
+
+        <!-- Stage 2 -->
+        <text x="0" y="44" fill="#94a3b8" font-size="9.5">Stage 2</text>
+        <g transform="translate(50, 32)">
+          <rect x="0" y="0" width="28" height="18" rx="2" fill="#1e293b" stroke="#475569" stroke-dasharray="1 1"/>
+          <rect x="30" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="34" y="13" fill="#fff" font-size="8">F1</text>
+          <rect x="54" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="58" y="13" fill="#fff" font-size="8">F2</text>
+          <rect x="78" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="82" y="13" fill="#fff" font-size="8">B1</text>
+          <rect x="102" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="106" y="13" fill="#fff" font-size="8">F3</text>
+          <rect x="126" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="130" y="13" fill="#fff" font-size="8">B2</text>
+        </g>
+
+        <!-- Stage 1 -->
+        <text x="0" y="74" fill="#94a3b8" font-size="9.5">Stage 1</text>
+        <g transform="translate(50, 62)">
+          <rect x="0" y="0" width="14" height="18" rx="2" fill="#1e293b" stroke="#475569" stroke-dasharray="1 1"/>
+          <rect x="16" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="20" y="13" fill="#fff" font-size="8">F1</text>
+          <rect x="40" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="44" y="13" fill="#fff" font-size="8">F2</text>
+          <rect x="64" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="68" y="13" fill="#fff" font-size="8">F3</text>
+          <rect x="88" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="92" y="13" fill="#fff" font-size="8">B1</text>
+          <rect x="112" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="116" y="13" fill="#fff" font-size="8">F4</text>
+          <rect x="136" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="140" y="13" fill="#fff" font-size="8">B2</text>
+        </g>
+
+        <!-- Stage 0 (First) -->
+        <text x="0" y="104" fill="#94a3b8" font-size="9.5">Stage 0</text>
+        <g transform="translate(50, 92)">
+          <rect x="0" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="4" y="13" fill="#fff" font-size="8">F1</text>
+          <rect x="24" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="28" y="13" fill="#fff" font-size="8">F2</text>
+          <rect x="48" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="52" y="13" fill="#fff" font-size="8">F3</text>
+          <rect x="72" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="76" y="13" fill="#fff" font-size="8">F4</text>
+          <rect x="96" y="0" width="22" height="18" rx="2" fill="#b91c1c"/>
+          <text x="100" y="13" fill="#fff" font-size="8">B1</text>
+          <rect x="120" y="0" width="22" height="18" rx="2" fill="#0369a1"/>
+          <text x="124" y="13" fill="#fff" font-size="8">F5</text>
+        </g>
+
+        <!-- Legend -->
+        <g transform="translate(0, 130)">
+          <rect x="0" y="0" width="16" height="12" rx="2" fill="#0369a1"/>
+          <text x="22" y="10" fill="#cbd5e1" font-size="9.5">前向 (Forward, F)</text>
+          <rect x="140" y="0" width="16" height="12" rx="2" fill="#b91c1c"/>
+          <text x="162" y="10" fill="#cbd5e1" font-size="9.5">反向 (Backward, B)</text>
+          <rect x="280" y="0" width="16" height="12" rx="2" fill="#1e293b" stroke="#475569" stroke-dasharray="1 1"/>
+          <text x="302" y="10" fill="#94a3b8" font-size="9.5">气泡 (Bubble)</text>
+        </g>
+
+        <!-- Bubble Math Explanation -->
+        <g transform="translate(0, 155)">
+          <rect x="0" y="0" width="352" height="115" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">1F1B 气泡率精确物理推导：</text>
+          <text x="10" y="36" fill="#cbd5e1" font-size="10">· 预热期（Warmup）气泡时间: (P - 1) · t_forward</text>
+          <text x="10" y="52" fill="#cbd5e1" font-size="10">· 冷却期（Cooldown）气泡时间: (P - 1) · t_backward</text>
+          <text x="10" y="70" fill="#f87171" font-size="10.5" font-weight="700">总气泡占比: F_bubble = (P - 1) / (M + P - 1) ≈ (P - 1) / M</text>
+          <text x="10" y="90" fill="#34d399" font-size="9.5">若 Stage P=8, Micro-batch M=32 ➔ 气泡率仅为 7/39 ≈ 17.9%</text>
+          <text x="10" y="104" fill="#94a3b8" font-size="9">最大驻留激活 Micro-batch 严格受限在 P 以内，防止显存 OOM！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 2.2: 流水线并行进阶：Interleaved 1F1B -->
+    <g transform="translate(20, 430)">
+      <rect x="0" y="0" width="380" height="255" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#fbbf24" font-size="12" font-weight="700">进阶架构：1F1B Interleaved (交错流水线)</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 原理: 每张物理卡不再承载单一连续 Stage，</text>
+        <text x="0" y="28" fill="#cbd5e1" font-size="10.5">  而是交错分配 v 个虚拟阶段 (如卡 0 承载 Stage 0 与 Stage 4)</text>
+        
+        <rect x="0" y="44" width="352" height="60" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="20" fill="#34d399" font-size="10.5" font-weight="700">气泡率再压低 v 倍：</text>
+        <text x="10" y="36" fill="#f0fdf4" font-size="10">F_bubble_interleaved ≈ (P - 1) / (v · M)</text>
+        <text x="10" y="50" fill="#fef08a" font-size="9.5">当 v=2 时，气泡率从 18% 进一步断崖式压缩至 9%！</text>
+
+        <text x="0" y="126" fill="#94a3b8" font-size="10">· 代价权衡: 通信频次增加 v 倍，需要更高的 P2P 通信带宽支持；</text>
+        <text x="0" y="142" fill="#94a3b8" font-size="10">· 生产选型: 跨节点 PP 采用标准 1F1B，节点内密集卡采用 Interleaved。</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-30)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">上下文并行 (CP) 与硬件拓扑映射</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Ring-Attention vs Ulysses · 硬件带宽金字塔逐级锁死</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 上下文并行 (CP) 机制对比 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="220" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">上下文并行 (CP) 突破 128K+ 显存墙</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Box 1: Ring Attention -->
+        <rect x="0" y="0" width="170" height="100" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="8" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. Ring Attention</text>
+        <text x="8" y="34" fill="#94a3b8" font-size="9.5">· 机制: P2P 沿环传递 KV</text>
+        <text x="8" y="48" fill="#94a3b8" font-size="9.5">· 重叠: 算 Q·K 与通信重叠</text>
+        <text x="8" y="62" fill="#94a3b8" font-size="9.5">· 通信原语: Send / Recv</text>
+        <text x="8" y="78" fill="#34d399" font-size="9.5" font-weight="600">支持 1M+ 理论无上限</text>
+
+        <!-- Box 2: DeepSpeed Ulysses -->
+        <g transform="translate(182, 0)">
+          <rect x="0" y="0" width="170" height="100" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="8" y="18" fill="#c084fc" font-size="10.5" font-weight="700">2. DeepSpeed Ulysses</text>
+          <text x="8" y="34" fill="#94a3b8" font-size="9.5">· 机制: All-to-All 转置</text>
+          <text x="8" y="48" fill="#94a3b8" font-size="9.5">· Seq 维转置为 Head 维</text>
+          <text x="8" y="62" fill="#94a3b8" font-size="9.5">· 复用原生 FlashAttention</text>
+          <text x="8" y="78" fill="#fbbf24" font-size="9.5" font-weight="600">Head 数必须被 CP 整除</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 150)">
+        <rect x="0" y="0" width="352" height="56" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#cbd5e1" font-size="10.5">选型决策：</text>
+        <text x="10" y="34" fill="#38bdf8" font-size="10" font-weight="600">Ulysses 算力利用率极高（直接跑 FlashAttention-3），</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9.5">但极端长序列（&gt;256K）或 GQA 头数太少时必须切为 Ring Attention。</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 硬件物理拓扑分级映射金字塔 -->
+    <g transform="translate(20, 320)">
+      <rect x="0" y="0" width="380" height="365" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">3D/4D 并行映射与物理带宽金字塔 (严禁倒置!)</text>
+
+      <!-- Tier 1: Intra-Node NVLink -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="66" rx="6" fill="#1e293b" stroke="#0284c7" stroke-width="1"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">Tier 1: 机内 8 卡全互联 NVLink (900 GB/s)</text>
+        <text x="10" y="34" fill="#f0f9ff" font-size="10">绑定策略: 严格部署 TP (张量并行) 与 SP (序列并行)</text>
+        <text x="10" y="50" fill="#bae6fd" font-size="9.5">理由: 通信频次最高 (每 Block 2 次)，微秒级延迟才能扛住</text>
+      </g>
+
+      <!-- Tier 2: Low-hop / Intra-rack IB -->
+      <g transform="translate(14, 114)">
+        <rect x="0" y="0" width="352" height="66" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">Tier 2: 机架内/紧邻跨机 IB 交换网络 (400 Gbps)</text>
+        <text x="10" y="34" fill="#f0fdf4" font-size="10">绑定策略: 部署 CP (上下文并行)</text>
+        <text x="10" y="50" fill="#a7f3d0" font-size="9.5">理由: Attention 聚合依赖稳定通信，中等频次跨卡交换</text>
+      </g>
+
+      <!-- Tier 3: Inter-Rack IB Fabrics -->
+      <g transform="translate(14, 190)">
+        <rect x="0" y="0" width="352" height="66" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="11" font-weight="700">Tier 3: 跨机架 Spine-Leaf 核心网络 (400 Gbps)</text>
+        <text x="10" y="34" fill="#fefce8" font-size="10">绑定策略: 部署 PP (流水线并行)</text>
+        <text x="10" y="50" fill="#fef08a" font-size="9.5">理由: 通信频次极低，仅在 Stage 边界通过 P2P 传递激活张量</text>
+      </g>
+
+      <!-- Tier 4: Global Cluster -->
+      <g transform="translate(14, 266)">
+        <rect x="0" y="0" width="352" height="66" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">Tier 4: 全局集群维度 (Thousands of GPUs)</text>
+        <text x="10" y="34" fill="#faf5ff" font-size="10">绑定策略: 部署 DP (数据并行 / ZeRO-1)</text>
+        <text x="10" y="50" fill="#e9d5ff" font-size="9.5">理由: 异步梯度聚合与计算流水线完美重叠，容忍较长延迟</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[算子闭环]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">TP 列切分与行切分的配对组合，将激活通信锁死在每 Block 仅 2 次 AllReduce。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="16" y="20" fill="#fbbf24" font-size="11" font-weight="700">[气泡压制]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">流水线并行的命门在于 M &gt;&gt; P；用 1F1B 稳态交织编排将气泡率压制在可控边界。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[拓扑严丝合缝]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">绝不要把 TP 跨出 NVLink 边界；并行维度的映射次序与硬件物理带宽谱系必须逐层锁死。</text>
+    </g>
+  </g>
+</svg>

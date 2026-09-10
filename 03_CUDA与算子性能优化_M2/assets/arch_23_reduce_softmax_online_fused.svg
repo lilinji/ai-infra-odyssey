@@ -1,0 +1,375 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-23" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-card-23" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-23" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-23" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-23" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-23" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-23" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-23)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-23)"/>
+    
+    <text x="24" y="27" class="title-main">第23讲：并行规约演进、Safe Softmax 存储墙与 Fused Online Softmax 全景图</text>
+    <text x="24" y="47" class="title-sub">Reduction Tree (7-Tier) · Warp Shuffle (__shfl_down_sync) · 3-Pass HBM Wall (16N) · Online Rescaling Algebra · Flash Softmax Fusion</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(820, 13)">
+      <rect x="0" y="0" width="135" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="67" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">显存访问流量降幅</text>
+      <text x="67" y="30" font-size="11" font-weight="800" fill="#4ade80" text-anchor="middle">16N ➔ 8N (-50%)</text>
+
+      <rect x="145" y="0" width="135" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="212" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">Warp Shuffle 原语</text>
+      <text x="212" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">5 步折叠 0 共享内存</text>
+
+      <rect x="290" y="0" width="130" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="355" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">FP16 数值安全边界</text>
+      <text x="355" y="30" font-size="11" font-weight="800" fill="#f87171" text-anchor="middle">Max 65504 (x ≤ 11.0)</text>
+
+      <rect x="430" y="0" width="120" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="490" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">算子端到端加速比</text>
+      <text x="490" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">2.1x ~ 3.5x 提速</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: REDUCTION TREE & WARP SHUFFLE ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-23)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">🌲 1. 规约（Reduction）体系结构与 Shuffle 原语</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">算法原语</text>
+
+    <!-- Mark Harris 7 Tiers -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="198" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">Mark Harris 树形规约七级性能跃迁天梯</text>
+      
+      <g transform="translate(10, 30)">
+        <rect x="0" y="0" width="392" height="22" rx="3" fill="rgba(136,19,55,0.3)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="7.5" fill="#fca5a5">Level 0: 交错寻址 (Interleaved Stride) ➔ % 运算符导致严重 Warp 分支发散</text>
+
+        <rect x="0" y="26" width="392" height="22" rx="3" fill="rgba(124,45,18,0.3)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="7.5" fill="#fdba74" transform="translate(0,26)">Level 1: 连续寻址 (Sequential Addressing) ➔ 解决发散，但爆发 Bank Conflict</text>
+
+        <rect x="0" y="52" width="392" height="22" rx="3" fill="rgba(120,53,15,0.3)" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="7.5" fill="#fde047" transform="translate(0,52)">Level 2: 逆向折半无冲突 (Non-Divergent) ➔ stride 步长折半，消除 Bank 冲突</text>
+
+        <rect x="0" y="78" width="392" height="22" rx="3" fill="rgba(8,51,68,0.3)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="7.5" fill="#67e8f9" transform="translate(0,78)">Level 3: 空闲线程消除 (Idle Thread Elimination) ➔ 载入时执行第一次两两相加</text>
+
+        <rect x="0" y="104" width="392" height="22" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="7.5" fill="#a7f3d0" transform="translate(0,104)">Level 4: 循环完全展开 (Loop Unrolling) ➔ 消除 for 循环分支判断开销</text>
+
+        <rect x="0" y="130" width="392" height="34" rx="3" fill="rgba(88,28,135,0.4)" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="10" y="14" font-size="8" font-weight="800" fill="#f3e8ff" transform="translate(0,130)">Level 5~6: Warp Shuffle 跨 Lane 直通 (__shfl_down_sync)</text>
+        <text x="10" y="26" font-size="7" fill="#d8b4fe" transform="translate(0,130)">无需共享内存、无需 __syncthreads()，单周期跨寄存器网络 5 步折叠 32 元素！</text>
+      </g>
+    </g>
+
+    <!-- Warp Shuffle Visual -->
+    <g transform="translate(14, 256)">
+      <rect x="0" y="0" width="412" height="264" rx="6" fill="#0f172a" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">Warp Shuffle 5 步二分折叠状态机 (Warp-Level Reduction)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">Lane 0..31 并行执行，每步将跨度 delta 减半：16 ➔ 8 ➔ 4 ➔ 2 ➔ 1</text>
+
+      <!-- Visual 5 steps -->
+      <g transform="translate(10, 46)">
+        <!-- Lane Boxes Top -->
+        <g transform="translate(0, 0)">
+          <rect x="0" y="0" width="44" height="26" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+          <text x="22" y="16" font-size="7.5" font-weight="700" fill="#5eead4" text-anchor="middle">Lane 0</text>
+
+          <rect x="50" y="0" width="44" height="26" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+          <text x="72" y="16" font-size="7.5" font-weight="700" fill="#5eead4" text-anchor="middle">Lane 1</text>
+
+          <text x="120" y="16" font-size="10" font-weight="700" fill="#64748b">...</text>
+
+          <rect x="150" y="0" width="44" height="26" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+          <text x="172" y="16" font-size="7.5" font-weight="700" fill="#5eead4" text-anchor="middle">Lane 15</text>
+
+          <rect x="200" y="0" width="44" height="26" rx="2" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.8"/>
+          <text x="222" y="16" font-size="7.5" font-weight="700" fill="#a5b4fc" text-anchor="middle">Lane 16</text>
+
+          <text x="270" y="16" font-size="10" font-weight="700" fill="#64748b">...</text>
+
+          <rect x="348" y="0" width="44" height="26" rx="2" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.8"/>
+          <text x="370" y="16" font-size="7.5" font-weight="700" fill="#a5b4fc" text-anchor="middle">Lane 31</text>
+        </g>
+
+        <!-- Step 1: delta = 16 -->
+        <g transform="translate(0, 36)">
+          <rect x="0" y="0" width="392" height="28" rx="3" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="0.8"/>
+          <text x="10" y="18" font-size="8" font-weight="700" fill="#67e8f9">Step 1 (delta=16):</text>
+          <text x="105" y="18" font-size="7.5" fill="#cbd5e1">Lane 0 += Lane 16, Lane 1 += Lane 17 ... (16 对并发)</text>
+          <path d="M 222 -10 Q 110 38 30 36" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#arrow-cyan)"/>
+        </g>
+
+        <!-- Step 2: delta = 8 -->
+        <g transform="translate(0, 70)">
+          <rect x="0" y="0" width="392" height="28" rx="3" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="0.8"/>
+          <text x="10" y="18" font-size="8" font-weight="700" fill="#67e8f9">Step 2 (delta=8):</text>
+          <text x="105" y="18" font-size="7.5" fill="#cbd5e1">Lane 0 += Lane 8, Lane 1 += Lane 9 ... (前 8 个 Lane 汇总)</text>
+        </g>
+
+        <!-- Step 3: delta = 4, Step 4: delta=2, Step 5: delta=1 -->
+        <g transform="translate(0, 104)">
+          <rect x="0" y="0" width="392" height="28" rx="3" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="0.8"/>
+          <text x="10" y="18" font-size="8" font-weight="700" fill="#67e8f9">Step 3..5 (delta=4,2,1):</text>
+          <text x="140" y="18" font-size="7.5" fill="#cbd5e1">Lane 0 最终持有全部 32 个元素的规约和 (Sum / Max)</text>
+        </g>
+
+        <!-- Code Block -->
+        <g transform="translate(0, 140)">
+          <rect x="0" y="0" width="392" height="66" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+          <text x="10" y="16" font-size="7.5" font-family="monospace" fill="#2dd4bf">// 工业级 Warp 级求和模板 (无分支、无共享内存)</text>
+          <text x="10" y="30" font-size="7.5" font-family="monospace" fill="#ffffff">#pragma unroll</text>
+          <text x="10" y="44" font-size="7.5" font-family="monospace" fill="#ffffff">for (int mask = 16; mask &gt; 0; mask &gt;&gt;= 1)</text>
+          <text x="24" y="58" font-size="7.5" font-family="monospace" fill="#fde047">val += __shfl_down_sync(0xffffffff, val, mask);</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Block-Level Aggregation -->
+    <g transform="translate(14, 532)">
+      <rect x="0" y="0" width="412" height="192" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a78bfa">两级分层 Block 规约体系 (Two-Level Warp Hierarchy)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">支持 1024 线程大 Block: 32 个 Warp 先各自规约，再合并结果</text>
+
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="42" rx="3" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#e9d5ff">Level 1: 32 个 Warp 并发执行 Shuffle 规约</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">每个 Warp 的 Lane 0 将局部极值写入 Shared Memory: `smem[warpId] = val;`</text>
+
+        <rect x="0" y="48" width="392" height="42" rx="3" fill="rgba(6,78,59,0.25)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#a7f3d0" transform="translate(0,48)">Level 2: 唯一的 Warp 0 执行最后一次规约</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1" transform="translate(0,48)">Warp 0 读入 `smem[0..numWarps-1]`，再次通过 5 步 Shuffle 得到全局答案！</text>
+
+        <rect x="0" y="96" width="392" height="42" rx="3" fill="rgba(8,51,68,0.25)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#67e8f9" transform="translate(0,96)">💎 性能优势: 共享内存占用极低 (&lt; 128 字节)</text>
+        <text x="10" y="30" font-size="7.5" fill="#e0f2fe" transform="translate(0,96)">仅需 1 次 `__syncthreads()`，整个 Block 1024 线程即可在 ~20 周期内完成规约！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: 3-PASS SAFE SOFTMAX MEMORY WALL ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-23)" stroke="#ea580c" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(124,45,18,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#fdba74">📉 2. 传统 Safe Softmax 的三遍扫描之殇 (3-Pass HBM Wall)</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#fef08a">存储之殇</text>
+
+    <!-- Formula & IEEE-754 Overflow -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="96" rx="6" fill="rgba(124,45,18,0.3)" stroke="#f97316" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="11" font-weight="800" fill="#fed7aa">数学本相：Softmax 为什么必须做“Safe”保护？</text>
+      <text x="14" y="40" font-size="12" font-weight="800" fill="#ffffff">Softmax(x_i) = exp(x_i) / Σ exp(x_j)  ➔ 容易发生 IEEE-754 浮点溢出！</text>
+      <text x="14" y="58" font-size="8" fill="#ffedd5">• FP32 溢出阈值: x &gt; 88.72 ➔ exp(x) 触发 +Inf，归一化产生 NaN 灾难！</text>
+      <text x="14" y="72" font-size="8" fill="#ffedd5">• FP16 溢出阈值: x &gt; 11.09 ➔ exp(x) 突破 65504 物理极值！</text>
+      <text x="14" y="86" font-size="8" font-weight="700" fill="#fde047">★ 平移不变性破局: exp(x_i - m) / Σ exp(x_j - m)，其中 m = max(x)</text>
+    </g>
+
+    <!-- Visual: 3-Pass HBM Flow -->
+    <g transform="translate(14, 152)">
+      <rect x="0" y="0" width="432" height="364" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#f87171">传统 3-Pass Safe Softmax 显存往返全景 (3 次读 + 1 次写)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">计算逻辑被强制切分成 3 个独立 Kernel 或 3 次全局显存扫描</text>
+
+      <!-- HBM Bar Top -->
+      <g transform="translate(14, 44)">
+        <rect x="0" y="0" width="404" height="28" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+        <text x="202" y="18" font-size="8.5" font-weight="800" fill="#ffffff" text-anchor="middle">全局显存 Global Memory (HBM3 / HBM3e, 延迟 ~400 Cycles)</text>
+      </g>
+
+      <!-- Pass 1 -->
+      <g transform="translate(14, 82)">
+        <rect x="0" y="0" width="404" height="66" rx="4" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">Pass 1: 扫描全局寻找最大值 Max (m)</text>
+        <text x="10" y="32" font-size="7.5" fill="#fecdd3">• 全局内存读流量: 4N 字节 (float32)</text>
+        <text x="10" y="46" font-size="7.5" fill="#cbd5e1">• SM 执行 Block 树形规约 ➔ 写回标量 m 到显存 (4 字节)</text>
+        <text x="10" y="58" font-size="7" fill="#fda4af">⚠️ 强制执行 __syncthreads() 或 Kernel 退出以等待全局可见</text>
+      </g>
+
+      <!-- Pass 2 -->
+      <g transform="translate(14, 158)">
+        <rect x="0" y="0" width="404" height="66" rx="4" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">Pass 2: 减去 Max，计算指数并求和 Sum (d)</text>
+        <text x="10" y="32" font-size="7.5" fill="#fecdd3">• 全局内存读流量: 第二次重新从 HBM 读取 4N 字节！</text>
+        <text x="10" y="46" font-size="7.5" fill="#cbd5e1">• 计算 exp(x - m)，执行规约求和 ➔ 写回标量 d (4 字节)</text>
+        <text x="10" y="58" font-size="7" fill="#fda4af">⚠️ 再次触发同步栅障，算力核心 (ALU) 长期饥饿等待访存</text>
+      </g>
+
+      <!-- Pass 3 -->
+      <g transform="translate(14, 234)">
+        <rect x="0" y="0" width="404" height="66" rx="4" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">Pass 3: 归一化计算并写回输出 (Normalize)</text>
+        <text x="10" y="32" font-size="7.5" fill="#fecdd3">• 全局内存读流量: 第三次从 HBM 读取 4N 字节！</text>
+        <text x="10" y="46" font-size="7.5" fill="#cbd5e1">• 计算 y_i = exp(x_i - m) / d ➔ 全局写回 4N 字节！</text>
+        <text x="10" y="58" font-size="7" fill="#fda4af">★ 总显存往返流量: 4N (读) + 4N (读) + 4N (读) + 4N (写) = 16N 字节！</text>
+      </g>
+
+      <!-- Arithmetic Intensity Verdict -->
+      <g transform="translate(14, 310)">
+        <rect x="0" y="0" width="404" height="42" rx="3" fill="#3b0764" stroke="#c084fc" stroke-width="1"/>
+        <text x="202" y="16" font-size="8.5" font-weight="800" fill="#fde047" text-anchor="middle">算术强度账本：典型 Memory-Bound 算子地狱</text>
+        <text x="202" y="32" font-size="7.5" fill="#e9d5ff" text-anchor="middle">总浮点计算量仅 ~3N FLOPs，访存 16N 字节 ➔ 算术强度 I = 0.18 FLOPs/Byte！</text>
+      </g>
+    </g>
+
+    <!-- Disaster Callout -->
+    <g transform="translate(14, 526)">
+      <rect x="0" y="0" width="432" height="196" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fed7aa">💥 生产真实现场：为什么大模型一开长文本，Softmax 成了显存吞噬兽？</text>
+      <text x="14" y="38" font-size="8" fill="#ffedd5">• 【惨案背景】: 在多头注意力中，每个 Head 的注意力得分矩阵 $S$ 大小为 $N \times N$；</text>
+      <text x="14" y="54" font-size="8" fill="#ffedd5">• 【血泪账本】: 当序列长度 $N = 128\text{K}$ 时，$N \times N$ 矩阵需要 **34.36 GB** 显存；</text>
+      <text x="14" y="70" font-size="8" fill="#ffedd5">• 【3-Pass 灾难】: 3 次往返 HBM 读写，意味着单卡需要搬运超过 **137 GB** 数据！</text>
+      <text x="14" y="86" font-size="8" fill="#ffedd5">• 【物理瓶颈】: A100 (2 TB/s) 光是搬运这些无意义的中间数据，就需要浪费近 70 ms！</text>
+      <text x="14" y="108" font-size="8.5" font-weight="700" fill="#fde047">工程师之问：</text>
+      <text x="14" y="124" font-size="8" fill="#fed7aa">“难道我们真的必须先知道全局 Max，才能开始算 Exp 求和吗？能不能一遍搞定？！”</text>
+      <text x="14" y="146" font-size="8.5" font-weight="800" fill="#6ee7b7">➔ 2018 年 NVIDIA 给出颠覆性答案：Online Softmax 在线动态修正算法！</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: FUSED ONLINE SOFTMAX ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-23)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(6,78,59,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#6ee7b7">🚀 3. Online Softmax 动态修正与 1-Pass 算子融合</text>
+    <text x="360" y="22" font-size="9.5" font-weight="600" fill="#a7f3d0">算子融合</text>
+
+    <!-- Master Algebraic Formula -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="152" rx="6" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a7f3d0">Online Softmax 在线动态更新数学状态机</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">边读边更新局部极值与累加和，通过代数等价因子动态 Rescale</text>
+
+      <g transform="translate(10, 42)">
+        <rect x="0" y="0" width="392" height="42" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="9" font-weight="800" fill="#fde047">m_new = max(m_old, x_i)</text>
+        <text x="10" y="32" font-size="9" font-weight="800" fill="#ffffff">d_new = d_old × exp(m_old - m_new) + exp(x_i - m_new)</text>
+      </g>
+
+      <text x="14" y="106" font-size="8" fill="#cbd5e1">• **核心精髓**：若遇到更大的 $x_i$，原先的累加和 $d_{\text{old}}$ 乘上衰减系数 $\alpha = \exp(m_{\text{old}} - m_{\text{new}})$！</text>
+      <text x="14" y="122" font-size="8" fill="#cbd5e1">• **结合律证明**：支持任意两个分块 $A$ 与 $B$ 的结合合并，天然适配并行规约树！</text>
+      <text x="14" y="138" font-size="8" font-weight="700" fill="#6ee7b7">★ 显存扫描次数直接从 3 遍斩杀至 1 遍！</text>
+    </g>
+
+    <!-- Visual 1-Pass Fused Pipeline -->
+    <g transform="translate(14, 208)">
+      <rect x="0" y="0" width="412" height="248" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">1-Pass Fused Softmax 硬件片上极速闭环</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">数据仅从 HBM 读取 1 次，全部在 SM 片上寄存器缓存中完成</text>
+
+      <!-- Pipeline Steps -->
+      <g transform="translate(10, 44)">
+        <!-- Step 1: Read once -->
+        <rect x="0" y="0" width="392" height="40" rx="3" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#67e8f9">Step 1: 全局显存唯一 1 次读取 (Read 4N) ➔ 直接缓存进寄存器</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">每个线程分配固定大小寄存器数组 `float reg_x[ELEMENTS_PER_THREAD]`</text>
+
+        <!-- Step 2: Online Warp Reduction -->
+        <rect x="0" y="46" width="392" height="44" rx="3" fill="rgba(6,78,59,0.4)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#a7f3d0">Step 2: 片上并行执行 Online Softmax (Warp Shuffle 双值规约)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">Lane 间同时传递 `(m, d)` 元组，在 5 步 Shuffle 内完成 Max 与 Sum 的同步递推！</text>
+
+        <!-- Step 3: Register Normalization -->
+        <rect x="0" y="96" width="392" height="40" rx="3" fill="rgba(88,28,135,0.4)" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#e9d5ff">Step 3: 寄存器原地归一化 (In-Register Normalization)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">无需再从 HBM 重读数据！直接计算 `reg_y = exp(reg_x - m_global) / d_global`</text>
+
+        <!-- Step 4: Write back once -->
+        <rect x="0" y="142" width="392" height="40" rx="3" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#67e8f9">Step 4: 全局显存唯一 1 次写回 (Write 4N) ➔ 算子完美闭环！</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff">总流量: 4N (读) + 4N (写) = 8N 字节 (显存流量暴降整整 50%！)</text>
+      </g>
+    </g>
+
+    <!-- FlashAttention Link -->
+    <g transform="translate(14, 466)">
+      <rect x="0" y="0" width="412" height="258" rx="6" fill="#0f172a" stroke="#059669" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">🌟 现代大模型基石：FlashAttention 核心计算原语</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">Online Softmax 的终极形态：彻底终结 Attention 的 O(N^2) 显存墙</text>
+
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="58" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#a7f3d0">注意力输出张量的动态缩放公式 (Output Rescaling)</text>
+        <text x="10" y="34" font-size="9" font-weight="800" fill="#ffffff">O_new = diag(exp(m_old - m_new)) × O_old + P_tile × V_tile</text>
+        <text x="10" y="48" font-size="7" fill="#cbd5e1">不仅累加和 d 需要缩放，已经算出的注意力输出矩阵 O 同样乘上衰减系数！</text>
+      </g>
+
+      <g transform="translate(10, 110)">
+        <rect x="0" y="0" width="392" height="74" rx="3" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#e9d5ff">🏛️ 智算体系结构级洞见：SRAM 算力换 HBM 流量</text>
+        <text x="10" y="32" font-size="7.5" fill="#cbd5e1">1. **中间矩阵清零**：大小为 $N \times N$ 的 $S$ 与 $P$ 矩阵永不落入 HBM 显存；</text>
+        <text x="10" y="48" font-size="7.5" fill="#cbd5e1">2. **长文本爆发**：上下文从 4K 飙升至 128K/1M，显存消耗仅随 $N$ 线性增长！</text>
+        <text x="10" y="64" font-size="7.5" font-weight="700" fill="#fde047">3. 没有 Online Softmax，就没有今天的现代大模型推理与长文本革命！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi 规约与 Softmax 优化核心箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **规约的终点是跨寄存器直通**：在同一个 Warp 内，坚决放弃低效的共享内存寻址，强制启用 5 步 `__shfl_down_sync` 单周期折叠；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **拒绝三遍扫描的 HBM 往返地狱**：利用 Online Softmax 的代数递推等价性，把求 Max、求 Sum、做归一化全部锁死在片上高速缓存；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **算子融合（Fusion）是打破存储墙的唯一真理**：宁愿在 SRAM 中多做几次指数重缩放乘法，也绝不允许一个临时中间张量打入显存！</text>
+  </g>
+</svg>

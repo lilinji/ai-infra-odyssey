@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" width="100%" height="100%">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+      }
+      .title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 800; fill: #f8fafc; font-size: 26px; }
+      .subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #94a3b8; font-size: 13px; }
+      .badge { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px; }
+      .card-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-weight: 700; font-size: 16px; }
+      .card-subtitle { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; fill: #94a3b8; }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      .text-sm { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 12px; }
+      .text-xs { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 11px; }
+    </style>
+    
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e293b" stroke-width="0.6" stroke-opacity="0.7"/>
+    </pattern>
+
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="980" fill="#0b0f19"/>
+  <rect width="1440" height="980" fill="url(#grid)"/>
+
+  <!-- ================= TOP HEADER ================= -->
+  <g transform="translate(50, 35)">
+    <rect x="0" y="0" width="280" height="24" rx="6" fill="#1e1b4b" fill-opacity="0.5" stroke="#6366f1" stroke-width="1"/>
+    <text x="12" y="16" fill="#818cf8" class="badge">INTER-NODE COMMUNICATION &amp; CONTROL OFFLOAD</text>
+    
+    <text x="0" y="60" class="title">机间通信控制面卸载与拓扑路由架构全景</text>
+    <text x="0" y="84" class="subtitle">CPU 代理控制 (IBRC) vs GPU 原生敲门铃 (IBGDA) · 一跳直达 vs 两跳聚合 MoE 拓扑网络 · DeepEP 物理双通道正交流水线</text>
+  </g>
+
+  <!-- ================= TOP: CONTROL PLANE DICHOTOMY (IBRC vs IBGDA) ================= -->
+  <!-- Left: CPU-Controlled RDMA (IBRC) -->
+  <g transform="translate(50, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#fb7185" stroke-width="1.5" stroke-opacity="0.6" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#ef4444" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#f87171" class="card-title">① 传统 CPU 代理控制（IBRC）：数据面直通，控制面跑断腿</text>
+
+    <!-- Visual Pipeline Flow -->
+    <g transform="translate(24, 55)">
+      <!-- Stage 1: GPU SM -->
+      <rect x="0" y="0" width="170" height="85" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="14" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700">GPU SM 计算核心</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs">Kernel 计算出梯度/Token</text>
+      <text x="14" y="62" fill="#fb7185" class="mono" font-size="11">写完成标志位到显存</text>
+
+      <!-- Arrow to CPU -->
+      <path d="M 170 42 L 230 42" stroke="#fb7185" stroke-width="2" marker-end="url(#arrow-rose)"/>
+      <text x="175" y="32" fill="#fb7185" class="mono" font-size="10">PCIe 轮询</text>
+
+      <!-- Stage 2: Host CPU -->
+      <rect x="235" y="0" width="180" height="85" rx="6" fill="#450a0a" fill-opacity="0.4" stroke="#ef4444" stroke-width="1.2"/>
+      <text x="14" y="24" fill="#fca5a5" class="mono" font-size="12" font-weight="700" transform="translate(235, 0)">Host CPU 线程</text>
+      <text x="14" y="44" fill="#f87171" class="text-xs" transform="translate(235, 0)">⚠️ OS 调度抖动 (~2-5μs)</text>
+      <text x="14" y="62" fill="#fecaca" class="mono" font-size="11" transform="translate(235, 0)">在 Host 内存构建 WQE</text>
+
+      <!-- Arrow to NIC -->
+      <path d="M 415 42 L 475 42" stroke="#fb7185" stroke-width="2" marker-end="url(#arrow-rose)"/>
+      <text x="420" y="32" fill="#fb7185" class="mono" font-size="10">MMIO 写</text>
+
+      <!-- Stage 3: NIC ASIC -->
+      <rect x="480" y="0" width="125" height="85" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+      <text x="12" y="24" fill="#cbd5e1" class="mono" font-size="12" font-weight="700" transform="translate(480, 0)">NIC ASIC</text>
+      <text x="12" y="44" fill="#94a3b8" class="text-xs" transform="translate(480, 0)">解析 WQE 工单</text>
+      <text x="12" y="62" fill="#38bdf8" class="mono" font-size="11" transform="translate(480, 0)">敲响 Doorbell</text>
+
+      <!-- Bottom: Data Plane Reality -->
+      <rect x="0" y="105" width="602" height="150" rx="8" fill="#1e1e2e" stroke="#334155" stroke-width="1"/>
+      <text x="16" y="28" fill="#e2e8f0" class="mono" font-size="13" font-weight="700">物理数据流与控制流的时间开销拆解：</text>
+      
+      <g transform="translate(16, 42)">
+        <rect x="0" y="0" width="160" height="28" rx="4" fill="#334155"/>
+        <text x="8" y="18" fill="#f8fafc" class="mono" font-size="11">1. GPU ➔ CPU 通知</text>
+        <text x="180" y="18" fill="#f87171" class="mono" font-size="11">~ 1.5 μs (跨 PCIe 总线事件/轮询)</text>
+
+        <rect x="0" y="36" width="160" height="28" rx="4" fill="#7f1d1d"/>
+        <text x="8" y="54" fill="#fecaca" class="mono" font-size="11">2. CPU 构造 WQE</text>
+        <text x="180" y="54" fill="#f87171" class="mono" font-size="11">~ 2.5 μs (CPU 缓存与操作系统线程调度)</text>
+
+        <rect x="0" y="72" width="160" height="28" rx="4" fill="#334155"/>
+        <text x="8" y="90" fill="#f8fafc" class="mono" font-size="11">3. CPU 敲网卡 Doorbell</text>
+        <text x="180" y="90" fill="#f87171" class="mono" font-size="11">~ 1.2 μs (PCIe MMIO 寄存器直写耗时)</text>
+      </g>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#450a0a" fill-opacity="0.4" stroke="#7f1d1d" stroke-width="1"/>
+    <text x="36" y="355" fill="#fca5a5" class="text-xs" font-weight="700">❌ 致命症结：控制面走大弯路，单包控制开销高达 4.5~6.0 μs，小包吞吐腰斩！</text>
+    <text x="36" y="374" fill="#f87171" class="mono" font-size="11">单包延迟: 5.2 μs | 400G 小包吞吐率: &lt; 25 GB/s | 适用范围: 仅适合大包密集训练 (Dense DDP)</text>
+  </g>
+
+  <!-- Right: GPU-Initiated RDMA (IBGDA / NVSHMEM) -->
+  <g transform="translate(740, 135)">
+    <rect width="650" height="405" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="42" rx="12" fill="#10b981" fill-opacity="0.12"/>
+    <text x="24" y="27" fill="#34d399" class="card-title">② GPU 原生自主控制（IBGDA / NVSHMEM）：核心直敲门铃</text>
+
+    <!-- Visual Direct Flow -->
+    <g transform="translate(24, 55)">
+      <!-- Stage 1: GPU SM (Autonomous!) -->
+      <rect x="0" y="0" width="280" height="85" rx="6" fill="#064e3b" fill-opacity="0.5" stroke="#059669" stroke-width="1.5"/>
+      <text x="14" y="24" fill="#a7f3d0" class="mono" font-size="12" font-weight="700">GPU SM 核心 (Kernel 内部直接掌舵)</text>
+      <text x="14" y="44" fill="#6ee7b7" class="text-xs">1. 直接在显存内部队列构建 16 字节 WQE</text>
+      <text x="14" y="64" fill="#34d399" class="mono" font-size="11">2. 跨 PCIe BAR 空间直接直写 Doorbell！</text>
+
+      <!-- Direct Laser Highway to NIC -->
+      <path d="M 280 42 L 390 42" stroke="#34d399" stroke-width="3.5" stroke-dasharray="6,3" marker-end="url(#arrow-emerald)"/>
+      <text x="290" y="32" fill="#6ee7b7" class="mono" font-size="10">PCIe P2P MMIO</text>
+
+      <!-- Stage 2: NIC ASIC -->
+      <rect x="395" y="0" width="210" height="85" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+      <text x="14" y="24" fill="#a7f3d0" class="mono" font-size="12" font-weight="700" transform="translate(395, 0)">NIC DMA ASIC (即刻响应)</text>
+      <text x="14" y="44" fill="#94a3b8" class="text-xs" transform="translate(395, 0)">收到 Doorbell 信号立即激发 DMA</text>
+      <text x="14" y="64" fill="#34d399" class="mono" font-size="11" transform="translate(395, 0)">零等待直接打光纤光信号！</text>
+
+      <!-- Bottom: Zero CPU Overhead Breakdown -->
+      <rect x="0" y="105" width="602" height="150" rx="8" fill="#064e3b" fill-opacity="0.2" stroke="#059669" stroke-width="1"/>
+      <text x="16" y="28" fill="#a7f3d0" class="mono" font-size="13" font-weight="700">控制面极速直达物理时序拆解：</text>
+      
+      <g transform="translate(16, 42)">
+        <rect x="0" y="0" width="160" height="28" rx="4" fill="#065f46"/>
+        <text x="8" y="18" fill="#a7f3d0" class="mono" font-size="11">1. GPU 显存内造 WQE</text>
+        <text x="180" y="18" fill="#34d399" class="mono" font-size="11">~ 0.05 μs (SM 专用寄存器直出，零 CPU 中转)</text>
+
+        <rect x="0" y="36" width="160" height="28" rx="4" fill="#047857"/>
+        <text x="8" y="54" fill="#6ee7b7" class="mono" font-size="11">2. GPU 敲击 Doorbell</text>
+        <text x="180" y="54" fill="#34d399" class="mono" font-size="11">~ 0.95 μs (PCIe P2P MMIO 单拍写入)</text>
+
+        <rect x="0" y="72" width="160" height="28" rx="4" fill="#065f46"/>
+        <text x="8" y="90" fill="#a7f3d0" class="mono" font-size="11">3. Host CPU 参与度</text>
+        <text x="180" y="90" fill="#34d399" class="mono" font-size="11">0.00 μs (100% 彻底脱手，零中断，零调度)</text>
+      </g>
+    </g>
+
+    <!-- Bottom summary box -->
+    <rect x="24" y="335" width="602" height="52" rx="6" fill="#064e3b" fill-opacity="0.4" stroke="#047857" stroke-width="1"/>
+    <text x="36" y="355" fill="#a7f3d0" class="text-xs" font-weight="700">✅ 物理突破：控制面与数据面完全合一，跨机单包时延压降至 1.0 μs，打满极速线速！</text>
+    <text x="36" y="374" fill="#34d399" class="mono" font-size="11">单包延迟: 1.2 μs | 400G 小包吞吐率: &gt; 46 GB/s | 适用范围: MoE Token Dispatch、在线推理 Decode</text>
+  </g>
+
+  <!-- ================= BOTTOM: TOPOLOGY ROUTING & DEEPEP ARCHITECTURE ================= -->
+  <!-- Left: One-Hop Direct vs Two-Hop Hierarchical in MoE -->
+  <g transform="translate(50, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#d97706" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#fbbf24" class="card-title">MoE 跨机通信拓扑博弈：一跳直达 vs 两跳聚合 (DeepEP)</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Strategy 1: One-Hop Direct (Red Warning) -->
+      <rect x="0" y="0" width="290" height="185" rx="6" fill="#1e293b" stroke="#b45309" stroke-width="1"/>
+      <rect x="12" y="10" width="110" height="22" rx="4" fill="#78350f"/>
+      <text x="18" y="25" fill="#fde68a" class="mono" font-size="11" font-weight="700">一跳直达 (One-Hop)</text>
+      <text x="12" y="50" fill="#f87171" class="text-xs font-weight-bold">❌ 56 目标分散，散弹枪死锁</text>
+      <text x="12" y="70" fill="#94a3b8" class="text-xs">• 单卡直接向 56 个远端 GPU 各发小包</text>
+      <text x="12" y="88" fill="#fca5a5" class="mono" font-size="10">• 单包尺寸仅 109 KB (严重碎片化)</text>
+      <text x="12" y="106" fill="#f87171" class="text-xs">• 56 路并发涌向交换机同一出端口</text>
+      <text x="12" y="126" fill="#fca5a5" class="text-xs font-weight-bold">⚠️ 结果: 严重 Incast 拥塞，PFC 反压死锁</text>
+      <rect x="12" y="140" width="265" height="32" rx="4" fill="#450a0a"/>
+      <text x="20" y="160" fill="#fca5a5" class="mono" font-size="11">有效跨机吞吐: 仅 20 ~ 25 GB/s</text>
+
+      <!-- Strategy 2: Two-Hop Hierarchical (Green Success) -->
+      <rect x="310" y="0" width="290" height="185" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1.2"/>
+      <rect x="322" y="10" width="120" height="22" rx="4" fill="#065f46"/>
+      <text x="328" y="25" fill="#a7f3d0" class="mono" font-size="11" font-weight="700">两跳聚合 (Two-Hop)</text>
+      <text x="322" y="50" fill="#34d399" class="text-xs font-weight-bold">✅ 机内先汇聚，打包发跨机</text>
+      <text x="322" y="70" fill="#94a3b8" class="text-xs">• 机内 8 卡先走 900 GB/s NVLink 汇聚</text>
+      <text x="322" y="88" fill="#6ee7b7" class="mono" font-size="10">• 拼装成 7 MB 饱满大包 (消除碎片)</text>
+      <text x="322" y="106" fill="#a7f3d0" class="text-xs">• 跨机数据包数量断崖式骤降 87.5%</text>
+      <text x="322" y="126" fill="#34d399" class="text-xs font-weight-bold">🎯 结果: 彻底消灭 Incast 拥塞与死锁</text>
+      <rect x="322" y="140" width="265" height="32" rx="4" fill="#064e3b"/>
+      <text x="330" y="160" fill="#34d399" class="mono" font-size="11">有效跨机吞吐: 48 GB/s (96% 线速)</text>
+
+      <!-- Summary Bottom -->
+      <rect x="0" y="198" width="600" height="52" rx="6" fill="#1e1e2e" stroke="#475569" stroke-width="1"/>
+      <text x="14" y="220" fill="#fbbf24" class="text-xs font-weight-bold">💡 网络经济学算盘：NVLink 带宽 (900GB/s) 是 RDMA (50GB/s) 的 18 倍！</text>
+      <text x="14" y="238" fill="#cbd5e1" class="text-xs">用充裕的机内 NVLink 带宽替拥挤脆弱的跨机网络打好大包，是当代千亿 MoE 的唯一正解！</text>
+    </g>
+  </g>
+
+  <!-- Right: DeepEP Orthogonal Dual-Channel Pipeline -->
+  <g transform="translate(740, 560)">
+    <rect width="650" height="370" rx="12" fill="#0f172a" stroke="#818cf8" stroke-width="1.2" stroke-opacity="0.7" filter="url(#shadow)"/>
+    <rect width="650" height="40" rx="12" fill="#4338ca" fill-opacity="0.15"/>
+    <text x="24" y="26" fill="#c7d2fe" class="card-title">DeepEP 单 Kernel 内 Warp 级物理双通道零争抢架构</text>
+
+    <g transform="translate(24, 55)">
+      <!-- Channel 1: NVLink Forwarding Warps -->
+      <rect x="0" y="0" width="602" height="88" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="14" y="10" width="160" height="22" rx="4" fill="#4338ca"/>
+      <text x="20" y="25" fill="#e0e7ff" class="mono" font-size="11" font-weight="700">奇数 SM / Warps (机内)</text>
+      <text x="185" y="26" fill="#f8fafc" class="card-title" font-size="13">专职 NVLink 数据流管道 (Intra-Node)</text>
+      <text x="14" y="48" fill="#94a3b8" class="text-xs">职责: 监听本卡显存，通过 NVSwitch 900 GB/s 从其他 7 张卡抓取分散 Token，在本地连续显存拼成大块矩阵</text>
+      <text x="14" y="68" fill="#818cf8" class="mono" font-size="11">硬件路径: 走 NVSwitch 物理交叉总线，与 PCIe / 网卡零带宽互斥！</text>
+
+      <!-- Channel 2: RDMA Transmission Warps -->
+      <rect x="0" y="98" width="602" height="88" rx="6" fill="#1e293b" stroke="#059669" stroke-width="1"/>
+      <rect x="14" y="10" width="160" height="22" rx="4" fill="#065f46" transform="translate(0, 98)"/>
+      <text x="20" y="25" fill="#a7f3d0" class="mono" font-size="11" font-weight="700" transform="translate(0, 98)">偶数 SM / Warps (跨机)</text>
+      <text x="185" y="26" fill="#f8fafc" class="card-title" font-size="13" transform="translate(0, 98)">专职 RDMA 跨机打大包 (Inter-Node)</text>
+      <text x="14" y="146" fill="#94a3b8" class="text-xs">职责: 跨机接收端 WQE 调度与批量发包，直接向目标机器的 Gateway GPU 投递 7MB 连续大包</text>
+      <text x="14" y="166" fill="#34d399" class="mono" font-size="11">硬件路径: 走 PCIe Gen5 Switch 直达 ConnectX 网卡，直扑物理以太网/IB！</text>
+
+      <!-- Dual Channel Perfection Box -->
+      <rect x="0" y="196" width="602" height="54" rx="6" fill="#064e3b" fill-opacity="0.3" stroke="#047857" stroke-width="1"/>
+      <text x="14" y="218" fill="#34d399" class="text-xs" font-weight="700">⚡ 物理级正交隔离：NVLink 跑满 900 GB/s，RDMA 跑满 50 GB/s，两者零资源竞争！</text>
+      <text x="14" y="236" fill="#a7f3d0" class="text-xs">单个 CUDA Kernel 内无缝流水线，彻底消除跨机通信空泡，达成 DeepSeek-V3 极限算力利用率！</text>
+    </g>
+  </g>
+</svg>

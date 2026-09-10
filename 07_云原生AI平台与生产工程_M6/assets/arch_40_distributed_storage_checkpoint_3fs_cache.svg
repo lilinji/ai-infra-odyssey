@@ -1,0 +1,448 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-40" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-40" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-40" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-40" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-40" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-40" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-40" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-40" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-40)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="295" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">AI DISTRIBUTED STORAGE &amp; CHECKPOINT</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      大模型分布式存储、零开销异步 Checkpoint 与多级缓存体系架构全景图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      四大极端 IO 负载画像 · 传统 FUSE 溃败 · DeepSeek 3FS CRAQ+RDMA 内核旁路 · 零开销 Host Pinned 异步快照 · 多级 KV 缓存金字塔
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">ASYNC DtoH PAUSE</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">&lt; 500 ms</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">3FS READ BANDWIDTH</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">&gt; 1.2 TB/s</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">KV CACHE SWAP L2/L3</text>
+      <text x="307" y="38" fill="#c084fc" font-size="16" font-weight="800">&lt; 5 ms/Block</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">TRAINING MFU WASTE</text>
+      <text x="467" y="38" fill="#fbbf24" font-size="16" font-weight="800">&lt; 1.5% Overhead</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-40)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、四大极端 IO 负载与传统存储溃败</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">AI 全生命周期 IO 模式断层 · 传统 FUSE 用户态内核双重拷贝黑洞</text>
+
+    <!-- Subcard 1.1: 4 Extreme IO Workloads -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="260" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 大模型全生命周期四大极端 IO 访问画像</text>
+
+      <!-- Grid 2x2 of Workloads -->
+      <g transform="translate(12, 34)">
+        <!-- 1: DataLoader -->
+        <rect x="0" y="0" width="178" height="102" rx="5" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">1. 训练数据读取 (DataLoader)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">• 属性：100% 只读、海量随机 Seek</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8.5">• 特征：小样本高频打散、元数据压力爆棚</text>
+        <text x="8" y="64" fill="#94a3b8" font-size="8">• 痛点：IO 饥饿导致 GPU 等待计算停滞</text>
+        <text x="8" y="80" fill="#38bdf8" font-size="8" font-weight="600">指标：要求小 IOPS &gt; 1,000,000</text>
+
+        <!-- 2: Checkpoint Storm -->
+        <rect x="188" y="0" width="178" height="102" rx="5" fill="#182234" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="196" y="16" fill="#f87171" font-size="9.5" font-weight="700">2. Checkpoint 突发落盘 (Ckpt)</text>
+        <text x="196" y="32" fill="#cbd5e1" font-size="8.5">• 属性：100% 写入、写后基本不读</text>
+        <text x="196" y="48" fill="#cbd5e1" font-size="8.5">• 特征：全集群千卡同步突发顺序大块写</text>
+        <text x="196" y="64" fill="#94a3b8" font-size="8">• 痛点：单次落盘停机15分钟，吞噬 MFU</text>
+        <text x="196" y="80" fill="#f87171" font-size="8" font-weight="600">指标：全集群突发吞吐需 &gt; 500 GB/s</text>
+
+        <!-- 3: Weight Warmup -->
+        <rect x="0" y="110" width="178" height="98" rx="5" fill="#182234" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="126" fill="#fbbf24" font-size="9.5" font-weight="700">3. 权重加载 (Weight Warmup)</text>
+        <text x="8" y="142" fill="#cbd5e1" font-size="8.5">• 属性：冷启动瞬间广播读（One-to-Many）</text>
+        <text x="8" y="156" fill="#cbd5e1" font-size="8.5">• 特征：千卡同时拉取上百 GB safetensors</text>
+        <text x="8" y="170" fill="#94a3b8" font-size="8">• 痛点：对象存储出向打爆，冷启动超40分</text>
+        <text x="8" y="184" fill="#fbbf24" font-size="8" font-weight="600">指标：多机广播并发需 P2P 旁路</text>
+
+        <!-- 4: KV Cache Storage -->
+        <rect x="188" y="110" width="178" height="98" rx="5" fill="#182234" stroke="#a855f7" stroke-width="1"/>
+        <text x="196" y="126" fill="#c084fc" font-size="9.5" font-weight="700">4. 推理 KV Cache 存储</text>
+        <text x="196" y="142" fill="#cbd5e1" font-size="8.5">• 属性：读写混合、Token 级 Block 换入换出</text>
+        <text x="196" y="156" fill="#cbd5e1" font-size="8.5">• 特征：跨 HBM/DRAM/NVMe 毫秒级流动</text>
+        <text x="196" y="170" fill="#94a3b8" font-size="8">• 痛点：长文本重复 Prefill 导致 TTFT 飙升</text>
+        <text x="196" y="184" fill="#c084fc" font-size="8" font-weight="600">指标：端到端跨级时延需 &lt; 5 ms</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 传统 FUSE / POSIX 架构溃败剖析 -->
+    <g transform="translate(15, 335)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">1.2 传统 FUSE / POSIX 在大模型下的致命瓶颈</text>
+
+      <!-- FUSE Data Flow Trap -->
+      <g transform="translate(12, 34)">
+        <rect width="366" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#f8fafc" font-size="9" font-weight="700">PyTorch DataLoader (用户态)</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="8">调用 read() 发起数据读取 ➔ 发生 User ➔ Kernel 模式切换</text>
+
+        <line x1="183" y1="38" x2="183" y2="48" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-purple-40)"/>
+
+        <rect y="48" width="366" height="42" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="64" fill="#f87171" font-size="9" font-weight="700">Linux VFS ➔ /dev/fuse 内核驱动</text>
+        <text x="8" y="78" fill="#cbd5e1" font-size="8">内核上下文切换 + 内存拷贝 ➔ 将请求排入 FUSE 等待队列</text>
+
+        <line x1="183" y1="90" x2="183" y2="100" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow-purple-40)"/>
+
+        <rect y="100" width="366" height="42" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="116" fill="#fbbf24" font-size="9" font-weight="700">FUSE 用户态守护进程 (User Daemon)</text>
+        <text x="8" y="130" fill="#cbd5e1" font-size="8">再次触发上下文切换 ➔ 拷贝数据包 ➔ 走网络协议栈请求后端存储</text>
+      </g>
+
+      <!-- FUSE Trap Summary -->
+      <g transform="translate(12, 186)">
+        <rect width="366" height="38" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="15" fill="#f87171" font-size="8.5" font-weight="700">🚨 四次内核/用户态切换 + 三次内存拷贝！</text>
+        <text x="8" y="29" fill="#94a3b8" font-size="8">CPU 单核被打满在软中断与上下文切换，万兆/RDMA 物理带宽被白白闲置！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 架构破局第一性原理 -->
+    <g transform="translate(15, 580)">
+      <rect width="390" height="105" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="24" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="12" r="4" fill="#34d399"/>
+      <text x="28" y="16" fill="#a7f3d0" font-size="10.5" font-weight="700">1.3 新一代 AI 原生存储的核心破局法则</text>
+
+      <text x="12" y="44" fill="#38bdf8" font-size="9" font-weight="700">1. 内核旁路 (Kernel Bypass)：</text>
+      <text x="145" y="44" fill="#94a3b8" font-size="8.5">全面采用 RDMA / SPDK，用户空间直接驱动 NVMe</text>
+
+      <text x="12" y="64" fill="#34d399" font-size="9" font-weight="700">2. 读写非对称解耦：</text>
+      <text x="120" y="64" fill="#94a3b8" font-size="8.5">写采用链式强一致，读采用无锁切片本地扇出</text>
+
+      <text x="12" y="84" fill="#c084fc" font-size="9" font-weight="700">3. 显存-内存零拷贝异步：</text>
+      <text x="145" y="84" fill="#94a3b8" font-size="8.5">利用 Host Pinned Memory 掩盖磁盘落盘开销</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-40)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、DeepSeek 3FS 架构与零开销异步 Checkpoint</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">CRAQ 链式复制 · RDMA 内核旁路 · Host Pinned Memory 异步流水线</text>
+
+    <!-- Subcard 2.1: DeepSeek 3FS 架构全景 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="275" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 DeepSeek 3FS (Fire-Flyer File System) 原生架构</text>
+
+      <!-- Architecture Top: Compute Client -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="58" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">3FS Client: KDK / 用户态直通动态链接库</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 无 POSIX VFS 损耗，直接提供 Tensor / Chunk 级二进制异步 API</text>
+        <text x="10" y="48" fill="#34d399" font-size="8.5">• 通过 RDMA CM 与所有 Storage Node 建立全互联无损队列对 (QP)</text>
+      </g>
+
+      <!-- Network Layer: InfiniBand / RoCEv2 -->
+      <g transform="translate(12, 100)">
+        <rect width="406" height="24" rx="4" fill="#182234" stroke="#a855f7" stroke-width="1"/>
+        <text x="12" y="16" fill="#c084fc" font-size="9" font-weight="700">高速无损互联层：</text>
+        <text x="110" y="16" fill="#cbd5e1" font-size="8.5">400Gbps / 800Gbps InfiniBand / RoCEv2 (RDMA Read/Write)</text>
+      </g>
+
+      <!-- Storage Nodes: CRAQ Chain Replication -->
+      <g transform="translate(12, 132)">
+        <rect width="406" height="130" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">CRAQ (Chain Replication with Apportioned Queries) 存储链</text>
+
+        <!-- Node Chain 1 -> 2 -> 3 -->
+        <g transform="translate(10, 24)">
+          <!-- Head Node -->
+          <rect x="0" y="0" width="115" height="52" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+          <text x="6" y="16" fill="#38bdf8" font-size="9" font-weight="700">Head Node (写入头)</text>
+          <text x="6" y="32" fill="#cbd5e1" font-size="8">接收写请求 (Write)</text>
+          <text x="6" y="44" fill="#94a3b8" font-size="7.5">标记 Clean/Dirty 状态</text>
+
+          <line x1="115" y1="26" x2="135" y2="26" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-40)"/>
+
+          <!-- Middle Node -->
+          <rect x="135" y="0" width="115" height="52" rx="4" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+          <text x="6" y="16" fill="#c084fc" font-size="9" font-weight="700">Middle Node (中间)</text>
+          <text x="6" y="32" fill="#cbd5e1" font-size="8">RDMA 零拷贝接力</text>
+          <text x="6" y="44" fill="#94a3b8" font-size="7.5">NVMe SSD 极速落盘</text>
+
+          <line x1="250" y1="26" x2="270" y2="26" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-emerald-40)"/>
+
+          <!-- Tail Node -->
+          <rect x="270" y="0" width="115" height="52" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+          <text x="6" y="16" fill="#34d399" font-size="9" font-weight="700">Tail Node (确认尾)</text>
+          <text x="6" y="32" fill="#cbd5e1" font-size="8">向 Client 返回 Ack</text>
+          <text x="6" y="44" fill="#34d399" font-size="7.5">反向广播提交版本号</text>
+        </g>
+
+        <!-- Read Scaling Magic -->
+        <g transform="translate(10, 84)">
+          <rect width="386" height="38" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+          <text x="8" y="15" fill="#fbbf24" font-size="8.5" font-weight="700">⚡ CRAQ 读吞吐爆炸秘诀：全链条并发只读</text>
+          <text x="8" y="29" fill="#cbd5e1" font-size="8">读请求不需要全扎堆在 Head/Tail，任意副本只要版本为 Clean，即可全速扇出！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: 零开销异步 Checkpoint 流水线 -->
+    <g transform="translate(15, 348)">
+      <rect width="430" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 零开销异步 Checkpoint 核心流水线机制</text>
+
+      <!-- 2-Phase Timeline -->
+      <g transform="translate(12, 34)">
+        <!-- Phase 1: GPU to Host -->
+        <rect width="406" height="68" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">Phase 1: 同步阻塞阶段（仅限制在 &lt; 500ms）</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• GPU HBM ➔ PCIe 5.0 (64GB/s) ➔ 写入 Host Pinned Memory (锁定页内存)</text>
+        <text x="10" y="48" fill="#34d399" font-size="8.5">• 70B 模型 ZeRO-3 单卡分片仅约 4~8GB ➔ 显卡到内存拷贝耗时仅 200~300ms</text>
+        <text x="10" y="60" fill="#f87171" font-size="8" font-weight="600">拷贝一完成，立即释放 PyTorch 计算主线程，继续 Step N+1 训练！</text>
+
+        <!-- Phase 2: Host to Storage -->
+        <rect y="78" width="406" height="88" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="94" fill="#34d399" font-size="9.5" font-weight="700">Phase 2: 后台完全异步落盘阶段（训练无感知）</text>
+        <text x="10" y="110" fill="#cbd5e1" font-size="8.5">• 独立 Background Worker 守护线程接管 Host Pinned 内存数据</text>
+        <text x="10" y="126" fill="#cbd5e1" font-size="8.5">• 通过 RDMA Write 发射至 3FS / 分布式存储集群，耗时数分钟完全解耦</text>
+        <text x="10" y="142" fill="#fbbf24" font-size="8.5">• 双缓冲机制（Double Buffering）：分配 2 套 Pinned Buffer，轮转避免等待</text>
+        <text x="10" y="156" fill="#38bdf8" font-size="8">MFU 损失从传统同步落盘的 25%~40% 骤降至 &lt; 1%！</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 性能手算与时延对比 -->
+    <g transform="translate(15, 566)">
+      <rect width="430" height="118" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 真实生产耗时与停顿手算算盘 (70B 模型 1024 卡)</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#f87171" font-size="9" font-weight="700">传统 NFS / S3 同步落盘：</text>
+        <text x="150" y="14" fill="#cbd5e1" font-size="8.5">每 500 步保存一次，停顿 12 分钟 ➔ 每日有效训练损失 4.2 小时！</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">3FS + Pinned 异步快照：</text>
+        <text x="150" y="34" fill="#cbd5e1" font-size="8.5">单卡停顿仅 320ms ➔ 每日有效训练损失仅 38 秒，算力利用率拉满！</text>
+
+        <text x="0" y="54" fill="#38bdf8" font-size="9" font-weight="700">冷启动拉取对比：</text>
+        <text x="150" y="54" fill="#cbd5e1" font-size="8.5">传统单挂载点 45 分钟 ➔ 3FS CRAQ 扇出读降至 90 秒，秒级自愈！</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">网络拓扑亲和性：</text>
+        <text x="150" y="74" fill="#cbd5e1" font-size="8.5">存储节点与计算节点置于同一 Spine-Leaf 下，避免跨胖树核心带宽挤占</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-40)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#c084fc"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、多级 KV 缓存金字塔与落地选型</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">跨节点分级流动 · Prefix 命中策略 · 企业级存储落地矩阵</text>
+
+    <!-- Subcard 3.1: KV Cache 存储金字塔 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">3.1 推理长文本多级 KV Cache 存储金字塔</text>
+
+      <!-- Tier 1: HBM -->
+      <g transform="translate(10, 34)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">L1: GPU HBM (本地高带宽显存)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">容量：80GB~141GB | 带宽：3.35 TB/s | 时延：&lt; 0.1 µs (超极速计算)</text>
+      </g>
+
+      <!-- Tier 2: Host DRAM -->
+      <g transform="translate(10, 82)">
+        <rect width="350" height="44" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">L2: 本机 Host DRAM (Pinned Memory 缓存)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">容量：1TB~2TB | 带宽：300 GB/s (PCIe 5.0) | 时延：1~2 ms (换入换出)</text>
+      </g>
+
+      <!-- Tier 3: Local NVMe -->
+      <g transform="translate(10, 132)">
+        <rect width="350" height="44" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="9" font-weight="700">L3: 本地 NVMe SSD (SPDK / io_uring)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">容量：15TB~30TB | 带宽：28 GB/s (PCIe 5.0 NVMe) | 时延：3~5 ms</text>
+      </g>
+
+      <!-- Tier 4: Remote 3FS / JuiceFS -->
+      <g transform="translate(10, 182)">
+        <rect width="350" height="42" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#c084fc" font-size="9" font-weight="700">L4: 分布式集群共享缓存 (DeepSeek 3FS / RDMA)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">容量：PB 级无限横向扩展 | 时延：5~10 ms (跨机复用 System Prompt)</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 存储架构落地选型全景矩阵 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="210" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">3.2 企业级大模型存储系统选型决策矩阵</text>
+
+      <!-- Table Matrix -->
+      <g transform="translate(8, 32)">
+        <rect width="354" height="22" fill="#1e293b" rx="3"/>
+        <text x="6" y="15" fill="#94a3b8" font-size="8" font-weight="700">方案</text>
+        <text x="60" y="15" fill="#94a3b8" font-size="8" font-weight="700">吞吐能力</text>
+        <text x="135" y="15" fill="#94a3b8" font-size="8" font-weight="700">时延特性</text>
+        <text x="210" y="15" fill="#94a3b8" font-size="8" font-weight="700">适用场景与评价</text>
+
+        <text x="6" y="38" fill="#38bdf8" font-size="8" font-weight="700">3FS</text>
+        <text x="60" y="38" fill="#34d399" font-size="8">极高(&gt;1TB/s)</text>
+        <text x="135" y="38" fill="#34d399" font-size="8">&lt; 100µs (RDMA)</text>
+        <text x="210" y="38" fill="#cbd5e1" font-size="8">自建高性能集群王道</text>
+
+        <text x="6" y="58" fill="#c084fc" font-size="8" font-weight="700">JuiceFS</text>
+        <text x="60" y="58" fill="#38bdf8" font-size="8">高(本地缓存)</text>
+        <text x="135" y="58" fill="#38bdf8" font-size="8">毫秒级</text>
+        <text x="210" y="58" fill="#cbd5e1" font-size="8">云上训练数据/模型分发</text>
+
+        <text x="6" y="78" fill="#fbbf24" font-size="8" font-weight="700">Lustre</text>
+        <text x="60" y="78" fill="#38bdf8" font-size="8">很高(顺序大块)</text>
+        <text x="135" y="78" fill="#fbbf24" font-size="8">小文件极差</text>
+        <text x="210" y="78" fill="#cbd5e1" font-size="8">传统超算遗产，元数据重</text>
+
+        <text x="6" y="98" fill="#f87171" font-size="8" font-weight="700">CephFS</text>
+        <text x="60" y="98" fill="#f87171" font-size="8">中等</text>
+        <text x="135" y="98" fill="#f87171" font-size="8">高抖动(PG争抢)</text>
+        <text x="210" y="98" fill="#fca5a5" font-size="8">不建议承载千卡 Ckpt</text>
+
+        <text x="6" y="118" fill="#94a3b8" font-size="8" font-weight="700">S3+P2P</text>
+        <text x="60" y="118" fill="#34d399" font-size="8">极高(分发节点多)</text>
+        <text x="135" y="118" fill="#94a3b8" font-size="8">秒级冷启动</text>
+        <text x="210" y="118" fill="#cbd5e1" font-size="8">容器镜像与大权重首选</text>
+      </g>
+
+      <g transform="translate(8, 160)">
+        <rect width="354" height="42" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">💡 生产黄金架构组合：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">3FS / RDMA NVMe-oF 承载 Ckpt + JuiceFS 挂载数据 + Dragonfly P2P 镜像</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 避坑清单与故障演练 -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 存储生产避坑与架构原则 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 严禁 FUSE 直跑大文件：</text>
+        <text x="130" y="14" fill="#94a3b8" font-size="8.5">必开直接 IO（direct_io）绕过内核 PageCache 争抢</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ Checkpoint 滚动保留：</text>
+        <text x="130" y="34" fill="#94a3b8" font-size="8.5">仅保留最新 3 份快照，异步后台触发清盘，防磁盘打满</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 独占存储网络平面：</text>
+        <text x="130" y="54" fill="#94a3b8" font-size="8.5">训练通信与存储落地网卡分离，防 Ckpt 争抢梯队反压</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 内存锁定锁页安全：</text>
+        <text x="130" y="74" fill="#94a3b8" font-size="8.5">设置 ulimit -l unlimited，防 Pinned Memory 交换被 OOM</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 元数据防击穿设计：</text>
+        <text x="130" y="94" fill="#94a3b8" font-size="8.5">禁用访问时间更新（noatime），合并小样本为 Tar/WebDataset</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 预热探测与冷读防雪崩：</text>
+        <text x="130" y="114" fill="#94a3b8" font-size="8.5">Pod 启动前预热本地 NVMe 缓存，切断中心存储雷鸣风暴</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不允许训练停机等磁盘：GPU 算力是千万级资产，必须用 Host Pinned Memory 实施秒级快照解耦，把落盘开销全部推入后台异步流水线。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">彻底抛弃传统 FUSE 慢速枷锁：大模型存储必须拥抱 RDMA 内核旁路与 SPDK 直通，利用 CRAQ 链式强一致与无锁多副本扇出榨干物理网络极限。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">长文本推理必须靠多级缓存金字塔：显存寸土寸金，建立 HBM ➔ DRAM ➔ NVMe ➔ 分布式 3FS 的 KV Cache 换入换出链条，彻底根除重复 Prefill 算力黑洞。</text>
+    </g>
+  </g>
+</svg>

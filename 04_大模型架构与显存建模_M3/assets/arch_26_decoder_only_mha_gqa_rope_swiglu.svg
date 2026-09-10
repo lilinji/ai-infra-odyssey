@@ -1,0 +1,420 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-26" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-card-26" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-26" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-26" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-26" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-26" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-26" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-26)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-26)"/>
+    
+    <text x="24" y="27" class="title-main">第26讲：现代 Decoder-only 大模型架构、GQA、RoPE 与 SwiGLU 深度解构全景图</text>
+    <text x="24" y="47" class="title-sub">Pre-LN Causal Backbone · MHA ➔ MQA ➔ GQA KV Cache Reduction · RoPE 2D Givens Rotation · SwiGLU Gated Feed-Forward (8/3d) · Tensor Shape Flow</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(820, 13)">
+      <rect x="0" y="0" width="135" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="67" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">GQA 显存降维收益</text>
+      <text x="67" y="30" font-size="11" font-weight="800" fill="#4ade80" text-anchor="middle">KV Cache 暴降至 1/8</text>
+
+      <rect x="145" y="0" width="135" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="212" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">残差超导高速路</text>
+      <text x="212" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Pre-LN 恒等梯度 I</text>
+
+      <rect x="290" y="0" width="130" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="355" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">RoPE 相对几何编码</text>
+      <text x="355" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">零显存 2D 复数旋转</text>
+
+      <rect x="430" y="0" width="120" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="490" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">SwiGLU 门控对齐</text>
+      <text x="490" y="30" font-size="11" font-weight="800" fill="#fde047" text-anchor="middle">(8/3)d 参数严格对齐</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: BACKBONE & PRE-LN & RMSNORM ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-26)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">🏛️ 1. 架构第一性原理与 Pre-LN 残差超导主干</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">主干模型</text>
+
+    <!-- Pre-LN vs Post-LN Math -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="196" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">归一化拓扑的生与死：Post-LN vs Pre-LN</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">反向传播链式求导：深层（80+ 层）大模型训练能否收敛的物理命门</text>
+
+      <!-- Post-LN -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="66" rx="3" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">❌ 早期 Post-LN: x_{l+1} = LN(x_l + SubLayer(x_l))</text>
+        <text x="10" y="30" font-size="7.5" fill="#fecdd3">• 链式反向梯度: ∂x_L / ∂x_0 = ∏ [ ∂LN(·) / ∂(·) ] × [ I + ∂SubLayer / ∂x ]</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• 连乘数十个非线性 LN 导数 ➔ 梯度在浅层雪崩消失或爆炸！</text>
+        <text x="10" y="58" font-size="7" fill="#fda4af">致命伤：必须依赖极其脆弱的超长 Warmup 学习率预热，否则训练直接 NaN 崩溃！</text>
+      </g>
+
+      <!-- Pre-LN -->
+      <g transform="translate(10, 118)">
+        <rect x="0" y="0" width="392" height="68" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#34d399">✅ 现代 Pre-LN: x_{l+1} = x_l + SubLayer(RMSNorm(x_l))</text>
+        <text x="10" y="30" font-size="7.5" fill="#a7f3d0">• 展开到第 L 层: x_L = x_0 + ∑ SubLayer(RMSNorm(x_l))</text>
+        <text x="10" y="44" font-size="8.5" font-weight="800" fill="#fde047">• 链式反向梯度: ∂x_L / ∂x_0 = 恒等矩阵 I + ∑ [ ∂SubLayer / ∂x_0 ]</text>
+        <text x="10" y="60" font-size="7.5" fill="#ffffff">★ 物理奇迹：恒等矩阵 I 充当超导铜线，浅层梯度 100% 零阻碍直通底层！</text>
+      </g>
+    </g>
+
+    <!-- RMSNorm Microarchitecture -->
+    <g transform="translate(14, 254)">
+      <rect x="0" y="0" width="412" height="216" rx="6" fill="#0f172a" stroke="#8b5cf6" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">从 LayerNorm 到 RMSNorm：算子融合与访存救赎</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">为什么现代大模型（LLaMA/DeepSeek/Mistral）全面抛弃 LayerNorm？</text>
+
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="52" rx="3" fill="rgba(15,23,42,0.8)" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#94a3b8">经典 LayerNorm 公式:</text>
+        <text x="10" y="32" font-size="7.5" fill="#cbd5e1">y = (x - μ) / sqrt(σ² + ε) ⊙ γ + β</text>
+        <text x="10" y="46" font-size="7" fill="#64748b">需计算均值 μ 与方差 σ² ➔ 触发 2 次跨 Warp 的全局规约（Reduction）！</text>
+
+        <rect x="0" y="58" width="392" height="58" rx="3" fill="rgba(88,28,135,0.3)" stroke="#c084fc" stroke-width="1"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#f3e8ff" transform="translate(0,58)">现代 RMSNorm 均方根归一化 (Root Mean Square):</text>
+        <text x="10" y="34" font-size="9" font-weight="800" fill="#fde047" transform="translate(0,58)">y = (x / RMS(x)) ⊙ γ,  其中 RMS(x) = sqrt( 1/d ∑ x_i² + ε )</text>
+        <text x="10" y="50" font-size="7.5" fill="#a7f3d0" transform="translate(0,58)">彻底去除减均值 (x - μ) 操作，只保留尺度缩放不变性！</text>
+
+        <rect x="0" y="122" width="392" height="38" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="800" fill="#34d399" transform="translate(0,122)">💎 AI Infra 收益：访存流量直降 30%！</text>
+        <text x="10" y="30" font-size="7" fill="#cbd5e1" transform="translate(0,122)">规约操作从 2 次减为 1 次，单 Kernel 极易完成与前序残差 Add 的算子融合！</text>
+      </g>
+    </g>
+
+    <!-- Why Causal Decoder-only Callout -->
+    <g transform="translate(14, 482)">
+      <rect x="0" y="0" width="412" height="244" rx="6" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">🏛️ 架构终局：为什么大一统于 Causal Decoder-only？</text>
+      <text x="14" y="38" font-size="8" fill="#e0f2fe">回顾 Encoder-Decoder（T5）与 Prefix-LM，为什么全被历史车轮碾压？</text>
+
+      <g transform="translate(10, 48)">
+        <rect x="0" y="0" width="392" height="56" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#2dd4bf">1. KV Cache 全生命周期线性复用 (Zero-Copy)</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff">在 Decoder-only 中，Prefill 算出的 Key/Value 直接成为 Decode 的缓存底座；</text>
+        <text x="10" y="44" font-size="7" fill="#a7f3d0">而 Enc-Dec 架构中 Cross-Attention 产生双份缓存，且跨模块无法连续拼装！</text>
+
+        <rect x="0" y="62" width="392" height="56" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#2dd4bf" transform="translate(0,62)">2. 同构切分与分布式并行极简</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff" transform="translate(0,62)">全模型由相同的单一层重复堆叠 $L$ 次，TP（张量并行）与 PP（流水线）</text>
+        <text x="10" y="44" font-size="7" fill="#a7f3d0" transform="translate(0,62)">各节点负载绝对均衡，消除了跨 Encoder/Decoder 调度引发的气泡损失！</text>
+
+        <rect x="0" y="124" width="392" height="54" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#fde047" transform="translate(0,124)">3. 训练与推理任务范式大一统</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff" transform="translate(0,124)">理解、生成、推理、代码、对话全归结为下一 Token 预测（Next Token Prediction）！</text>
+        <text x="10" y="44" font-size="7" fill="#fed7aa" transform="translate(0,124)">Scaling Law 的规模法则在统一自回归目标下得以完美涌现！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: GQA & ROPE ROTATION ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-26)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">⚡ 2. 注意力演进（GQA）与 RoPE 2D 几何旋转</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">核心算子</text>
+
+    <!-- MHA vs MQA vs GQA Visual -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="294" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">MHA ➔ MQA ➔ GQA 注意力演进三部曲</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">自回归 Decode 阶段是极度受限于显存带宽（Memory-Bound）的经典地狱</text>
+
+      <!-- Visual 3 columns -->
+      <g transform="translate(10, 44)">
+        <!-- MHA Box -->
+        <rect x="0" y="0" width="128" height="174" rx="4" fill="rgba(15,23,42,0.8)" stroke="#475569" stroke-width="1"/>
+        <text x="64" y="16" font-size="8.5" font-weight="800" fill="#94a3b8" text-anchor="middle">MHA (多头注意力)</text>
+        <text x="64" y="28" font-size="7" fill="#64748b" text-anchor="middle">H_q = 32, H_kv = 32</text>
+        <rect x="8" y="36" width="112" height="40" rx="2" fill="rgba(56,189,248,0.2)" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="64" y="58" font-size="7.5" fill="#bae6fd" text-anchor="middle">32 个 Query 头</text>
+        <path d="M 64 78 L 64 92" stroke="#64748b" stroke-width="1" marker-end="url(#arrow-cyan)"/>
+        <rect x="8" y="96" width="112" height="40" rx="2" fill="rgba(244,63,94,0.2)" stroke="#f43f5e" stroke-width="0.8"/>
+        <text x="64" y="118" font-size="7.5" fill="#fca5a5" text-anchor="middle">32 组独立 KV 头</text>
+        <text x="64" y="152" font-size="7" font-weight="700" fill="#f87171" text-anchor="middle">KV Cache: 100% 满额</text>
+        <text x="64" y="164" font-size="6.5" fill="#94a3b8" text-anchor="middle">Decode 算术强度极低</text>
+
+        <!-- MQA Box -->
+        <rect x="136" y="0" width="128" height="174" rx="4" fill="rgba(124,45,18,0.25)" stroke="#f97316" stroke-width="1"/>
+        <text x="200" y="16" font-size="8.5" font-weight="800" fill="#fdba74" text-anchor="middle">MQA (多查询注意力)</text>
+        <text x="200" y="28" font-size="7" fill="#fed7aa" text-anchor="middle">H_q = 32, H_kv = 1</text>
+        <rect x="144" y="36" width="112" height="40" rx="2" fill="rgba(56,189,248,0.2)" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="200" y="58" font-size="7.5" fill="#bae6fd" text-anchor="middle">32 个 Query 头</text>
+        <path d="M 200 78 L 200 92" stroke="#f97316" stroke-width="1" marker-end="url(#arrow-orange)"/>
+        <rect x="144" y="96" width="112" height="40" rx="2" fill="rgba(249,115,22,0.3)" stroke="#f97316" stroke-width="1"/>
+        <text x="200" y="118" font-size="7.5" font-weight="800" fill="#ffffff" text-anchor="middle">唯一 1 组 KV 头！</text>
+        <text x="200" y="152" font-size="7" font-weight="700" fill="#fde047" text-anchor="middle">KV Cache: 骤降至 1/32</text>
+        <text x="200" y="164" font-size="6.5" fill="#fca5a5" text-anchor="middle">表达力受损 / 训练不稳定</text>
+
+        <!-- GQA Box -->
+        <rect x="272" y="0" width="134" height="174" rx="4" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="339" y="16" font-size="8.5" font-weight="800" fill="#34d399" text-anchor="middle">GQA (分组查询注意力)</text>
+        <text x="339" y="28" font-size="7" fill="#a7f3d0" text-anchor="middle">H_q = 32, H_kv = 8 (Group=4)</text>
+        <rect x="280" y="36" width="118" height="40" rx="2" fill="rgba(56,189,248,0.2)" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="339" y="58" font-size="7.5" fill="#bae6fd" text-anchor="middle">32 个 Q 头 (分 8 组)</text>
+        <path d="M 339 78 L 339 92" stroke="#10b981" stroke-width="1" marker-end="url(#arrow-emerald)"/>
+        <rect x="280" y="96" width="118" height="40" rx="2" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1"/>
+        <text x="339" y="118" font-size="7.5" font-weight="800" fill="#ffffff" text-anchor="middle">8 组共享 KV 头</text>
+        <text x="339" y="152" font-size="7" font-weight="700" fill="#4ade80" text-anchor="middle">KV Cache: 压降至 1/4~1/8</text>
+        <text x="339" y="164" font-size="6.5" fill="#a7f3d0" text-anchor="middle">精度完全无损 / 工业标配！</text>
+      </g>
+
+      <g transform="translate(10, 226)">
+        <rect x="0" y="0" width="412" height="56" rx="3" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="800" fill="#67e8f9">公式穿透：KV Cache 单步字节数 (FP16)</text>
+        <text x="10" y="32" font-size="9" font-weight="800" fill="#fde047">S_kv = 2 × 2 × L × H_kv × d_h × S_len 字节</text>
+        <text x="10" y="48" font-size="7.5" fill="#cbd5e1">当采用 GQA-8 时，KV 显存占用直接砍去 75%~87.5%，Decode 吞吐暴涨 3~4 倍！</text>
+      </g>
+    </g>
+
+    <!-- RoPE 2D Rotation Engine -->
+    <g transform="translate(14, 348)">
+      <rect x="0" y="0" width="432" height="378" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a7f3d0">RoPE 旋转位置编码几何代数本质与证明</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">Su Jianlin (苏剑林) 提出的基于复数旋转的相对位置编码范式</text>
+
+      <!-- Formula Box -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="412" height="84" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="18" font-size="8.5" font-weight="800" fill="#2dd4bf">2D Givens 旋转矩阵定义 (将 head_dim 拆为 d/2 个 2D 正交子空间):</text>
+        <text x="10" y="36" font-size="9.5" font-family="monospace" fill="#ffffff">[ q_{2i}^{(m)}, q_{2i+1}^{(m)} ]^T = R(mθ_i) · [ q_{2i}, q_{2i+1} ]^T</text>
+        <text x="10" y="54" font-size="8.5" font-family="monospace" fill="#fde047">其中 R(mθ) = [[ cos(mθ), -sin(mθ) ], [ sin(mθ), cos(mθ) ]], θ_i = 10000^{-2i/d}</text>
+        <text x="10" y="74" font-size="7.5" fill="#a7f3d0">★ 核心内积不变性证明: ⟨R_m q, R_n k⟩ = q^T R_m^T R_n k = q^T R(n - m) k = g(q, k, n-m)</text>
+      </g>
+
+      <!-- Visual 2D Circle Rotation -->
+      <g transform="translate(10, 136)">
+        <rect x="0" y="0" width="412" height="142" rx="4" fill="#030712" stroke="#1e293b" stroke-width="0.8"/>
+        
+        <!-- Coordinate Axes Left -->
+        <g transform="translate(80, 70)">
+          <line x1="-50" y1="0" x2="50" y2="0" stroke="#475569" stroke-width="1"/>
+          <line x1="0" y1="-50" x2="0" y2="50" stroke="#475569" stroke-width="1"/>
+          <circle cx="0" cy="0" r="40" fill="none" stroke="#334155" stroke-dasharray="3,3"/>
+
+          <!-- Vector q at m -->
+          <line x1="0" y1="0" x2="35" y2="-20" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)"/>
+          <text x="38" y="-24" font-size="7.5" font-weight="700" fill="#38bdf8">R_m · q</text>
+
+          <!-- Vector k at n -->
+          <line x1="0" y1="0" x2="15" y2="-37" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+          <text x="18" y="-42" font-size="7.5" font-weight="700" fill="#f59e0b">R_n · k</text>
+
+          <!-- Arc angle delta -->
+          <path d="M 18 -10 A 20 20 0 0 1 8 -18" fill="none" stroke="#fde047" stroke-width="1.5"/>
+          <text x="24" y="-8" font-size="7" font-weight="700" fill="#fde047">n - m</text>
+        </g>
+
+        <!-- Explanation Right -->
+        <g transform="translate(165, 12)">
+          <text x="0" y="16" font-size="8" font-weight="800" fill="#fef08a">几何本质：纯复数相角相减</text>
+          <text x="0" y="32" font-size="7.5" fill="#cbd5e1">1. 位置 $m$ 与 $n$ 的注意力打分，只取决于夹角差 $(n - m)$；</text>
+          <text x="0" y="48" font-size="7.5" fill="#cbd5e1">2. **零显存落盘**：无需像绝对位置编码那样创建可学习查找表；</text>
+          <text x="0" y="64" font-size="7.5" fill="#cbd5e1">3. **极速向量化**：代码中无需矩阵乘，只需分块两两交替乘加：</text>
+          <text x="5" y="80" font-size="7" font-family="monospace" fill="#34d399">q_rot = (q * cos) + (rotate_half(q) * sin)</text>
+          <text x="0" y="100" font-size="7.5" font-weight="700" fill="#fde047">4. 长度外推神技：通过修改底数或 NTK/YaRN 插值轻松破 128K！</text>
+        </g>
+      </g>
+
+      <!-- RoPE Extrapolation Box -->
+      <g transform="translate(10, 286)">
+        <rect x="0" y="0" width="412" height="80" rx="3" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="800" fill="#f3e8ff">RoPE 长文本外推技术阶梯：</text>
+        <text x="10" y="32" font-size="7.5" fill="#e9d5ff">• **直接外插 (Extrapolation)**: 高频空间剧烈振荡，超过 4K 困惑度瞬间爆炸；</text>
+        <text x="10" y="46" font-size="7.5" fill="#e9d5ff">• **线性内插 (PI)**: 将位置索引压缩 $m / \alpha$，高频分辨率丢失，短文本性能下跌；</text>
+        <text x="10" y="60" font-size="7.5" font-weight="700" fill="#fde047">• **NTK-Aware / YaRN (现代标准)**: 高频外推保局部，低频内插保长程，4K 预训练稳破 128K！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: SWIGLU & PARAMETER LEDGER ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-26)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(120,53,15,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#fcd34d">🔀 3. SwiGLU 门控前馈网络与全模型参数账本</text>
+    <text x="360" y="22" font-size="9.5" font-weight="600" fill="#fef08a">前馈模型</text>
+
+    <!-- SwiGLU Architecture Visual -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">SwiGLU 门控线性单元 (Gated Feed-Forward Network)</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">由 Noam Shazeer 提出，全面取代传统 ReLU / GELU 结构</text>
+
+      <!-- Diagram Flow -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="114" rx="4" fill="rgba(120,53,15,0.25)" stroke="#f59e0b" stroke-width="0.8"/>
+        
+        <rect x="15" y="15" width="80" height="26" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="55" y="32" font-size="7.5" fill="#5eead4" text-anchor="middle">x [B, S, d]</text>
+
+        <!-- Fork to Gate and Up -->
+        <path d="M 95 28 L 125 15" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#arrow-orange)"/>
+        <path d="M 95 28 L 125 45" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#arrow-orange)"/>
+
+        <!-- Gate Proj -->
+        <rect x="130" y="5" width="105" height="22" rx="2" fill="#083344" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="182" y="20" font-size="7" fill="#67e8f9" text-anchor="middle">W_gate ➔ SiLU (Swish)</text>
+
+        <!-- Up Proj -->
+        <rect x="130" y="35" width="105" height="22" rx="2" fill="#1e1b4b" stroke="#6366f1" stroke-width="0.8"/>
+        <text x="182" y="50" font-size="7" fill="#a5b4fc" text-anchor="middle">W_up (线性激活)</text>
+
+        <!-- Elementwise Multiply -->
+        <text x="250" y="32" font-size="12" font-weight="800" fill="#fde047">⊗</text>
+
+        <!-- Down Proj -->
+        <path d="M 265 28 L 285 28" stroke="#f59e0b" stroke-width="1.2" marker-end="url(#arrow-orange)"/>
+        <rect x="290" y="15" width="90" height="26" rx="3" fill="#065f46" stroke="#34d399" stroke-width="0.8"/>
+        <text x="335" y="32" font-size="7.5" font-weight="700" fill="#ffffff" text-anchor="middle">W_down [d_ffn, d]</text>
+
+        <!-- Formula Text -->
+        <text x="15" y="80" font-size="8.5" font-weight="800" fill="#ffffff">SwiGLU(x) = ( Swish(x W_gate) ⊙ (x W_up) ) W_down</text>
+        <text x="15" y="98" font-size="7.5" fill="#fed7aa">门控机制：W_gate 动态学习哪些特征需要放行，W_up 负责信息特征提供！</text>
+      </g>
+
+      <!-- Why 8/3 d Box -->
+      <g transform="translate(10, 168)">
+        <rect x="0" y="0" width="392" height="58" rx="3" fill="rgba(88,28,135,0.3)" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="800" fill="#f3e8ff">为什么隐藏维度 d_ffn 不是 4d，而是取 ≈ (8/3)d？</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">• 标准 FFN（2 个矩阵）: 参数量 = 2 × (d × 4d) = 8 d²；</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• SwiGLU（3 个矩阵）: 参数量 = 3 × (d × d_ffn) ➔ 设 3 d_ffn = 8 d ➔ d_ffn = 8/3 d！</text>
+        <text x="10" y="54" font-size="7" font-weight="700" fill="#4ade80">★ 在总参数量绝对保持一致的前提下，模型下游能力全面超越经典 FFN！</text>
+      </g>
+    </g>
+
+    <!-- Complete Tensor Shape Ledger -->
+    <g transform="translate(14, 292)">
+      <rect x="0" y="0" width="412" height="268" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#6ee7b7">单层 Decoder Block 张量 Shape 全流转账本</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">大厂白板手撕：Batch Size B, Seq Len S, Hidden Dim d=4096</text>
+
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="22" fill="#1e293b"/>
+        <text x="8" y="15" font-size="7.5" font-weight="700" fill="#94a3b8">计算节点 / 算子</text>
+        <text x="160" y="15" font-size="7.5" font-weight="700" fill="#38bdf8">输出张量 Shape</text>
+        <text x="290" y="15" font-size="7.5" font-weight="700" fill="#4ade80">物理显存字节数 (FP16)</text>
+
+        <!-- Rows -->
+        <text x="8" y="38" font-size="7" fill="#cbd5e1">1. Token Embedding</text>
+        <text x="160" y="38" font-size="7" fill="#cbd5e1">[B, S, d]</text>
+        <text x="290" y="38" font-size="7" fill="#cbd5e1">2 B S d</text>
+
+        <text x="8" y="56" font-size="7" fill="#cbd5e1">2. Input RMSNorm</text>
+        <text x="160" y="56" font-size="7" fill="#cbd5e1">[B, S, d]</text>
+        <text x="290" y="56" font-size="7" fill="#cbd5e1">2 B S d</text>
+
+        <text x="8" y="74" font-size="7" fill="#cbd5e1">3. Q, K, V Projection</text>
+        <text x="160" y="74" font-size="7" fill="#cbd5e1">Q:[B,S,H_q,d_h], K/V:[B,S,H_kv,d_h]</text>
+        <text x="290" y="74" font-size="7" fill="#cbd5e1">2 B S (H_q + 2H_kv) d_h</text>
+
+        <text x="8" y="92" font-size="7" fill="#cbd5e1">4. RoPE 旋转编码</text>
+        <text x="160" y="92" font-size="7" fill="#cbd5e1">Q, K 原地旋转 (Shape 不变)</text>
+        <text x="290" y="92" font-size="7" fill="#4ade80">0 (就地原地复用)</text>
+
+        <text x="8" y="110" font-size="7" fill="#cbd5e1">5. FlashAttention / SDPA</text>
+        <text x="160" y="110" font-size="7" fill="#cbd5e1">[B, S, H_q, d_h] ➔ [B, S, d]</text>
+        <text x="290" y="110" font-size="7" fill="#cbd5e1">2 B S d (中间 Map 0 字节)</text>
+
+        <text x="8" y="128" font-size="7" fill="#cbd5e1">6. Post-Attn RMSNorm</text>
+        <text x="160" y="128" font-size="7" fill="#cbd5e1">[B, S, d]</text>
+        <text x="290" y="128" font-size="7" fill="#cbd5e1">2 B S d</text>
+
+        <text x="8" y="146" font-size="7" fill="#cbd5e1">7. SwiGLU Gate/Up/Down</text>
+        <text x="160" y="146" font-size="7" fill="#cbd5e1">[B, S, d_ffn] ➔ [B, S, d]</text>
+        <text x="290" y="146" font-size="7" fill="#cbd5e1">2 B S d_ffn + 2 B S d</text>
+
+        <text x="8" y="164" font-size="7" fill="#cbd5e1">8. 残差 Add (残差流)</text>
+        <text x="160" y="164" font-size="7" fill="#cbd5e1">[B, S, d]</text>
+        <text x="290" y="164" font-size="7" fill="#cbd5e1">2 B S d (主干高速公路)</text>
+
+        <rect x="0" y="174" width="392" height="34" rx="2" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="188" font-size="7.5" font-weight="800" fill="#67e8f9">单层激活显存无重算物理底账:</text>
+        <text x="10" y="200" font-size="7" fill="#ffffff">A_layer ≈ 34 B S d + 5 B S² (标准) ➔ 启用 FA-2 选择性重算后暴降至 ~10 B S d！</text>
+      </g>
+    </g>
+
+    <!-- Production Architecture Guidelines -->
+    <g transform="translate(14, 570)">
+      <rect x="0" y="0" width="412" height="154" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fed7aa">🛠️ Ringi 大模型架构与算子工程自检军规</text>
+      <text x="14" y="38" font-size="8" fill="#ffedd5">1. 【Norm 融合】: 绝不允许 RMSNorm 产生独立 Kernel Launch，必须与残差相加融合；</text>
+      <text x="14" y="54" font-size="8" fill="#ffedd5">2. 【SwiGLU 融合】: 必须使用 Fused SwiGLU，避免 Gate 和 Up 的中间激活溢出到显存；</text>
+      <text x="14" y="70" font-size="8" fill="#ffedd5">3. 【GQA 头数对齐】: $H_{kv}$ 必须能被流水线并行与张量并行（TP）整除（TP 必须 $\le H_{kv}$）；</text>
+      <text x="14" y="86" font-size="8" fill="#ffedd5">4. 【RoPE 精度】: 旋转计算中的 $\cos, \sin$ 必须在 FP32 精度下生成，严禁在 FP16 下累积舍入误差；</text>
+      <text x="14" y="108" font-size="8.5" font-weight="700" fill="#fde047">架构真谛：</text>
+      <text x="14" y="124" font-size="8" fill="#fed7aa">现代大模型架构之所以趋同，不是算法研究员缺乏想象力，而是硅片物理显存与总线给出的唯一最优解！</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi Decoder-only 大模型架构白板推导箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **Pre-LN 是百层大模型训练的铁律**：恒等矩阵 $I$ 构成了残差超导高速公路，彻底终结了深层梯度弥散；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **GQA 是长文本高并发推理的拯救者**：通过 8 组共享 KV 头，将 Decode 阶段的 KV 显存与访存带宽直接砍去 87.5%；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **RoPE 与 SwiGLU 展现了数学对称之美**：2D 正交复数旋转实现相对位置不变性，$\frac{8}{3}d$ 隐藏层实现了参数量与门控算力的绝对平衡！</text>
+  </g>
+</svg>

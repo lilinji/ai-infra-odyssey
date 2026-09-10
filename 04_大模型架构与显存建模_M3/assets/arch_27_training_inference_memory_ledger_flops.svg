@@ -1,0 +1,355 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-27" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-card-27" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-27" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-27" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-27" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-27" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-27" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-27)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-27)"/>
+    
+    <text x="24" y="27" class="title-main">第27讲：大模型训练与推理显存全景账本、FLOPs 白板手算与容量规划全景图</text>
+    <text x="24" y="47" class="title-sub">Static Memory (16Ψ~20Ψ) · ZeRO-1/2/3 Sharding · Dynamic Activation (Recomputation Tradeoff) · KV Cache Model · FLOPs (2P/4P/6P) &amp; MFU</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(820, 13)">
+      <rect x="0" y="0" width="135" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="67" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">静态训练显存底账</text>
+      <text x="67" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">16Ψ ~ 20Ψ 字节</text>
+
+      <rect x="145" y="0" width="135" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="212" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">ZeRO-3 切分收益</text>
+      <text x="212" y="30" font-size="11" font-weight="800" fill="#4ade80" text-anchor="middle">显存 1/Nd 线性均摊</text>
+
+      <rect x="290" y="0" width="130" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="355" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">选择性重算省激活</text>
+      <text x="355" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">压缩 70% 0 算力惩罚</text>
+
+      <rect x="430" y="0" width="120" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="490" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">集群真实 MFU 基准</text>
+      <text x="490" y="30" font-size="11" font-weight="800" fill="#fde047" text-anchor="middle">40% ~ 55% 实际利用率</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: STATIC MEMORY & ZERO SHARDING ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-27)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">💰 1. 静态显存四重身与 ZeRO 状态切分模型</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">静态账本</text>
+
+    <!-- Static Memory 16Psi Formula -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="216" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">混合精度训练的四重身：16Ψ ~ 20Ψ 字节底账</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">参数量为 Ψ 时，单卡训练进程常驻静态显存严密手算</text>
+
+      <!-- 4 parts visual -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="36" rx="3" fill="rgba(8,51,68,0.3)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#67e8f9">1. 模型权重 (Model Weights): 2Ψ 字节 (BF16 / FP16)</text>
+        <text x="10" y="28" font-size="7" fill="#cbd5e1">前向计算必须持有的模型参数实体</text>
+
+        <rect x="0" y="42" width="392" height="36" rx="3" fill="rgba(124,45,18,0.3)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#fdba74" transform="translate(0,42)">2. 模型梯度 (Gradients): 2Ψ 字节 (BF16)</text>
+        <text x="10" y="28" font-size="7" fill="#cbd5e1" transform="translate(0,42)">反向传播产出的参数求导梯度（若累积为 FP32 则为 4Ψ）</text>
+
+        <rect x="0" y="84" width="392" height="66" rx="3" fill="rgba(88,28,135,0.4)" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#f3e8ff" transform="translate(0,84)">3. AdamW 优化器状态 (Optimizer States): 12Ψ 字节 (FP32)</text>
+        <text x="10" y="30" font-size="7.5" fill="#e9d5ff" transform="translate(0,84)">• FP32 主参数副本 (Master Weights): 4Ψ 字节 (防止下溢截断)</text>
+        <text x="10" y="44" font-size="7.5" fill="#e9d5ff" transform="translate(0,84)">• FP32 动量一阶矩 m_t: 4Ψ 字节 | 二阶矩 v_t: 4Ψ 字节</text>
+        <text x="10" y="58" font-size="7" fill="#fde047" transform="translate(0,84)">★ 为什么必须 FP32？微小梯度 ΔW (10⁻⁶) 在 BF16 尾数上会被直接截断消失！</text>
+      </g>
+
+      <g transform="translate(10, 160)">
+        <rect x="0" y="0" width="392" height="46" rx="3" fill="#042f2e" stroke="#10b981" stroke-width="1"/>
+        <text x="196" y="18" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">静态基准总和: 2Ψ + 2Ψ + 12Ψ = 16Ψ 字节 / 参数</text>
+        <text x="196" y="34" font-size="8" fill="#a7f3d0" text-anchor="middle">★ 70B 模型单卡全量常驻需 70 × 16 = 1120 GB！必须至少 14 张 A100-80G 才能装下！</text>
+      </g>
+    </g>
+
+    <!-- ZeRO-1/2/3 Sharding Architecture -->
+    <g transform="translate(14, 274)">
+      <rect x="0" y="0" width="412" height="276" rx="6" fill="#0f172a" stroke="#8b5cf6" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a78bfa">ZeRO 显存切分三部曲：数据并行的降维打击</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">DeepSpeed ZeRO：将数据并行（DP）内部的冗余参数全网打散</text>
+
+      <!-- ZeRO 1/2/3 Rows -->
+      <g transform="translate(10, 44)">
+        <!-- ZeRO-1 -->
+        <rect x="0" y="0" width="392" height="66" rx="3" fill="rgba(8,51,68,0.35)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#67e8f9">ZeRO-Stage 1: 优化器状态切分 (ZeRO-OS)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">• 切分内容: 将 12Ψ 优化器状态均摊到 N_d 个数据并行卡上；</text>
+        <text x="10" y="44" font-size="8" font-weight="700" fill="#ffffff">• 单卡显存: 2Ψ (权) + 2Ψ (梯) + 12Ψ / N_d ➔ N_d=8 时降至 5.5Ψ 字节；</text>
+        <text x="10" y="58" font-size="7" fill="#6ee7b7">★ 通信开销: 零额外通信！通信量与标准 DDP 完全等价！</text>
+
+        <!-- ZeRO-2 -->
+        <rect x="0" y="74" width="392" height="66" rx="3" fill="rgba(124,45,18,0.35)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fdba74" transform="translate(0,74)">ZeRO-Stage 2: 优化器 + 梯度切分 (ZeRO-2)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1" transform="translate(0,74)">• 切分内容: 梯度算完立即 Reduce-Scatter 打散，单卡不保存全量梯度；</text>
+        <text x="10" y="44" font-size="8" font-weight="700" fill="#ffffff" transform="translate(0,74)">• 单卡显存: 2Ψ (权) + (2Ψ + 12Ψ) / N_d ➔ N_d=8 时降至 3.75Ψ 字节；</text>
+        <text x="10" y="58" font-size="7" fill="#fde047" transform="translate(0,74)">★ 生产标配: 显存直接打 2.5 折，且通信量依然与 DDP 一致！</text>
+
+        <!-- ZeRO-3 -->
+        <rect x="0" y="148" width="392" height="74" rx="3" fill="rgba(6,78,59,0.35)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#a7f3d0" transform="translate(0,148)">ZeRO-Stage 3: 优化器 + 梯度 + 权重全切分 (ZeRO-3)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1" transform="translate(0,148)">• 切分内容: 连权重 2Ψ 也打散！每层前向时 All-Gather 临时拉取，算完立刻释放；</text>
+        <text x="10" y="46" font-size="8.5" font-weight="800" fill="#4ade80" transform="translate(0,148)">• 单卡显存: 16Ψ / N_d ➔ N_d=8 时降至 2.0Ψ 字节！(70B 仅需 17.5 GB！)</text>
+        <text x="10" y="60" font-size="7" fill="#fca5a5" transform="translate(0,148)">⚠️ 代价: 带来额外的 50% 通信量开销，前向反向均需频繁 All-Gather！</text>
+      </g>
+    </g>
+
+    <!-- ZeRO-Offload Warning -->
+    <g transform="translate(14, 562)">
+      <rect x="0" y="0" width="412" height="162" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fed7aa">⚠️ 生产现场避坑：ZeRO-Offload 的物理带宽惩罚</text>
+      <text x="14" y="38" font-size="8.5" fill="#ffedd5">• 【原理】: 把 12Ψ 的优化器状态卸载（Offload）到 CPU 主机内存；</text>
+      <text x="14" y="54" font-size="8.5" fill="#ffedd5">• 【诱惑】: 单卡显存只留 2Ψ 权重 + 2Ψ 梯度 = 4Ψ，单张 80G 就能微调 70B！</text>
+      <text x="14" y="70" font-size="8.5" fill="#ffedd5">• 【残酷物理本相】: PCIe Gen4 x16 带宽仅 32 GB/s，而 HBM 是 2000 GB/s；</text>
+      <text x="14" y="86" font-size="8.5" fill="#ffedd5">• 【数据】: 70B 优化器步进时，在 PCIe 上搬运 840 GB 数据需要漫长的 26 秒！</text>
+      <text x="14" y="108" font-size="8.5" font-weight="700" fill="#fde047">架构金律：</text>
+      <text x="14" y="124" font-size="8" fill="#fed7aa">除非经费极度受限且卡数不足，否则分布式预训练与全量微调坚决不上 CPU Offload！</text>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: DYNAMIC ACTIVATION & KV CACHE ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-27)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">🔄 2. 动态激活显存重算博弈与推理 KV Cache</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">动态账本</text>
+
+    <!-- Activation Recomputation 3-Tier Game -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="266" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">动态激活值（Activation）三档重算策略博弈</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">长文本（16K~128K）训练时，激活显存远超权重，成为 OOM 罪魁祸首</text>
+
+      <g transform="translate(10, 44)">
+        <!-- Tier 1: No Recompute -->
+        <rect x="0" y="0" width="412" height="66" rx="3" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">策略 1: 无重算 (No Recompute) ➔ 激活值 100% 缓存</text>
+        <text x="10" y="30" font-size="7.5" fill="#fecdd3">• 单层开销: 34 b s d + 5 b s² (注意包含二次项 Attention Map 5 b s²)；</text>
+        <text x="10" y="44" font-size="7.5" fill="#cbd5e1">• 显存增长: 随序列长 s 呈 O(s²) 爆炸！16K 序列单步激活值直冲 120 GB！</text>
+        <text x="10" y="58" font-size="7" fill="#fda4af">★ 适用场景: 仅适用于极短文本（s ≤ 2048），算力利用率最高，但显存极度饥渴！</text>
+
+        <!-- Tier 2: Full Recompute -->
+        <rect x="0" y="74" width="412" height="66" rx="3" fill="rgba(124,45,18,0.25)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fdba74" transform="translate(0,74)">策略 2: 全重算 (Full Activation Checkpointing)</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1" transform="translate(0,74)">• 机制: 前向只保存每层输入，反向传播时重新把前向所有算子再算一遍！</text>
+        <text x="10" y="44" font-size="8" font-weight="700" fill="#ffffff" transform="translate(0,74)">• 收益与代价: 激活值压缩 95%！但额外付出整整 33% 算力惩罚 (6P ➔ 8P FLOPs)！</text>
+        <text x="10" y="58" font-size="7" fill="#fed7aa" transform="translate(0,74)">★ 适用场景: 极端长文本穷途末路之选，用 33% 算力开销换取不 OOM。</text>
+
+        <!-- Tier 3: Selective Recompute -->
+        <rect x="0" y="148" width="412" height="68" rx="3" fill="rgba(6,78,59,0.35)" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#a7f3d0" transform="translate(0,148)">策略 3: 选择性重算 (Selective Recompute / FlashAttention)</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff" transform="translate(0,148)">• 洞察: 70% 显存被轻量非矩阵乘（Softmax, Dropout, Norm）吞噬，重算它们极快！</text>
+        <text x="10" y="44" font-size="8.5" font-weight="800" fill="#4ade80" transform="translate(0,148)">• 奇迹平衡: 仅多花 2%~4% 计算时间，直接消除 70% 激活显存！彻底抹平 O(s²) 矩阵！</text>
+        <text x="10" y="58" font-size="7.5" font-weight="700" fill="#fde047" transform="translate(0,148)">★ 现代大模型工业标准：FlashAttention 原生集成选择性重算！</text>
+      </g>
+    </g>
+
+    <!-- Inference KV Cache Capacity Model -->
+    <g transform="translate(14, 324)">
+      <rect x="0" y="0" width="432" height="402" rx="6" fill="#0f172a" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">推理显存全景账本与 KV Cache 容量物理模型</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">推理显存 = 静态权重 (2Ψ 或 1Ψ) + 动态 KV Cache (并发与长文本杀手)</text>
+
+      <!-- KV Cache Formula Box -->
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="412" height="74" rx="3" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="18" font-size="8.5" font-weight="800" fill="#67e8f9">KV Cache 精确容量推导公式 (No Naked Formula 2.0):</text>
+        <text x="10" y="36" font-size="10.5" font-weight="800" fill="#ffffff">Memory_kv = 2 × 2 × L × H_kv × d_h × S_len × Batch_size (Bytes)</text>
+        <text x="10" y="52" font-size="7.5" fill="#a5f3fc">• 2(K和V) × 2(FP16字节) × 层数 L × KV头数 H_kv × 头维度 d_h × 序列长 S × 并发 B</text>
+        <text x="10" y="66" font-size="7.5" font-weight="700" fill="#fde047">★ LLaMA-3-70B 实测: 单 Token 占用 327.68 KB ➔ 128K 单请求需 42.9 GB！</text>
+      </g>
+
+      <!-- PagedAttention Visual -->
+      <g transform="translate(10, 126)">
+        <rect x="0" y="0" width="412" height="152" rx="4" fill="#030712" stroke="#1e293b" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#fef08a">显存碎片革命：传统连续预分配 vs PagedAttention (vLLM)</text>
+
+        <!-- Traditional Contiguous Bad -->
+        <g transform="translate(10, 26)">
+          <rect x="0" y="0" width="186" height="66" rx="3" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+          <text x="8" y="15" font-size="7.5" font-weight="700" fill="#fb7185">❌ 传统连续预分配 (Contiguous)</text>
+          <text x="8" y="28" font-size="6.5" fill="#cbd5e1">• 必须按 max_seq_len (如 4K) 连续预划</text>
+          <text x="8" y="40" font-size="6.5" fill="#fca5a5">• 内部碎片: 实际生成 100 字，浪费 3900</text>
+          <text x="8" y="54" font-size="7" font-weight="700" fill="#f87171">显存有效利用率仅 20% ~ 40%！</text>
+        </g>
+
+        <!-- PagedAttention Good -->
+        <g transform="translate(206, 26)">
+          <rect x="0" y="0" width="196" height="66" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1"/>
+          <text x="8" y="15" font-size="7.5" font-weight="700" fill="#34d399">✅ PagedAttention 分页虚拟化</text>
+          <text x="8" y="28" font-size="6.5" fill="#cbd5e1">• 物理显存划分为 16/32 Token 小 Block</text>
+          <text x="8" y="40" font-size="6.5" fill="#a7f3d0">• Block Table 虚拟映射，按需动态分配</text>
+          <text x="8" y="54" font-size="7" font-weight="800" fill="#4ade80">显存利用率冲上 96%！并发提升 4x！</text>
+        </g>
+
+        <!-- Prefix Caching Callout -->
+        <g transform="translate(10, 100)">
+          <rect x="0" y="0" width="392" height="42" rx="2" fill="rgba(8,51,68,0.3)" stroke="#06b6d4" stroke-width="0.8"/>
+          <text x="8" y="16" font-size="7.5" font-weight="700" fill="#67e8f9">🚀 衍生杀招：前缀缓存 (Prefix Caching / Radix Tree)</text>
+          <text x="8" y="30" font-size="7" fill="#e0f2fe">多轮对话与 System Prompt 的 KV 块全网物理共享，首字生成延迟 (TTFT) 归零！</text>
+        </g>
+      </g>
+
+      <!-- FP8 KV Cache Callout -->
+      <g transform="translate(10, 286)">
+        <rect x="0" y="0" width="412" height="74" rx="3" fill="rgba(124,45,18,0.3)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fdba74">FP8 KV Cache 量化技术革命：</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffedd5">• 将 FP16 (2 Bytes) 量化为 FP8 (1 Byte) ➔ 物理容量直接翻倍！</text>
+        <text x="10" y="44" font-size="7.5" fill="#ffedd5">• 访存带宽消耗腰斩 ➔ Decode 吞吐直接飙升 1.8x ~ 2.0x！</text>
+        <text x="10" y="58" font-size="7.5" font-weight="700" fill="#fde047">★ 工业共识：千亿模型上 128K 必须标配 GQA + PagedAttention + FP8 KV！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: FLOPS & MFU & CAPACITY PLANNING ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-27)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(6,78,59,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#6ee7b7">⚡ 3. FLOPs 矩阵算盘、MFU 评估与集群规划</text>
+    <text x="360" y="22" font-size="9.5" font-weight="600" fill="#a7f3d0">算力算盘</text>
+
+    <!-- 2P / 4P / 6P / 8P Matrix FLOPs Counting -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="248" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">大模型计算量 FLOPs 白板手算第一性原理</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">参数量 P 时，单 Token 在前向与反向上的严格乘加次数</text>
+
+      <g transform="translate(10, 44)">
+        <!-- 2P Forward -->
+        <rect x="0" y="0" width="392" height="42" rx="3" fill="rgba(8,51,68,0.3)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#67e8f9">1. 前向传播计算量: 2P FLOPs / Token</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">每个参数对应 1 次乘法与 1 次加法 (MAC) = 2 FLOPs</text>
+
+        <!-- 4P Backward -->
+        <rect x="0" y="48" width="392" height="46" rx="3" fill="rgba(124,45,18,0.3)" stroke="#f97316" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fdba74" transform="translate(0,48)">2. 反向传播计算量: 4P FLOPs / Token (恰好为前向 2 倍！)</text>
+        <text x="10" y="30" font-size="7" fill="#cbd5e1" transform="translate(0,48)">• 激活求导 ∂L/∂x: 2P FLOPs | 权重求导 ∂L/∂W: 2P FLOPs ➔ 合计 4P</text>
+
+        <!-- 6P Training -->
+        <rect x="0" y="100" width="392" height="46" rx="3" fill="rgba(6,78,59,0.4)" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#34d399" transform="translate(0,100)">3. 训练全流程基准: 6P FLOPs / Token (前向 2P + 反向 4P)</text>
+        <text x="10" y="30" font-size="7" fill="#a7f3d0" transform="translate(0,100)">无重算或选择性重算下的标准公式：C = 6 · P · N_tokens</text>
+
+        <!-- 8P Full Recompute -->
+        <rect x="0" y="152" width="392" height="40" rx="3" fill="rgba(88,28,135,0.3)" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="800" fill="#f3e8ff" transform="translate(0,152)">4. 全激活重算: 8P FLOPs / Token (2P前向 + 2P重算 + 4P反向)</text>
+        <text x="10" y="28" font-size="7" fill="#cbd5e1" transform="translate(0,152)">额外付出 33% 纯算力换取显存不爆仓！</text>
+      </g>
+    </g>
+
+    <!-- MFU vs HFU Accounting -->
+    <g transform="translate(14, 304)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#6ee7b7">MFU（模型算力利用率）vs HFU（硬件利用率）</text>
+      <text x="14" y="34" class="card-sub" fill="#94a3b8">大厂集群压测金标：严防“重算虚假高算力”自嗨！</text>
+
+      <g transform="translate(10, 44)">
+        <rect x="0" y="0" width="392" height="58" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="18" font-size="9" font-weight="800" fill="#2dd4bf">MFU 公式: 6 · P · (Tokens/s) / (集群物理理论峰值 FLOPs)</text>
+        <text x="10" y="34" font-size="7.5" fill="#ffffff">仅计算产生模型有效价值的 6P，绝不包含重算产生的虚假 FLOPs！</text>
+        <text x="10" y="48" font-size="7" fill="#a7f3d0">HFU 包含重算（以 8P 算），若盲目吹捧 HFU=60%，实际有效 MFU 仅 45%！</text>
+      </g>
+
+      <g transform="translate(10, 110)">
+        <rect x="0" y="0" width="392" height="110" rx="3" fill="rgba(136,19,55,0.25)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#fb7185">💥 为什么真实集群 MFU 很少能超过 55%？“蒸发”去哪了？</text>
+        <text x="10" y="32" font-size="7.5" fill="#fecdd3">① **流水线气泡 (PP Bubble)**: 1F1B 调度依然存在阶段性首尾空等；</text>
+        <text x="10" y="46" font-size="7.5" fill="#fecdd3">② **跨机通信墙**: TP 跨节点通信或 DP AllReduce 跨越 RDMA 吞吐断崖；</text>
+        <text x="10" y="60" font-size="7.5" fill="#fecdd3">③ **非矩阵乘算子**: RMSNorm、Softmax 处于 Memory-Bound 低算术强度；</text>
+        <text x="10" y="76" font-size="7.5" font-weight="700" fill="#fde047">④ **数据加载与 Host 同步**: CPU DataLoader 瓶颈或 CUDA Stream 争抢！</text>
+      </g>
+    </g>
+
+    <!-- Cluster Capacity Planning Formula -->
+    <g transform="translate(14, 550)">
+      <rect x="0" y="0" width="412" height="174" rx="6" fill="rgba(88,28,135,0.3)" stroke="#c084fc" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#f3e8ff">🏛️ 大厂千卡容量规划决策公式 (Capacity Planner)</text>
+      
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="392" height="42" rx="3" fill="#030712" stroke="#8b5cf6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#ffffff">训练最大可分配 Batch: B_max = (M_gpu - M_static) / A_layer</text>
+        <text x="10" y="30" font-size="7" fill="#d8b4fe">其中 A_layer = 10 b s d (选择性重算)；当扩充序列长 s 时，B 必须反比压降！</text>
+
+        <rect x="0" y="48" width="392" height="42" rx="3" fill="#030712" stroke="#8b5cf6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="800" fill="#ffffff">推理最大并发数: Concurrency_max = (M_gpu - M_weights) / (S_kv · s)</text>
+        <text x="10" y="30" font-size="7" fill="#4ade80">开启 PagedAttention 与 FP8 后，单卡支撑的最大并发直接暴增 3.5 倍！</text>
+      </g>
+
+      <text x="14" y="136" font-size="8" fill="#e9d5ff">白板面试通关秘籍：</text>
+      <text x="14" y="152" font-size="7.5" font-weight="700" fill="#fde047">“把 16Ψ 静态账本、选择性重算 10bsd 与 KV Cache 4bshd 焊死在脑海中！”</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi 大模型显存建模与容量规划箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **静态显存 16Ψ 是底账，AdamW 占了大头**：理解 FP32 主参数防下溢机理，善用 ZeRO-2/3 将静态显存打散均摊；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **动态显存用重算换空间，用分页灭碎片**：训练靠 FlashAttention 选择性重算抹平 O(s²)，推理靠 PagedAttention 榨取 96% 显存率；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **FLOPs 账本只认 6P 真实有效算力**：看透 MFU 与 HFU 的重算水分，消灭通信气泡与访存受限算子才是攀登利用率之巅的正道！</text>
+  </g>
+</svg>

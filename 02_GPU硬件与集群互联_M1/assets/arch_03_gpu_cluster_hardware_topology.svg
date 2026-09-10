@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <pattern id="grid-03" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <linearGradient id="grad-card-03" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-blue-03" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(30, 58, 138, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-03" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-03" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-03" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-03" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-03)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-03)"/>
+    
+    <text x="24" y="27" class="title-main">第14讲：AI 智算节点与集群物理硬件拓扑全景图 (SXM · NVSwitch · Clos · Rail)</text>
+    <text x="24" y="47" class="title-sub">Dual-Socket NUMA · 4x NVSwitch 900 GB/s Full-Mesh · PCIe P2P Direct · 3-Tier Clos 1:1 Non-Blocking · Rail-Optimized Fabric</text>
+
+    <!-- Badges -->
+    <g transform="translate(870, 13)">
+      <rect x="0" y="0" width="125" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="62" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">机内全对全互联</text>
+      <text x="62" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">4× NVSwitch (900G)</text>
+
+      <rect x="135" y="0" width="120" height="38" rx="6" fill="rgba(30,58,138,0.5)" stroke="#3b82f6" stroke-width="1"/>
+      <text x="195" y="16" font-size="8.5" font-weight="600" fill="#93c5fd" text-anchor="middle">机间胖树网络</text>
+      <text x="195" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">1:1 无收敛 Clos</text>
+
+      <rect x="265" y="0" width="125" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="327" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">跨机通信准则</text>
+      <text x="327" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">8 轨道独立无冲突</text>
+
+      <rect x="400" y="0" width="100" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="450" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">调度法则</text>
+      <text x="450" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">拓扑感知</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. TOP HALF: 3-TIER CLOS & RAIL-OPTIMIZED FABRIC ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="1380" height="370" rx="8" fill="url(#grad-card-03)" stroke="#2563eb" stroke-width="1.5"/>
+    <rect x="0" y="0" width="1380" height="32" rx="8" fill="rgba(30,58,138,0.7)"/>
+    <text x="16" y="21" class="sec-header" fill="#93c5fd">🌐 1. 万卡智算集群网络拓扑：3 层 Clos / Fat-Tree 与 Rail-Optimized 轨道组网</text>
+    <text x="1230" y="21" font-size="9.5" font-weight="600" fill="#bfdbfe">1:1 Non-Blocking</text>
+
+    <!-- Tier 3: Core Switches (Top of Fabric) -->
+    <g transform="translate(390, 44)">
+      <rect x="0" y="0" width="600" height="42" rx="5" fill="rgba(15,23,42,0.9)" stroke="#475569" stroke-width="1.2"/>
+      <text x="300" y="18" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Core Switches (Tier 3 核心核心交换矩阵 · Quantum-2 / Spectrum-4)</text>
+      <text x="300" y="32" font-size="8.5" fill="#94a3b8" text-anchor="middle">千万卡规模集群跨 SU (Scalable Unit) 互联 · 800G OSFP 光纤直连 · 自适应路由 (AR)</text>
+    </g>
+
+    <!-- Tier 2: Spine Switches -->
+    <g transform="translate(190, 110)">
+      <rect x="0" y="0" width="1000" height="46" rx="5" fill="url(#grad-blue-03)" stroke="#3b82f6" stroke-width="1.2"/>
+      <text x="500" y="18" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Spine Switches (Tier 2 骨干交换矩阵 · SU 内部全交叉)</text>
+      <text x="500" y="34" font-size="8.5" fill="#bfdbfe" text-anchor="middle">提供 1:1 无阻塞上行带宽 · 跨 Rail 通信时必须跨越 Spine，造成共享排队与抖动！</text>
+    </g>
+
+    <!-- Connecting lines Spine to Leaf -->
+    <line x1="280" y1="156" x2="160" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <line x1="450" y1="156" x2="330" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <line x1="620" y1="156" x2="500" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <line x1="790" y1="156" x2="670" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <line x1="960" y1="156" x2="840" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+    <line x1="1100" y1="156" x2="1010" y2="190" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3,2"/>
+
+    <!-- Tier 1: 8 Dedicated Rail Leaf Switches -->
+    <g transform="translate(30, 190)">
+      <text x="0" y="-8" font-size="10" font-weight="700" fill="#67e8f9">【Tier 1 Leaf 交换层：8 条物理独立轨道 (Rail 0 ~ Rail 7)】 ➔ 核心规则：同号网卡直连同轨交换机！</text>
+      
+      <!-- 8 Rail Boxes -->
+      <!-- Rail 0 -->
+      <g transform="translate(0, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 0)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 0</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 0 (Rank 0, 8, ...)</text>
+      </g>
+
+      <!-- Rail 1 -->
+      <g transform="translate(165, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 1)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 1</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 1 (Rank 1, 9, ...)</text>
+      </g>
+
+      <!-- Rail 2 -->
+      <g transform="translate(330, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 2)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 2</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 2 (Rank 2, 10, ...)</text>
+      </g>
+
+      <!-- Rail 3 -->
+      <g transform="translate(495, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 3)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 3</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 3 (Rank 3, 11, ...)</text>
+      </g>
+
+      <!-- Rail 4 -->
+      <g transform="translate(660, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 4)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 4</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 4 (Rank 4, 12, ...)</text>
+      </g>
+
+      <!-- Rail 5 -->
+      <g transform="translate(825, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 5)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 5</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 5 (Rank 5, 13, ...)</text>
+      </g>
+
+      <!-- Rail 6 -->
+      <g transform="translate(990, 5)">
+        <rect x="0" y="0" width="155" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="77" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 6)</text>
+        <text x="77" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 6</text>
+        <text x="77" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 6 (Rank 6, 14, ...)</text>
+      </g>
+
+      <!-- Rail 7 -->
+      <g transform="translate(1155, 5)">
+        <rect x="0" y="0" width="165" height="66" rx="4" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+        <text x="82" y="18" font-size="9.5" font-weight="800" fill="#67e8f9" text-anchor="middle">Leaf Switch (Rail 7)</text>
+        <text x="82" y="34" font-size="8" fill="#e0f2fe" text-anchor="middle">聚合所有 Node 的 NIC 7</text>
+        <text x="82" y="48" font-size="7.5" fill="#a5f3fc" text-anchor="middle">绑定 GPU 7 (Rank 7, 15, ...)</text>
+      </g>
+    </g>
+
+    <!-- Rail-Optimized Benefits Explanation Banner -->
+    <g transform="translate(30, 275)">
+      <rect x="0" y="0" width="1320" height="74" rx="5" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1.2"/>
+      <text x="16" y="20" font-size="10.5" font-weight="800" fill="#6ee7b7">🎯 轨道优化（Rail-Optimized）的核心物理红利：</text>
+      <text x="16" y="38" font-size="8.5" fill="#a7f3d0">① **跨节点 DP 梯度同步（零跨越 Spine，Zero Spine Crossing）**：所有 Node 0~N 的相同位次 GPU（如全是 GPU 0）在同一个 Rail 0 交换机内部完成单跳 AllReduce，绝不上浮到 Spine 交换机！</text>
+      <text x="16" y="54" font-size="8.5" fill="#a7f3d0">② **消除 Hash 冲突与哈希微突发（Micro-Burst）**：8 个轨道完全物理硬件隔离，流量互不干扰；将万卡跨机通信冲突概率压降至数学最低点！</text>
+    </g>
+  </g>
+
+  <!-- ================= 2. BOTTOM LEFT: INTRA-NODE 8-GPU CHASSIS TOPOLOGY ================= -->
+  <g transform="translate(30, 485)">
+    <rect x="0" y="0" width="760" height="355" rx="8" fill="url(#grad-card-03)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="760" height="32" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="21" class="sec-header" fill="#38bdf8">💻 2. 单机 8 卡物理机箱微观解剖 (HGX H100 / SXM5 底板)</text>
+    <text x="630" y="21" font-size="9.5" font-weight="600" fill="#67e8f9">NUMA &amp; NVSwitch</text>
+
+    <!-- Dual Socket CPU & UPI Bus -->
+    <g transform="translate(16, 42)">
+      <!-- CPU 0 -->
+      <rect x="0" y="0" width="310" height="50" rx="4" fill="rgba(30,41,59,0.8)" stroke="#64748b" stroke-width="1"/>
+      <text x="12" y="20" font-size="10" font-weight="700" fill="#ffffff">CPU Socket 0 (NUMA Node 0)</text>
+      <text x="12" y="36" font-size="8" fill="#94a3b8">PCIe Gen5 Controller 0 ➔ 辖制 GPU 0~3 &amp; NIC 0~3</text>
+
+      <!-- UPI Link -->
+      <line x1="310" y1="25" x2="418" y2="25" stroke="#f43f5e" stroke-width="2"/>
+      <text x="364" y="18" font-size="7.5" font-weight="800" fill="#f43f5e" text-anchor="middle">UPI (32 GT/s)</text>
+      <text x="364" y="38" font-size="6.5" fill="#fca5a5" text-anchor="middle">⚠️ 跨 NUMA 陷阱</text>
+
+      <!-- CPU 1 -->
+      <rect x="418" y="0" width="310" height="50" rx="4" fill="rgba(30,41,59,0.8)" stroke="#64748b" stroke-width="1"/>
+      <text x="12" y="20" font-size="10" font-weight="700" fill="#ffffff" transform="translate(418, 0)">CPU Socket 1 (NUMA Node 1)</text>
+      <text x="12" y="36" font-size="8" fill="#94a3b8" transform="translate(418, 0)">PCIe Gen5 Controller 1 ➔ 辖制 GPU 4~7 &amp; NIC 4~7</text>
+    </g>
+
+    <!-- PCIe Switch Layer (GPUDirect P2P Direct Connection) -->
+    <g transform="translate(16, 102)">
+      <rect x="0" y="0" width="350" height="42" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+      <text x="12" y="18" font-size="9.5" font-weight="700" fill="#67e8f9">PCIe Switch 0 (Broadcom / Microchip)</text>
+      <text x="12" y="32" font-size="8" fill="#e0f2fe">GPUDirect P2P 硬件直通 (GPU 0~3 ↔ NIC 0~3 零 CPU 环路)</text>
+
+      <rect x="378" y="0" width="350" height="42" rx="4" fill="#083344" stroke="#0891b2" stroke-width="1"/>
+      <text x="12" y="18" font-size="9.5" font-weight="700" fill="#67e8f9" transform="translate(378, 0)">PCIe Switch 1 (Broadcom / Microchip)</text>
+      <text x="12" y="32" font-size="8" fill="#e0f2fe" transform="translate(378, 0)">GPUDirect P2P 硬件直通 (GPU 4~7 ↔ NIC 4~7 零 CPU 环路)</text>
+    </g>
+
+    <!-- 8x SXM GPUs Row -->
+    <g transform="translate(16, 154)">
+      <!-- 8 GPUs -->
+      <rect x="0" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle">GPU 0</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle">NIC 0</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle">NUMA 0</text>
+
+      <rect x="91" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(91, 0)">GPU 1</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(91, 0)">NIC 1</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(91, 0)">NUMA 0</text>
+
+      <rect x="182" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(182, 0)">GPU 2</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(182, 0)">NIC 2</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(182, 0)">NUMA 0</text>
+
+      <rect x="273" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(273, 0)">GPU 3</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(273, 0)">NIC 3</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(273, 0)">NUMA 0</text>
+
+      <rect x="373" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(373, 0)">GPU 4</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(373, 0)">NIC 4</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(373, 0)">NUMA 1</text>
+
+      <rect x="464" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(464, 0)">GPU 5</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(464, 0)">NIC 5</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(464, 0)">NUMA 1</text>
+
+      <rect x="555" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(555, 0)">GPU 6</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(555, 0)">NIC 6</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(555, 0)">NUMA 1</text>
+
+      <rect x="646" y="0" width="82" height="60" rx="4" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+      <text x="41" y="20" font-size="9" font-weight="800" fill="#a7f3d0" text-anchor="middle" transform="translate(646, 0)">GPU 7</text>
+      <text x="41" y="36" font-size="7.5" fill="#6ee7b7" text-anchor="middle" transform="translate(646, 0)">NIC 7</text>
+      <text x="41" y="48" font-size="7" fill="#6ee7b7" text-anchor="middle" transform="translate(646, 0)">NUMA 1</text>
+    </g>
+
+    <!-- 4x NVSwitch Baseboard Mesh (The Crown Jewel) -->
+    <g transform="translate(16, 226)">
+      <rect x="0" y="0" width="728" height="112" rx="5" fill="url(#grad-orange-03)" stroke="#f97316" stroke-width="1.5"/>
+      <text x="364" y="20" font-size="11.5" font-weight="800" fill="#ffedd5" text-anchor="middle">4× NVSwitch 3 / 4 专用全互联交换矩阵 (Full-Mesh Crossbar · 900 ~ 1800 GB/s)</text>
+      
+      <!-- 4 Switch chips mini blocks -->
+      <g transform="translate(24, 32)">
+        <rect x="0" y="0" width="150" height="42" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+        <text x="75" y="18" font-size="8.5" font-weight="700" fill="#ffedd5" text-anchor="middle">NVSwitch Chip 0</text>
+        <text x="75" y="30" font-size="7" fill="#fed7aa" text-anchor="middle">NVLink Ports 0~15</text>
+
+        <rect x="175" y="0" width="150" height="42" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+        <text x="75" y="18" font-size="8.5" font-weight="700" fill="#ffedd5" text-anchor="middle" transform="translate(175, 0)">NVSwitch Chip 1</text>
+        <text x="75" y="30" font-size="7" fill="#fed7aa" text-anchor="middle" transform="translate(175, 0)">NVLink Ports 16~31</text>
+
+        <rect x="350" y="0" width="150" height="42" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+        <text x="75" y="18" font-size="8.5" font-weight="700" fill="#ffedd5" text-anchor="middle" transform="translate(350, 0)">NVSwitch Chip 2</text>
+        <text x="75" y="30" font-size="7" fill="#fed7aa" text-anchor="middle" transform="translate(350, 0)">NVLink Ports 32~47</text>
+
+        <rect x="525" y="0" width="155" height="42" rx="3" fill="#7c2d12" stroke="#ea580c" stroke-width="1"/>
+        <text x="77" y="18" font-size="8.5" font-weight="700" fill="#ffedd5" text-anchor="middle" transform="translate(525, 0)">NVSwitch Chip 3</text>
+        <text x="77" y="30" font-size="7" fill="#fed7aa" text-anchor="middle" transform="translate(525, 0)">NVLink Ports 48~63</text>
+      </g>
+      <text x="364" y="98" font-size="8.5" font-weight="700" fill="#fef08a" text-anchor="middle">每张卡通过 18 条 NVLink 4 链路直达 4 颗 NVSwitch · 任何卡对卡通信均为严格单跳（Single-Hop 0 路由等待）！</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. BOTTOM RIGHT: 3D PARALLELISM & RANK PLACEMENT ================= -->
+  <g transform="translate(810, 485)">
+    <rect x="0" y="0" width="600" height="355" rx="8" fill="url(#grad-card-03)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="600" height="32" rx="8" fill="rgba(6,78,59,0.7)"/>
+    <text x="16" y="21" class="sec-header" fill="#6ee7b7">🧩 3. 拓扑感知调度 (Rank Placement) 与 3D 并行映射</text>
+    <text x="490" y="21" font-size="9.5" font-weight="600" fill="#a7f3d0">生产调度契约</text>
+
+    <!-- Parallelism Mapping Rules -->
+    <g transform="translate(16, 42)">
+      <rect x="0" y="0" width="568" height="80" rx="5" fill="rgba(8,51,68,0.5)" stroke="#0e7490" stroke-width="1"/>
+      <text x="14" y="18" font-size="10" font-weight="800" fill="#67e8f9">大模型 3D 并行拓扑映射三铁律</text>
+      <text x="14" y="34" font-size="8.5" fill="#e0f2fe">1. **TP (张量并行) = 机内 8 卡 (Rank 0~7)** ➔ 独享 900 GB/s NVSwitch 极速带宽；</text>
+      <text x="14" y="50" font-size="8.5" fill="#e0f2fe">2. **PP (流水线并行) = 跨相邻节点** ➔ 点对点传输，利用点对点专用网卡与独立轨道；</text>
+      <text x="14" y="66" font-size="8.5" fill="#e0f2fe">3. **DP / FSDP = 跨节点同号卡** ➔ 严格落入同轨 Leaf 交换机，消除跨 Spine 广播流量！</text>
+    </g>
+
+    <!-- Placement Comparison Box -->
+    <g transform="translate(16, 132)">
+      <rect x="0" y="0" width="276" height="196" rx="5" fill="rgba(136,19,55,0.25)" stroke="#e11d48" stroke-width="1"/>
+      <text x="14" y="20" font-size="10" font-weight="800" fill="#fca5a5">❌ 灾难调度 (Naive Placement)</text>
+      <text x="14" y="38" font-size="8" fill="#fecdd3">• 随机将 TP 进程分配到不同主机的 GPU；</text>
+      <text x="14" y="54" font-size="8" fill="#fecdd3">• TP 每次前向被迫从 NVLink 掉入 50G 网卡；</text>
+      <text x="14" y="70" font-size="8" fill="#fecdd3">• 跨机流量杂乱无章，跨越不同 Rail；</text>
+      <text x="14" y="86" font-size="8" fill="#fecdd3">• 56 对高频小包瞬间挤爆 Tier 2 Spine 交换机；</text>
+      <text x="14" y="106" font-size="8.5" font-weight="700" fill="#f87171">后果:</text>
+      <text x="14" y="122" font-size="8" fill="#fecdd3">• 触发 PFC 风暴与网卡丢包重传；</text>
+      <text x="14" y="138" font-size="8" fill="#fecdd3">• 集群 MFU 暴跌 60%~75%，训练频繁 Hang 死！</text>
+    </g>
+
+    <g transform="translate(308, 132)">
+      <rect x="0" y="0" width="276" height="196" rx="5" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="20" font-size="10" font-weight="800" fill="#6ee7b7">✅ 生产黄金调度 (Topology-Aware)</text>
+      <text x="14" y="38" font-size="8" fill="#a7f3d0">• K8s / Slurm 调度器严格读取节点物理拓扑；</text>
+      <text x="14" y="54" font-size="8" fill="#a7f3d0">• 保证单个 TP 域完全落在同一台 SXM 机箱内；</text>
+      <text x="14" y="70" font-size="8.5" font-weight="700" fill="#fef08a">• 进程与 NUMA 严格绑定 (numactl / CPU core)；</text>
+      <text x="14" y="86" font-size="8" fill="#a7f3d0">• 跨机网卡与 GPU 建立直通亲和性 (No UPI)；</text>
+      <text x="14" y="106" font-size="8.5" font-weight="700" fill="#34d399">成果:</text>
+      <text x="14" y="122" font-size="8" fill="#a7f3d0">• 机内 900 GB/s 满速狂飙，跨机流量 0 拥塞；</text>
+      <text x="14" y="138" font-size="8" fill="#a7f3d0">• 达成千卡扩展线性度 &gt; 92%，MFU 突破 50%！</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi 拓扑工程第一性原理箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **“Rank 不是等价的纯数字”**：物理距离决定了通信速率与物理带宽；GPU 0 和 GPU 1 是亲密邻居，GPU 0 和 Node 1 是异地恋；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **NUMA 与 PCIe 亲和性是防踩坑第一步**：GPU 0 绝不能让 Socket 1 的 CPU 线程去搬数据，跨越 UPI 总线会导致延迟暴增 3 倍；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **轨道优化是超算扩展的命脉**：同轨单跳交换，跨轨必死；将大模型的通信流量模式与物理 Clos 网络严格对齐，才是千卡破局的终极法宝！</text>
+  </g>
+</svg>

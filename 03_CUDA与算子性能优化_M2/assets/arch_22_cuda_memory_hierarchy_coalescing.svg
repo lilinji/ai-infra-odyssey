@@ -1,0 +1,477 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="100%" height="100%">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="grid-22" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75"/>
+    </pattern>
+
+    <!-- Linear Gradients -->
+    <linearGradient id="grad-card-22" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-22" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(8, 51, 68, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-purple-22" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(88, 28, 135, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(46, 16, 101, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-orange-22" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(124, 45, 18, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(67, 20, 7, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-emerald-22" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(6, 78, 59, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(15, 23, 42, 0.9)"/>
+    </linearGradient>
+
+    <linearGradient id="grad-badge-22" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&amp;display=swap');
+    text { font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; }
+    .title-main { font-size: 20px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.5px; }
+    .title-sub { font-size: 11px; font-weight: 500; fill: #94a3b8; }
+    .sec-header { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .card-title { font-size: 11px; font-weight: 700; fill: #ffffff; }
+    .card-sub { font-size: 9px; font-weight: 500; fill: #94a3b8; }
+    .code-tag { font-size: 8.5px; font-weight: 600; font-family: monospace; }
+  </style>
+
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#grid-22)"/>
+
+  <!-- ================= TOP HEADER BLOCK ================= -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="1380" height="64" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="64" rx="3" fill="url(#grad-badge-22)"/>
+    
+    <text x="24" y="27" class="title-main">第22讲：CUDA 编程模型、分级存储层次与合并访存/Bank Conflict 全景图</text>
+    <text x="24" y="47" class="title-sub">Grid/Block/Warp/Thread Mapping · DRAM Burst (32B Sector) · Coalesced (100%) vs Strided (3.1%) · 32-Bank Crossbar · Little's Law Occupancy</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(820, 13)">
+      <rect x="0" y="0" width="135" height="38" rx="6" fill="rgba(8,51,68,0.6)" stroke="#06b6d4" stroke-width="1"/>
+      <text x="67" y="16" font-size="8.5" font-weight="600" fill="#67e8f9" text-anchor="middle">HBM 显存物理带宽</text>
+      <text x="67" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">2.0 ~ 3.35 TB/s</text>
+
+      <rect x="145" y="0" width="135" height="38" rx="6" fill="rgba(124,45,18,0.5)" stroke="#f97316" stroke-width="1"/>
+      <text x="212" y="16" font-size="8.5" font-weight="600" fill="#fdba74" text-anchor="middle">合并访存 vs 跨步冲突</text>
+      <text x="212" y="30" font-size="11" font-weight="800" fill="#f87171" text-anchor="middle">100% ➔ 3.1% 暴跌</text>
+
+      <rect x="290" y="0" width="130" height="38" rx="6" fill="rgba(88,28,135,0.5)" stroke="#a855f7" stroke-width="1"/>
+      <text x="355" y="16" font-size="8.5" font-weight="600" fill="#d8b4fe" text-anchor="middle">Shared Mem 带宽</text>
+      <text x="355" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">~19 TB/s (32 Banks)</text>
+
+      <rect x="430" y="0" width="120" height="38" rx="6" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="1"/>
+      <text x="490" y="16" font-size="8.5" font-weight="600" fill="#6ee7b7" text-anchor="middle">延迟隐藏数学法则</text>
+      <text x="490" y="30" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">Little's Law (W=L·T)</text>
+    </g>
+  </g>
+
+  <!-- ================= 1. LEFT SECTION: SOFTWARE HIERARCHY TO HARDWARE SILICON ================= -->
+  <g transform="translate(30, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-22)" stroke="#0e7490" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(8,51,68,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#38bdf8">🏛️ 1. 软件层次抽象与物理硅片刚性映射</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#67e8f9">层次模型</text>
+
+    <!-- Software Hierarchy Visual -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="174" rx="6" fill="rgba(8,51,68,0.3)" stroke="#0891b2" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#67e8f9">CUDA 软件逻辑抽象 (Logical Hierarchy)</text>
+      
+      <!-- Grid -->
+      <g transform="translate(12, 30)">
+        <rect x="0" y="0" width="388" height="132" rx="4" fill="#042f2e" stroke="#14b8a6" stroke-width="1" stroke-dasharray="4,2"/>
+        <text x="10" y="16" font-size="9" font-weight="700" fill="#2dd4bf">Grid (Kernel Launch 网格: gridDim.x × gridDim.y × gridDim.z)</text>
+
+        <!-- Block 0 -->
+        <g transform="translate(10, 24)">
+          <rect x="0" y="0" width="178" height="98" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+          <text x="10" y="16" font-size="8.5" font-weight="700" fill="#38bdf8">Thread Block 0 (CTA)</text>
+          <text x="10" y="28" font-size="7.5" fill="#94a3b8">blockDim: (1024 max)</text>
+          
+          <!-- Warps inside Block -->
+          <rect x="8" y="34" width="162" height="26" rx="3" fill="rgba(56,189,248,0.15)" stroke="#0284c7" stroke-width="0.8"/>
+          <text x="14" y="50" font-size="8" font-weight="700" fill="#bae6fd">Warp 0: Thread [0 .. 31]</text>
+          
+          <rect x="8" y="64" width="162" height="26" rx="3" fill="rgba(56,189,248,0.1)" stroke="#0284c7" stroke-width="0.8"/>
+          <text x="14" y="80" font-size="8" font-weight="700" fill="#bae6fd">Warp k: Thread [32k .. 32k+31]</text>
+        </g>
+
+        <!-- Block N-1 -->
+        <g transform="translate(200, 24)">
+          <rect x="0" y="0" width="178" height="98" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+          <text x="10" y="16" font-size="8.5" font-weight="700" fill="#38bdf8">Thread Block N-1 (CTA)</text>
+          <text x="10" y="28" font-size="7.5" fill="#94a3b8">独立调度 / 任意执行顺序</text>
+
+          <rect x="8" y="34" width="162" height="56" rx="3" fill="rgba(88,28,135,0.15)" stroke="#8b5cf6" stroke-width="0.8"/>
+          <text x="89" y="60" font-size="8" font-weight="600" fill="#c084fc" text-anchor="middle">硬件 SM 资源一旦释放</text>
+          <text x="89" y="74" font-size="7.5" fill="#a78bfa" text-anchor="middle">立即由 GigaThread 分发调度</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Hardware Mapping Connection -->
+    <g transform="translate(14, 230)">
+      <rect x="0" y="0" width="412" height="194" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#fef08a">硬件硅片物理承载 (Hardware Execution Binding)</text>
+
+      <!-- SM Box -->
+      <g transform="translate(12, 32)">
+        <rect x="0" y="0" width="388" height="150" rx="4" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="10" y="18" font-size="9.5" font-weight="800" fill="#fbbf24">Streaming Multiprocessor (SM) 内部硬件资源流水</text>
+
+        <!-- 4 SMSP -->
+        <g transform="translate(10, 26)">
+          <rect x="0" y="0" width="86" height="60" rx="3" fill="rgba(120,53,15,0.3)" stroke="#d97706" stroke-width="0.8"/>
+          <text x="43" y="16" font-size="7.5" font-weight="700" fill="#fde047" text-anchor="middle">SMSP 0</text>
+          <text x="43" y="30" font-size="7" fill="#cbd5e1" text-anchor="middle">Warp Scheduler</text>
+          <text x="43" y="44" font-size="6.5" fill="#94a3b8" text-anchor="middle">16 FP32 / 8 FP64</text>
+          <text x="43" y="54" font-size="6.5" fill="#f97316" text-anchor="middle">1 Tensor Core</text>
+
+          <rect x="92" y="0" width="86" height="60" rx="3" fill="rgba(120,53,15,0.3)" stroke="#d97706" stroke-width="0.8"/>
+          <text x="135" y="16" font-size="7.5" font-weight="700" fill="#fde047" text-anchor="middle">SMSP 1</text>
+          <text x="135" y="30" font-size="7" fill="#cbd5e1" text-anchor="middle">Warp Scheduler</text>
+          <text x="135" y="44" font-size="6.5" fill="#94a3b8" text-anchor="middle">16 INT32 / 8 SFU</text>
+          <text x="135" y="54" font-size="6.5" fill="#f97316" text-anchor="middle">1 Tensor Core</text>
+
+          <rect x="184" y="0" width="86" height="60" rx="3" fill="rgba(120,53,15,0.3)" stroke="#d97706" stroke-width="0.8"/>
+          <text x="227" y="16" font-size="7.5" font-weight="700" fill="#fde047" text-anchor="middle">SMSP 2</text>
+          <text x="227" y="30" font-size="7" fill="#cbd5e1" text-anchor="middle">Warp Scheduler</text>
+          <text x="227" y="44" font-size="6.5" fill="#94a3b8" text-anchor="middle">16 FP32 / 8 FP64</text>
+          <text x="227" y="54" font-size="6.5" fill="#f97316" text-anchor="middle">1 Tensor Core</text>
+
+          <rect x="276" y="0" width="90" height="60" rx="3" fill="rgba(120,53,15,0.3)" stroke="#d97706" stroke-width="0.8"/>
+          <text x="321" y="16" font-size="7.5" font-weight="700" fill="#fde047" text-anchor="middle">SMSP 3</text>
+          <text x="321" y="30" font-size="7" fill="#cbd5e1" text-anchor="middle">Warp Scheduler</text>
+          <text x="321" y="44" font-size="6.5" fill="#94a3b8" text-anchor="middle">LSU 访存总线</text>
+          <text x="321" y="54" font-size="6.5" fill="#f97316" text-anchor="middle">1 Tensor Core</text>
+        </g>
+
+        <!-- Memory Quota inside SM -->
+        <g transform="translate(10, 92)">
+          <rect x="0" y="0" width="178" height="48" rx="3" fill="rgba(88,28,135,0.3)" stroke="#a855f7" stroke-width="0.8"/>
+          <text x="10" y="16" font-size="8" font-weight="700" fill="#e9d5ff">Register File (64K 32-bit regs/SM)</text>
+          <text x="10" y="30" font-size="7" fill="#c084fc">• 单周期访问时延 / 私属于单个线程</text>
+          <text x="10" y="42" font-size="7" fill="#cbd5e1">• 溢出则产生 Local Memory (打入 HBM!)</text>
+
+          <rect x="188" y="0" width="178" height="48" rx="3" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="0.8"/>
+          <text x="10" y="16" font-size="8" font-weight="700" fill="#a7f3d0" transform="translate(188,0)">Shared Memory / L1 (48~228 KB)</text>
+          <text x="10" y="30" font-size="7" fill="#6ee7b7" transform="translate(188,0)">• Block 内所有线程共享 / 32 Banks</text>
+          <text x="10" y="42" font-size="7" fill="#cbd5e1" transform="translate(188,0)">• 程序员可控高速 SRAM 暂存区</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Mapping Dictum Callout -->
+    <g transform="translate(14, 434)">
+      <rect x="0" y="0" width="412" height="124" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fed7aa">⚠️ SIMT 执行微架构第一性原理：Warp 是最小原子调度单位</text>
+      <text x="14" y="38" font-size="8.5" fill="#ffedd5">1. **单指令多线程 (SIMT)**：Warp 内部 32 个线程锁步执行 (Lock-Step)；</text>
+      <text x="14" y="54" font-size="8.5" fill="#ffedd5">2. **分支发散代价 (Divergence)**：若同一 Warp 内走不同 if/else 分支，硬件只能串行执行两条分支路径，执行掩码屏蔽下算力直接腰斩；</text>
+      <text x="14" y="76" font-size="8.5" fill="#ffedd5">3. **Block 调度不可抢占**：Block 一旦分发到 SM，直到完全执行完毕才会释放寄存器与共享内存资源，绝不可发生跨 SM 线程同步！</text>
+      <text x="14" y="98" font-size="8.5" font-weight="700" fill="#fde047">金律：所有跨 Block 的全局同步必须借助原子指令、Kernel 结束或 TMA完成。</text>
+    </g>
+
+    <!-- Hardware Limits Table -->
+    <g transform="translate(14, 568)">
+      <rect x="0" y="0" width="412" height="156" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="18" class="card-title" fill="#67e8f9">📋 经典架构硬件配额边界速查 (A100 vs H100)</text>
+      
+      <!-- Table Header -->
+      <g transform="translate(10, 28)">
+        <rect x="0" y="0" width="392" height="22" fill="#1e293b"/>
+        <text x="10" y="15" font-size="8" font-weight="700" fill="#94a3b8">硬件物理参数指标</text>
+        <text x="190" y="15" font-size="8" font-weight="700" fill="#38bdf8">A100 (Ampere GA100)</text>
+        <text x="300" y="15" font-size="8" font-weight="700" fill="#4ade80">H100 (Hopper GH100)</text>
+
+        <!-- Rows -->
+        <text x="10" y="38" font-size="7.5" fill="#cbd5e1">SM 核心总数</text>
+        <text x="190" y="38" font-size="7.5" fill="#cbd5e1">108 SMs</text>
+        <text x="300" y="38" font-size="7.5" fill="#cbd5e1">132 SMs (SXM5)</text>
+
+        <text x="10" y="56" font-size="7.5" fill="#cbd5e1">Max Threads / SM</text>
+        <text x="190" y="56" font-size="7.5" fill="#cbd5e1">2048 线程 (64 Warps)</text>
+        <text x="300" y="56" font-size="7.5" fill="#cbd5e1">2048 线程 (64 Warps)</text>
+
+        <text x="10" y="74" font-size="7.5" fill="#cbd5e1">Max Blocks / SM</text>
+        <text x="190" y="74" font-size="7.5" fill="#cbd5e1">32 Blocks</text>
+        <text x="300" y="74" font-size="7.5" fill="#cbd5e1">32 Blocks (Cluster 8)</text>
+
+        <text x="10" y="92" font-size="7.5" fill="#cbd5e1">Shared Memory / SM</text>
+        <text x="190" y="92" font-size="7.5" fill="#cbd5e1">164 KB 可配置</text>
+        <text x="300" y="92" font-size="7.5" fill="#cbd5e1">228 KB + DSMEM</text>
+
+        <text x="10" y="110" font-size="7.5" fill="#cbd5e1">Register File / SM</text>
+        <text x="190" y="110" font-size="7.5" fill="#cbd5e1">65,536 个 32-bit (256KB)</text>
+        <text x="300" y="110" font-size="7.5" fill="#cbd5e1">65,536 个 32-bit (256KB)</text>
+
+        <text x="10" y="124" font-size="7" fill="#f87171">注：单线程分配寄存器超过 32/64 个时，SM 并发 Warp 数将发生阶梯骤降！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= 2. CENTER SECTION: GLOBAL MEMORY COALESCING ================= -->
+  <g transform="translate(490, 98)">
+    <rect x="0" y="0" width="460" height="740" rx="8" fill="url(#grad-card-22)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="460" height="34" rx="8" fill="rgba(88,28,135,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#d8b4fe">⚡ 2. 全局内存合并访问与 32B Sector 事务放大</text>
+    <text x="365" y="22" font-size="9.5" font-weight="600" fill="#f3e8ff">合并访存</text>
+
+    <!-- Master Formula Box -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="432" height="76" rx="6" fill="rgba(88,28,135,0.4)" stroke="#c084fc" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="11" font-weight="800" fill="#f3e8ff">全局内存总线有效利用率模型 (Bus Efficiency Model)</text>
+      <text x="14" y="42" font-size="12" font-weight="800" fill="#fde047">η_bus = 请求有效载荷 / 实际物理传输载荷 = (32 × sizeof(T)) / (N_transactions × 32 Bytes)</text>
+      <text x="14" y="62" font-size="8" fill="#e9d5ff">理想对齐合并: N_tx = 4 ➔ η = 128B / 128B = 100% | 最坏跨步发散: N_tx = 32 ➔ η = 128B / 1024B = 12.5% (甚至 3.1%)</text>
+    </g>
+
+    <!-- Visual: Coalesced vs Non-Coalesced Diagram -->
+    <g transform="translate(14, 132)">
+      <rect x="0" y="0" width="432" height="280" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#a78bfa">物理微架构对比：128B Cache Line 与 4 个 32B Sectors 调度</text>
+
+      <!-- Scenario A: Coalesced -->
+      <g transform="translate(14, 34)">
+        <rect x="0" y="0" width="404" height="106" rx="4" fill="rgba(6,78,59,0.2)" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="16" font-size="9" font-weight="800" fill="#34d399">✅ 完美合并访问 (Coalesced Access): 32 线程连续读取 128 Bytes</text>
+
+        <!-- Threads -->
+        <g transform="translate(10, 26)">
+          <rect x="0" y="0" width="384" height="20" rx="3" fill="#064e3b"/>
+          <text x="192" y="14" font-size="8" font-weight="700" fill="#6ee7b7" text-anchor="middle">Warp 32 线程: Thread 0 .. Thread 31 (请求 A[0] .. A[31], float32)</text>
+        </g>
+
+        <!-- Arrows down -->
+        <path d="M 50 48 L 50 58" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+        <path d="M 150 48 L 150 58" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+        <path d="M 250 48 L 250 58" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+        <path d="M 350 48 L 350 58" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+
+        <!-- 128B Cache Line (4 Sectors) -->
+        <g transform="translate(10, 62)">
+          <rect x="0" y="0" width="94" height="32" rx="2" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+          <text x="47" y="16" font-size="7.5" font-weight="700" fill="#67e8f9" text-anchor="middle">Sector 0 (32B)</text>
+          <text x="47" y="26" font-size="7" fill="#bae6fd" text-anchor="middle">Th 0~7 (100%)</text>
+
+          <rect x="97" y="0" width="94" height="32" rx="2" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+          <text x="144" y="16" font-size="7.5" font-weight="700" fill="#67e8f9" text-anchor="middle">Sector 1 (32B)</text>
+          <text x="144" y="26" font-size="7" fill="#bae6fd" text-anchor="middle">Th 8~15 (100%)</text>
+
+          <rect x="194" y="0" width="94" height="32" rx="2" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+          <text x="241" y="16" font-size="7.5" font-weight="700" fill="#67e8f9" text-anchor="middle">Sector 2 (32B)</text>
+          <text x="241" y="26" font-size="7" fill="#bae6fd" text-anchor="middle">Th 16~23 (100%)</text>
+
+          <rect x="290" y="0" width="94" height="32" rx="2" fill="#083344" stroke="#06b6d4" stroke-width="1"/>
+          <text x="337" y="16" font-size="7.5" font-weight="700" fill="#67e8f9" text-anchor="middle">Sector 3 (32B)</text>
+          <text x="337" y="26" font-size="7" fill="#bae6fd" text-anchor="middle">Th 24~31 (100%)</text>
+        </g>
+      </g>
+
+      <!-- Scenario B: Strided -->
+      <g transform="translate(14, 150)">
+        <rect x="0" y="0" width="404" height="118" rx="4" fill="rgba(136,19,55,0.2)" stroke="#f43f5e" stroke-width="1"/>
+        <text x="10" y="16" font-size="9" font-weight="800" fill="#fb7185">❌ 跨步访问发散 (Strided / Uncoalesced): 索引跨度 Stride = 32</text>
+
+        <!-- Threads -->
+        <g transform="translate(10, 24)">
+          <rect x="0" y="0" width="384" height="20" rx="3" fill="#881337"/>
+          <text x="192" y="14" font-size="8" font-weight="700" fill="#fecdd3" text-anchor="middle">Thread 0 读 A[0], Thread 1 读 A[32], Thread 2 读 A[64] ... (列优先转置陷阱)</text>
+        </g>
+
+        <!-- Sectors Explosion -->
+        <g transform="translate(10, 52)">
+          <rect x="0" y="0" width="118" height="30" rx="2" fill="#4c0519" stroke="#fb7185" stroke-width="0.8"/>
+          <text x="59" y="14" font-size="7" font-weight="700" fill="#fca5a5" text-anchor="middle">Tx 0: Sector 32B (4B用)</text>
+          <text x="59" y="24" font-size="6.5" fill="#fda4af" text-anchor="middle">利用率仅 12.5%！</text>
+
+          <rect x="133" y="0" width="118" height="30" rx="2" fill="#4c0519" stroke="#fb7185" stroke-width="0.8"/>
+          <text x="192" y="14" font-size="7" font-weight="700" fill="#fca5a5" text-anchor="middle">Tx 1: Sector 32B (4B用)</text>
+          <text x="192" y="24" font-size="6.5" fill="#fda4af" text-anchor="middle">利用率仅 12.5%！</text>
+
+          <rect x="266" y="0" width="118" height="30" rx="2" fill="#4c0519" stroke="#fb7185" stroke-width="0.8"/>
+          <text x="325" y="14" font-size="7" font-weight="700" fill="#fca5a5" text-anchor="middle">Tx 31: Sector 32B (4B用)</text>
+          <text x="325" y="24" font-size="6.5" fill="#fda4af" text-anchor="middle">利用率仅 12.5%！</text>
+        </g>
+        <text x="14" y="104" font-size="8" font-weight="800" fill="#fca5a5">💥 惨烈后果：单次 Warp 访存触发 32 次独立内存总线事务，总线利用率骤降 87.5%！</text>
+      </g>
+    </g>
+
+    <!-- Vectorized Load float4 Callout -->
+    <g transform="translate(14, 422)">
+      <rect x="0" y="0" width="432" height="142" rx="6" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#67e8f9">🚀 向量化加载 (Vectorized Load `float4`)：压榨 LSU 指令发射</text>
+      <text x="14" y="38" font-size="8.5" fill="#e0f2fe">• 【标量模式】: 32 个线程每次读 4 字节，需要发射 32 条 `LDG.E` 指令；</text>
+      <text x="14" y="54" font-size="8.5" fill="#e0f2fe">• 【向量化模式】: 使用 `reinterpret_cast&lt;float4*&gt;` 触发单个 `LDG.E.128` 指令；</text>
+      <text x="14" y="70" font-size="8.5" fill="#e0f2fe">• 【硬件收益】: 单次指令直接拉取 16 字节，指令数量减少 75%，极速打满 LSU 管线！</text>
+      
+      <g transform="translate(10, 84)">
+        <rect x="0" y="0" width="412" height="46" rx="3" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="7.5" font-family="monospace" fill="#2dd4bf">// 向量化访存白板标准范式 (对齐必须为 16 字节)</text>
+        <text x="10" y="28" font-size="7.5" font-family="monospace" fill="#ffffff">float4 v = *reinterpret_cast&lt;const float4*&gt;(&amp;d_in[idx * 4]);</text>
+        <text x="10" y="40" font-size="7.5" font-family="monospace" fill="#fde047">*reinterpret_cast&lt;float4*&gt;(&amp;d_out[idx * 4]) = v; // 一条汇编指令搞定 16 字节</text>
+      </g>
+    </g>
+
+    <!-- Real Production Tragedy -->
+    <g transform="translate(14, 574)">
+      <rect x="0" y="0" width="432" height="148" rx="6" fill="rgba(124,45,18,0.25)" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#fed7aa">💥 生产真实现场：改了一行索引，算子有效带宽蒸发 97%</text>
+      <text x="14" y="38" font-size="8.5" fill="#ffedd5">• 【案发现场】: 工程师在实现矩阵转置或反向传播时，误写了访问下标：</text>
+      <text x="24" y="54" font-size="8" font-family="monospace" fill="#fca5a5">错误: float val = data[col * N + row]; // 导致相邻线程跨行读取，步长 N=4096！</text>
+      <text x="24" y="70" font-size="8" font-family="monospace" fill="#86efac">正解: float val = data[row * N + col]; // 相邻线程访问连续地址，完美合并！</text>
+      <text x="14" y="90" font-size="8.5" fill="#ffedd5">• 【数据血泪】: A100 上有效带宽从 1620 GB/s 骤降到 48 GB/s，算子延迟飙升 33 倍！</text>
+      <text x="14" y="112" font-size="8.5" font-weight="700" fill="#fde047">诊断利器:</text>
+      <text x="14" y="128" font-size="8" fill="#fed7aa">通过 Nsight Compute 查看 `smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct`</text>
+    </g>
+  </g>
+
+  <!-- ================= 3. RIGHT SECTION: SHARED MEMORY BANK CONFLICT & OCCUPANCY ================= -->
+  <g transform="translate(970, 98)">
+    <rect x="0" y="0" width="440" height="740" rx="8" fill="url(#grad-card-22)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="440" height="34" rx="8" fill="rgba(6,78,59,0.7)"/>
+    <text x="16" y="22" class="sec-header" fill="#6ee7b7">🔀 3. 共享内存 32-Bank 冲突消除与 Occupancy 调优</text>
+    <text x="360" y="22" font-size="9.5" font-weight="600" fill="#a7f3d0">Bank 冲突</text>
+
+    <!-- Bank Architecture Visual -->
+    <g transform="translate(14, 46)">
+      <rect x="0" y="0" width="412" height="236" rx="6" fill="#030712" stroke="#1e293b" stroke-width="1.2"/>
+      <text x="14" y="18" class="card-title" fill="#fef08a">32 个 4-Byte Bank 与 Crossbar 交叉开关网络</text>
+      <text x="14" y="32" class="card-sub" fill="#94a3b8">映射规则: Bank ID = (字节地址 / 4) % 32 = (float元素索引) % 32</text>
+
+      <!-- Bank Grid 0..31 -->
+      <g transform="translate(10, 42)">
+        <!-- Row 0: Words 0..7 -->
+        <rect x="0" y="0" width="45" height="36" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="22" y="14" font-size="7" font-weight="700" fill="#5eead4" text-anchor="middle">Bank 0</text>
+        <text x="22" y="26" font-size="6.5" fill="#94a3b8" text-anchor="middle">Addr: 0,32</text>
+
+        <rect x="49" y="0" width="45" height="36" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="71" y="14" font-size="7" font-weight="700" fill="#5eead4" text-anchor="middle">Bank 1</text>
+        <text x="71" y="26" font-size="6.5" fill="#94a3b8" text-anchor="middle">Addr: 1,33</text>
+
+        <rect x="98" y="0" width="45" height="36" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="120" y="14" font-size="7" font-weight="700" fill="#5eead4" text-anchor="middle">Bank 2</text>
+        <text x="120" y="26" font-size="6.5" fill="#94a3b8" text-anchor="middle">Addr: 2,34</text>
+
+        <text x="160" y="22" font-size="10" font-weight="700" fill="#64748b">...</text>
+
+        <rect x="188" y="0" width="55" height="36" rx="2" fill="#881337" stroke="#f43f5e" stroke-width="1.2"/>
+        <text x="215" y="14" font-size="7" font-weight="700" fill="#fca5a5" text-anchor="middle">Bank k (冲突)</text>
+        <text x="215" y="26" font-size="6.5" fill="#fecdd3" text-anchor="middle">多线程撞地址</text>
+
+        <text x="260" y="22" font-size="10" font-weight="700" fill="#64748b">...</text>
+
+        <rect x="288" y="0" width="48" height="36" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="312" y="14" font-size="7" font-weight="700" fill="#5eead4" text-anchor="middle">Bank 30</text>
+        <text x="312" y="26" font-size="6.5" fill="#94a3b8" text-anchor="middle">Addr: 30</text>
+
+        <rect x="340" y="0" width="48" height="36" rx="2" fill="#042f2e" stroke="#14b8a6" stroke-width="0.8"/>
+        <text x="364" y="14" font-size="7" font-weight="700" fill="#5eead4" text-anchor="middle">Bank 31</text>
+        <text x="364" y="26" font-size="6.5" fill="#94a3b8" text-anchor="middle">Addr: 31</text>
+      </g>
+
+      <!-- Conflict Scenarios -->
+      <g transform="translate(10, 92)">
+        <rect x="0" y="0" width="392" height="66" rx="4" fill="rgba(120,53,15,0.25)" stroke="#f59e0b" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8.5" font-weight="700" fill="#fde047">1. 无冲突 (Conflict-Free): 1 周期直通响应 (32 线程落入 32 个不同 Bank)</text>
+        <text x="10" y="32" font-size="8.5" font-weight="700" fill="#fb7185">2. 2-way / N-way Conflict: 硬件自动串行化！N 个周期逐步放行 (最高 32 周期)</text>
+        <text x="10" y="48" font-size="8.5" font-weight="700" fill="#67e8f9">3. 广播机制 (Broadcast): 多个线程请求同一 Bank 的同一地址 ➔ 1 周期免费广播！</text>
+        <text x="10" y="60" font-size="7" fill="#cbd5e1">（注：只有地址完全相同时才触发广播，若地址不同但属于同一 Bank 则构成冲突串行化！）</text>
+      </g>
+
+      <!-- Solution Padding / Swizzle -->
+      <g transform="translate(10, 168)">
+        <rect x="0" y="0" width="392" height="58" rx="4" fill="rgba(6,78,59,0.3)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="15" font-size="8.5" font-weight="800" fill="#a7f3d0">消除冲突两大生产大杀招：Padding 与 Swizzling</text>
+        <text x="10" y="30" font-size="7.5" fill="#ffffff">① **静态填充 (Padding)**: `__shared__ float s[32][33];` (多塞 1 列打破 32 周期共振)</text>
+        <text x="10" y="45" font-size="7.5" fill="#ffffff">② **异或重排 (Swizzling)**: `bank = (row ^ col) % 32;` (无需多耗显存，完美正交映射)</text>
+      </g>
+    </g>
+
+    <!-- Occupancy and Little's Law -->
+    <g transform="translate(14, 290)">
+      <rect x="0" y="0" width="412" height="268" rx="6" fill="#0f172a" stroke="#059669" stroke-width="1.2"/>
+      <text x="14" y="20" class="card-title" fill="#6ee7b7">💎 Little's Law 延迟隐藏数学模型与 Occupancy 调优</text>
+      
+      <!-- Formula Box -->
+      <g transform="translate(10, 32)">
+        <rect x="0" y="0" width="392" height="50" rx="4" fill="rgba(6,78,59,0.5)" stroke="#10b981" stroke-width="0.8"/>
+        <text x="196" y="20" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle">W_needed = Latency (Cycles) × Issue Throughput (Warps/Cycle)</text>
+        <text x="196" y="38" font-size="8" fill="#a7f3d0" text-anchor="middle">全局内存延迟 ~400 周期，SM 吞吐 4 Warps/周期 ➔ 需维持 1600 个并发指令以完全掩盖延迟！</text>
+      </g>
+
+      <!-- Curve / Visualization -->
+      <g transform="translate(10, 92)">
+        <rect x="0" y="0" width="392" height="106" rx="4" fill="#030712" stroke="#1e293b" stroke-width="0.8"/>
+        
+        <!-- Axes -->
+        <line x1="40" y1="85" x2="360" y2="85" stroke="#64748b" stroke-width="1"/>
+        <line x1="40" y1="85" x2="40" y2="15" stroke="#64748b" stroke-width="1"/>
+        <text x="360" y="98" font-size="7.5" fill="#94a3b8" text-anchor="end">Occupancy (活跃 Warp 占比)</text>
+        <text x="25" y="15" font-size="7.5" fill="#94a3b8" transform="rotate(-90 25 15)" text-anchor="end">实测算子算力性能</text>
+
+        <!-- Curve -->
+        <path d="M 40 80 Q 140 30 200 28 T 350 28" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
+        <circle cx="200" cy="28" r="4" fill="#f59e0b"/>
+        <text x="200" y="20" font-size="8" font-weight="700" fill="#fde047" text-anchor="middle">饱和拐点 (~50% Occupancy 即可打满性能)</text>
+
+        <rect x="220" y="44" width="160" height="34" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="300" y="58" font-size="7" font-weight="700" fill="#fca5a5" text-anchor="middle">盲目冲 100% Occupancy 陷阱：</text>
+        <text x="300" y="70" font-size="6.5" fill="#cbd5e1" text-anchor="middle">导致单线程寄存器配额不足，溢出到显存！</text>
+      </g>
+
+      <!-- Tradeoff dictums -->
+      <g transform="translate(10, 208)">
+        <rect x="0" y="0" width="392" height="50" rx="3" fill="rgba(8,51,68,0.4)" stroke="#06b6d4" stroke-width="0.8"/>
+        <text x="10" y="16" font-size="8" font-weight="700" fill="#67e8f9">⚖️ 寄存器与共享内存的“零和博弈”：</text>
+        <text x="10" y="30" font-size="7.5" fill="#cbd5e1">1. 单线程占用超过 32 个寄存器，每个 SM 驻留的 Warp 数量开始打折；</text>
+        <text x="10" y="42" font-size="7.5" fill="#cbd5e1">2. 优先保证单线程计算效率 (ILP) 与局部性，而非不计代价追求满占用率！</text>
+      </g>
+    </g>
+
+    <!-- 5-Step Checklist -->
+    <g transform="translate(14, 568)">
+      <rect x="0" y="0" width="412" height="156" rx="6" fill="rgba(88,28,135,0.25)" stroke="#c084fc" stroke-width="1.2"/>
+      <text x="14" y="20" font-size="10.5" font-weight="800" fill="#f3e8ff">🛠️ Ringi CUDA 内存极致调优五步自检表</text>
+      <text x="14" y="38" font-size="8" fill="#e9d5ff">Step 1: 【访存对齐】 保证基地址与步长满足 32B/128B 边界，启用 `float4`；</text>
+      <text x="14" y="54" font-size="8" fill="#e9d5ff">Step 2: 【连续合并】 严格审查内层循环索引，确保相邻 Lane 访问连续内存；</text>
+      <text x="14" y="70" font-size="8" fill="#e9d5ff">Step 3: 【共享中转】 对跨步访问数据先通过 Shared Memory 转置后再写回；</text>
+      <text x="14" y="86" font-size="8" fill="#e9d5ff">Step 4: 【垫片防撞】 检查共享内存访问步长，遇到 $32$ 的倍数强制加 Pad；</text>
+      <text x="14" y="102" font-size="8" fill="#fde047">Step 5: 【寄存器压制】 使用 `__launch_bounds__` 限制寄存器，拒绝局部显存溢出！</text>
+      <text x="14" y="126" font-size="8" font-weight="600" fill="#d8b4fe">让每一个内存事务传输的每一字节，都被 ALU 真实计算消费！</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM FOOTER BAR ================= -->
+  <g transform="translate(30, 850)">
+    <rect x="0" y="0" width="1380" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="20" y="24" font-size="11" font-weight="700" fill="#ffffff">🏛️ Ringi CUDA 编程模型与内存层次箴言速记：</text>
+    <text x="20" y="46" font-size="9" fill="#94a3b8">① **“多开线程就能加速”是初学者最大的幻觉**：如果访存发散，32 倍的内存事务放大与 Cache 颠簸会让 GPU 庞大算力彻底瘫痪；</text>
+    <text x="20" y="64" font-size="9" fill="#94a3b8">② **永远顺着硬件物理走线写代码**：连续访存对齐 128B、向量化合并压榨 LSU、共享内存垫片避开 32-Bank 冲突；</text>
+    <text x="20" y="80" font-size="9" fill="#38bdf8">③ **适度 Occupancy 才是王道**：通过 Little's Law 估算延迟隐藏底线，用足单线程寄存器展开（ILP）榨取最高的实际算术利用率！</text>
+  </g>
+</svg>

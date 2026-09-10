@@ -1,0 +1,411 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-44" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-44" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-44" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-44" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-44" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-44" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-44" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-44" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-44)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="320" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">AI INFRA GRAND FINALE &amp; SYSTEM DESIGN</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      AI Infra 大厂全真面试演练、白板手撕与系统设计全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      段位能力雷达与红线 · 405B 模型 1024 卡 3D 并行资源算盘 · 线上死锁与慢卡排查决策树 · 万卡级统一基础设施 System Design
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">405B STATIC SHARD</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">38.5 GB/GPU</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">2T TOKENS TIME</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">~ 54 Days</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">FAULT DECISION TREE</text>
+      <text x="307" y="38" fill="#fbbf24" font-size="16" font-weight="800">4-Level Isolate</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">SYSTEM DESIGN RFC</text>
+      <text x="467" y="38" fill="#c084fc" font-size="16" font-weight="800">End-to-End</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-44)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、大厂面试能力雷达与段位模型</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">从概念八股到定量白板手算 · L4 至 L7 架构师段位跃迁与淘汰红线</text>
+
+    <!-- Subcard 1.1: 四大段位金字塔 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="235" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.1 大厂 AI Infra 四大段位能力阶梯与淘汰线</text>
+
+      <!-- Level 4 -->
+      <g transform="translate(10, 34)">
+        <rect width="370" height="42" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#94a3b8" font-size="9" font-weight="700">L4 初级工程师 (概念知晓层)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">掌握框架 API，背诵八股概念。致命淘汰红线：分不清显存与内存，概念背错</text>
+      </g>
+
+      <!-- Level 5 -->
+      <g transform="translate(10, 82)">
+        <rect width="370" height="46" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">L5 资深工程师 (定量手算与物理穿透)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">心中有底账！提笔手算 70B/405B 显存/FLOPs/通信量误差 &lt; 10%，秒懂 Roofline</text>
+      </g>
+
+      <!-- Level 6 -->
+      <g transform="translate(10, 134)">
+        <rect width="370" height="46" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">L6 技术专家 (线上疑难杂症攻坚者)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">遇 Xid 报错/NCCL 死锁/慢卡有清晰逻辑树，结合 Nsight/dcgm 抓包快速止血</text>
+      </g>
+
+      <!-- Level 7 -->
+      <g transform="translate(10, 186)">
+        <rect width="370" height="42" rx="4" fill="#182234" stroke="#c084fc" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#c084fc" font-size="9" font-weight="700">L7 顶尖架构师 (万卡算力平台 System Design)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">白板端到端设计万卡平台，在算力利用率 MFU、存储、容灾与成本间做最优权衡</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 四大考察维度全景雷达 -->
+    <g transform="translate(15, 312)">
+      <rect width="390" height="210" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">1.2 AI Infra 工程师四大考核维度全景雷达</text>
+
+      <g transform="translate(10, 34)">
+        <rect width="175" height="74" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">维度 1: 硬件底账与定量手算</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">• 显存四重身 (16Ψ~20Ψ)</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8">• FLOPs 手算 (前2P/反4P)</text>
+        <text x="8" y="60" fill="#94a3b8" font-size="7.5">• Roofline 算力访存比</text>
+
+        <rect x="195" y="0" width="175" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(195,0)" fill="#34d399" font-size="9" font-weight="700">维度 2: 分布式通信与网络</text>
+        <text x="8" y="32" transform="translate(195,0)" fill="#cbd5e1" font-size="8">• Ring-AllReduce 数学推导</text>
+        <text x="8" y="46" transform="translate(195,0)" fill="#cbd5e1" font-size="8">• RoCEv2 PFC/ECN 拥塞</text>
+        <text x="8" y="60" transform="translate(195,0)" fill="#94a3b8" font-size="7.5">• 拓扑感知 (NVLink vs 机间)</text>
+      </g>
+
+      <g transform="translate(10, 118)">
+        <rect width="175" height="74" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="9" font-weight="700">维度 3: 线上故障排查调优</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">• Xid 硬件坏卡定位</text>
+        <text x="8" y="46" fill="#cbd5e1" font-size="8">• NCCL Hang 死锁排查树</text>
+        <text x="8" y="60" fill="#94a3b8" font-size="7.5">• 慢卡 (Straggler) 捕获</text>
+
+        <rect x="195" y="0" width="175" height="74" rx="4" fill="#1e293b" stroke="#c084fc" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(195,0)" fill="#c084fc" font-size="9" font-weight="700">维度 4: 架构设计与系统规划</text>
+        <text x="8" y="32" transform="translate(195,0)" fill="#cbd5e1" font-size="8">• 万卡调度 (Gang/Kueue)</text>
+        <text x="8" y="46" transform="translate(195,0)" fill="#cbd5e1" font-size="8">• 存储吞吐 (3FS/异步快照)</text>
+        <text x="8" y="60" transform="translate(195,0)" fill="#94a3b8" font-size="7.5">• 容灾自愈与 SLO 治理</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: Ringi 五问白板防身符 -->
+    <g transform="translate(15, 534)">
+      <rect width="390" height="150" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">1.3 Ringi 工程师五问：面试白板答辩终极防身符</text>
+
+      <g transform="translate(10, 34)">
+        <text x="0" y="14" fill="#38bdf8" font-size="9" font-weight="700">1. Shape 是什么？</text>
+        <text x="125" y="14" fill="#cbd5e1" font-size="8.5">张量形状与切分维度？连续还是转置？</text>
+
+        <text x="0" y="34" fill="#ef4444" font-size="9" font-weight="700">2. Cost 花在哪里？</text>
+        <text x="125" y="34" fill="#cbd5e1" font-size="8.5">算力受限还是访存受限？通信泡重多大？</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">3. Machine 怎么跑？</text>
+        <text x="125" y="54" fill="#cbd5e1" font-size="8.5">SM 内部、NVLink 跨卡还是机间 RDMA 网卡？</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">4. Evidence 在哪里？</text>
+        <text x="125" y="74" fill="#cbd5e1" font-size="8.5">系统指标、抓包证据还是白纸黑字严格公式？</text>
+
+        <text x="0" y="94" fill="#c084fc" font-size="9" font-weight="700">5. Production 怎么选？</text>
+        <text x="125" y="94" fill="#cbd5e1" font-size="8.5">在性能极限、工程复杂度与成本间做最优折衷！</text>
+      </g>
+
+      <rect x="10" y="118" width="370" height="24" rx="3" fill="#182234"/>
+      <text x="18" y="134" fill="#34d399" font-size="8.5" font-weight="600">💡 牢记五问闭环，任何系统设计与算力题均能降维打击！</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-44)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、定量手撕真题：405B 模型千卡全套账本</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">1024 张 H100 3D 并行切分 · 单卡显存手算 · 2T Token 训练耗时与成本</text>
+
+    <!-- Subcard 2.1: 3D 并行切分方案 -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="225" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 405B 模型 1024 卡推荐 3D 并行拓扑与硬核依据</text>
+
+      <g transform="translate(12, 34)">
+        <rect width="406" height="48" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="9.5" font-weight="700">TP = 8 (张量并行，锁定机内 8 卡 NVLink)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 理由：机内 900 GB/s NVLink 带宽极高，跨机走网络必被打穿！严格限制在 1 节点</text>
+        <text x="10" y="42" fill="#94a3b8" font-size="7.5">每层前向反向各 2 次 AllReduce，高频通信由物理铜缆强力承载</text>
+      </g>
+
+      <g transform="translate(12, 88)">
+        <rect width="406" height="48" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="18" fill="#34d399" font-size="9.5" font-weight="700">PP = 8 (流水线并行，采用 1F1B 调度)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 理由：将 126 层按层切分到 8 个流水级，单级仅需承载约 16 层权重</text>
+        <text x="10" y="42" fill="#94a3b8" font-size="7.5">通信量仅为边界激活值，极度适配机间 400Gbps RDMA 低带宽链路</text>
+      </g>
+
+      <g transform="translate(12, 142)">
+        <rect width="406" height="48" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="9.5" font-weight="700">DP = 16 (配合 ZeRO-1 优化器状态切分)</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">• 理由：总卡数 = TP(8) × PP(8) × DP(16) = 1024 卡！</text>
+        <text x="10" y="42" fill="#94a3b8" font-size="7.5">ZeRO-1 将 AdamW 状态切为 16 份，单卡显存骤降且无需动态 AllGather 权重</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: 显存账本精确手算 -->
+    <g transform="translate(15, 298)">
+      <rect width="430" height="235" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 单卡物理显存白板手算账本 (严格数字推导)</text>
+
+      <g transform="translate(12, 34)">
+        <rect width="406" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9" font-weight="700">1. 参数与梯度显存 (BF16, TP×PP = 64 切分)：</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8.5">M_param = 405B × 2B / 64 = 12.66 GB ； M_grad = 12.66 GB ➔ 合计 25.32 GB</text>
+      </g>
+
+      <g transform="translate(12, 82)">
+        <rect width="406" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="10" y="16" fill="#34d399" font-size="9" font-weight="700">2. AdamW 优化器状态 (ZeRO-1, 16 份切分)：</text>
+        <text x="10" y="30" fill="#cbd5e1" font-size="8.5">M_opt = (405B × 12B / 64) / 16 = 4.75 GB ➔ 静态显存总计 = 30.07 GB！</text>
+      </g>
+
+      <g transform="translate(12, 130)">
+        <rect width="406" height="46" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9" font-weight="700">3. 动态激活值显存 (Sequence Length S=8192, 选择性重算)：</text>
+        <text x="10" y="32" fill="#cbd5e1" font-size="8.5">开启 FlashAttention + Selective Recomputation，单 MicroBatch 显存约 18.5 GB</text>
+      </g>
+
+      <g transform="translate(12, 182)">
+        <rect width="406" height="42" rx="4" fill="#182234" stroke="#10b981" stroke-width="1.2"/>
+        <text x="10" y="16" fill="#34d399" font-size="9.5" font-weight="700">总显存 = 30.07 + 18.5 = 48.57 GB &lt; 80 GB！</text>
+        <text x="10" y="30" fill="#94a3b8" font-size="8">预留安全余量高达 31.4 GB (抵御 NCCL 缓冲池与显存碎片，绝不 OOM！)</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 训练耗时与 MFU 算盘 -->
+    <g transform="translate(15, 542)">
+      <rect width="430" height="142" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">2.3 训练耗时、天数与集群机时费严格推演</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#c084fc" font-size="9" font-weight="700">总 FLOPs 计算：</text>
+        <text x="135" y="14" fill="#cbd5e1" font-size="8.5">FLOPs = 6 × 405B × 2×10^12 Token = 4.86 × 10^24 FLOPs</text>
+
+        <text x="0" y="34" fill="#38bdf8" font-size="9" font-weight="700">集群有效算力：</text>
+        <text x="135" y="34" fill="#cbd5e1" font-size="8.5">1024 × 989 TFLOPS (H100 FP16) × 42% MFU = 4.25 × 10^17 FLOPs/s</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">总有效训练天数：</text>
+        <text x="135" y="54" fill="#34d399" font-size="9" font-weight="700">Time = 4.86×10^24 / 4.25×10^17 ≈ 1.14×10^7 秒 ≈ 132 天</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">生产算力费用：</text>
+        <text x="135" y="74" fill="#cbd5e1" font-size="8.5">单卡每小时 2 美元 ➔ 1024卡 × 24h × 132天 × $2 ≈ 648 万美元 (~4500万 RMB)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-44)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#fbbf24"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、线上故障排查与 System Design</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">NCCL Hang 死锁排查决策树 · 万卡统一集群端到端设计 RFC</text>
+
+    <!-- Subcard 3.1: NCCL 挂死排查决策树 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="240" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">3.1 NCCL Watchdog 挂死线上排查四步决策树</text>
+
+      <!-- Step 1 -->
+      <g transform="translate(10, 32)">
+        <rect width="350" height="44" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="8.5" font-weight="700">Level 1: 区分“应用真死锁” vs “底层通信挂死”</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">查 host CPU 栈 (pstack / py-spy)：是否卡在 find_unused_parameters 动态计算图</text>
+      </g>
+
+      <!-- Step 2 -->
+      <g transform="translate(10, 80)">
+        <rect width="350" height="44" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="8.5" font-weight="700">Level 2: 慢节点抓捕 (Straggler Hunting)</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">某卡降频(Thermal Throttling) ➔ 其他千卡停滞等待 ➔ 查 GPU 功耗/时钟频率</text>
+      </g>
+
+      <!-- Step 3 -->
+      <g transform="translate(10, 128)">
+        <rect width="350" height="46" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="8.5" font-weight="700">Level 3: RoCEv2 网络拥塞与 PFC 环路死锁</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">查交换机 rx_pause / tx_pause 计数器 ➔ 检查丢包重传风暴与 ECN 阈值配置</text>
+      </g>
+
+      <!-- Step 4 -->
+      <g transform="translate(10, 178)">
+        <rect width="350" height="48" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">Level 4: 硬件掉卡与 Xid 致命错误定位</text>
+        <text x="8" y="30" fill="#cbd5e1" font-size="8">dmesg 查 Xid 31/45/79 ➔ 自动触发节点 Cordon 隔离，从最近 Ckpt 秒级自愈</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: 万卡 System Design 核心架构 -->
+    <g transform="translate(15, 315)">
+      <rect width="370" height="205" rx="8" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#c084fc" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">3.2 万卡统一训练推理集群 System Design RFC</text>
+
+      <g transform="translate(10, 32)">
+        <text x="0" y="14" fill="#c084fc" font-size="9" font-weight="700">1. 计算调度面：</text>
+        <text x="110" y="14" fill="#cbd5e1" font-size="8.5">Kueue 多租户配额 + Volcano Gang All-or-Nothing</text>
+
+        <text x="0" y="34" fill="#38bdf8" font-size="9" font-weight="700">2. 存储吞吐底座：</text>
+        <text x="110" y="34" fill="#cbd5e1" font-size="8.5">DeepSeek 3FS (RDMA+CRAQ) + 零开销异步 Checkpoint</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">3. 网络拓扑互联：</text>
+        <text x="110" y="54" fill="#cbd5e1" font-size="8.5">双轨三层胖树 (Rail-Optimized Fat-Tree) 无收敛架构</text>
+
+        <text x="0" y="74" fill="#fbbf24" font-size="9" font-weight="700">4. 弹性容灾体系：</text>
+        <text x="110" y="74" fill="#cbd5e1" font-size="8.5">基于健康探针自动坏卡摘除，自愈热拉起耗时 &lt; 90 秒</text>
+
+        <text x="0" y="94" fill="#f87171" font-size="9" font-weight="700">5. 潮汐混部收益：</text>
+        <text x="110" y="94" fill="#cbd5e1" font-size="8.5">白天承载大并发 Serving，夜间潮汐抢占跑离线微调</text>
+      </g>
+
+      <g transform="translate(10, 138)">
+        <rect width="350" height="56" rx="4" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="8.5" font-weight="700">💡 架构师终极答辩心法：</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8">“没有完美的设计，只有对物理限制的深刻妥协。算清每一分钱、压榨每一瓦电、对齐每一个字节，才是 AI Infra 工程师的终极浪漫！”</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 面试通关 Checklist -->
+    <g transform="translate(15, 530)">
+      <rect width="370" height="154" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 大厂面试临场状态 Checklist</text>
+
+      <g transform="translate(12, 34)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ 拒绝孤立公式：</text>
+        <text x="130" y="14" fill="#94a3b8" font-size="8.5">写出公式必紧跟物理量纲与极简数字手算代入</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ 建立证据闭环：</text>
+        <text x="130" y="34" fill="#94a3b8" font-size="8.5">抛出结论必提供 profiler 耗时与监控指标证明</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ 拓扑映射直觉：</text>
+        <text x="130" y="54" fill="#94a3b8" font-size="8.5">随时在白板上画出卡间物理连线（NVLink vs 网络）</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 线上战功沉淀：</text>
+        <text x="130" y="74" fill="#94a3b8" font-size="8.5">准备两个处理百万级真实掉卡雪崩的实战案例</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 关注工程 ROI：</text>
+        <text x="130" y="94" fill="#94a3b8" font-size="8.5">谈性能必谈显存、人力开发复杂度与硬件机时成本</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 工程师人味口吻：</text>
+        <text x="130" y="114" fill="#94a3b8" font-size="8.5">以并肩拆机器的战友姿态与面试官展开深度探讨</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">杜绝裸奔公式与八股背诵：提笔先算静态与动态显存账本，用真实的物理量纲与集群 MFU 击穿一切纸上谈兵。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">排障必须顺藤摸瓜：遇 NCCL 挂死绝不盲目重启，沿着“应用死锁 ➔ 慢节点 ➔ PFC 拥塞 ➔ 硬件掉卡”排查树直捣根因。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">万卡系统设计是物理与经济学的权衡：以 Rail-Optimized 拓扑为骨骼，以 3FS 异步快照为经脉，打造自愈、高效与平民化算力平台！</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-34" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-34" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-34" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-34" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-34" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-34" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-34" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-34" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-34)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="235" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#a855f7"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">VLLM V1 CORE ARCHITECTURE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      vLLM 生产级系统架构剖析与核心高阶加速技术全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      三层架构解耦 (Frontend/Engine/Worker) · Radix Tree 前缀缓存 · Piecewise CUDA Graph · 投机采样数学证明
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: APC TTFT -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">多轮追问 TTFT 降幅</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">90% ~ 99% (APC)</text>
+      </g>
+      <!-- Badge 2: CUDA Graph -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">CPU Launch 耗时</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">降低 20% ~ 45%</text>
+      </g>
+      <!-- Badge 3: Speculative Decoding -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">投机采样加速比</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">2.0x ~ 2.8x (无损)</text>
+      </g>
+      <!-- Badge 4: Architecture Evolution -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">架构跨越</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">V0 ➔ V1 Zero-Overhead</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-34)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">vLLM V1 生产架构全景解构</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Frontend ➔ Engine ➔ Worker 三层解耦执行流</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 三层架构分层实体 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="280" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">三层解耦与进程/线程边界</text>
+
+      <!-- Tier 1: Frontend -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="11" font-weight="700">1. Frontend 接入层 (API Server)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 暴露 OpenAI 兼容 RESTful / gRPC 接口，维护流式 SSE 长连接</text>
+        <text x="10" y="48" fill="#94a3b8" font-size="9">· 异步 FastAPI 线程池负责文本 Tokenize 与安全鉴权校验</text>
+      </g>
+
+      <!-- Tier 2: Engine -->
+      <g transform="translate(14, 110)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="11" font-weight="700">2. Engine 调度大脑 (LLMEngine / Scheduler)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 维护等待/运行/交换队列 (Waiting / Running / Swapped)</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9.5">· 核心管控双子星: `KVCacheManager` (请求视角逻辑块映射)</text>
+        <text x="10" y="62" fill="#cbd5e1" font-size="9.5">  与 `BlockAllocator` (底层显存页池分配与物理引用计数)</text>
+      </g>
+
+      <!-- Tier 3: Worker -->
+      <g transform="translate(14, 192)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="11" font-weight="700">3. Worker 执行层 (ModelRunner / GPU Kernels)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 对应单机多卡 TP 进程组 (Ray Worker 或多进程 IPC)</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9.5">· 调度 PagedAttention CUDA Kernel、FlashAttention-3 算子</text>
+        <text x="10" y="62" fill="#38bdf8" font-size="9" font-weight="600">· V1 架构突破: C++ 核心常驻，彻底拔除 Python 解释器 GIL 锁！</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: 内存管理双子星架构 -->
+    <g transform="translate(20, 375)">
+      <rect x="0" y="0" width="380" height="305" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">内存双子星职责划分与交互协议</text>
+
+      <g transform="translate(14, 38)">
+        <!-- KVCacheManager -->
+        <rect x="0" y="0" width="170" height="130" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="20" fill="#c084fc" font-size="10.5" font-weight="700">KVCacheManager</text>
+        <text x="10" y="38" fill="#cbd5e1" font-size="9.5">· 视角: 请求与序列上下文</text>
+        <text x="10" y="52" fill="#94a3b8" font-size="9">· 跟踪每个 Req 的逻辑块</text>
+        <text x="10" y="66" fill="#94a3b8" font-size="9">· 维护 Block 引用计数</text>
+        <text x="10" y="80" fill="#94a3b8" font-size="9">· 负责前缀匹配寻址</text>
+        <text x="10" y="96" fill="#34d399" font-size="9" font-weight="600">输出 Block Table 虚拟页表</text>
+        <text x="10" y="112" fill="#cbd5e1" font-size="8.5">（纯 CPU 数据结构，零显存）</text>
+
+        <!-- BlockAllocator -->
+        <g transform="translate(182, 0)">
+          <rect x="0" y="0" width="170" height="130" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+          <text x="10" y="20" fill="#34d399" font-size="10.5" font-weight="700">BlockAllocator</text>
+          <text x="10" y="38" fill="#cbd5e1" font-size="9.5">· 视角: 裸物理显存槽位</text>
+          <text x="10" y="52" fill="#94a3b8" font-size="9">· 维护 Free Blocks 空闲栈</text>
+          <text x="10" y="66" fill="#94a3b8" font-size="9">· 执行物理分配合并</text>
+          <text x="10" y="80" fill="#94a3b8" font-size="9">· O(1) 极速出入栈</text>
+          <text x="10" y="96" fill="#38bdf8" font-size="9" font-weight="600">物理显存池 (HBM Pool)</text>
+          <text x="10" y="112" fill="#cbd5e1" font-size="8.5">（真正承载 KV 张量数据）</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 185)">
+        <rect x="0" y="0" width="352" height="100" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">V1 架构性能飞跃真相：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">V0 版本的 Python 调度开销单步高达 3~5ms，严重侵蚀 Decode 延迟；</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9.5">V1 将调度器、分页管理与批次组装全量重构为 C++ 引擎，</text>
+        <text x="10" y="62" fill="#34d399" font-size="9.5" font-weight="700">单步 CPU 调度延迟断崖式暴降至 80 微秒（&lt; 0.08ms）！</text>
+        <text x="10" y="78" fill="#38bdf8" font-size="9">彻底消除了 CPU 成为吞吐瓶颈的千古顽疾。</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-34)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">缓存复用与 CPU 开销消除</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Radix Tree 前缀缓存 · Piecewise CUDA Graph</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: Radix Tree 前缀树结构 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="310" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Automatic Prefix Caching (APC) 与 Radix Tree</text>
+
+      <g transform="translate(14, 36)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 痛点: RAG 知识库与多轮对话中，大量的 System Prompt 与</text>
+        <text x="0" y="28" fill="#cbd5e1" font-size="10.5">  历史问答在每次请求中被反复做全量 Prefill，算力浪费高达 90%！</text>
+
+        <!-- Radix Tree Visualization -->
+        <g transform="translate(0, 36)">
+          <rect x="0" y="0" width="352" height="135" rx="6" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <!-- Root -->
+          <rect x="10" y="10" width="130" height="24" rx="3" fill="#0369a1"/>
+          <text x="16" y="26" fill="#fff" font-size="9" font-weight="700">Root: [System Prompt]</text>
+          <text x="150" y="26" fill="#34d399" font-size="9">Block #1,#2 (ref_count=3)</text>
+
+          <!-- Branch 1 -->
+          <path d="M 75 34 L 75 52" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-34)"/>
+          <rect x="25" y="55" width="140" height="24" rx="3" fill="#047857"/>
+          <text x="31" y="71" fill="#fff" font-size="9" font-weight="700">User A: [Doc 1 + Q1]</text>
+          <text x="175" y="71" fill="#cbd5e1" font-size="9">Block #3 (ref_count=1)</text>
+
+          <!-- Branch 2 -->
+          <path d="M 75 34 L 210 52" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan-34)"/>
+          <rect x="180" y="55" width="140" height="24" rx="3" fill="#7e22ce"/>
+          <text x="186" y="71" fill="#fff" font-size="9" font-weight="700">User B: [Doc 2 + Q2]</text>
+          <text x="186" y="92" fill="#cbd5e1" font-size="8.5">Block #4 (ref_count=2)</text>
+
+          <!-- Child of User B -->
+          <path d="M 250 80 L 250 100" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arrow-purple-34)"/>
+          <rect x="180" y="102" width="150" height="22" rx="3" fill="#9d174d"/>
+          <text x="186" y="117" fill="#fff" font-size="8.5">User B: [Follow-up Q3]</text>
+        </g>
+
+        <!-- APC Benefit -->
+        <g transform="translate(0, 180)">
+          <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">最长公共前缀命中收益：</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">新请求涌入时沿树检索，直接复用已分配好的物理 Block 显存地址！</text>
+          <text x="10" y="48" fill="#38bdf8" font-size="9.5" font-weight="600">多轮追问仅需 Prefill 最新追加的几个字，首字延迟 TTFT 缩短 95%！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 2.2: Piecewise CUDA Graph -->
+    <g transform="translate(20, 410)">
+      <rect x="0" y="0" width="380" height="270" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Piecewise CUDA Graph（分段计算图录制）</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 传统问题: 小 Batch Decode 阶段每步只需跑几百微秒，但 CPU</text>
+        <text x="0" y="28" fill="#cbd5e1" font-size="10.5">  发射几十个底层 Kernel 的开销就要 1ms，GPU 大量时间在空等！</text>
+        
+        <rect x="0" y="38" width="352" height="74" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="20" fill="#38bdf8" font-size="10.5" font-weight="700">CUDA Graph 录制机制：</text>
+        <text x="10" y="36" fill="#f0f9ff" font-size="9.5">将静态形状的全部 GEMM 与线性层操作录制为一张单指令硬件图；</text>
+        <text x="10" y="50" fill="#bae6fd" font-size="9.5">运行时 CPU 仅需发射 1 次 Launch 指令，GPU 自动串联执行全部算子！</text>
+        <text x="10" y="66" fill="#34d399" font-size="9" font-weight="600">单步 Launch 开销从 1200 微秒瞬间压缩至 &lt; 15 微秒！</text>
+
+        <g transform="translate(0, 122)">
+          <text x="0" y="14" fill="#fbbf24" font-size="10" font-weight="600">破解动态 Attention 难题（Piecewise 分段技巧）：</text>
+          <text x="0" y="28" fill="#94a3b8" font-size="9.5">动态长度的 PagedAttention 无法录进静态图，vLLM 将模型切为多段：</text>
+          <text x="0" y="42" fill="#94a3b8" font-size="9.5">“固定 GEMM (Graph) ➔ 动态 PagedAttention (Eager) ➔ 固定 GEMM (Graph)”</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-34)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">投机采样 (Speculative) 与无损证明</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Draft 快猜 + Target 验证 · 拒绝采样数学严格无损</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 投机采样流程图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="260" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">自回归串行时间死结的破局工作流</text>
+
+      <g transform="translate(14, 38)">
+        <!-- Step 1: Draft model -->
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">Step 1: Draft 小模型连续自回归预测 (快猜 K=4 步)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">使用同词表的轻量小模型（如 0.5B 或 Eagle）低成本极速吐出</text>
+        <text x="10" y="48" fill="#bae6fd" font-size="9">候选词序列: [Token 1, Token 2, Token 3, Token 4]</text>
+
+        <!-- Step 2: Target model parallel verification -->
+        <g transform="translate(0, 68)">
+          <rect x="0" y="0" width="352" height="68" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">Step 2: Target 目标大模型单步并行验证 (一次性前向)</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">将这 4 个 Token 作为长输入送进 70B 大模型，仅跑 1 次 GEMM 前向，</text>
+          <text x="10" y="48" fill="#f0fdf4" font-size="9.5">瞬间获取全部 4 个位置对应的真实条件概率分布 P_target(x)！</text>
+        </g>
+
+        <!-- Step 3: Rejection Sampling -->
+        <g transform="translate(0, 144)">
+          <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">Step 3: 拒绝采样（Rejection Sampling）判定</text>
+          <text x="10" y="34" fill="#cbd5e1" font-size="9.5">按接受概率 α = min(1, P_target/P_draft) 依序校验每个 Token，</text>
+          <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">若接受 3 个词，则 1 步大模型计算等效于串行生成了 4 个词！</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 严格数学证明与收益矩阵 -->
+    <g transform="translate(20, 355)">
+      <rect x="0" y="0" width="380" height="325" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">无损数学证明与加速比量化方程</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">拒绝采样的分布无损等价性数学推导：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">最终接受输出 Token 的边缘分布：</text>
+        <text x="10" y="48" fill="#f0fdf4" font-size="9.5">P(x) = P_draft(x) · min(1, P_target/P_draft) + (1 - α) · P_resample(x)</text>
+        <text x="10" y="64" fill="#38bdf8" font-size="9.5" font-weight="700">代数化简后 ≡ P_target(x)！在数学上完全保证 0 精度损失！</text>
+      </g>
+
+      <g transform="translate(14, 122)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5" font-weight="600">生产加速比理论模型：</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="9.5">Speedup = (1 - α^(K+1)) / ((1 - α) · (1 + c · K))</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="9.5">其中 α 为接受率，c 为 Draft 模型的耗时占比（如 5%~10%）。</text>
+      </g>
+
+      <g transform="translate(14, 180)">
+        <rect x="0" y="0" width="352" height="96" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">工业落地三大最佳实践场景：</text>
+        <text x="10" y="36" fill="#cbd5e1" font-size="9.5">1. 代码补全与语法生成: 确定性极高，接受率 α ≥ 85%，加速 2.5x！</text>
+        <text x="10" y="52" fill="#cbd5e1" font-size="9.5">2. 长文本总结与翻译: 接受率 α ≈ 75%，加速 2.0x；</text>
+        <text x="10" y="68" fill="#f87171" font-size="9.5">⚠ 开放式创意写作: 熵值过高导致接受率暴跌，可能引发负收益反噬。</text>
+        <text x="10" y="86" fill="#34d399" font-size="9" font-weight="600">架构决策: 建议结合业务请求类型进行动态自适应开启！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[架构演进]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">vLLM 的成功在于把操作系统成熟的虚拟化机制与现代硬件特性结合得浑然天成。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[零开销哲学]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">前缀缓存消灭重复计算，CUDA Graph 消灭发射开销，投机采样打破时间死结。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[数学守恒]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">投机采样以极小验证算力换取时间维度跨越，实现了速度跃迁与精度的完美统一。</text>
+    </g>
+  </g>
+</svg>

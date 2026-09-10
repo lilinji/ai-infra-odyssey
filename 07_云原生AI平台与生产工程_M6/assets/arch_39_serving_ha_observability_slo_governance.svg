@@ -1,0 +1,471 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-39" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="card-grad-left-39" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-39" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-39" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-39" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-39" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-39" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-39" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-39)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="280" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#22d3ee"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">AI SERVING HA &amp; SLO OBSERVABILITY</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      生产级 AI Serving 高可用、全栈可观测与 SLO 治理全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      从 GPU-Util 破除到语义黄金指标 · Prometheus+DCGM 四层可观测 · KEDA 队列/显存事件弹性伸缩 · 优雅停机长请求平滑排空
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="135" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.5"/>
+      <text x="12" y="20" fill="#94a3b8" font-size="10" font-weight="600">TTFT P99 TARGET</text>
+      <text x="12" y="38" fill="#38bdf8" font-size="16" font-weight="800">&lt; 800 ms</text>
+
+      <rect x="145" y="0" width="140" height="48" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+      <text x="157" y="20" fill="#94a3b8" font-size="10" font-weight="600">TPOT (DECODE)</text>
+      <text x="157" y="38" fill="#34d399" font-size="16" font-weight="800">&lt; 40 ms/Tkn</text>
+
+      <rect x="295" y="0" width="150" height="48" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="307" y="20" fill="#94a3b8" font-size="10" font-weight="600">KV WATERMARK SAFE</text>
+      <text x="307" y="38" fill="#c084fc" font-size="16" font-weight="800">85% Trigger</text>
+
+      <rect x="455" y="0" width="155" height="48" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="467" y="20" fill="#94a3b8" font-size="10" font-weight="600">IN-FLIGHT LOSS</text>
+      <text x="467" y="38" fill="#fbbf24" font-size="16" font-weight="800">0 (Zero Drop)</text>
+    </g>
+  </g>
+
+  <!-- ==================== MAIN CONTENT (3 COLUMNS) ==================== -->
+
+  <!-- ==================== COLUMN 1: LEFT CARD (x=60, y=140, w=420, h=700) ==================== -->
+  <g transform="translate(60, 140)">
+    <rect width="420" height="700" rx="12" fill="url(#card-grad-left-39)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="420" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 420 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#38bdf8"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">一、大模型 Serving 语义指标与断层</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">打破 nvidia-smi 假象 · 语义黄金四指标与硬件真饱和度</text>
+
+    <!-- Subcard 1.1: nvidia-smi GPU-Util 致命谎言 -->
+    <g transform="translate(15, 65)">
+      <rect width="390" height="185" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">1.1 nvidia-smi GPU-Util 的致命谎言与真指标</text>
+
+      <rect x="12" y="34" width="366" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <text x="20" y="49" fill="#f87171" font-size="9.5" font-weight="600">官方定义：采样周期内至少 1 个 Kernel 处于活跃时间占比</text>
+      <text x="20" y="66" fill="#94a3b8" font-size="9">H100 132个SM中仅1个SM在跑单Warp微核 ➔ 虚假上报 100% Util！</text>
+
+      <!-- Comparison Visual -->
+      <g transform="translate(12, 85)">
+        <rect x="0" y="0" width="178" height="88" rx="6" fill="#182234" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#f87171" font-size="10" font-weight="700">❌ 传统黑盒指标 (不可用)</text>
+        <text x="8" y="34" fill="#cbd5e1" font-size="9">• nvidia-smi GPU-Util: 98%</text>
+        <text x="8" y="50" fill="#64748b" font-size="8.5">（Decode小Batch空转盲目高）</text>
+        <text x="8" y="66" fill="#cbd5e1" font-size="9">• Pod CPU / Host Memory</text>
+        <text x="8" y="80" fill="#ef4444" font-size="8.5">无法感知排队雪崩与显存淘汰</text>
+
+        <rect x="188" y="0" width="178" height="88" rx="6" fill="#182234" stroke="#10b981" stroke-width="1"/>
+        <text x="196" y="16" fill="#34d399" font-size="10" font-weight="700">✅ 硬件真饱和度 (DCGM)</text>
+        <text x="196" y="34" fill="#cbd5e1" font-size="9">• DCGM_FI_PROF_SM_ACTIVE</text>
+        <text x="196" y="50" fill="#38bdf8" font-size="8.5">真实 SM 活跃周期占比（算力）</text>
+        <text x="196" y="66" fill="#cbd5e1" font-size="9">• DCGM_FI_PROF_DRAM_ACTIVE</text>
+        <text x="196" y="80" fill="#a855f7" font-size="8.5">HBM 访存带宽饱和度（吞吐）</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.2: 语义黄金四指标模型 -->
+    <g transform="translate(15, 262)">
+      <rect width="390" height="240" rx="8" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#0ea5e9" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">1.2 大模型推理生命周期与语义黄金四指标</text>
+
+      <!-- Lifecycle Trace Visual -->
+      <g transform="translate(12, 34)">
+        <!-- Step 1: Request Arrive -->
+        <rect x="0" y="0" width="95" height="42" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#f8fafc" font-size="9" font-weight="700">1. 请求到达</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">网关 ➔ 调度队列</text>
+
+        <line x1="95" y1="21" x2="115" y2="21" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-39)"/>
+
+        <!-- Step 2: Prefill Phase -->
+        <rect x="115" y="0" width="125" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="123" y="16" fill="#38bdf8" font-size="9" font-weight="700">2. Prefill (预填充)</text>
+        <text x="123" y="32" fill="#94a3b8" font-size="8.5">计算密集型并行处理</text>
+
+        <line x1="240" y1="21" x2="260" y2="21" stroke="#34d399" stroke-width="2" marker-end="url(#arrow-emerald-39)"/>
+
+        <!-- Step 3: Decode Loop -->
+        <rect x="260" y="0" width="106" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="268" y="16" fill="#34d399" font-size="9" font-weight="700">3. Decode 循环</text>
+        <text x="268" y="32" fill="#94a3b8" font-size="8.5">访存密集型自回归</text>
+      </g>
+
+      <!-- 4 Metric Cards -->
+      <g transform="translate(12, 86)">
+        <rect x="0" y="0" width="178" height="66" rx="5" fill="#182234" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="10" font-weight="700">TTFT (Time To First Token)</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">首字时延 = 排队时延 + Prefill 耗时</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8.5">决定产品的交互敏捷“跟手感”</text>
+        <text x="8" y="60" fill="#38bdf8" font-size="8" font-weight="600">SLA: P90&lt;400ms, P99&lt;1000ms</text>
+
+        <rect x="188" y="0" width="178" height="66" rx="5" fill="#182234" stroke="#334155" stroke-width="1"/>
+        <text x="196" y="16" fill="#34d399" font-size="10" font-weight="700">TPOT (Time Per Output Tkn)</text>
+        <text x="196" y="32" fill="#94a3b8" font-size="8.5">单字时延 = Decode耗时 / 生成Token数</text>
+        <text x="196" y="48" fill="#cbd5e1" font-size="8.5">决定阅读流利度（人眼极限 50ms）</text>
+        <text x="196" y="60" fill="#34d399" font-size="8" font-weight="600">SLA: Mean&lt;35ms, P99&lt;60ms</text>
+      </g>
+
+      <g transform="translate(12, 160)">
+        <rect x="0" y="0" width="178" height="68" rx="5" fill="#182234" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="10" font-weight="700">ITL (Inter-Token Latency)</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">Token 间瞬时抖动：Token_i - Token_{i-1}</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8.5">由抢占、动态 Batch 加入引起卡顿</text>
+        <text x="8" y="62" fill="#fbbf24" font-size="8" font-weight="600">标准差需 &lt; 15ms (平滑防卡顿)</text>
+
+        <rect x="188" y="0" width="178" height="68" rx="5" fill="#182234" stroke="#334155" stroke-width="1"/>
+        <text x="196" y="16" fill="#c084fc" font-size="10" font-weight="700">E2E Latency (端到端总时延)</text>
+        <text x="196" y="32" fill="#94a3b8" font-size="8.5">E2E = TTFT + (N_out - 1) × TPOT</text>
+        <text x="196" y="48" fill="#cbd5e1" font-size="8.5">长文本生成的核心耗时决定因素</text>
+        <text x="196" y="62" fill="#c084fc" font-size="8" font-weight="600">Agent/代码补全超时控制红线</text>
+      </g>
+    </g>
+
+    <!-- Subcard 1.3: 推理引擎核心运行时指标 -->
+    <g transform="translate(15, 514)">
+      <rect width="390" height="170" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect width="390" height="26" rx="8" fill="#a855f7" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#c084fc"/>
+      <text x="28" y="17" fill="#e9d5ff" font-size="11" font-weight="700">1.3 推理引擎内部运行时关键暴露指标 (vLLM)</text>
+
+      <g transform="translate(12, 34)">
+        <rect x="0" y="0" width="366" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#c084fc" font-size="9.5" font-weight="700">vllm:num_requests_waiting (排队请求数)</text>
+        <text x="10" y="30" fill="#94a3b8" font-size="8.5">最强前置告警源！大于 0 说明并发超载，必须立即触发水平扩容</text>
+      </g>
+
+      <g transform="translate(12, 78)">
+        <rect x="0" y="0" width="366" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#38bdf8" font-size="9.5" font-weight="700">vllm:gpu_cache_usage_factor (KV 缓存水位)</text>
+        <text x="10" y="30" fill="#94a3b8" font-size="8.5">显存生命线：超过 85% 即将驱逐（Eviction），引发剧烈重算开销</text>
+      </g>
+
+      <g transform="translate(12, 122)">
+        <rect x="0" y="0" width="366" height="38" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">vllm:num_preemptions_total (累积抢占次数)</text>
+        <text x="10" y="30" fill="#94a3b8" font-size="8.5">SLO 崩盘指示器：一旦出现非零增长，说明部分长请求已被强制打断</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: CENTER CARD (x=500, y=140, w=460, h=700) ==================== -->
+  <g transform="translate(500, 140)">
+    <rect width="460" height="700" rx="12" fill="url(#card-grad-mid-39)" stroke="#0ea5e9" stroke-width="1.8"/>
+    <rect width="460" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 460 50" stroke="#0ea5e9" stroke-width="1.2"/>
+    <circle cx="24" cy="25" r="5" fill="#0ea5e9"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">二、全栈可观测拓扑与 KEDA 弹性伸缩闭环</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">Prometheus/DCGM 联动采集 · 基于队列/显存事件的自动扩缩容闭环</text>
+
+    <!-- Subcard 2.1: 4-Layer Observability Architecture -->
+    <g transform="translate(15, 65)">
+      <rect width="430" height="235" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#38bdf8" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#7dd3fc" font-size="11" font-weight="700">2.1 AI Serving 四层可观测数据流架构 (Data Flow)</text>
+
+      <!-- Layer 1: Ingress Gateway -->
+      <g transform="translate(12, 34)">
+        <rect width="406" height="42" rx="5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <rect x="0" y="0" width="85" height="42" rx="5" fill="#334155"/>
+        <text x="10" y="25" fill="#f8fafc" font-size="9.5" font-weight="700">接入网关层</text>
+        <text x="96" y="18" fill="#38bdf8" font-size="9" font-weight="600">Envoy / APISIX Ingress Gateway</text>
+        <text x="96" y="33" fill="#94a3b8" font-size="8.5">观测指标：QPS、HTTP 429 拒保率、连接数、请求 Body 尺寸分布</text>
+      </g>
+
+      <!-- Arrow down -->
+      <line x1="227" y1="80" x2="227" y2="88" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan-39)"/>
+
+      <!-- Layer 2: Model Serving Pod -->
+      <g transform="translate(12, 90)">
+        <rect width="406" height="46" rx="5" fill="#1e293b" stroke="#0ea5e9" stroke-width="1.2"/>
+        <rect x="0" y="0" width="85" height="46" rx="5" fill="#0369a1"/>
+        <text x="10" y="27" fill="#f8fafc" font-size="9.5" font-weight="700">推理引擎层</text>
+        <text x="96" y="18" fill="#7dd3fc" font-size="9" font-weight="600">vLLM / SGLang / TensorRT-LLM Pod (Prometheus Exporter)</text>
+        <text x="96" y="32" fill="#cbd5e1" font-size="8.5">TTFT/TPOT 直方图、num_requests_waiting、gpu_cache_usage_factor</text>
+        <text x="96" y="43" fill="#a855f7" font-size="8">OpenTelemetry 分布式链路追踪 Trace Context 逐级传递</text>
+      </g>
+
+      <!-- Arrow down -->
+      <line x1="227" y1="140" x2="227" y2="148" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-emerald-39)"/>
+
+      <!-- Layer 3: Hardware & Node -->
+      <g transform="translate(12, 150)">
+        <rect width="406" height="44" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <rect x="0" y="0" width="85" height="44" rx="5" fill="#047857"/>
+        <text x="10" y="26" fill="#f8fafc" font-size="9.5" font-weight="700">硬件驱动层</text>
+        <text x="96" y="18" fill="#34d399" font-size="9" font-weight="600">NVIDIA dcgm-exporter (DaemonSet)</text>
+        <text x="96" y="33" fill="#94a3b8" font-size="8.5">DCGM_FI_PROF_SM_ACTIVE, DRAM_ACTIVE, PCIe/NVLink 吞吐, Xid 故障码</text>
+      </g>
+
+      <!-- Layer 4: Monitoring Aggregation -->
+      <g transform="translate(12, 200)">
+        <rect width="406" height="26" rx="4" fill="#182234" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="17" fill="#c084fc" font-size="9" font-weight="700">统一聚合存储：</text>
+        <text x="80" y="17" fill="#cbd5e1" font-size="8.5">VictoriaMetrics / Prometheus ➔ Grafana 大盘 ➔ Alertmanager</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.2: KEDA 弹性伸缩机制 -->
+    <g transform="translate(15, 312)">
+      <rect width="430" height="230" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#10b981" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#34d399"/>
+      <text x="28" y="17" fill="#a7f3d0" font-size="11" font-weight="700">2.2 KEDA 事件驱动自动伸缩闭环 (Event-Driven Autoscaling)</text>
+
+      <!-- Architecture schematic -->
+      <g transform="translate(12, 34)">
+        <!-- Trigger Metric -->
+        <rect x="0" y="0" width="130" height="56" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">Trigger 1: 队列等待</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">avg(waiting) &gt; 5 req</text>
+        <text x="8" y="48" fill="#64748b" font-size="8">瞬时峰值极速响应</text>
+
+        <rect x="138" y="0" width="130" height="56" rx="5" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(138,0)" fill="#c084fc" font-size="9" font-weight="700">Trigger 2: KV 水位</text>
+        <text x="8" y="32" transform="translate(138,0)" fill="#cbd5e1" font-size="8.5">cache_factor &gt; 0.82</text>
+        <text x="8" y="48" transform="translate(138,0)" fill="#64748b" font-size="8">防驱逐重算雪崩</text>
+
+        <!-- KEDA Operator -->
+        <rect x="276" y="0" width="130" height="56" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" transform="translate(276,0)" fill="#34d399" font-size="9" font-weight="700">KEDA Controller</text>
+        <text x="8" y="32" transform="translate(276,0)" fill="#cbd5e1" font-size="8.5">ScaledObject 评估</text>
+        <text x="8" y="48" transform="translate(276,0)" fill="#34d399" font-size="8">驱动 K8s HPA 扩容</text>
+      </g>
+
+      <!-- Scaling Speed & Cold-start Problem -->
+      <g transform="translate(12, 100)">
+        <rect x="0" y="0" width="406" height="118" rx="5" fill="#182234" stroke="#334155" stroke-width="1"/>
+        <text x="10" y="16" fill="#fbbf24" font-size="9.5" font-weight="700">⚡ 大模型伸缩的“冷启动致命延迟”与解法</text>
+        
+        <text x="10" y="34" fill="#cbd5e1" font-size="8.5">• 传统无盘冷拉取：140GB Safetensors 下载 + 初始化耗时 &gt; 8 分钟（早被冲垮）</text>
+        <text x="10" y="52" fill="#38bdf8" font-size="8.5">• 解法一：常驻预热缓冲池（Standby Warm Pool）秒级迎战突发流量</text>
+        <text x="10" y="70" fill="#34d399" font-size="8.5">• 解法二：P2P 流式镜像与本地 NVMe 共享缓存（Dragonfly / JuiceFS 纳秒投递）</text>
+        <text x="10" y="88" fill="#c084fc" font-size="8.5">• 解法三：缩容平滑冷却期（Stabilization Window: 300s），防止抖动反复震荡</text>
+        <text x="10" y="106" fill="#94a3b8" font-size="8">生产经验：扩容步长由慢到快（Exponential），缩容设置单步最大淘汰比例 20%</text>
+      </g>
+    </g>
+
+    <!-- Subcard 2.3: 自适应背压阻断体系 -->
+    <g transform="translate(15, 554)">
+      <rect width="430" height="130" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="430" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">2.3 网关自适应背压与防熔断分级控制 (Adaptive Backpressure)</text>
+
+      <g transform="translate(12, 34)">
+        <rect x="0" y="0" width="95" height="84" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">安全区 (&lt;80%)</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8">全量放行</text>
+        <text x="8" y="48" fill="#cbd5e1" font-size="8">正常并发调度</text>
+        <text x="8" y="64" fill="#64748b" font-size="7.5">无任何排队限制</text>
+
+        <rect x="103" y="0" width="95" height="84" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(103,0)" fill="#38bdf8" font-size="9" font-weight="700">预警区 (80-90%)</text>
+        <text x="8" y="32" transform="translate(103,0)" fill="#94a3b8" font-size="8">触发 KEDA 扩容</text>
+        <text x="8" y="48" transform="translate(103,0)" fill="#cbd5e1" font-size="8">短上下文优先</text>
+        <text x="8" y="64" transform="translate(103,0)" fill="#64748b" font-size="7.5">限制长文本接入</text>
+
+        <rect x="206" y="0" width="95" height="84" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(206,0)" fill="#fbbf24" font-size="9" font-weight="700">背压区 (90-95%)</text>
+        <text x="8" y="32" transform="translate(206,0)" fill="#94a3b8" font-size="8">网关排队等待</text>
+        <text x="8" y="48" transform="translate(206,0)" fill="#cbd5e1" font-size="8">自适应滑动窗口</text>
+        <text x="8" y="64" transform="translate(206,0)" fill="#fbbf24" font-size="7.5">延缓新连接建立</text>
+
+        <rect x="309" y="0" width="97" height="84" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="1"/>
+        <text x="8" y="16" transform="translate(309,0)" fill="#f87171" font-size="9" font-weight="700">熔断区 (&gt;95%)</text>
+        <text x="8" y="32" transform="translate(309,0)" fill="#f87171" font-size="8">HTTP 429 拒保</text>
+        <text x="8" y="48" transform="translate(309,0)" fill="#cbd5e1" font-size="8">宁损新单，绝不</text>
+        <text x="8" y="64" transform="translate(309,0)" fill="#fca5a5" font-size="7.5">腰斩现有长请求！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: RIGHT CARD (x=980, y=140, w=400, h=700) ==================== -->
+  <g transform="translate(980, 140)">
+    <rect width="400" height="700" rx="12" fill="url(#card-grad-right-39)" stroke="#334155" stroke-width="1.5"/>
+    <rect width="400" height="50" rx="12" fill="#1e293b" fill-opacity="0.8"/>
+    <path d="M 0 50 L 400 50" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="25" r="5" fill="#fbbf24"/>
+    <text x="38" y="29" fill="#f8fafc" font-size="15" font-weight="700">三、高可用生命周期与故障自愈</text>
+    <text x="38" y="44" fill="#64748b" font-size="10">优雅停机长请求排空 · Xid 自动拉黑隔离 · PDB 预算</text>
+
+    <!-- Subcard 3.1: 优雅停机全流程 -->
+    <g transform="translate(15, 65)">
+      <rect width="370" height="235" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#fbbf24" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#fbbf24"/>
+      <text x="28" y="17" fill="#fde68a" font-size="11" font-weight="700">3.1 长文本无损平滑优雅停机 (Graceful Drain)</text>
+
+      <!-- Steps in graceful termination -->
+      <g transform="translate(10, 34)">
+        <rect x="0" y="0" width="350" height="42" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+        <text x="8" y="16" fill="#fbbf24" font-size="9" font-weight="700">Step 1: K8s 发出删除指令 ➔ 标记 Terminating</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">立即将 Pod 从 EndpointSlice 摘除，新请求不再路由进本实例</text>
+      </g>
+
+      <g transform="translate(10, 82)">
+        <rect x="0" y="0" width="350" height="42" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="8" y="16" fill="#38bdf8" font-size="9" font-weight="700">Step 2: 执行 PreStop Hook 脚本</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">向推理服务发送 /drain 请求，拒绝新任务，允许在途长文本继续生成</text>
+      </g>
+
+      <g transform="translate(10, 130)">
+        <rect x="0" y="0" width="350" height="42" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">Step 3: 关键配置：超长宽限期 (120s~300s)</text>
+        <text x="8" y="32" fill="#cbd5e1" font-size="8.5">terminationGracePeriodSeconds: 180 (防 K8s 默认 30s 粗暴 SIGKILL)</text>
+      </g>
+
+      <g transform="translate(10, 178)">
+        <rect x="0" y="0" width="350" height="46" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+        <text x="8" y="16" fill="#c084fc" font-size="9" font-weight="700">Step 4: 零残余排空完毕 ➔ 自主正常退出 (Exit 0)</text>
+        <text x="8" y="32" fill="#94a3b8" font-size="8.5">在途请求全部安全输出最后一个 Token，用户连接完美收尾无感知</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.2: Xid 故障检测与节点自动隔离 -->
+    <g transform="translate(15, 312)">
+      <rect width="370" height="195" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#ef4444" fill-opacity="0.15"/>
+      <circle cx="16" cy="13" r="4" fill="#f87171"/>
+      <text x="28" y="17" fill="#fca5a5" font-size="11" font-weight="700">3.2 Xid 硬件致命故障与秒级自动隔离闭环</text>
+
+      <!-- Table of Fatal Xid Errors -->
+      <g transform="translate(10, 32)">
+        <rect width="350" height="24" fill="#1e293b" rx="3"/>
+        <text x="8" y="16" fill="#94a3b8" font-size="8.5" font-weight="700">Xid 故障码</text>
+        <text x="90" y="16" fill="#94a3b8" font-size="8.5" font-weight="700">硬件失效类型</text>
+        <text x="240" y="16" fill="#94a3b8" font-size="8.5" font-weight="700">治理动作</text>
+
+        <text x="8" y="40" fill="#f87171" font-size="8.5" font-weight="700">Xid 31/45</text>
+        <text x="90" y="40" fill="#cbd5e1" font-size="8.5">GPU 硬件掉卡 / 掉电</text>
+        <text x="240" y="40" fill="#f87171" font-size="8.5">立即封锁并驱逐</text>
+
+        <text x="8" y="58" fill="#f87171" font-size="8.5" font-weight="700">Xid 43/62</text>
+        <text x="90" y="58" fill="#cbd5e1" font-size="8.5">NVLink / PCIe 致命错误</text>
+        <text x="240" y="58" fill="#fbbf24" font-size="8.5">Cordon + 维修流程</text>
+
+        <text x="8" y="76" fill="#fbbf24" font-size="8.5" font-weight="700">Xid 79</text>
+        <text x="90" y="76" fill="#cbd5e1" font-size="8.5">GPU 掉卡 (Fallen off bus)</text>
+        <text x="240" y="76" fill="#f87171" font-size="8.5">主机硬重启重插拔</text>
+
+        <text x="8" y="94" fill="#38bdf8" font-size="8.5" font-weight="700">Xid 94/95</text>
+        <text x="90" y="94" fill="#cbd5e1" font-size="8.5">不可纠正 ECC 显存翻转</text>
+        <text x="240" y="94" fill="#38bdf8" font-size="8.5">单卡重启重置 (Reset)</text>
+      </g>
+
+      <!-- Auto-Cordon Loop -->
+      <g transform="translate(10, 136)">
+        <rect width="350" height="48" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+        <text x="8" y="16" fill="#34d399" font-size="9" font-weight="700">自动化闭环流水线：</text>
+        <text x="8" y="31" fill="#cbd5e1" font-size="8.5">Node-Problem-Detector 捕获 ➔ 触发 Custom Controller</text>
+        <text x="8" y="44" fill="#fca5a5" font-size="8">kubectl cordon &amp; drain ➔ 阻止新 Pod 调度至故障坏卡节点</text>
+      </g>
+    </g>
+
+    <!-- Subcard 3.3: 生产部署防护 Checklist -->
+    <g transform="translate(15, 518)">
+      <rect width="370" height="166" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2"/>
+      <rect width="370" height="26" rx="8" fill="#334155" fill-opacity="0.3"/>
+      <circle cx="16" cy="13" r="4" fill="#38bdf8"/>
+      <text x="28" y="17" fill="#cbd5e1" font-size="11" font-weight="700">3.3 生产级 Serving 稳定性防线 Checklist</text>
+
+      <g transform="translate(12, 36)">
+        <text x="0" y="14" fill="#34d399" font-size="9" font-weight="700">☑ PDB 防破坏预算：</text>
+        <text x="108" y="14" fill="#94a3b8" font-size="8.5">minAvailable: 80%，防节点维护时误杀服务</text>
+
+        <text x="0" y="34" fill="#34d399" font-size="9" font-weight="700">☑ Readiness 探针：</text>
+        <text x="108" y="34" fill="#94a3b8" font-size="8.5">严禁简单 ping，必须检测模型权重加载完成与预热</text>
+
+        <text x="0" y="54" fill="#34d399" font-size="9" font-weight="700">☑ Liveness 探针：</text>
+        <text x="108" y="54" fill="#94a3b8" font-size="8.5">检测 CUDA 死锁，超时周期必须 &gt; TTFT 极限时间</text>
+
+        <text x="0" y="74" fill="#34d399" font-size="9" font-weight="700">☑ 亲和性拓扑：</text>
+        <text x="108" y="74" fill="#94a3b8" font-size="8.5">TP 实例强制同节点调度，跨机 PP/EP 绑定低跳数交换机</text>
+
+        <text x="0" y="94" fill="#34d399" font-size="9" font-weight="700">☑ 客户端自适应：</text>
+        <text x="108" y="94" fill="#94a3b8" font-size="8.5">带抖动的指数退避重试（Exponential Backoff Jitter）</text>
+
+        <text x="0" y="114" fill="#34d399" font-size="9" font-weight="700">☑ 显存静态预分配：</text>
+        <text x="108" y="114" fill="#94a3b8" font-size="8.5">gpu_memory_utilization 设为 0.90，留 10% 防碎片化</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 860)">
+    <rect width="1320" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    
+    <g transform="translate(20, 14)">
+      <circle cx="8" cy="8" r="4" fill="#ef4444"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律一：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">绝不以 nvidia-smi 论英雄：Decode 阶段 GPU-Util 100% 掩盖不了 Tensor Core 饥饿，以 TTFT、TPOT 和 DCGM SM_Active 为唯一真理。</text>
+    </g>
+
+    <g transform="translate(20, 32)">
+      <circle cx="8" cy="8" r="4" fill="#38bdf8"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律二：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">扩缩容必须基于队列事件：传统 CPU/GPU 利用率伸缩必死无疑，基于 KEDA 的 waiting requests 和 KV 水位才能在排队雪崩前完成拉起。</text>
+    </g>
+
+    <g transform="translate(20, 50)">
+      <circle cx="8" cy="8" r="4" fill="#34d399"/>
+      <text x="20" y="12" fill="#f8fafc" font-size="11" font-weight="700">Ringi 工程师铁律三：</text>
+      <text x="135" y="12" fill="#94a3b8" font-size="10.5">长流式输出必须长优雅宽限：设置 180s+ terminationGracePeriodSeconds 与 PreStop 排空，严禁 SIGKILL 造成正在打字的用户连接腰斩。</text>
+    </g>
+  </g>
+</svg>

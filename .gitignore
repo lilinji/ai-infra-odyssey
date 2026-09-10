@@ -1,0 +1,57 @@
+# User-specified exclusions
+00教学大纲/
+prompt/
+.wechatsync-imgserver.mjs
+AGENTS.md
+
+# Draft covers
+封面一.png
+封面二.png
+
+# Redundant backup directories and duplicate assets
+**/_backup_orig/
+**/assets/images/
+**/*@2x.png
+**/assets/README.md
+**/assets/code/
+**/assets/gifs/
+**/assets/videos/
+**/assets/ip_character/
+**/assets/diagrams/
+
+# Root assets directory: only keep referenced images
+/assets/*
+!/assets/ai_infra_master_architecture.svg
+!/assets/book_cover.png
+
+# Python & Temporary files
+*.pyc
+__pycache__/
+scratch/
+.DS_Store
+Thumbs.db
+
+
+# Unreferenced draft / intermediate images
+01_性能工程与系统前置_M0/assets/ringi_10_cluster_capacity_planning_warroom.png
+01_性能工程与系统前置_M0/assets/ringi_10_memory_four_ledgers_reservoir.png
+01_性能工程与系统前置_M0/assets/ringi_10_roofline_decision_theater.png
+01_性能工程与系统前置_M0/assets/ringi_11_profiler_quad_panel.png
+01_性能工程与系统前置_M0/assets/ringi_ai_infra_engine.png
+01_性能工程与系统前置_M0/assets/ringi_decoder_block.png
+01_性能工程与系统前置_M0/assets/ringi_decoder_block_*.jpg
+01_性能工程与系统前置_M0/assets/ringi_ffn_swiglu.png
+01_性能工程与系统前置_M0/assets/ringi_kv_cache.png
+01_性能工程与系统前置_M0/assets/ringi_kv_cache_*.jpg
+01_性能工程与系统前置_M0/assets/ringi_multi_head_gqa.png
+01_性能工程与系统前置_M0/assets/ringi_residual_highway.png
+01_性能工程与系统前置_M0/assets/ringi_rope_position.png
+01_性能工程与系统前置_M0/assets/ringi_self_attention.png
+01_性能工程与系统前置_M0/assets/ringi_self_attention_*.jpg
+01_性能工程与系统前置_M0/assets/ringi_transformer_overview.png
+01_性能工程与系统前置_M0/assets/ringi_transformer_overview_*.jpg
+07_云原生AI平台与生产工程_M6/assets/ringi_40_overview.png
+08_Post-Training与相邻Infra_M7/assets/ringi_41_ppo_memory_avalanche.png
+08_Post-Training与相邻Infra_M7/assets/ringi_42_rag_sandbox_bottleneck.png
+08_Post-Training与相邻Infra_M7/assets/ringi_43_heterogeneous_adaptation_bottleneck.png
+08_Post-Training与相邻Infra_M7/assets/ringi_44_whiteboard_system_design.png

@@ -1,0 +1,333 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 960" width="1440" height="960" style="background:#0b0f19; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Grid -->
+    <pattern id="bg-grid-35" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <!-- Card Gradients -->
+    <linearGradient id="card-grad-left-35" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="card-grad-mid-35" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right-35" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="arrow-cyan-35" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-purple-35" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrow-emerald-35" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-amber-35" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1440" height="960" fill="#0b0f19"/>
+  <rect width="1440" height="960" fill="url(#bg-grid-35)"/>
+
+  <!-- ==================== TOP HEADER ==================== -->
+  <g transform="translate(60, 40)">
+    <!-- Top Super-Badge -->
+    <rect x="0" y="0" width="250" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4" fill="#38bdf8"/>
+    <text x="24" y="16" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1">PREFILL-DECODE DISAGGREGATION</text>
+
+    <!-- Main Title -->
+    <text x="0" y="56" fill="#f8fafc" font-size="25" font-weight="800" letter-spacing="-0.5">
+      分布式推理并行拓扑与 PD 分离架构（Disaggregation）全景架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="80" fill="#64748b" font-size="13" font-weight="400">
+      TP/PP/DP/EP 推理延迟边界 · P/D 算力显存异构解耦 · 分布式 KV RDMA 传输 · Mooncake 工业落地
+    </text>
+
+    <!-- KPI Metric Badges (Top Right) -->
+    <g transform="translate(730, 8)">
+      <!-- Badge 1: TPOT Stability -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#34d399" font-size="10" font-weight="600">P99 TPOT 改善</text>
+        <text x="12" y="42" fill="#f0fdf4" font-size="14" font-weight="700">长尾压制 &gt; 70%</text>
+      </g>
+      <!-- Badge 2: Cost Saving -->
+      <g transform="translate(150, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#38bdf8" font-size="10" font-weight="600">异构硬件成本节省</text>
+        <text x="12" y="42" fill="#f0f9ff" font-size="14" font-weight="700">降低 35% ~ 50%</text>
+      </g>
+      <!-- Badge 3: KV RDMA Bandwidth -->
+      <g transform="translate(300, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#c084fc" font-size="10" font-weight="600">KV RDMA 网络</text>
+        <text x="12" y="42" fill="#faf5ff" font-size="14" font-weight="700">400 Gbps RoCE/IB</text>
+      </g>
+      <!-- Badge 4: Ratio -->
+      <g transform="translate(450, 0)">
+        <rect x="0" y="0" width="140" height="54" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="12" y="20" fill="#fbbf24" font-size="10" font-weight="600">P : D 节点配比</text>
+        <text x="12" y="42" fill="#fefce8" font-size="14" font-weight="700">1:3 ~ 1:5 (典型)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== THREE COLUMN CARDS ==================== -->
+
+  <!-- CARD 1: LEFT COLUMN (X: 60, W: 420, H: 710) -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-left-35)" stroke="#0284c7" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#0369a1" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#38bdf8" font-size="16" font-weight="800">1</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">分布式推理四大并行延迟边界</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">TP / PP / DP / EP 在推理中的硬件延迟刚性制约</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 1.1: 四大拓扑矩阵拆解 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="330" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">四大并行拓扑在在线推理中的特性</text>
+
+      <!-- TP -->
+      <g transform="translate(14, 36)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">1. 张量并行 (TP, Tensor Parallelism): 机内唯一首选</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 通信频次极高: 每 Transformer Block 两次 AllReduce！</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">· 物理铁律: 必须锁死在单机 8 卡 900 GB/s NVLink 内！</text>
+      </g>
+
+      <!-- PP -->
+      <g transform="translate(14, 110)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">2. 流水线并行 (PP, Pipeline): 在线推理慎用！</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 在线单请求无法做微批次重叠，气泡率接近 100%！</text>
+        <text x="10" y="48" fill="#f87171" font-size="9.5">· 导致首字延迟 TTFT 呈 Stage 数倍线性翻倍暴增！</text>
+      </g>
+
+      <!-- DP -->
+      <g transform="translate(14, 184)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">3. 数据并行 (DP, Data Parallelism): 线性水平扩展</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 各推理实例独立部署，0 运行时跨机通信，靠网关负载均衡</text>
+        <text x="10" y="48" fill="#a7f3d0" font-size="9">· 是集群 Scale-Out 增加整体 QPS 吞吐的标准范式</text>
+      </g>
+
+      <!-- EP -->
+      <g transform="translate(14, 252)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">4. 专家并行 (EP, Expert Parallelism): MoE 专用</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 每个 Token 跨卡分发，依赖 2 次 All-to-All 极速路由；</text>
+        <text x="10" y="48" fill="#bae6fd" font-size="9">· 跨机部署必须依靠 DeepEP 等硬件级 RDMA 压制延迟</text>
+      </g>
+    </g>
+
+    <!-- Module 1.2: 为什么传统混跑拓扑被锁死？ -->
+    <g transform="translate(20, 425)">
+      <rect x="0" y="0" width="380" height="255" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#38bdf8" font-size="12" font-weight="700">混跑架构的“拓扑锁死”僵局</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 在传统架构中，单台 8 卡机器必须同时承载 P 与 D：</text>
+        <text x="0" y="30" fill="#94a3b8" font-size="10">为了缩短长 Prompt 的 Prefill 耗时，必须设 TP=8；</text>
+        <text x="0" y="46" fill="#94a3b8" font-size="10">但 TP=8 意味着 Decode 阶段每吐 1 个词都要在 8 卡间触发 2 次</text>
+        <text x="0" y="60" fill="#94a3b8" font-size="10">AllReduce 通信，在小 Batch 下通信开销反而高于计算！</text>
+
+        <rect x="0" y="78" width="352" height="66" rx="4" fill="#1e293b" stroke="#ef4444" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#f87171" font-size="10.5" font-weight="700">拓扑死局根源：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">P 节点渴望高 TP 榨干算力，D 节点渴望低 TP 规避通信；</text>
+        <text x="10" y="48" fill="#f87171" font-size="9.5">混跑让两阶段被迫妥协在同一个次优并行度上，两败俱伤！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 2: CENTER COLUMN (X: 510, W: 420, H: 710) -->
+  <g transform="translate(510, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-mid-35)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.9"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#7e22ce" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#c084fc" font-size="16" font-weight="800">2</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">PD 分离物理隔离与异构解耦</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">Prefill 节点池 vs Decode 节点池 · 异构算力显存匹配</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 2.1: PD 分离集群物理拓扑图 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="340" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">Splitwise / Mooncake 异构解耦拓扑</text>
+
+      <!-- Prefill Pool (P-Nodes) -->
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="165" height="150" rx="6" fill="#1e293b" stroke="#0284c7" stroke-width="1"/>
+        <text x="10" y="20" fill="#38bdf8" font-size="11" font-weight="700">Prefill 节点池 (P-Pool)</text>
+        <text x="10" y="38" fill="#cbd5e1" font-size="9.5">· 目标: 极致低 TTFT</text>
+        <text x="10" y="52" fill="#cbd5e1" font-size="9.5">· 芯片选型: 高算力密度</text>
+        <text x="10" y="66" fill="#94a3b8" font-size="9">  NVIDIA H100 / 910B</text>
+        <text x="10" y="82" fill="#cbd5e1" font-size="9.5">· 并行策略: TP=8 (跑满)</text>
+        <text x="10" y="98" fill="#34d399" font-size="9.5" font-weight="600">· 特点: 算完即移交</text>
+        <text x="10" y="114" fill="#94a3b8" font-size="9">  本地仅保留临时显存</text>
+        <text x="10" y="132" fill="#38bdf8" font-size="9.5" font-weight="700">Compute-Bound 专属</text>
+      </g>
+
+      <!-- Decode Pool (D-Nodes) -->
+      <g transform="translate(195, 38)">
+        <rect x="0" y="0" width="170" height="150" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+        <text x="10" y="20" fill="#34d399" font-size="11" font-weight="700">Decode 节点池 (D-Pool)</text>
+        <text x="10" y="38" fill="#cbd5e1" font-size="9.5">· 目标: 极致吞吐与平稳 TPOT</text>
+        <text x="10" y="52" fill="#cbd5e1" font-size="9.5">· 芯片选型: 高显存/高带宽</text>
+        <text x="10" y="66" fill="#94a3b8" font-size="9">  NVIDIA H20 / A100 / L40S</text>
+        <text x="10" y="82" fill="#cbd5e1" font-size="9.5">· 并行策略: TP=1 或 TP=2</text>
+        <text x="10" y="98" fill="#34d399" font-size="9.5" font-weight="600">· 特点: 全局大容量 KV 池</text>
+        <text x="10" y="114" fill="#94a3b8" font-size="9">  万级并发流式生成</text>
+        <text x="10" y="132" fill="#34d399" font-size="9.5" font-weight="700">Memory-Bound 专属</text>
+      </g>
+
+      <!-- RDMA Bridge in the middle -->
+      <g transform="translate(14, 200)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+        <text x="10" y="18" fill="#c084fc" font-size="10.5" font-weight="700">中间纽带: GPUDirect RDMA 高速传输总线</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">P 节点产出的 KV Cache 绕过 CPU，直接通过 400G RoCE/IB</text>
+        <text x="10" y="48" fill="#38bdf8" font-size="9.5" font-weight="600">网络写入 D 节点的 GPU HBM 显存物理块中！</text>
+      </g>
+
+      <g transform="translate(14, 272)">
+        <rect x="0" y="0" width="352" height="54" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="8" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">异构成本奇迹：</text>
+        <text x="8" y="34" fill="#cbd5e1" font-size="9.5">不必为全部节点都买昂贵的 H100！</text>
+        <text x="8" y="48" fill="#34d399" font-size="9.5" font-weight="600">P:D 节点按 1:4 异构配比，集群总资本支出 (CapEx) 狂降 40%！</text>
+      </g>
+    </g>
+
+    <!-- Module 2.2: P99 延迟平抑实录 -->
+    <g transform="translate(20, 435)">
+      <rect x="0" y="0" width="380" height="245" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#c084fc" font-size="12" font-weight="700">彻底根除长尾延迟突刺（ITL Spikes）</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· D 节点永远不承载算力吞噬型的全量 GEMM：</text>
+        <text x="0" y="28" fill="#94a3b8" font-size="9.5">没有突发性的大 Prompt 抢占 SM 核心，D 节点的每个 Step 耗时</text>
+        <text x="0" y="42" fill="#94a3b8" font-size="9.5">极其平稳，几乎呈现一条毫无波动的水平直线！</text>
+
+        <rect x="0" y="56" width="352" height="66" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">线上实测对比 (70B 真实流量):</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 混跑系统: P50 TPOT = 25ms，P99 TPOT = 380ms (长尾暴增 15x!)</text>
+        <text x="10" y="50" fill="#34d399" font-size="9.5" font-weight="700">· PD 分离: P50 TPOT = 22ms，P99 TPOT = 28ms (长尾平抑 92%！)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CARD 3: RIGHT COLUMN (X: 960, W: 420, H: 710) -->
+  <g transform="translate(960, 140)">
+    <rect x="0" y="0" width="420" height="710" rx="12" fill="url(#card-grad-right-35)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.8"/>
+
+    <!-- Section Header -->
+    <g transform="translate(20, 22)">
+      <rect x="0" y="0" width="30" height="30" rx="6" fill="#065f46" fill-opacity="0.3"/>
+      <text x="9" y="21" fill="#34d399" font-size="16" font-weight="800">3</text>
+      <text x="40" y="15" fill="#f8fafc" font-size="15" font-weight="700">分布式 KV RDMA 传输与全局大脑</text>
+      <text x="40" y="31" fill="#64748b" font-size="11">逐层流水预传 · 显存零拷贝 · Mooncake 调度协调</text>
+    </g>
+
+    <line x1="20" y1="65" x2="400" y2="65" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Module 3.1: 逐层流水预传机制 -->
+    <g transform="translate(20, 80)">
+      <rect x="0" y="0" width="380" height="280" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">Layer-by-Layer Pipelined RDMA 逐层预传</text>
+
+      <g transform="translate(14, 38)">
+        <text x="0" y="14" fill="#cbd5e1" font-size="10.5">· 传统串行痛点: P 节点全网算完 80 层才开始传输 KV，</text>
+        <text x="0" y="28" fill="#ef4444" font-size="10.5" font-weight="600">  32K 上下文产生 2GB 数据，网络传输耗时 50ms 暴露在外！</text>
+
+        <!-- Pipelined Steps -->
+        <g transform="translate(0, 36)">
+          <rect x="0" y="0" width="352" height="120" rx="6" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+          <text x="10" y="18" fill="#38bdf8" font-size="10" font-weight="700">逐层流式搬运流水线 (Compute-Comm Overlap):</text>
+          
+          <text x="10" y="36" fill="#cbd5e1" font-size="9">1. P 节点计算 Layer 1 ➔ 触发 RDMA 流式外发 Layer 1 KV</text>
+          <text x="10" y="52" fill="#cbd5e1" font-size="9">2. P 节点计算 Layer 2 ➔ RDMA 在网络上并发传输 Layer 1 KV</text>
+          <text x="10" y="68" fill="#cbd5e1" font-size="9">3. P 节点计算 Layer 80 ➔ 此时前 79 层 KV 早已全部抵达 D 节点！</text>
+          <text x="10" y="86" fill="#34d399" font-size="9.5" font-weight="700">4. P 节点吐出首字 Token 瞬间，D 节点无缝启动 Decode 吐字！</text>
+          <text x="10" y="104" fill="#fbbf24" font-size="9">端到端传输开销被 100% 隐藏，首字交付延迟几乎零增加！</text>
+        </g>
+      </g>
+
+      <g transform="translate(14, 205)">
+        <rect x="0" y="0" width="352" height="60" rx="4" fill="#1e293b" fill-opacity="0.6"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">传输技术选型：</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">· 底层原语: IB Verbs / RoCE v2 GPUDirect RDMA Write；</text>
+        <text x="10" y="48" fill="#a7f3d0" font-size="9">· 零 CPU 中断介入，单向链路打满 400 Gbps 线路全速。</text>
+      </g>
+    </g>
+
+    <!-- Module 3.2: 全局调度大脑与网关路由 -->
+    <g transform="translate(20, 375)">
+      <rect x="0" y="0" width="380" height="305" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+      <text x="14" y="22" fill="#34d399" font-size="12" font-weight="700">全局 Conductor 调度大脑与路由协调</text>
+
+      <g transform="translate(14, 38)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#fbbf24" font-size="10.5" font-weight="700">1. Prefix-Cache 亲和性路由 (Affinity Routing)</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">网关计算 Prompt 前缀 Hash，将相同会话优先分发到已持有该 KV 缓存</text>
+        <text x="10" y="48" fill="#34d399" font-size="9.5" font-weight="600">的 P/D 节点，跨机网络搬运量锐减 80%！</text>
+      </g>
+
+      <g transform="translate(14, 114)">
+        <rect x="0" y="0" width="352" height="66" rx="4" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#38bdf8" font-size="10.5" font-weight="700">2. D 节点动态负载均衡与 Block 水位探针</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">实时监控全集群各 D 节点的 Free Block 水位，杜绝热点倾斜；</text>
+        <text x="10" y="48" fill="#cbd5e1" font-size="9.5">预先在目标 D 节点完成页表预分配，确保 RDMA 目的地址就绪。</text>
+      </g>
+
+      <g transform="translate(14, 190)">
+        <rect x="0" y="0" width="352" height="74" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="0.8"/>
+        <text x="10" y="18" fill="#34d399" font-size="10.5" font-weight="700">3. Mooncake 分布式文件与显存池一体化</text>
+        <text x="10" y="34" fill="#cbd5e1" font-size="9.5">将多机 GPU HBM、CPU DRAM 与 NVMe SSD 统一纳管为</text>
+        <text x="10" y="48" fill="#f0fdf4" font-size="9.5">全局三层分布式 KV 存储池，为万亿 MoE 超长文本提供底座保障！</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== FOOTER: RINGI ENGINEERING DICTUMS ==================== -->
+  <g transform="translate(60, 870)">
+    <!-- Dictum 1 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="11" font-weight="700">[物理隔离]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">PD 分离不是简单拆分，而是将算力受限与访存受限两大物理矛盾彻底解耦。</text>
+    </g>
+    <!-- Dictum 2 -->
+    <g transform="translate(450, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1"/>
+      <text x="16" y="20" fill="#c084fc" font-size="11" font-weight="700">[网络即总线]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">在 PD 分离下，集群 RDMA 网络已实质演进为全局统一的第二级 HBM 显存总线。</text>
+    </g>
+    <!-- Dictum 3 -->
+    <g transform="translate(900, 0)">
+      <rect x="0" y="0" width="420" height="50" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="16" y="20" fill="#34d399" font-size="11" font-weight="700">[帕累托跃升]</text>
+      <text x="16" y="36" fill="#94a3b8" font-size="10.5">异构芯片组合与差异化并行度让 P 节点和 D 节点各自跑在最佳能效点上。</text>
+    </g>
+  </g>
+</svg>
