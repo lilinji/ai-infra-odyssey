@@ -529,7 +529,7 @@ $$\text{KV}_{\text{token}} = 2 \times L \times H_{\text{kv}} \times d_{\text{hea
 
 对于一个并发数为 $B$、平均上下文长度为 $S$ 的在线服务，KV Cache 消耗的显存物理总量为：
 
-$$\text{Memory}_{\text{KV\_Total}} = B \times S \times \text{KV}_{\text{token}} \quad (\text{Bytes})$$
+$$\text{Memory}_{\text{KV\\_Total}} = B \times S \times \text{KV}_{\text{token}} \quad (\text{Bytes})$$
 
 #### ⑤ Sanity Check（数量级校验与震惊时刻）
 以 LLaMA-3 70B 为例：
@@ -644,7 +644,7 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 #### 1. TTFT（Time To First Token，首字延迟）
 - **定义**：从客户端发送 HTTP/gRPC 请求开始，到客户端接收并渲染出**第一个生成的 Token** 的完整耗时；
 - **物理构成**：
-  $$\text{TTFT} = T_{\text{network\_in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network\_out}}$$
+  $$\text{TTFT} = T_{\text{network\\_in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network\\_out}}$$
 - **核心主导项**：在服务端高负载排队时受 $T_{\text{queue}}$ 主导；在平稳运行时受 $T_{\text{prefill}}$ 主导；
 - **用户心智阈值**：人机交互黄金定律规定，TTFT 超过 **1.0 秒** 用户便开始感知迟钝，超过 **2.0 秒** 会引发用户二次刷新或放弃任务。
 
@@ -860,7 +860,7 @@ Step t+7: [████ 512 Chunk 8][■ Decode x 16] -> 耗时 35ms (Prefill �
 而在 **vLLM V1 核心调度引擎** 中，实现了一个极其优雅的抽象跃迁——**统一 Token 预算调度器（Token Budget Scheduler）**。
 
 #### 核心哲学：在 GPU 眼里，天下没有任何阶段之分，只有“这一步要算几个 Token”！
-调度器在每一步开始前，只持有唯独一个硬指标：**当前 Step 的全局 Token 预算上限（$\text{max\_num\_batched\_tokens}$，如 2048）**。
+调度器在每一步开始前，只持有唯独一个硬指标：**当前 Step 的全局 Token 预算上限（$\text{max\\_num\\_batched\\_tokens}$，如 2048）**。
 
 调度决策被高度抽象为一个纯粹的装箱字典映射：
 
@@ -1374,7 +1374,7 @@ if __name__ == "__main__":
 - 70B 模型（700 亿参数），半精度 FP16（每参数 2 字节）：
   $$\text{Memory}_{\text{Weights}} = 70 \times 10^9 \times 2\text{ Bytes} = 140\text{ GB}$$
 - 在 8 卡 H100（TP=8）集群上，单卡均摊静态权重为：
-  $$\text{Weight}_{\text{Per\_GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}$$
+  $$\text{Weight}_{\text{Per\\_GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}$$
 
 **步骤二：手算动态 KV Cache 总显存**
 - LLaMA-3 70B 架构参数：层数 $L = 80$，$H_{\text{kv}} = 8$，$d_{\text{head}} = 128$，$\text{Precision} = 2$ 字节；
@@ -1383,18 +1383,18 @@ if __name__ == "__main__":
 - 并发 $B = 128$，平均长度 $S = 4096$：
   $$\text{KV}_{\text{Total}} = 128 \times 4096 \times 320\text{ KB} = 128 \times 4096 \times 0.3125\text{ MB} = 163,840\text{ MB} = \mathbf{160\text{ GB}}$$
 - 在 TP=8 下，KV 头数按卡均分（每张卡分到 $8 / 8 = 1$ 个 KV 头），单卡均摊 KV Cache 为：
-  $$\text{KV}_{\text{Per\_GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}$$
+  $$\text{KV}_{\text{Per\\_GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}$$
 - **单卡显存总占用**：
-  $$\text{Total}_{\text{Per\_GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}$$
+  $$\text{Total}_{\text{Per\\_GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}$$
   （完全安全地落在 H100 80GB 的显存预算内，剩余约 42.5GB 充当额外安全裕量）。
 
 **步骤三：推导 H100 上的单步理论 TPOT 物理下限**
 - 单卡单步需要从 HBM 搬运的数据量：
-  $$\text{Data}_{\text{Per\_Step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}$$
+  $$\text{Data}_{\text{Per\\_Step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}$$
 - 单张 H100 SXM5 的物理理论显存带宽为 $B_{\text{peak}} = 3.35\text{ TB/s} = 3350\text{ GB/s}$；
 - 假定显存总线带宽利用率为极高水平的 80%（有效带宽 $3350 \times 0.8 = 2680\text{ GB/s}$）；
 - 单步仅搬运数据所需的物理耗时下限为：
-  $$T_{\text{step\_min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}$$
+  $$T_{\text{step\\_min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}$$
 - **标准答案结论**：在并发 128、4K 上下文下，单卡仅需 37.5GB 显存；H100 上的单步纯搬运理论 TPOT 下限约为 **14ms 左右**（对应单用户感知流速最高约 71 Token/s）。
 
 ---

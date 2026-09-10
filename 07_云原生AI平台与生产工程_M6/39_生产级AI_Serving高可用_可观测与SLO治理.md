@@ -239,7 +239,7 @@ $$\text{GPU-Util} = \frac{\text{采样周期内至少有 } 1 \text{ 个计算核
   $\text{Prefill 耗时} = \frac{1024}{20000} \approx 51.2\text{ms}$。  
   $\text{TTFT} = 50 + 51.2 = 101.2\text{ms}$。
 - **④ 理论公式**：
-  $$\text{TTFT} = T_{\text{queue}} + T_{\text{prefill}} = T_{\text{queue}} + \frac{\text{Prompt\_Tokens}}{\text{Prefill\_Throughput}}$$
+  $$\text{TTFT} = T_{\text{queue}} + T_{\text{prefill}} = T_{\text{queue}} + \frac{\text{Prompt\\_Tokens}}{\text{Prefill\\_Throughput}}$$
 - **⑤ 数量级校验**：大厂在线 Chat 业务的 TTFT P95 必须控制在 **$500\text{ms} \sim 800\text{ms}$** 以内，超过 $2\text{s}$ 用户流失率将呈指数上升。
 
 ### 2. TPOT（Time Per Output Token，单字生成时延）
@@ -248,7 +248,7 @@ $$\text{GPU-Util} = \frac{\text{采样周期内至少有 } 1 \text{ 个计算核
 - **③ 数字手算**：如果模型以每秒输出 $40$ 个 Token 的速度吐字，则单字耗时为：  
   $\text{TPOT} = \frac{1000\text{ms}}{40} = 25\text{ms/token}$。
 - **④ 理论公式**：
-  $$\text{TPOT} = \frac{\sum_{i=2}^{N} \text{Latency}(\text{Token}_i)}{N - 1} \approx \frac{1}{\text{Decode\_Throughput\_per\_request}}$$
+  $$\text{TPOT} = \frac{\sum_{i=2}^{N} \text{Latency}(\text{Token}_i)}{N - 1} \approx \frac{1}{\text{Decode\\_Throughput\\_per\\_request}}$$
 - **⑤ 数量级校验**：人类正常阅读速度约为每秒 5~8 个汉字（约合 8~12 Tokens）。生产服务要求 TPOT 稳定在 **$20\text{ms} \sim 40\text{ms}$（对应 25~50 tokens/s）**，低于 10 tokens/s 用户会明显感知到卡顿。
 
 ### 3. ITL（Inter-Token Latency，词元间抖动）
@@ -459,11 +459,11 @@ $$\text{Replicas}_{\text{desired}} = \max \left( R_{\text{queue}}, R_{\text{cach
 
 其中：
 1. **基于排队深度的伸缩分量（$R_{\text{queue}}$）**：
-   $$R_{\text{queue}} = \left\lceil \frac{\text{Total\_Waiting\_Requests}}{\text{Target\_Queue\_Depth\_per\_Pod}} \times \text{CurrentReplicas} \right\rceil$$
-   （在大模型服务中，我们通常设定单个 Pod 允许排队的健康深度 $\text{Target\_Queue} = 5$）；
+   $$R_{\text{queue}} = \left\lceil \frac{\text{Total\\_Waiting\\_Requests}}{\text{Target\\_Queue\\_Depth\\_per\\_Pod}} \times \text{CurrentReplicas} \right\rceil$$
+   （在大模型服务中，我们通常设定单个 Pod 允许排队的健康深度 $\text{Target\\_Queue} = 5$）；
 2. **基于显存水线的伸缩分量（$R_{\text{cache}}$）**：
-   $$R_{\text{cache}} = \left\lceil \frac{\text{Avg}(\text{KV\_Cache\_Usage\_Ratio})}{\text{Target\_Watermark}} \times \text{CurrentReplicas} \right\rceil$$
-   （健康安全水线 $\text{Target\_Watermark} = 0.75$）。
+   $$R_{\text{cache}} = \left\lceil \frac{\text{Avg}(\text{KV\\_Cache\\_Usage\\_Ratio})}{\text{Target\\_Watermark}} \times \text{CurrentReplicas} \right\rceil$$
+   （健康安全水线 $\text{Target\\_Watermark} = 0.75$）。
 
 通过这个公式，无论是因为用户涌入导致排队暴增，还是因为输入上下文过长导致显存预警，系统都能在最早期阶段敏锐捕获并瞬间触发扩容。
 

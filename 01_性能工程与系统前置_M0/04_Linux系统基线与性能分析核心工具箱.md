@@ -373,7 +373,7 @@ load average: 12.50, 8.20, 4.15
 > Linux 的平均负载统计的是：**系统处于「可运行状态（R 状态）」与「不可中断睡眠状态（D 状态）」的平均活跃任务数之和！**
 > 
 > $$
-> \text{Active Tasks} = N_{\text{TASK\_RUNNING (CPU就绪与运行)}} + N_{\text{TASK\_UNINTERRUPTIBLE (D状态IO阻塞)}}
+> \text{Active Tasks} = N_{\text{TASK\\_RUNNING (CPU就绪与运行)}} + N_{\text{TASK\\_UNINTERRUPTIBLE (D状态IO阻塞)}}
 > $$
 >
 > 内核每隔 5 秒对当前活跃任务数采样一次，并采用**指数衰减移动平均（Exponential Decay Moving Average）** 进行更新：
@@ -1022,7 +1022,7 @@ echo "✅ 内核优化参数注入完成！当前 swappiness: $(sysctl vm.swappi
 ### 💡 面试题 1：当遇到一台服务器 CPU Load 极高（如 Load=64）但 CPU 使用率（%CPU）极低（如 5%）时，可能的原因是什么？请给出一步步排查的指令链路。
 
 > **🎯 大厂标准答题路径**：
-> 1. **第一性原理定性**：根据 Linux 内核 `loadavg.c` 模型，$\text{Load} = N_{\text{TASK\_RUNNING}} + N_{\text{TASK\_UNINTERRUPTIBLE}}$。当 CPU 使用率低而 Load 极高时，说明系统中积压了大量处于 **D 状态（Uninterruptible Sleep 不可中断睡眠）** 的进程，任务并非在消耗算力，而是在内核中等待硬件或锁资源。
+> 1. **第一性原理定性**：根据 Linux 内核 `loadavg.c` 模型，$\text{Load} = N_{\text{TASK\\_RUNNING}} + N_{\text{TASK\\_UNINTERRUPTIBLE}}$。当 CPU 使用率低而 Load 极高时，说明系统中积压了大量处于 **D 状态（Uninterruptible Sleep 不可中断睡眠）** 的进程，任务并非在消耗算力，而是在内核中等待硬件或锁资源。
 > 2. **Step-by-Step 排查指令链**：
 >    - **第一步：确认进程状态**：执行 `ps -eo state,pid,ppid,comm | grep -E '^D'`，抓出所有处于 D 状态的进程 PID 与命令名；
 >    - **第二步：读取内核挂起调用栈**：执行 `cat /proc/<PID>/stack`，查看该进程阻塞在内核的哪一个系统调用和驱动函数中；

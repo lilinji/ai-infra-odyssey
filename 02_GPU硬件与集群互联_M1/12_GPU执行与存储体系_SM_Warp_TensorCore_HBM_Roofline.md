@@ -458,7 +458,7 @@ _“CPU 切换一个线程，要触发内核中断、保存上下文、刷寄存
 | 1. Long Scoreboard     | Warp 发起了全局显存 (HBM/L2) 加载，正在等待记分牌解锁 数据迟迟未从片外返回 (占据线上性能瓶颈 70% 以上) | 读写 HBM 延迟未被掩盖；合并访存被破坏; 需增大计算访存比、优化 Tiling 与重排  |
 | 2. Memory Throttle     | 内存子系统的指令请求队列已达到硬件缓冲上限 LSU 单元无法接收新的 LDG/STG 指令                           | 连续高频发射访存指令，LSU 彻底过载; 需加入算子融合或改用寄存器中转           |
 | 3. MIO / Math Throttle | 特定的数学计算管线 (如 FP32、Tensor Core 或 SFU) 拥堵 指令发射队列排队等待计算单元空闲                 | 连续大量使用除法、求模或三角函数(SFU); 需优化数学运算强度，改用快速近似指令  |
-| 4. Stall Barrier       | 线程块内部执行了 \_\_syncthreads() 显式屏障等待 快的 Warp 必须挂起等待最慢的一个 Warp 抵达             | Block 内不同 Warp 执行速度严重失衡; 需减少无谓同步，拆解大块算子             |
+| 4. Stall Barrier       | 线程块内部执行了 \\_\\_syncthreads() 显式屏障等待 快的 Warp 必须挂起等待最慢的一个 Warp 抵达             | Block 内不同 Warp 执行速度严重失衡; 需减少无谓同步，拆解大块算子             |
 | 5. Wait / RAW Hazard   | Read-After-Write 数据冒险：下一条指令必须使用上一条 计算指令的结果，但前序计算指令管线延迟尚未走完     | 指令级并行度 (ILP) 极差，无独立运算; 展开循环 (Loop Unrolling) 暴露独立依赖  |
 | 6. Branch Divergence   | Warp 内部线程走向了不同的 if-else 分支，硬件分步串行 掩码屏蔽执行                                      | 条件语句依赖于 threadIdx，掩码串行化; 重新组织数据排布，消除跨 Warp 内部判断 |
 

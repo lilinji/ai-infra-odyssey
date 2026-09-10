@@ -204,7 +204,7 @@ math: true
 
 **如果敢跨机做 TP（跨越网络光纤走 InfiniBand / RoCE）：**
 跨机网络的单次 AllReduce 延迟至少是 **$30\sim 50\mu s$**！
-$$T_{\text{comm\_inter\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}$$
+$$T_{\text{comm\\_inter\\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}$$
 硬件计算只要 1.9ms，通信却要等 6.4ms，GPU 算力利用率当场跌破 20%！
 
 > 👓 **Ringi 工程师铁律**：  
@@ -386,9 +386,9 @@ $$AI_{\text{decode}} = \frac{2 \times 1 \times d^2}{2 \times d^2} = 1 \text{ FLO
    $$\text{Size}_{\text{128K}} = 131,072 \times 320 \text{ KB} \approx \mathbf{40.0 \text{ GB！！}}$$
 
 #### 步骤 4：Formal Model（标准物理公式与网络映射）
-对于包含 $n_{\text{layers}}$ 层、每层具有 $n_{\text{kv\_heads}}$ 个 KV 注意力头、头维度为 $d_{\text{head}}$ 的模型，在精度字节数为 $b_{\text{bytes}}$（FP16/BF16 取 2，FP8 取 1）时，输入序列长度为 $L_{\text{prompt}}$ 的 KV Cache 传输字节量为：
+对于包含 $n_{\text{layers}}$ 层、每层具有 $n_{\text{kv\\_heads}}$ 个 KV 注意力头、头维度为 $d_{\text{head}}$ 的模型，在精度字节数为 $b_{\text{bytes}}$（FP16/BF16 取 2，FP8 取 1）时，输入序列长度为 $L_{\text{prompt}}$ 的 KV Cache 传输字节量为：
 
-$$\text{Bytes}_{\text{KV}} = 2 \times n_{\text{layers}} \times n_{\text{kv\_heads}} \times d_{\text{head}} \times b_{\text{bytes}} \times L_{\text{prompt}}$$
+$$\text{Bytes}_{\text{KV}} = 2 \times n_{\text{layers}} \times n_{\text{kv\\_heads}} \times d_{\text{head}} \times b_{\text{bytes}} \times L_{\text{prompt}}$$
 
 在有效传输带宽为 $B_{\text{net}}$（GB/s）的网络中，理想跨机传输延迟为：
 
@@ -453,10 +453,10 @@ KV Cache 传输三大架构决策维度:
 $$\text{Size}_{\text{layer}} = \frac{10 \text{ GB}}{80 \text{ layers}} = 128 \text{ MB / layer}$$
 
 在 400 Gbps RDMA 网络（有效带宽 48 GB/s）下，单层传输耗时为：
-$$T_{\text{comm\_layer}} = \frac{128 \text{ MB}}{48 \text{ GB/s}} \approx \mathbf{2.66 \text{ ms}}$$
+$$T_{\text{comm\\_layer}} = \frac{128 \text{ MB}}{48 \text{ GB/s}} \approx \mathbf{2.66 \text{ ms}}$$
 
 **看见这个物理奇迹了吗？**
-$$T_{\text{comm\_layer}} (2.66\text{ ms}) < T_{\text{comp}} (3.5\text{ ms})$$
+$$T_{\text{comm\\_layer}} (2.66\text{ ms}) < T_{\text{comp}} (3.5\text{ ms})$$
 **单层的网络搬运时间严格小于单层的 GPU 计算时间！**
 
 ```python

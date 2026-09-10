@@ -72,7 +72,7 @@ math: true
   - [0.3 AI 集群故障分层与排障全景速查表](#03-ai-集群故障分层与排障全景速查表)
 - [1. 性能分析第一性原理：Step Time 三层分解金字塔（No Naked Formula 2.0）](#1-性能分析第一性原理step-time-三层分解金字塔no-naked-formula-20)
   - [1.1 为什么需要分解？盲目优化单点往往南辕北辙](#11-为什么需要分解盲目优化单点往往南辕北辙)
-  - [1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed\_comm}}$）](#12-第一层计算时间t_textcompute-vs-暴露通信时间t_textexposed_comm)
+  - [1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed\\_comm}}$）](#12-第一层计算时间t_textcompute-vs-暴露通信时间t_textexposed_comm)
   - [1.3 第二层：计算内部细分——算力瓶颈（Compute-Bound） vs 访存瓶颈（Memory-Bound）](#13-第二层计算内部细分算力瓶颈compute-bound-vs-访存瓶颈memory-bound)
   - [1.4 第三层：通信内部细分——小包启动时延（Latency-Bound） vs 大包网络带宽（Bandwidth-Bound）](#14-第三层通信内部细分小包启动时延latency-bound-vs-大包网络带宽bandwidth-bound)
   - [1.5 Step Time 分解公式与 MFU / MBU 算盘校验](#15-step-time-分解公式与-mfu--mbu-算盘校验)
@@ -194,11 +194,11 @@ math: true
 
 ---
 
-## 1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed\_comm}}$）
+## 1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed\\_comm}}$）
 
 单步训练迭代耗时（Step Time）由计算与未被重叠隐藏的通信共同组成：
 
-$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\_comm}}$$
+$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}$$
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────┐

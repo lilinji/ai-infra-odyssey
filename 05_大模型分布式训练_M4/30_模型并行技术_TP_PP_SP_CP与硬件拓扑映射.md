@@ -882,7 +882,7 @@ if __name__ == "__main__":
 
 ### 7.2 生产模型并行工程黄金 Checklist
 
-- [ ] 1. **【TP 单机闭环铁律】**：张量并行度必须满足 $\text{TP} \le \text{gpus\_per\_node}$（通常 $\text{TP} \le 8$），严禁分配超出物理节点的高频 TP。
+- [ ] 1. **【TP 单机闭环铁律】**：张量并行度必须满足 $\text{TP} \le \text{gpus\\_per\\_node}$（通常 $\text{TP} \le 8$），严禁分配超出物理节点的高频 TP。
 - [ ] 2. **【SP 无条件协同】**：只要在 Megatron-LM 或框架中开启了 `--tensor-model-parallel-size > 1`，必须显式加上 `--sequence-parallel`，享受免费的激活显存压降。
 - [ ] 3. **【微批次倍数约束】**：在配置流水线并行时，微批次数量 $M$ 必须至少满足 $M \ge 4 \times P$，确保流水线气泡率严格控制在 20% 以下。
 - [ ] 4. **【Interleaved 虚拟 Stage 权衡】**：仅在机间 InfiniBand 带宽极其充裕（如 8x400G IB）时才开启 `v_virtual_stages >= 2`，防止激活值跨机传输翻倍抵消算力收益。

@@ -329,9 +329,9 @@ CPU 应用程序虚拟内存空间       <=======>    请求逻辑上下文序�
 #### 2. 显存物理块张量形状（Tensor Shape）
 在 GPU 显存底层，vLLM 会在服务启动时开辟一个庞大的物理块池，其张量形状被固化为：
 
-$$\mathbf{K}_{\text{pool}} \in \mathbb{R}^{\text{num\_blocks} \times H_{\text{kv}} \times \frac{d_{\text{head}}}{x} \times B_{\text{size}} \times x}$$
+$$\mathbf{K}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times \frac{d_{\text{head}}}{x} \times B_{\text{size}} \times x}$$
 
-$$\mathbf{V}_{\text{pool}} \in \mathbb{R}^{\text{num\_blocks} \times H_{\text{kv}} \times d_{\text{head}} \times B_{\text{size}}}$$
+$$\mathbf{V}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times d_{\text{head}} \times B_{\text{size}}}$$
 
 其中 $x$ 是为了满足 GPU 向量化加载（如 16 字节 `float4` 内存指令）设置的内嵌重排维度（通常为 8）。
 这个巨大的连续张量一旦分配，就再也不进行任何销毁与重分配，彻底规避了向操作系统反复申请释放显存的巨大开销。
@@ -602,7 +602,7 @@ Step 102: [██ 512 Chunk 3][■■■■■■■■■■■■ 32 Decodes] 
 
 在 V1 引擎源码（`vllm/v1/core/sched/scheduler.py`）中，传统的“Prefill 调度队列”与“Decode 调度队列”被全部废弃。取而代之的是一个无比凝练的统一抽象：
 
-$$\mathbf{Token\_Budget} = \text{max\_num\_batched\_tokens} \quad (\text{如 } 2048)$$
+$$\mathbf{Token\\_Budget} = \text{max\\_num\\_batched\\_tokens} \quad (\text{如 } 2048)$$
 
 对底层 GPU 执行器而言：
 - 一个做 Decode 的请求，本质是：**这一步需要处理 1 个 Token**；
@@ -1053,11 +1053,11 @@ $$\text{Addr}_{\text{contiguous}} = \text{BasePtr} + b \times \text{Stride}_b + 
 **步骤二：PagedAttention 的虚拟间接寻址推导**
 在 PagedAttention 中，物理内存被切分为块大小为 $B_{\text{size}}$ 的 Block：
 1. **计算逻辑块号与块内偏移**：
-   $$\text{logical\_block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}$$
+   $$\text{logical\\_block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}$$
 2. **查块表拿到物理块编号（引入一次访存开销）**：
-   $$\text{physical\_block} = \text{block\_table}[b][\text{logical\_block}]$$
+   $$\text{physical\\_block} = \text{block\\_table}[b][\text{logical\\_block}]$$
 3. **计算最终物理地址**：
-   $$\text{Addr}_{\text{paged}} = \text{K\_Pool\_Base} + \text{physical\_block} \times \text{Block\_Stride} + h \times \text{Head\_Stride} + \text{offset} \times \text{Token\_Stride} + d$$
+   $$\text{Addr}_{\text{paged}} = \text{K\\_Pool\\_Base} + \text{physical\\_block} \times \text{Block\\_Stride} + h \times \text{Head\\_Stride} + \text{offset} \times \text{Token\\_Stride} + d$$
 
 **步骤三：性能开销本质剖析**
 1. **额外的查表显存访问（Table Indirection Overhead）**：Kernel 在读取数据前必须先读取 `block_table`，虽然其较小通常能命中 L1/L2 Cache，但依然占用了片上寄存器资源；

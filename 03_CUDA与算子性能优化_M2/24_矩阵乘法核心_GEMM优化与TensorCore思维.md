@@ -378,12 +378,12 @@ for (int k = 0; k < K; ++k) {
   $$\text{Global Read Bytes} = 4 \times (BM \times BK + BK \times BN)$$
 - 此时全局显存的算术强度提升为：
 
-$$I_{\text{block\_tiled}} = \frac{2 \cdot BM \cdot BN \cdot BK}{4 \cdot BK \cdot (BM + BN)} = \frac{BM \cdot BN}{2 \cdot (BM + BN)}$$
+$$I_{\text{block\\_tiled}} = \frac{2 \cdot BM \cdot BN \cdot BK}{4 \cdot BK \cdot (BM + BN)} = \frac{BM \cdot BN}{2 \cdot (BM + BN)}$$
 
 ##### 极简数字代入：
 
 若设 $BM = BN = 128$：
-$$I_{\text{block\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac{16384}{512} = \mathbf{32.0 \text{ FLOPs/Byte}}$$
+$$I_{\text{block\\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac{16384}{512} = \mathbf{32.0 \text{ FLOPs/Byte}}$$
 
 从原本的 **0.25** 骤增至 **32.0**！**算术强度整整放大了 128 倍！**
 全局显存的带宽不再是致命瓶颈，算子性能直接从 1.2% 跃升到 20% 以上！
@@ -450,7 +450,7 @@ $$I_{\text{block\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac{
 
 - 如果用传统的内积计算，两个长度为 8 的向量点乘，读取 16 个数，只产生 16 次 FLOPs；
 - 但如果将 $A$ 的 $8 \times 1$ 列向量与 $B$ 的 $1 \times 8$ 行向量做**外积（Outer Product）**：
-  $$C_{\text{accum}}[i][j] += r\_a[i] \times r\_b[j], \quad \forall i \in [0, 7], j \in [0, 7]$$
+  $$C_{\text{accum}}[i][j] += r\\_a[i] \times r\\_b[j], \quad \forall i \in [0, 7], j \in [0, 7]$$
   **只从 Shared Memory 读取了 16 个数，就在片上寄存器里瞬间爆发了 64 次乘加（128 FLOPs）！**
 
 ---

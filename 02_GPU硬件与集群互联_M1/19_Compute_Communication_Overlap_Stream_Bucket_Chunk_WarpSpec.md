@@ -266,13 +266,13 @@ torch.cuda.nvtx.range_pop()
 
 ### 4. Formal Model（标准形式化公式）：
 单步执行总时间（Step Time）的通用数学模型为：
-$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\_comm}}$$
+$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}$$
 
 其中，暴露通信时间定义为：
-$$\mathbf{T_{\text{exposed\_comm}} = \max\left(0, \, T_{\text{comm}} - T_{\text{compute\_overlap}}\right)}$$
+$$\mathbf{T_{\text{exposed\\_comm}} = \max\left(0, \, T_{\text{comm}} - T_{\text{compute\\_overlap}}\right)}$$
 
 如果考虑到资源争抢惩罚因子 $k \ge 1.0$（第 5 节将深度推导），实际总时间将被修正为：
-$$T_{\text{step\_real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)$$
+$$T_{\text{step\\_real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)$$
 
 ---
 
@@ -551,7 +551,7 @@ $$\mathbf{T_{\text{real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, 
 ## 5.5 惩罚因子的数学建模与生产评估公式
 
 大厂性能工程团队将惩罚因子建模为并发访存强度的连续函数：
-$$k_{\text{comp}} = 1.0 + \gamma \cdot \left(\frac{\text{BW}_{\text{comm\_HBM}}}{\text{BW}_{\text{HBM\_peak}}}\right) \cdot \left(\frac{1}{\text{AI}_{\text{comp}}}\right)$$
+$$k_{\text{comp}} = 1.0 + \gamma \cdot \left(\frac{\text{BW}_{\text{comm\\_HBM}}}{\text{BW}_{\text{HBM\\_peak}}}\right) \cdot \left(\frac{1}{\text{AI}_{\text{comp}}}\right)$$
 
 - 当算子算术强度 $\text{AI} \to \infty$（如超大 GEMM），$k \to 1.0$；
 - 当算子算术强度低且通信吞吐极高，惩罚项急剧发散，甚至会导致 Overlap 后的耗时反超纯串行耗时！
@@ -869,7 +869,7 @@ FSDP 预取下一层，显存通信双平衡。
 
 1. 解释为什么 CPU 端的异步非阻塞调用（Non-blocking Launch）不等于 GPU 端的物理并发重叠（True Overlap）？
 2. 真正实现物理级 Compute-Communication Overlap 必须同时满足哪三大硬件约束？
-3. 在公式 $T_{\text{exposed\_comm}} = \max(0, T_{\text{comm}} - T_{\text{compute}})$ 中，如何理解“暴露通信时间”的物理意义？
+3. 在公式 $T_{\text{exposed\\_comm}} = \max(0, T_{\text{comm}} - T_{\text{compute}})$ 中，如何理解“暴露通信时间”的物理意义？
 4. DDP 的梯度分桶机制（Gradient Bucketing）为什么能有效降低网络通信开销？
 5. 为什么 DDP 默认将桶容量设为 25MB，而不是 1MB 或 1GB？请分别分析设太大与设太小的弊端。
 6. FSDP 的前向预取（Forward Prefetch）是在什么时间点、通过什么机制拉取下一层权重的？
@@ -933,7 +933,7 @@ FSDP 预取下一层，显存通信双平衡。
    - 只要单桶计算时间满足 $t_{\text{comp}} \ge t_{\text{comm}}$（计算吞吐大于通信吞吐）；
    - 则第 $0$ 至第 $N-2$ 个桶的通信时间均被完全重叠在下一桶的计算窗口内部；
    - **最终暴露在关键路径上的通信时间，仅为最后一个桶（Bucket $N-1$）的收尾通信时间**：
-     $$T_{\text{exposed\_ideal}} = t_{\text{comm\_last\_bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}$$
+     $$T_{\text{exposed\\_ideal}} = t_{\text{comm\\_last\\_bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}$$
    - 相对整步数百毫秒的计算而言，暴露时间无限趋近于 0！
 
 ---

@@ -353,18 +353,18 @@ $$N_{\text{concurrent}} = Q \times (\text{TTFT} + T_{\text{gen}}) = 100 \times (
 #### 步骤 3：KV Cache 显存容量下限计算
 对于一个 7B 模型（以 LLaMA-7B 为例：32 层，32 个注意力头，头维度 $d=128$，采用 GQA 后 Key/Value 各 4 头）：
 - 单个 Token 占用的 KV Cache 显存（FP16，2 字节）：
-  $$\text{Mem}_{\text{token}} = 2 \times 2 \times (\text{num\_layers} \times \text{num\_kv\_heads} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}$$
+  $$\text{Mem}_{\text{token}} = 2 \times 2 \times (\text{num\\_layers} \times \text{num\\_kv\\_heads} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}$$
 - 单个请求全生命周期峰值占用（$1024 + 256 = 1280 \text{ Tokens}$）：
   $$\text{Mem}_{\text{req}} = 1,280 \times 64 \text{ KB} \approx 80 \text{ MB}$$
 - 680 个并发请求所需的纯 KV Cache 显存总容量：
-  $$\text{Mem}_{\text{KV\_total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}$$
+  $$\text{Mem}_{\text{KV\\_total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}$$
 
 #### 步骤 4：所需 GPU 数量反推
 设单张 GPU 为 NVIDIA A100 80GB：
 - 模型权重占用：14 GB；
 - 系统运行时与激活值预留：16 GB；
 - 单卡可分配给 KV Cache 的安全显存空间：
-  $$\text{Mem}_{\text{KV\_per\_gpu}} = 80 - 14 - 16 = 50 \text{ GB}$$
+  $$\text{Mem}_{\text{KV\\_per\\_gpu}} = 80 - 14 - 16 = 50 \text{ GB}$$
 - 所需 GPU 数量（显存视角）：
   $$N_{\text{gpus}} \ge \lceil \frac{54.4 \text{ GB}}{50 \text{ GB}} \rceil = 2 \text{ GPUs}$$
 - **算力视角校验**：

@@ -234,11 +234,11 @@ BF16 Gradient ─── 传给 ───► AdamW 优化器:
    - FP32 梯度二阶动量（Second Moment $v$）：$4\Psi$ 字节；
    - 优化器状态小计：$4 + 4 + 4 = \mathbf{12\Psi}$ 字节。
 
-$$M_{\text{static\_16}} = 2\Psi (\text{权重}) + 2\Psi (\text{梯度}) + 12\Psi (\text{优化器}) = \mathbf{16\Psi} \quad (\text{Bytes})$$
+$$M_{\text{static\\_16}} = 2\Psi (\text{权重}) + 2\Psi (\text{梯度}) + 12\Psi (\text{优化器}) = \mathbf{16\Psi} \quad (\text{Bytes})$$
 
 #### 何时会膨胀到 $18\Psi$？
 在部分对数值稳定性要求极高的框架中（如早期的 Apex 混合精度），为了防止梯度在跨 Micro-Batch 累加时溢出，**梯度本身以 FP32 格式常驻**：
-$$M_{\text{static\_18}} = 2\Psi (\text{BF16 权重}) + 4\Psi (\text{FP32 梯度}) + 12\Psi (\text{优化器}) = \mathbf{18\Psi} \quad (\text{Bytes})$$
+$$M_{\text{static\\_18}} = 2\Psi (\text{BF16 权重}) + 4\Psi (\text{FP32 梯度}) + 12\Psi (\text{优化器}) = \mathbf{18\Psi} \quad (\text{Bytes})$$
 
 #### 何时会膨胀到 $20\Psi$？
 如果在分布式数据并行（DDP）同步规约中，额外开辟了一个全尺寸的 FP32 通信平坦缓冲区（Bucket Flat Buffer），则会再增加 $2\Psi$ 的常驻开销，达到惊人的 **$20\Psi$**。
@@ -308,11 +308,11 @@ $$70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}$$
 - **FFN 激活值小计**：$\approx 22BSd \sim 24BSd$ 字节。
 
 #### 单层激活值总量大一统公式（无重算）：
-$$M_{\text{act\_layer}} = 34BSd + 5B H_q S^2 \quad (\text{Bytes})$$
+$$M_{\text{act\\_layer}} = 34BSd + 5B H_q S^2 \quad (\text{Bytes})$$
 
 全模型 $L$ 层的总激活显存为：
 
-$$M_{\text{act\_total}} = L \times (34BSd + 5B H_q S^2) \quad (\text{Bytes})$$
+$$M_{\text{act\\_total}} = L \times (34BSd + 5B H_q S^2) \quad (\text{Bytes})$$
 
 **致命痛点**：注意公式右侧的 **$5B H_q S^2$**！  
 当序列长度从 $S=2048$ 放大到 $S=32768$（放大 16 倍）时，$S^2$ 项被放大了整整 **256 倍**！激活显存会瞬间突破数百 GB，这就是引发长文本 OOM 的头号元凶。
@@ -394,7 +394,7 @@ KV Cache 就像是你在读一本长篇侦探小说时手边做的人物关系�
 对于一个 $L$ 层、隐藏层大小 $d$、Query 头数 $H_q$、KV 头数 $H_{kv}$ 的模型，在精度字节数为 $U$（FP16/BF16 时 $U=2$，FP8 时 $U=1$）下：
 单 Token 在全模型中产生的 KV Cache 显存为：
 
-$$\text{KV\_Size\_Per\_Token} = 2 \times U \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+$$\text{KV\\_Size\\_Per\\_Token} = 2 \times U \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
 
 在并发请求数为 $B$，平均上下文长度为 $S$ 时，全集群常驻的总 KV Cache 物理显存为：
 
@@ -408,7 +408,7 @@ $$\text{Size}_{\text{token}} = 2 \times 2 \times 80 \times 8192 \times \frac{8}{
 当部署在单机 8 卡 H100（TP=8）上时：
 - 单卡平摊每 Token 仅：$320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}$；
 - 若并发 $B=32$，上下文平均长度 $S=8192$（8K）：
-  $$M_{\text{kv\_card}} = 40\text{ KB} \times 32 \times 8192 \approx \mathbf{10.48\text{ GB}}$$
+  $$M_{\text{kv\\_card}} = 40\text{ KB} \times 32 \times 8192 \approx \mathbf{10.48\text{ GB}}$$
 - 80GB 显存扣除约 17.5 GB 静态权重后，剩余超过 50 GB 显存，服务运行非常宽裕！
 
 ---
@@ -476,7 +476,7 @@ $$\text{Size}_{\text{token}} = 2 \times 2 \times 80 \times 8192 \times \frac{8}{
   $$\text{FLOPs}_{\text{train}} = \text{FLOPs}_{\text{fwd}} + \text{FLOPs}_{\text{bwd}} = \mathbf{6 \times P \times B \times S}$$
 - **全激活重算训练（Full Activation Checkpointing）**：
   由于前向过程被完整多算了一次：
-  $$\text{FLOPs}_{\text{full\_recompute}} = 2 \times P \times B \times S (\text{前向}) + 2 \times P \times B \times S (\text{重算}) + 4 \times P \times B \times S (\text{反向}) = \mathbf{8 \times P \times B \times S}$$
+  $$\text{FLOPs}_{\text{full\\_recompute}} = 2 \times P \times B \times S (\text{前向}) + 2 \times P \times B \times S (\text{重算}) + 4 \times P \times B \times S (\text{反向}) = \mathbf{8 \times P \times B \times S}$$
 
 ---
 
@@ -491,7 +491,7 @@ $$\text{Size}_{\text{token}} = 2 \times 2 \times 80 \times 8192 \times \frac{8}{
 前向传播中每层产生 $4 B S^2 d$ FLOPs，反向传播约为前向的 2 倍（$8 B S^2 d$）。  
 因此，训练中 Attention 二次项的总计算量为：
 
-$$\text{FLOPs}_{\text{attn\_quadratic}} = 12 \times L \times B \times S^2 \times d$$
+$$\text{FLOPs}_{\text{attn\\_quadratic}} = 12 \times L \times B \times S^2 \times d$$
 
 #### 临界对比分析：
 以 LLaMA-3-8B（$L=32, d=4096, P \approx 7 \times 10^9$）为例：
@@ -910,7 +910,7 @@ if __name__ == "__main__":
 1. **单卡显存手算**：
    - 70B 稠密模型全量静态显存为 $16\Psi = 16 \times 70 \times 10^9\text{ Bytes} \approx 1120\text{ GB}$；
    - 在 1024 张 GPU 下，采用纯 ZeRO-3 全切分：
-     $$\text{Mem}_{\text{static\_card}} = \frac{1120\text{ GB}}{1024} \approx \mathbf{1.09\text{ GB}}$$
+     $$\text{Mem}_{\text{static\\_card}} = \frac{1120\text{ GB}}{1024} \approx \mathbf{1.09\text{ GB}}$$
    - 动态激活值（若使用选择性重算，设单卡 Batch=2, Seq=4096）：约占 **4.5 GB**；
    - 临时通信缓冲区与框架开销：约 **3.5 GB**；
    - 单卡总显存开销：$1.09 + 4.5 + 3.5 = \mathbf{9.09\text{ GB}}$！
@@ -941,9 +941,9 @@ if __name__ == "__main__":
    - **KV Cache 读取量（随序列激增）**：
      - 单 Token GQA KV Cache 约 320 KB；
      - 并发 16 下，32K 长度的瞬时全量 KV Cache 为：
-       $$M_{\text{kv\_BF16}} = 320\text{ KB} \times 16 \times 32768 \approx \mathbf{167.7\text{ GB}}!$$
+       $$M_{\text{kv\\_BF16}} = 320\text{ KB} \times 16 \times 32768 \approx \mathbf{167.7\text{ GB}}!$$
      - 开启 FP8 KV Cache 后，每个元素从 2 字节降至 1 字节：
-       $$M_{\text{kv\_FP8}} = \frac{167.7\text{ GB}}{2} \approx \mathbf{83.8\text{ GB}}!$$
+       $$M_{\text{kv\\_FP8}} = \frac{167.7\text{ GB}}{2} \approx \mathbf{83.8\text{ GB}}!$$
        **单次生成仅 KV 搬运就直接节省了整整 83.9 GB 显存带宽！**
 3. **系统吞吐的核心放大器（显存容量解锁并发）**：
    - INT4 权重虽然压缩了模型，但无法解决 KV Cache 吞噬显存的死局，最大并发数被死死卡在低水位；
@@ -964,18 +964,18 @@ if __name__ == "__main__":
    - 序列长度 $S = 2048$
 2. **计算单层线性项与二次项系数**：
    - 单层线性项（Linear Part）：
-     $$\text{Act}_{\text{linear\_layer}} = 34 \times B \times S \times d = 34 \times 16 \times 2048 \times 5120 \approx 5,704,253,440\text{ 字节} \approx \mathbf{5.31\text{ GB}}$$
+     $$\text{Act}_{\text{linear\\_layer}} = 34 \times B \times S \times d = 34 \times 16 \times 2048 \times 5120 \approx 5,704,253,440\text{ 字节} \approx \mathbf{5.31\text{ GB}}$$
    - 单层 Attention 二次项（Quadratic Part）：
-     $$\text{Act}_{\text{quad\_layer}} = 5 \times B \times S^2 \times H_q = 5 \times 16 \times (2048)^2 \times 40 = 13,421,772,800\text{ 字节} \approx \mathbf{12.50\text{ GB}}$$
+     $$\text{Act}_{\text{quad\\_layer}} = 5 \times B \times S^2 \times H_q = 5 \times 16 \times (2048)^2 \times 40 = 13,421,772,800\text{ 字节} \approx \mathbf{12.50\text{ GB}}$$
 3. **计算全模型（40 层）总和**：
    - **无重算模式（保留线性项 + 二次项）**：
-     $$M_{\text{total\_no\_recompute}} = 40 \times (5.31\text{ GB} + 12.50\text{ GB}) = 40 \times 17.81\text{ GB} \approx \mathbf{712.4\text{ GB}}$$
+     $$M_{\text{total\\_no\\_recompute}} = 40 \times (5.31\text{ GB} + 12.50\text{ GB}) = 40 \times 17.81\text{ GB} \approx \mathbf{712.4\text{ GB}}$$
    - **选择性重算模式（抹除二次项，仅保留线性项）**：
-     $$M_{\text{total\_selective}} = 40 \times 5.31\text{ GB} \approx \mathbf{212.4\text{ GB}}$$
+     $$M_{\text{total\\_selective}} = 40 \times 5.31\text{ GB} \approx \mathbf{212.4\text{ GB}}$$
 4. **得出差值与结论**：
    $$\Delta \text{Memory} = 712.4\text{ GB} - 212.4\text{ GB} = \mathbf{500.0\text{ GB}}!$$
    在 8 卡数据并行下，每张卡直接净省：
-   $$\Delta \text{Memory\_per\_card} = \frac{500\text{ GB}}{8} = \mathbf{62.5\text{ GB/卡}}!$$
+   $$\Delta \text{Memory\\_per\\_card} = \frac{500\text{ GB}}{8} = \mathbf{62.5\text{ GB/卡}}!$$
    **结论**：如果不开启选择性重算，单卡光激活值就要吃掉近 90 GB 显存，80GB 卡当场 OOM 暴毙；而开启选择性重算后，单卡激活值骤降到仅 **26.5 GB**，训练稳稳当当全速跑飞，且额外算力开销不足 3%！
 
 ---

@@ -226,7 +226,7 @@ graph TD
 ```
 
 #### 动态借用数学规则（Lending & Borrowing Policy）：
-设一个 ClusterQueue 的保底配额为 $Q_{\text{nominal}}$，当前借出上限为 $Q_{\text{borrowing\_limit}}$：
+设一个 ClusterQueue 的保底配额为 $Q_{\text{nominal}}$，当前借出上限为 $Q_{\text{borrowing\\_limit}}$：
 1. **优先满足保底（Nominal Capacity）**：每个租户在其保底额度内提交的任务，享有**最高调度优先级**，立即可被准入调度；
 2. **闲置借用（Borrowing from Cohort）**：若搜索组白天只用了 500 卡，剩余的 1,548 卡自动借给预训练组跑大规模任务；
 3. **主人归还与优雅抢占（Reclaim & Preemption）**：当搜索组突然发起高优任务时，Kueue 立即触发 **Workload Reclaim**：

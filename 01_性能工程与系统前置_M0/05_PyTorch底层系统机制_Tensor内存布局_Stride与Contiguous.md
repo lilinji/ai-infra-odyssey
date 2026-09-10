@@ -402,7 +402,7 @@ struct C10_API StorageImpl : public c10::intrusive_ptr_target {
 - **步长数组（Strides）**：$(s_0, s_1, s_2, \dots, s_{n-1})$
 - **存储偏移量（Storage Offset）**：$\text{offset}$
 - **元素字节大小（Item Size）**：$S_{\text{byte}}$（例如 FP32 为 4 字节）
-- **物理内存起始指针**：$P_{\text{base}} = \text{static\_cast<char*>}(\text{Storage.data\_ptr()})$
+- **物理内存起始指针**：$P_{\text{base}} = \text{static\\_cast<char*>}(\text{Storage.data\\_ptr()})$
 
 现在，我们在 Python 中访问多维张量的一个特定元素 $T[i_0, i_1, i_2, \dots, i_{n-1}]$（其中 $0 \le i_k < d_k$）。
 

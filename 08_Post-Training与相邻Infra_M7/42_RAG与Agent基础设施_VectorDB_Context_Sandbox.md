@@ -254,7 +254,7 @@
 1. **未启用缓存（Cold Prefill）计算量与时延**：
    $$\text{FLOPs}_{\text{cold}} = 2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})$$
    首字生成时间（TTFT）：
-   $$\text{TTFT}_{\text{cold}} \approx \frac{2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})}{\text{FLOPS}_{\text{effective}}} + T_{\text{memory\_fetch}}$$
+   $$\text{TTFT}_{\text{cold}} \approx \frac{2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})}{\text{FLOPS}_{\text{effective}}} + T_{\text{memory\\_fetch}}$$
    对于 70B 模型，有效算力 $\text{FLOPS}_{\text{effective}} = 500\text{ TFLOPS}$，$S_{\text{ctx}} = 32,768$，$S_{\text{query}} = 128$：
    $$\text{TTFT}_{\text{cold}} \approx \frac{2 \times 70 \times 10^9 \times 32896}{500 \times 10^{12}} \approx \frac{4.605 \times 10^{15}}{500 \times 10^{12}} \approx 9.21\text{ 秒！}$$
    **用户必须对着转圈等待近 10 秒才能看到第一个字！**

@@ -324,14 +324,14 @@ $$y = \frac{x}{\text{RMS}(x)} \odot \gamma$$
 #### ④ Formal Model（标准公式与映射）
 对于一个 $L$ 层、隐藏层大小 $d_{\text{model}}$、Query 头数 $H_q$、KV 头数 $H_{kv}$、Head 维度 $d_h = d_{\text{model}} / H_q$ 的模型，存储单个 Token 在全模型所有层中占用的 KV Cache 物理显存为：
 
-$$\text{KV\_Size\_Per\_Token} = 2 \times 2 \times L \times H_{kv} \times d_h \quad (\text{Bytes})$$
+$$\text{KV\\_Size\\_Per\\_Token} = 2 \times 2 \times L \times H_{kv} \times d_h \quad (\text{Bytes})$$
 
 其中：
 - 第一个 $2$：分别代表 Key 张量与 Value 张量；
 - 第二个 $2$：数据精度为 FP16 或 BF16（每个元素 2 字节）；
 - $H_{kv} \times d_h$：每一层单个 Token 的 KV 维度。将其改写为全模型总维度 $d_{\text{model}}$ 的比例形式：
 
-$$\text{KV\_Size\_Per\_Token} = 4 \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+$$\text{KV\\_Size\\_Per\\_Token} = 4 \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
 
 当并发 Batch 为 $B$，上下文总长度为 $S$ 时，集群需常驻的 KV Cache 物理总量为：
 
@@ -345,11 +345,11 @@ $$M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \l
 - 上下文长度 $S = 8192$（8K），并发 $B = 16$
 
 如果采用传统 **MHA**（$H_{kv} = 64$，比例为 1）：
-$$M_{\text{kv\_MHA}} = 4 \times 16 \times 8192 \times 80 \times 8192 \times 1 = 343,597,383,680\text{ 字节} \approx \mathbf{320\text{ GB}}!$$
+$$M_{\text{kv\\_MHA}} = 4 \times 16 \times 8192 \times 80 \times 8192 \times 1 = 343,597,383,680\text{ 字节} \approx \mathbf{320\text{ GB}}!$$
 四张 80GB 的 A100/H100 显卡连权重都不存，光塞这 16 个并发的 KV Cache 就直接爆仓熔断！
 
 而采用现代标准的 **GQA**（$H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$）：
-$$M_{\text{kv\_GQA}} = \frac{320\text{ GB}}{8} = \mathbf{40\text{ GB}}!$$
+$$M_{\text{kv\\_GQA}} = \frac{320\text{ GB}}{8} = \mathbf{40\text{ GB}}!$$
 显存开销瞬间暴降 **87.5%**！在 8 卡 TP 并行下，单卡仅占 5 GB，原本无法上线的服务直接顺畅跑飞。
 
 ---
@@ -481,12 +481,12 @@ $$\theta_i = b^{-2i / d_h}, \quad i \in \left[ 0, 1, \dots, \frac{d_h}{2} - 1 \r
 如果在 GPU 上真去构造这个稀疏的分块矩阵做矩阵乘法，显存与计算开销将不可接受。  
 在实际 Kernel（如 HuggingFace Transformers 与 vLLM）中，采用的是**向量逐元素乘法（Elementwise Hadamard Product）**：
 
-$$\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\_half}(x) \odot \sin(m\Theta)$$
+$$\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\\_half}(x) \odot \sin(m\Theta)$$
 
 其中：
 - $\cos(m\Theta)$ 与 $\sin(m\Theta)$ 预先计算并在序列维度广播；
 - 对于输入分块 $x = [x_1, x_2]$（前后对半拆分），定义：
-  $$\text{rotate\_half}(x) = [-x_2, x_1]$$
+  $$\text{rotate\\_half}(x) = [-x_2, x_1]$$
 
 只需一次内存连续加载，在寄存器中对半交换符号，即可在 1 个时钟周期内完成正交旋转变换！
 
@@ -584,7 +584,7 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 
 在朴素 PyTorch 实现中，这三个步骤分别触发三次独立 Kernel Launch，需要将数以 GB 计的张量写入 HBM，再读取回 SM 进行逐元素乘法，严重拖慢训练步时。
 
-**工业级解决方案**：必须采用 **Fused SwiGLU 算子**（在 Triton 或 CUDA 中融合）。在单个 Kernel 内部完成 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 的双矩阵合并乘法（通过将两矩阵拼为一个大权重 $W_{\text{gate\_up}} \in \mathbb{R}^{d \times 2d_{\text{ffn}}}$），在寄存器内直接完成 SiLU 与乘法，将中间激活值写出量压缩至原先的 **1/3**！
+**工业级解决方案**：必须采用 **Fused SwiGLU 算子**（在 Triton 或 CUDA 中融合）。在单个 Kernel 内部完成 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 的双矩阵合并乘法（通过将两矩阵拼为一个大权重 $W_{\text{gate\\_up}} \in \mathbb{R}^{d \times 2d_{\text{ffn}}}$），在寄存器内直接完成 SiLU 与乘法，将中间激活值写出量压缩至原先的 **1/3**！
 
 ---
 
@@ -636,24 +636,24 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 - $W_v$ 权重：$d \times d_{kv}$
 - $W_o$ 权重：$d \times d$
 - **单层 Attention 总参数量**：
-  $$P_{\text{attn\_layer}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)$$
-  - 若为传统 MHA（$H_{kv} = H_q$）：$P_{\text{attn\_layer}} = 4d^2$；
-  - 若为 1:8 GQA（$H_{kv} = \frac{1}{8} H_q$）：$P_{\text{attn\_layer}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
+  $$P_{\text{attn\\_layer}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)$$
+  - 若为传统 MHA（$H_{kv} = H_q$）：$P_{\text{attn\\_layer}} = 4d^2$；
+  - 若为 1:8 GQA（$H_{kv} = \frac{1}{8} H_q$）：$P_{\text{attn\\_layer}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
 
 #### 2. SwiGLU FFN 层参数量手算：
 - $W_{\text{gate}}$ 权重：$d \times d_{\text{ffn}}$
 - $W_{\text{up}}$ 权重：$d \times d_{\text{ffn}}$
 - $W_{\text{down}}$ 权重：$d_{\text{ffn}} \times d$
 - **单层 FFN 总参数量**：
-  $$P_{\text{ffn\_layer}} = 3 \times d \times d_{\text{ffn}}$$
+  $$P_{\text{ffn\\_layer}} = 3 \times d \times d_{\text{ffn}}$$
   若按 $d_{\text{ffn}} = \frac{8}{3}d$：
-  $$P_{\text{ffn\_layer}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}$$
+  $$P_{\text{ffn\\_layer}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}$$
 
 #### 3. 其他非重要参数（Norm 等）：
 - 两个 RMSNorm 的可学习缩放向量 $\gamma$：$2 \times d$（与矩阵参数相比完全可忽略不计）。
 
 #### 4. 单层 Block 总参数量：
-$$P_{\text{layer}} = P_{\text{attn\_layer}} + P_{\text{ffn\_layer}} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right) + 3d \cdot d_{\text{ffn}}$$
+$$P_{\text{layer}} = P_{\text{attn\\_layer}} + P_{\text{ffn\\_layer}} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right) + 3d \cdot d_{\text{ffn}}$$
 
 #### 5. 全模型参数量（含 Embedding）：
 全模型包含 $L$ 个 Block，以及输入 Embedding 矩阵和通常解绑的 LM Head 输出投射矩阵：
@@ -661,8 +661,8 @@ $$P_{\text{total}} = L \times P_{\text{layer}} + 2 \times V \times d$$
 
 以 **LLaMA-3-8B** 真实配置验算：
 $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
-- $P_{\text{attn\_layer}} = 2 \times 4096^2 \times (1 + 8/32) = 2 \times 16777216 \times 1.25 = 41,943,040$
-- $P_{\text{ffn\_layer}} = 3 \times 4096 \times 14336 = 176,160,768$
+- $P_{\text{attn\\_layer}} = 2 \times 4096^2 \times (1 + 8/32) = 2 \times 16777216 \times 1.25 = 41,943,040$
+- $P_{\text{ffn\\_layer}} = 3 \times 4096 \times 14336 = 176,160,768$
 - 单层 Block 参数量：$41.94\text{M} + 176.16\text{M} = 218.10\text{M}$
 - 32 层 Block 总和：$32 \times 218.10\text{M} = \mathbf{6.98\text{ B}}$
 - Embedding 与 LM Head：$2 \times 128256 \times 4096 \approx \mathbf{1.05\text{ B}}$
@@ -775,7 +775,7 @@ $$M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \l
 
 在推理集群做容量规划（Capacity Planning）时，必须按以下推论计算最大承载并发 $B_{\max}$：
 
-$$B_{\max} = \left\lfloor \frac{M_{\text{GPU\_Total}} - M_{\text{Weights}} - M_{\text{CUDA\_Runtime}}}{M_{\text{kv\_per\_seq}}} \right\rfloor$$
+$$B_{\max} = \left\lfloor \frac{M_{\text{GPU\\_Total}} - M_{\text{Weights}} - M_{\text{CUDA\\_Runtime}}}{M_{\text{kv\\_per\\_seq}}} \right\rfloor$$
 
 ---
 

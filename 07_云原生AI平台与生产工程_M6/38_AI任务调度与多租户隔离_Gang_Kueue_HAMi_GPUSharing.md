@@ -718,11 +718,11 @@ CPU 超卖最多导致大家算得慢一点（CFS 限流）；而 **GPU 显存�
 
 大厂的黄金防波堤公式为：
 
-$$M_{\text{allocatable}} = M_{\text{physical}} - M_{\text{driver\_overhead}} - M_{\text{safety\_buffer}}$$
+$$M_{\text{allocatable}} = M_{\text{physical}} - M_{\text{driver\\_overhead}} - M_{\text{safety\\_buffer}}$$
 
 对于一张 80GB（实际约 81,920 MB）的 H100 显卡：
-1. **驱动与 CUDA 上下文保留（$M_{\text{driver\_overhead}}$）**：固定预留 **1,500 MB**；
-2. **防波堤安全缓冲（$M_{\text{safety\_buffer}}$）**：预留 **10%（约 8,000 MB）** 作为防御 PyTorch 显存碎片（Fragmentation）与临时通信缓存的绝对隔离带；
+1. **驱动与 CUDA 上下文保留（$M_{\text{driver\\_overhead}}$）**：固定预留 **1,500 MB**；
+2. **防波堤安全缓冲（$M_{\text{safety\\_buffer}}$）**：预留 **10%（约 8,000 MB）** 作为防御 PyTorch 显存碎片（Fragmentation）与临时通信缓存的绝对隔离带；
 3. **真实最大可切分额度**：控制在 **$72,000 \text{ MB}$** 以内，严禁突破红线！
 
 ---

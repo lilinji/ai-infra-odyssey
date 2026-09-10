@@ -589,7 +589,7 @@ $$\text{addr}_i = \text{base} + i \times \text{stride}$$
 $$\text{Bank}_i = (i \times \text{stride}) \pmod{32}$$
 
 由数论性质易得，该访问模式命中的独立 Bank 总数为：
-$$N_{\text{active\_banks}} = \frac{32}{\gcd(\text{stride}, 32)}$$
+$$N_{\text{active\\_banks}} = \frac{32}{\gcd(\text{stride}, 32)}$$
 进而，平均落入每个 Bank 的冲突度（Way 数）精确满足：
 $$\text{Conflict Degree} = \gcd(\text{stride}, 32)$$
 
@@ -1568,7 +1568,7 @@ Warp 调度三十二，连续对齐是一伙。
    - 全局 HBM 带宽：$B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
    - 平均 HBM 访存延迟：$L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
    - 全芯片必须维持在飞行中的数据量：
-     $$N_{\text{total\_bytes}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}$$
+     $$N_{\text{total\\_bytes}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}$$
 3. **分摊到单 SM 与 Warp 级计算**：
    - A100 共有 108 个 SM，每个 SM 必须分摊维持的在途数据量：
      $$N_{\text{bytes per SM}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}$$

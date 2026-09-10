@@ -62,7 +62,7 @@ Register ↔ Shared Mem   Shared Mem ↔ L2 ↔ HBM  GPU ↔ NVLink ↔ GPU    G
 $$P = \min\left(P_{\text{peak}}, \text{BW}_{\text{HBM}} \times \text{AI}\right), \quad \text{Arithmetic Intensity (AI)} = \frac{\text{FLOPs}}{\text{Bytes}}$$
 
 ### 3. 真实暴露通信耗时：Exposed Communication
-$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\_comm}} = T_{\text{compute}} + \max(0, T_{\text{comm}} - T_{\text{compute\_overlap}})$$
+$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}} = T_{\text{compute}} + \max(0, T_{\text{comm}} - T_{\text{compute\\_overlap}})$$
 
 ### 4. Overlap 惩罚因子模型：$k \ge 1.0$
 $$\text{实际总耗时 } T_{\text{total}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)$$

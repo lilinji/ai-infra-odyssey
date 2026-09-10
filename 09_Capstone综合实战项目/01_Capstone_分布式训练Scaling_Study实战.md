@@ -269,7 +269,7 @@ $$T_{\text{comm}} \approx \frac{2 \times S_{\text{grad}}}{B_{\text{comm}}}$$
 
 - **黄金无感区（Compute-Bound / Perfect Overlap）**：
   若满足：
-  $$T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first\_bucket\_wait}}$$
+  $$T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first\\_bucket\\_wait}}$$
   通信被反向计算完全掩盖在阴影之下，对外表现出来的通信损耗**几乎为零**！
 - **性能悬崖区（Communication-Bound / Exposed Bubble）**：
   若因为卡数激增、网络带宽骤降，导致：

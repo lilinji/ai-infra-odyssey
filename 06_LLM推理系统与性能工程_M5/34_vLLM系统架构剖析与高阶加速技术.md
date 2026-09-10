@@ -378,7 +378,7 @@ $$\mathcal{S}_{\text{throughput}} = \frac{1}{1 - 0.9 \times 0.95} = \frac{1}{1 -
 - CPU 必须通过 Python 循环，一个接一个调用 CUDA Runtime API 发射每个算子；
 - 每次发射需要经历驱动参数打包、Stream 队列同步检查，开销约为 **$3 \sim 5\text{ 微秒}$**；
 - 350 个算子仅在 CPU 发射上就要烧掉：
-  $$T_{\text{cpu\_launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}$$
+  $$T_{\text{cpu\\_launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}$$
 - 如果此时 GPU 执行一个 Batch=1 的 Decode 算子只需要 **1.0 ms**，那么整个系统的耗时为 $1.4 + 1.0 = \mathbf{2.4\text{ ms}}$——**超过 58% 的时间死在 CPU 派发指令的路上！**
 
 ---

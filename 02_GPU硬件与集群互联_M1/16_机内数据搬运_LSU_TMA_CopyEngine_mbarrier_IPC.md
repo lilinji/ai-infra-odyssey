@@ -84,7 +84,7 @@ math: true
   - [3.2 mbarrier 核心机制三位一体：字节级硬件计数 + Phase Bit 翻转 + Warp Scheduler 硬件挂起/唤醒](#32-mbarrier-核心机制三位一体字节级硬件计数--phase-bit-翻转--warp-scheduler-硬件挂起唤醒)
   - [3.3 Ping-Pong 双缓冲异步流水线：计算读 Buffer A 时 TMA 写入 Buffer B，mbarrier 翻转后角色瞬间对调](#33-ping-pong-双缓冲异步流水线计算读-buffer-a-时-tma-写入-buffer-b-mbarrier-翻转后角色瞬间对调)
 - [4. 通算重叠（Overlap）的残酷真相：SM 竞争与 k 倍率膨胀](#4-通算重叠overlap的残酷真相sm-竞争与-k-倍率膨胀)
-  - [4.1 通算重叠不是免费的午餐：通信与计算同跑时，耗时发生的乘性膨胀 $t_{comm\_overlap} = t_{comm\_solo} \times k$](#41-通算重叠不是免费的午餐通信与计算同跑时耗时发生的乘性膨胀-t_comm_overlap--t_comm_solo-times-k)
+  - [4.1 通算重叠不是免费的午餐：通信与计算同跑时，耗时发生的乘性膨胀 $t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k$](#41-通算重叠不是免费的午餐通信与计算同跑时耗时发生的乘性膨胀-t_comm_overlap--t_comm_solo-times-k)
   - [4.2 资源争夺的五重战场：SM 核心配额、寄存器堆、L2 Cache 带宽、HBM 内存控制器、Warp 调度器](#42-资源争夺的五重战场sm-核心配额寄存器堆l2-cache-带宽hbm-内存控制器warp-调度器)
   - [4.3 工业级破局利器：字节 Flux 的 `sm_margin` 显式预留切分，与 DeepEP Normal 的 `Buffer.set_num_sms(n)` 硬件级配额](#43-工业级破局利器字节-flux-的-sm_margin-显式预留切分与-deepep-normal-的-bufferset_num_smsn-硬件级配额)
   - [4.4 激活值卸载（Activation Offloading）的三大必要条件：异步流、Pinned Memory 与 NUMA 亲和性](#44-激活值卸载activation-offloading的三大必要条件异步流pinned-memory-与-numa-亲和性)
@@ -440,7 +440,7 @@ NVIDIA 从 Ampere 架构开始萌芽、在 Hopper 架构达到完全体形态的
 
 # 4. 通算重叠（Overlap）的残酷真相：SM 竞争与 k 倍率膨胀
 
-## 4.1 通算重叠不是免费的午餐：通信与计算同跑时，耗时发生的乘性膨胀 $t_{comm\_overlap} = t_{comm\_solo} \times k$
+## 4.1 通算重叠不是免费的午餐：通信与计算同跑时，耗时发生的乘性膨胀 $t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k$
 
 在很多架构师的理想图纸上，通算重叠被描述成一个近乎无损的美好公式：
 $$\text{Ideal Overlap Time} = \max(T_{\text{compute}}, T_{\text{communication}})$$
@@ -449,7 +449,7 @@ $$\text{Ideal Overlap Time} = \max(T_{\text{compute}}, T_{\text{communication}})
 **原本单独执行只需 1.0 毫秒的通信操作，在与计算重叠执行时，耗时居然悄悄膨胀到了 1.3 甚至 1.5 毫秒！**
 
 通信耗时相比单独独占执行，会出现一个明显的乘性膨胀系数 $k$：
-$$t_{\text{comm\_overlap}} = t_{\text{comm\_solo}} \times k \quad (k > 1.0)$$
+$$t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k \quad (k > 1.0)$$
 
 在大模型训练小规模集群的真实测试中：
 - 当与 Compute-Bound 的大 GEMM 算子重叠时，竞争相对缓和，$k \approx 1.05 \sim 1.15$；
@@ -1074,7 +1074,7 @@ if __name__ == "__main__":
 > 🎯 **大厂标准答题路径与白板推导**：
 > 1. **数学模型与现象**：
 >    - 理论公式假设两者物理互不相干：$T = \max(T_{\text{comp}}, T_{\text{comm}})$；
->    - 实际上实测通信耗时膨胀：$t_{\text{comm\_overlap}} = t_{\text{comm\_solo}} \times k$（$k \approx 1.1 \sim 1.4$）。
+>    - 实际上实测通信耗时膨胀：$t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k$（$k \approx 1.1 \sim 1.4$）。
 > 2. **微架构资源的五大冲突点**：
 >    - **L2 Cache 带宽挤占**：跨卡 NVLink 传输的大流量穿透 L2，冲垮了 GEMM 矩阵计算的权重缓存命中，迫使计算线程向 HBM 发起昂贵的重加载；
 >    - **内存控制器（Memory Controller）排队**：通信的突发写入与计算的密集读取在片外显存总线端口迎头相撞，队列溢出导致平均延迟翻倍；

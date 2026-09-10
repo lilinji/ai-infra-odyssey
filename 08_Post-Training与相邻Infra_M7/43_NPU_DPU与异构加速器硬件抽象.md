@@ -308,7 +308,7 @@ $$\text{FLOPs} = 2 \times M \times N \times K$$
 1. **昇腾 DaVinci Cube 单元**：
    硬件设计尺寸固定为 $M=16, N=16, K=16$。
    单时钟周期（Clock Cycle）内，Cube 硬件流水线执行：
-   $$\text{Ops}_{\text{cube\_cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}$$
+   $$\text{Ops}_{\text{cube\\_cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}$$
    设芯片主频为 $f_{\text{clk}}$，单芯片集成 $N_{\text{core}}$ 个 AI Core：
    $$\text{Peak}_{\text{Cube}} = N_{\text{core}} \times 8192 \times f_{\text{clk}}$$
    当 $N_{\text{core}} = 32, f_{\text{clk}} = 1.8\text{ GHz}$ 时：
@@ -317,7 +317,7 @@ $$\text{FLOPs} = 2 \times M \times N \times K$$
 2. **NVIDIA Hopper H100 SXM5 Tensor Core**：
    每个 SM 包含 4 个 4th-Gen Tensor Core。每个 Tensor Core 单周期支持执行 256 次 FP16 FMA（512 FLOPs）。
    每个 SM 单周期吞吐：
-   $$\text{Ops}_{\text{sm\_cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}$$
+   $$\text{Ops}_{\text{sm\\_cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}$$
    H100 拥有 132 个活跃 SM，主频 $f_{\text{clk}} \approx 1.83\text{ GHz}$，加上 FP8/FP16 密集计算指令优化，单卡密集 FP16 峰值达 **989 TFLOPS**。
    **结论**：NVIDIA 凭借更多的 SM 阵列与更高的时钟频率在算力密度上占优，但昇腾单个 Cube 单元的单周期并发粒度更大（8192 vs 2048），更强依赖数据排布的分块饱满度！
 
