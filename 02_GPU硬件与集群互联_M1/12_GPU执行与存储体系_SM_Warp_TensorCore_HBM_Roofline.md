@@ -544,7 +544,9 @@ NVIDIA 的突破性方案，就是将矩阵计算的原语从“单线程标量�
 
 在汇编底层，NVIDIA 引入了 **MMA（Matrix Multiply and Accumulate）** 指令集体系：
 
-$$D = A \times B + C$$
+$$
+D = A \times B + C
+$$
 
 其中 $A, B, C, D$ 不再是标量数字，而是小维度的矩阵切片！
 
@@ -608,7 +610,9 @@ $$D = A \times B + C$$
 - 每次浮点乘加操作需要 2 个输入操作数（每个 FP16 占 2 字节），产生 1 个输出；
 - 如果我们要让 Tensor Core 跑满，且**假设每次计算的数据都是从片外显存 HBM 实时读取、没有做任何片上数据复用**，那么每秒钟需要从 HBM 读入的数据量是：
 
-$$\text{Required Bandwidth} = \frac{9.89 \times 10^{14}\text{ FLOPs/s} \times 2\text{ Bytes}}{2\text{ FLOPs/op}} = 9.89 \times 10^{14}\text{ Bytes/s} \approx \mathbf{989\text{ TB/s}}！$$
+$$
+\text{Required Bandwidth} = \frac{9.89 \times 10^{14}\text{ FLOPs/s} \times 2\text{ Bytes}}{2\text{ FLOPs/op}} = 9.89 \times 10^{14}\text{ Bytes/s} \approx \mathbf{989\text{ TB/s}}！
+$$
 
 然而，H100 搭载的当今世界顶尖的 HBM3 物理显存带宽是多少？
 实测物理峰值只有：**$3.35\text{ TB/s}$**！
@@ -830,26 +834,37 @@ Bank 31:  0x7C~0x7F, 0xFC~0xFF, 0x17C~0x17F ...
   - 浮点运算量（FLOPs）：每个元素做 1 次加法，共 **$4\text{ FLOPs}$**；
   - 访存量（Bytes）：读取 $A$（8 字节）+ 读取 $B$（8 字节）+ 写回 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比（Arithmetic Intensity）：
-    $$\text{AI} = \frac{4\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.167\text{ FLOPs/Byte}}$$
+
+    $$
+    \text{AI} = \frac{4\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.167\text{ FLOPs/Byte}}
+    $$
 
 - **算例 B（极简小矩阵乘法：$2 \times 2$ 乘 $2 \times 2$，FP16 2 字节）**：
   - 浮点运算量：$2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}$；
   - 访存量（假设无缓存）：读 $A$（8 字节）+ 读 $B$（8 字节）+ 写 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比：
-    $$\text{AI} = \frac{16\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.667\text{ FLOPs/Byte}}$$
+
+    $$
+    \text{AI} = \frac{16\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.667\text{ FLOPs/Byte}}
+    $$
 
 ### Step 4: Formal Model（正式数学模型与硬件映射）
 
 给定硬件平台与特定算子，该算子在该硬件上所能达到的**理论最大计算性能 $P$（单位：TFLOPS）** 由下式唯一决定：
 
-$$P = \min\left(P_{\text{peak}}, \; \text{BW}_{\text{HBM}} \times \text{AI}\right)$$
+$$
+P = \min\left(P_{\text{peak}}, \; \text{BW}_{\text{HBM}} \times \text{AI}\right)
+$$
 
 其中核心参量物理定义如下：
 
 - **$P_{\text{peak}}$（硬件峰值算力）**：芯片在当前数据精度下的理论硬件算力顶峰（单位：$\text{TFLOPS} = 10^{12}\text{ FLOPs/s}$）；
 - **$\text{BW}_{\text{HBM}}$（硬件显存物理带宽）**：显卡主存储总线的理论或实测最大吞吐速率（单位：$\text{TB/s} = 10^{12}\text{ Bytes/s}$）；
 - **$\text{AI}$（Arithmetic Intensity，算术强度 / 计算访存比）**：算法自身固有的数学物理特征：
-  $$\text{AI} = \frac{\text{算法总浮点运算量 (Total FLOPs)}}{\text{从 HBM 读写搬运的总物理字节数 (Total Bytes Trafficked)}}\quad (\text{单位: FLOPs/Byte})$$
+
+  $$
+  \text{AI} = \frac{\text{算法总浮点运算量 (Total FLOPs)}}{\text{从 HBM 读写搬运的总物理字节数 (Total Bytes Trafficked)}}\quad (\text{单位: FLOPs/Byte})
+  $$
 
 ```text
 计算性能 P (TFLOPS)
@@ -870,7 +885,9 @@ P_peak │───────────────────────�
 
 由几何关系显然可知，斜线与平顶的交汇点被定义为 **硬件固有物理转折点（Turning Point $\text{AI}^*$）**：
 
-$$\text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}$$
+$$
+\text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}
+$$
 
 - **当 $\text{AI} < \text{AI}^*$ 时**：算子落在左侧斜坡区，属于 **Memory-Bound（访存受限）**。此时就算你把计算指令优化上天，性能也纹丝不动；唯一的破局手段是**减少 HBM 访存字节数（提高 AI 值）**！
 - **当 $\text{AI} \ge \text{AI}^*$ 时**：算子落在右侧平顶区，属于 **Compute-Bound（算力受限）**。此时显存带宽已经不再是瓶颈，限制性能的是硬件 Tensor Core 的算力供给能力。
@@ -883,13 +900,19 @@ $$\text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}$$
   - Dense FP16 峰值算力：$P_{\text{peak}} = 312\text{ TFLOPS}$；
   - HBM2e 物理实测带宽：$\text{BW} = 2.0\text{ TB/s}$；
   - **A100 硬件固有转折点**：
-    $$\text{AI}^*_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}$$
+
+    $$
+    \text{AI}^*_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}
+    $$
 
 - **NVIDIA H100-SXM5-80GB (Hopper 架构)**：
   - Dense FP16 峰值算力：$P_{\text{peak}} = 989\text{ TFLOPS}$；
   - HBM3 物理实测带宽：$\text{BW} = 3.35\text{ TB/s}$；
   - **H100 硬件固有转折点**：
-    $$\text{AI}^*_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}$$
+
+    $$
+    \text{AI}^*_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}
+    $$
 
 > 💡 **惊心动魄的工程事实**：
 > 在 H100 上，**只有当一个算子每从显存中搬运 1 个字节的数据，就能在其上完成 295 次以上的乘加计算，才配把 H100 的 Tensor Core 彻底喂饱！**  
@@ -947,7 +970,10 @@ $$\text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}$$
 ### 1. 浮点运算量（FLOPs）：
 
 每一个输出元素都需要做 $K$ 次乘法和 $K$ 次加法（$2K$ 次操作）：
-$$\text{FLOPs} = 2 \times M \times N \times K = 2 \times 4096^3 = \mathbf{1.374 \times 10^{11}\text{ FLOPs}} \quad (137.4\text{ GFLOPs})$$
+
+$$
+\text{FLOPs} = 2 \times M \times N \times K = 2 \times 4096^3 = \mathbf{1.374 \times 10^{11}\text{ FLOPs}} \quad (137.4\text{ GFLOPs})
+$$
 
 ### 2. 物理访存量（Bytes）：
 
@@ -955,15 +981,22 @@ $$\text{FLOPs} = 2 \times M \times N \times K = 2 \times 4096^3 = \mathbf{1.374 
 - 读矩阵 $B$：$K \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
 - 写矩阵 $C$：$M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
 - **总 HBM 搬运量（假定理想片上复用）**：
-  $$\text{Bytes} = 2 \times (MK + KN + MN) = 3 \times 33.55\text{ MB} \approx \mathbf{100.66\text{ MB}} \quad (1.0066 \times 10^8\text{ Bytes})$$
+
+  $$
+  \text{Bytes} = 2 \times (MK + KN + MN) = 3 \times 33.55\text{ MB} \approx \mathbf{100.66\text{ MB}} \quad (1.0066 \times 10^8\text{ Bytes})
+  $$
 
 ### 3. 算术强度计算：
 
-$$\text{AI}_{\text{GEMM}} = \frac{1.374 \times 10^{11}\text{ FLOPs}}{1.0066 \times 10^8\text{ Bytes}} \approx \mathbf{1365\text{ FLOPs/Byte}}$$
+$$
+\text{AI}_{\text{GEMM}} = \frac{1.374 \times 10^{11}\text{ FLOPs}}{1.0066 \times 10^8\text{ Bytes}} \approx \mathbf{1365\text{ FLOPs/Byte}}
+$$
 
 ### 4. Roofline 判决：
 
-$$\text{AI}_{\text{GEMM}} = 1365 \gg \text{AI}^*_{\text{H100}} (295.2)$$
+$$
+\text{AI}_{\text{GEMM}} = 1365 \gg \text{AI}^*_{\text{H100}} (295.2)
+$$
 
 - **结论**：**大矩阵 GEMM 是毫无争议的纯 Compute-Bound（算力受限）算子！**
 - 它深深扎根在 Roofline 的最右侧平顶区。因此，优化大 GEMM 的核心手段是：**提高 Tensor Core 的 MMA 指令填充率、隐藏指令延迟、优化流水线分块（Tiling）**，而根本不用担心 HBM 物理带宽被榨干。
@@ -973,7 +1006,10 @@ $$\text{AI}_{\text{GEMM}} = 1365 \gg \text{AI}^*_{\text{H100}} (295.2)$$
 ## 6.2 算子 B：FlashAttention 如何通过片上 SRAM 分块将 Attention 变成 Compute-Bound？
 
 标准自注意力机制（Self-Attention）的公式：
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V$$
+
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V
+$$
 
 设序列长度为 $N$，特征维度为 $d$。
 
@@ -989,7 +1025,11 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V$
 
 - $O(N^2)$ 的中间读写量高达数个 GB！
 - 算术强度被稀释至：
-  $$\text{AI}_{\text{Standard Attention}} \approx \mathbf{15 \sim 30\text{ FLOPs/Byte}} \ll 295.2$$
+
+  $$
+  \text{AI}_{\text{Standard Attention}} \approx \mathbf{15 \sim 30\text{ FLOPs/Byte}} \ll 295.2
+  $$
+
 - **标准 Attention 被死死锁在 Memory-Bound 的低效斜坡上！算力硬件 90% 的时间在等 HBM 搬运中间矩阵 $S$ 和 $P$！**
 
 ### 2. FlashAttention 的相变突破：
@@ -1012,7 +1052,10 @@ HBM 物理读写量：从 O(N^2) 断崖式骤降为 O(N)！
 ## 6.3 算子 C：LayerNorm / RMSNorm / Softmax 为什么永远被困在 Memory-Bound 深渊？
 
 我们再来看大模型中密密麻麻的逐元素（Element-wise）与规约算子，以 **RMSNorm** 为例：
-$$y = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2 + \epsilon}} \odot \gamma$$
+
+$$
+y = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2 + \epsilon}} \odot \gamma
+$$
 
 对于一个长度为 $d$ 的向量（FP16，每个数 2 字节）：
 
@@ -1025,10 +1068,17 @@ $$y = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2 + \epsilon}} \odot \gamma$$
    - 将结果 $y$ 写回 HBM：$2d$ 字节；
    - 总访存量约 **$6d\text{ Bytes}$**；
 3. **算术强度**：
-   $$\text{AI}_{\text{RMSNorm}} = \frac{3d}{6d} = \mathbf{0.5\text{ FLOPs/Byte}}！$$
+
+   $$
+   \text{AI}_{\text{RMSNorm}} = \frac{3d}{6d} = \mathbf{0.5\text{ FLOPs/Byte}}！
+   $$
 
 在 H100 上，这个算子的理论上限算力是：
-$$P = 3.35\text{ TB/s} \times 0.5\text{ FLOPs/Byte} = \mathbf{1.675\text{ TFLOPS}}$$
+
+$$
+P = 3.35\text{ TB/s} \times 0.5\text{ FLOPs/Byte} = \mathbf{1.675\text{ TFLOPS}}
+$$
+
 **仅相当于 H100 峰值算力（989 TFLOPS）的 0.17%！连零头都算不上！**
 
 > 🏭 **大厂生产解法：Kernel Fusion（算子融合）**
@@ -1054,7 +1104,10 @@ $$P = 3.35\text{ TB/s} \times 0.5\text{ FLOPs/Byte} = \mathbf{1.675\text{ TFLOPS
 - 假设权重参数量为 $P$，FP16 占用字节数 $2P$；
 - 每次与 $1 \times D$ 的向量相乘，进行的浮点运算量是 $2P$；
 - 算术强度：
-  $$\text{AI}_{\text{Decode (BS=1)}} = \frac{2P\text{ FLOPs}}{2P\text{ Bytes}} = \mathbf{1.0\text{ FLOPs/Byte}}！$$
+
+  $$
+  \text{AI}_{\text{Decode (BS=1)}} = \frac{2P\text{ FLOPs}}{2P\text{ Bytes}} = \mathbf{1.0\text{ FLOPs/Byte}}！
+  $$
 
 在 H100 上，面对 $\text{AI} = 1.0$ 的算子，硬件能发挥的算力上限永远被锁死在 **$3.35\text{ TFLOPS}$**！你的万亿参数芯片，在这一瞬间变成了纯粹的显存搬运工！
 
@@ -1482,15 +1535,27 @@ if __name__ == "__main__":
 >    - 矩阵乘向量计算量：$\text{FLOPs} = 2 \times 70 \times 10^9 = 1.4 \times 10^{11}\text{ FLOPs}$；
 >    - FP16 权重显存读取量：$\text{Bytes} = 70 \times 10^9 \times 2\text{ Bytes} = 1.4 \times 10^{11}\text{ Bytes} = 140\text{ GB}$；
 >    - 该算子的计算访存比：
->      $$\text{AI} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = 1.0\text{ FLOPs/Byte}$$
+>
+>      $$
+>      \text{AI} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = 1.0\text{ FLOPs/Byte}
+>      $$
+>
 > 2. **在 Roofline 上判定瓶颈**：
 >    - H100 的转折点 $\text{AI}^* = \frac{989}{3.35} \approx 295.2\text{ FLOPs/Byte}$；
 >    - 因为 $\text{AI} = 1.0 \ll 295.2$，系统处于**绝对的 Memory-Bound（显存带宽受限）极限斜坡**上。
 > 3. **计算单 Token 物理时延极限与吞吐上限**：
 >    - 生成 1 个 Token 所需搬运权重的理论最短物理时间：
->      $$T_{\text{min}} = \frac{140\text{ GB}}{3.35\text{ TB/s}} = \frac{140 \times 10^9}{3.35 \times 10^{12}} \approx \mathbf{0.0418\text{ 秒}} \quad (41.8\text{ ms})$$
+>
+>      $$
+>      T_{\text{min}} = \frac{140\text{ GB}}{3.35\text{ TB/s}} = \frac{140 \times 10^9}{3.35 \times 10^{12}} \approx \mathbf{0.0418\text{ 秒}} \quad (41.8\text{ ms})
+>      $$
+>
 >    - 理论最高生成吞吐：
->      $$\text{Throughput}_{\text{max}} = \frac{1}{0.0418\text{ s}} \approx \mathbf{23.9\text{ Tokens/s}}$$
+>
+>      $$
+>      \text{Throughput}_{\text{max}} = \frac{1}{0.0418\text{ s}} \approx \mathbf{23.9\text{ Tokens/s}}
+>      $$
+>
 > 4. **架构结论与生产启示**：
 >    - 单卡跑 70B（甚至装不下，需量化为 4-bit 或跨卡 TP），在 BS=1 下单卡单流生成绝不可能超过 24 Tokens/s；
 >    - 想要提升吞吐，必须提高 Batch Size（分摊权重搬运），或者采用投机采样（Speculative Decoding）将多步验证合并为批处理矩阵计算。
@@ -1503,13 +1568,21 @@ if __name__ == "__main__":
 >
 > 1. **利特尔法则（Little's Law）在体系结构中的应用**：
 >    - 并发隐藏模型公式：
->      $$\text{Concurrency Required (Warps)} = \frac{\text{Latency (时钟周期)}}{\text{Throughput (每周期消耗指令数)}}$$
+>
+>      $$
+>      \text{Concurrency Required (Warps)} = \frac{\text{Latency (时钟周期)}}{\text{Throughput (每周期消耗指令数)}}
+>      $$
+>
 > 2. **定量推导**：
 >    - 若访存延迟为 $L = 400$ 个周期；
 >    - 单个 Warp 发射完一条访存指令后，必须等待 400 个周期才能发射下一条依赖该数据的指令；
 >    - 如果每个周期调度器都需要发射一条指令以保证计算流水线 100% 满负荷，那么在这 400 个周期的时间空窗内，必须有其他独立的 Warp 处于就绪状态并供调度器发射；
 >    - 因此，理论最少需要并发维护的活跃 Warp 数为：
->      $$N_{\text{warps}} = \frac{400\text{ Cycles}}{1\text{ Cycle/Warp}} = \mathbf{400\text{ 个 Warp}}$$
+>
+>      $$
+>      N_{\text{warps}} = \frac{400\text{ Cycles}}{1\text{ Cycle/Warp}} = \mathbf{400\text{ 个 Warp}}
+>      $$
+>
 > 3. **指令级并行（ILP）的分摊**：
 >    - 如果每个线程自身具有独立的指令级并行度（例如通过循环展开，一个线程连续发射 4 条完全无依赖的独立运算指令），那么每个 Warp 可以连续支撑 4 个周期的发射；
 >    - 此时需要的活跃 Warp 数可以降为 $400 / 4 = 100$ 个 Warp。
@@ -1526,20 +1599,35 @@ if __name__ == "__main__":
 > 1. **硬件寻址映射模型**：
 >    - Shared Memory 划分为 32 个 Bank，每个 Bank 宽 4 字节（1 个 32-bit float）。
 >    - 任意元素下标 $k$ 所对应的物理 Bank 编号公式为：
->      $$\text{Bank ID} = k \pmod{32}$$
+>
+>      $$
+>      \text{Bank ID} = k \pmod{32}
+>      $$
+>
 > 2. **转置冲突诱因推导**：
 >    - 声明二维共享数组 `float tile[32][32]`；
 >    - 其在内存中的线性展开为：`tile[row][col]` 对应的扁平下标为 $k = \text{row} \times 32 + \text{col}$；
 >    - 当 Warp 写入该数组时按行写入（$\text{row}$ 固定，$\text{col} = \text{tid}$），$\text{Bank} = \text{tid} \pmod{32}$，32 个线程落入 32 个不同的 Bank，无冲突；
 >    - 但在转置读取阶段，线程必须**按列读取**（$\text{col}$ 固定，$\text{row} = \text{tid}$）：
->      $$k = \text{tid} \times 32 + \text{col}$$
->      $$\text{Bank ID} = (\text{tid} \times 32 + \text{col}) \pmod{32} = \text{col} \pmod{32} \equiv \text{常数！}$$
+>
+>      $$
+>      k = \text{tid} \times 32 + \text{col}
+>      $$
+>
+>      $$
+>      \text{Bank ID} = (\text{tid} \times 32 + \text{col}) \pmod{32} = \text{col} \pmod{32} \equiv \text{常数！}
+>      $$
+>
 >    - **32 个线程计算出的 Bank ID 完全相同！全部砸在同一个 Bank 上！触发最高级别的 32-way Bank Conflict，原本 1 个周期的访问被强制分拆为 32 个连续周期！**
 > 3. **错位 Padding 的数学解法**：
 >    - 将数组定义修改为：`__shared__ float tile[32][33];`（每行末尾多加 1 个无用 float）；
 >    - 新的扁平下标为：$k = \text{row} \times 33 + \text{col}$；
 >    - 按列读取时（$\text{row} = \text{tid}$）：
->      $$\text{Bank ID} = (\text{tid} \times 33 + \text{col}) \pmod{32} = (\text{tid} \times 32 + \text{tid} + \text{col}) \pmod{32} = (\text{tid} + \text{col}) \pmod{32}$$
+>
+>      $$
+>      \text{Bank ID} = (\text{tid} \times 33 + \text{col}) \pmod{32} = (\text{tid} \times 32 + \text{tid} + \text{col}) \pmod{32} = (\text{tid} + \text{col}) \pmod{32}
+>      $$
+>
 >    - 对于不同的 $\text{tid} \in [0, 31]$，$(\text{tid} + \text{col}) \pmod{32}$ 严格互不相同、单调双射覆盖 $[0, 31]$！
 >    - **32 个线程的访问被完美分流到 32 个互不冲突的 Bank 中，冲突瞬间归零！**
 
@@ -1557,7 +1645,15 @@ if __name__ == "__main__":
 > 3. **定量性能跳变推导**：
 >    - 算子计算强度 $\text{AI} = 20\text{ FLOPs/Byte}$；
 >    - 若数据未命中 L2，受限于 HBM：
->      $$P_{\text{HBM}} = \min(989, \, 3.35 \times 20) = \mathbf{67\text{ TFLOPS}}$$
+>
+>      $$
+>      P_{\text{HBM}} = \min(989, \, 3.35 \times 20) = \mathbf{67\text{ TFLOPS}}
+>      $$
+>
 >    - 若重构 Kernel 网格调度，引入 CUDA 12 的 **L2 Cache Residency Controls（持久化缓存保留）** 或调整 Thread Block 的遍历顺序（Z-Curve / Hilbert Curve 保持时间局部性），使数据 100% 命中 L2：
->      $$P_{\text{L2}} = \min(989, \, 6.0 \times 20) = \mathbf{120\text{ TFLOPS}}$$
+>
+>      $$
+>      P_{\text{L2}} = \min(989, \, 6.0 \times 20) = \mathbf{120\text{ TFLOPS}}
+>      $$
+>
 >    - **算子在算法 FLOPs 完全不变的前提下，仅靠调整片上缓存命中，吞吐直接提升了 1.79 倍！**

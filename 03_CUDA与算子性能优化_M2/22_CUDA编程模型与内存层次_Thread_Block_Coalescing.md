@@ -358,7 +358,10 @@ graph TD
 ##### ③ Tiny Calculator（极简数字手算）
 
 假设 Warp 内 32 个线程，每个线程加载 1 个 `float`（4 字节），有效数据总量为：
-$$D_{\text{useful}} = 32 \times 4 \text{ Bytes} = 128 \text{ Bytes}$$
+
+$$
+D_{\text{useful}} = 32 \times 4 \text{ Bytes} = 128 \text{ Bytes}
+$$
 
 - **情况 1（连续且对齐）**：线程 0~31 分别读取地址 $0, 4, 8, \dots, 124$。这 128 字节恰好填满 1 个 128B Cache Line 内的 4 个 32B Sectors。
   - 硬件发射事务数：$N_{\text{trans}} = 4$ 次（每个 32B），搬运总量：$4 \times 32 = 128 \text{ Bytes}$。
@@ -371,7 +374,9 @@ $$D_{\text{useful}} = 32 \times 4 \text{ Bytes} = 128 \text{ Bytes}$$
 
 定义全局内存事务总线效率 $\eta_{\text{mem}}$ 为：
 
-$$\eta_{\text{mem}} = \frac{\sum_{i=0}^{31} \text{SizeOf}(\text{Type}_i)}{N_{\text{transactions}} \times \text{Size}_{\text{sector}}}$$
+$$
+\eta_{\text{mem}} = \frac{\sum_{i=0}^{31} \text{SizeOf}(\text{Type}_i)}{N_{\text{transactions}} \times \text{Size}_{\text{sector}}}
+$$
 
 其中：
 
@@ -439,7 +444,10 @@ $$\eta_{\text{mem}} = \frac{\sum_{i=0}^{31} \text{SizeOf}(\text{Type}_i)}{N_{\te
 ### 3.2 矩阵行优先与列优先的数据流拆解（Row-Major 陷阱）
 
 在 C/C++ 与 PyTorch 中，多维张量默认采用**行优先存储（Row-Major）**：
-$$A[i][j] \text{ 的物理内存偏移} = i \times \text{Cols} + j$$
+
+$$
+A[i][j] \text{ 的物理内存偏移} = i \times \text{Cols} + j
+$$
 
 现在我们需要用一个 2D Block（例如 `dim3 block(32, 8)`) 遍历这个矩阵。请注意两种写法的生死之别：
 
@@ -584,14 +592,28 @@ Word 编号:   Word 0  Word 1  Word 2  Word 3  ...  Word 30   Word 31   Word 32 
 ##### 经典冲突公式：$\gcd(\text{stride}, 32)$ 模型
 
 假设 Warp 内线程 $i$（$i \in [0, 31]$）访问共享内存数组：
-$$\text{addr}_i = \text{base} + i \times \text{stride}$$
+
+$$
+\text{addr}_i = \text{base} + i \times \text{stride}
+$$
+
 其命中的 Bank 编号为：
-$$\text{Bank}_i = (i \times \text{stride}) \pmod{32}$$
+
+$$
+\text{Bank}_i = (i \times \text{stride}) \pmod{32}
+$$
 
 由数论性质易得，该访问模式命中的独立 Bank 总数为：
-$$N_{\text{active\\_banks}} = \frac{32}{\gcd(\text{stride}, 32)}$$
+
+$$
+N_{\text{active\\_banks}} = \frac{32}{\gcd(\text{stride}, 32)}
+$$
+
 进而，平均落入每个 Bank 的冲突度（Way 数）精确满足：
-$$\text{Conflict Degree} = \gcd(\text{stride}, 32)$$
+
+$$
+\text{Conflict Degree} = \gcd(\text{stride}, 32)
+$$
 
 让我们用这个公式速算常见步长下的性能表现：
 
@@ -639,11 +661,19 @@ __shared__ float tile_good[32][33]; // 每行人为扩充到 33 个 float = 132 
 ##### 物理推导过程：
 
 在 `tile_bad[32][32]` 中，`tile_bad[row][col]` 对应的 Bank 编号为：
-$$\text{Bank} = (\text{row} \times 32 + \text{col}) \pmod{32} = \text{col} \pmod{32}$$
+
+$$
+\text{Bank} = (\text{row} \times 32 + \text{col}) \pmod{32} = \text{col} \pmod{32}
+$$
+
 这意味着第 0 列的所有元素（`tile_bad[0][0], tile_bad[1][0], ...`）全部死死固定在 **Bank 0** 上！如果线程按列读取（`tile_bad[threadIdx.x][0]`），32 个线程将全部访问 Bank 0，引发惨烈的 32-way 冲突。
 
 而在 `tile_good[32][33]` 中，`tile_good[row][col]` 对应的 Bank 编号变成了：
-$$\text{Bank} = (\text{row} \times 33 + \text{col}) \pmod{32} = (\text{row} + \text{col}) \pmod{32}$$
+
+$$
+\text{Bank} = (\text{row} \times 33 + \text{col}) \pmod{32} = (\text{row} + \text{col}) \pmod{32}
+$$
+
 现在我们再来看按列读取（`tile_good[threadIdx.x][0]`）：
 
 - 线程 0 读取第 0 行第 0 列：$\text{Bank} = (0 + 0) \pmod{32} = 0$；
@@ -729,21 +759,37 @@ sequenceDiagram
 
 我们到底需要多少并发线程，才能把一条带宽为 $B$、延迟为 $L$ 的硬件管道彻底填满？这必须请出排队论中最经典的**利特尔法则（Little's Law）**：
 
-$$N = \lambda \times W$$
+$$
+N = \lambda \times W
+$$
 
 在 GPU 体系结构中，我们可以将其具象化为：
-$$\text{Concurrency（并发驻留指令字节数）} = \text{Bandwidth（硬件物理带宽）} \times \text{Latency（访问物理延迟）}$$
+
+$$
+\text{Concurrency（并发驻留指令字节数）} = \text{Bandwidth（硬件物理带宽）} \times \text{Latency（访问物理延迟）}
+$$
 
 ##### 极简数字手算（A100 真实数据）：
 
 - A100 HBM 带宽：$B = 2039 \text{ GB/s} \approx 2.0 \text{ TB/s}$；
 - 全局内存访问平均延迟：$L \approx 400 \text{ ns}$（约合 500 个时钟周期 @ 1.4 GHz）；
 - 硬件需要同时保持在空中飞行的**未决数据总量（In-flight Bytes）**：
-  $$\text{In-flight Data} = 2.0 \times 10^{12} \text{ B/s} \times 400 \times 10^{-9} \text{ s} = \mathbf{800 \text{ KB}}$$
+
+  $$
+  \text{In-flight Data} = 2.0 \times 10^{12} \text{ B/s} \times 400 \times 10^{-9} \text{ s} = \mathbf{800 \text{ KB}}
+  $$
+
 - 假设每个线程通过指令级并行（ILP）发起 16 字节（如 `float4`）的并发读取，那么芯片上至少需要维持并发的线程总数为：
-  $$N_{\text{threads}} = \frac{800 \text{ KB}}{16 \text{ Bytes}} = 50,000 \text{ 线程}$$
+
+  $$
+  N_{\text{threads}} = \frac{800 \text{ KB}}{16 \text{ Bytes}} = 50,000 \text{ 线程}
+  $$
+
 - A100 共有 108 个 SM，平均到每个 SM 必须常驻：
-  $$N_{\text{threads per SM}} = \frac{50000}{108} \approx 463 \text{ 线程} \approx \mathbf{15 \text{ 个 Warps}}$$
+
+  $$
+  N_{\text{threads per SM}} = \frac{50000}{108} \approx 463 \text{ 线程} \approx \mathbf{15 \text{ 个 Warps}}
+  $$
 
 这意味着：**在 A100 上，每个 SM 至少要维持 15 个以上的就绪 Warp 并发，才能完全吃满那 2 TB/s 的 HBM 显存带宽！** 这就是延迟隐藏的数学本质。
 
@@ -752,7 +798,10 @@ $$\text{Concurrency（并发驻留指令字节数）} = \text{Bandwidth（硬件
 ### 5.3 限制 Occupancy 的三座大山：寄存器、共享内存与 Block 阈值
 
 **Occupancy（占用率）** 定义为：
-$$\text{Occupancy} = \frac{\text{SM 当前实际驻留的活跃 Warp 数}}{\text{SM 理论支持的最大活跃 Warp 数 (A100 上为 64)}}$$
+
+$$
+\text{Occupancy} = \frac{\text{SM 当前实际驻留的活跃 Warp 数}}{\text{SM 理论支持的最大活跃 Warp 数 (A100 上为 64)}}
+$$
 
 在物理硬件上，决定一个 Block 能否入驻 SM 的，是以下三大约束：
 
@@ -818,7 +867,11 @@ graph TD
    在 Pascal 以前，L1 缓存和共享内存是两套物理电路。Volta 架构将它们合并为物理统一的 SRAM 阵列，允许程序员根据需求动态配置比例（例如 32KB L1 + 96KB SMEM，或 64KB L1 + 64KB SMEM），大幅提升了硅片利用率。
 2. **Ampere：硬件异步拷贝指令 `cp.async`**：
    在 Ampere 以前，要把数据从全局内存拷入共享内存，数据必须走这条冗长路径：
-   $$\text{Global Memory} \xrightarrow{\text{LDG 指令}} \text{通用寄存器 (Register)} \xrightarrow{\text{STS 指令}} \text{Shared Memory}$$
+
+   $$
+   \text{Global Memory} \xrightarrow{\text{LDG 指令}} \text{通用寄存器 (Register)} \xrightarrow{\text{STS 指令}} \text{Shared Memory}
+   $$
+
    这一过程不仅霸占了宝贵的寄存器空间，而且消耗了大量的 SM 发射槽位和 ALU 周期。
    Ampere 首次引入了硬件级异步拷贝引擎 `cp.async`：**数据直接绕过通用寄存器，由专门的 DMA 硬件电路直接从 L2/Global 搬运到 Shared Memory！** 这使得在数据搬运的同时，ALU 可以完全不受干扰地计算上一轮数据，实现了真正的软流水线（Software Pipelining）。
 
@@ -1563,19 +1616,39 @@ Warp 调度三十二，连续对齐是一伙。
 
 1. **定义法则**：
    利特尔法则表明：在稳态系统中，平均并发未决指令/数据量 $N$ 等于到达率（吞吐量）$\lambda$ 乘以平均等待延迟 $W$：
-   $$N_{\text{in-flight}} = \text{Throughput} \times \text{Latency}$$
+
+   $$
+   N_{\text{in-flight}} = \text{Throughput} \times \text{Latency}
+   $$
+
 2. **代入 A100 SXM4 物理常数**：
    - 全局 HBM 带宽：$B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
    - 平均 HBM 访存延迟：$L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
    - 全芯片必须维持在飞行中的数据量：
-     $$N_{\text{total\\_bytes}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}$$
+
+     $$
+     N_{\text{total\\_bytes}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}
+     $$
+
 3. **分摊到单 SM 与 Warp 级计算**：
    - A100 共有 108 个 SM，每个 SM 必须分摊维持的在途数据量：
-     $$N_{\text{bytes per SM}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}$$
+
+     $$
+     N_{\text{bytes per SM}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}
+     $$
+
    - 假设每个线程采用标准的单精度向量加载（`float4`，每个线程未决数据为 16 字节），则一个 Warp（32 线程）所能贡献的未决数据量为：
-     $$\text{Bytes per Warp} = 32 \times 16 = 512 \text{ Bytes}$$
+
+     $$
+     \text{Bytes per Warp} = 32 \times 16 = 512 \text{ Bytes}
+     $$
+
    - 每个 SM 维持满带宽所需的最少并发活跃 Warp 数量为：
-     $$\text{Warps}_{\text{needed}} = \lceil \frac{7552}{512} \rceil \approx \mathbf{15 \text{ 个 Warps}}$$
+
+     $$
+     \text{Warps}_{\text{needed}} = \lceil \frac{7552}{512} \rceil \approx \mathbf{15 \text{ 个 Warps}}
+     $$
+
 4. **系统级工程洞见（大模型 GEMV 分析）**：
    在 LLM 推理的 Decode 阶段，GEMV 算子由于 Batch=1，几乎没有计算复用，属于极端严重的 Memory-Bound 算子。如果每个线程只读 4 字节（标量 float），单个 Warp 只能贡献 128 字节，此时 SM 必须维持 $7552 / 128 \approx 59$ 个活跃 Warps（几乎要求 92% 以上的极端 Occupancy）才能打满带宽！这就是为什么在推理优化中必须推行向量化加载和多 Batch 汇聚，否则硬件带宽将永远处于严重的“饥饿”状态。
 

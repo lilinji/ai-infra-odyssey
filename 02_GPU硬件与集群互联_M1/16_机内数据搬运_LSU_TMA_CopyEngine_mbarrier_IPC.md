@@ -346,7 +346,11 @@ TMA 彻底把这部分苦力活固化到了硅片硬件中：
 在大模型机内并行优化中，字节跳动开发的 **Flux（Dense MLP 通算融合架构）** 提供了一份极具教科书价值的工程答卷。
 
 在一个标准的 Transformer MLP 结构中包含两层全连接：
-$$\text{MLP}(X) = \text{GELU}(X \cdot W_1) \cdot W_2$$
+
+$$
+\text{MLP}(X) = \text{GELU}(X \cdot W_1) \cdot W_2
+$$
+
 在张量并行（TP=8）切分下：
 - **Layer 1（Up-Projection，列并行）**：需要对输入做 AllGather，然后执行 GEMM；
 - **Layer 2（Down-Projection，行并行）**：执行 GEMM，最后必须对输出做 ReduceScatter。
@@ -443,13 +447,19 @@ NVIDIA 从 Ampere 架构开始萌芽、在 Hopper 架构达到完全体形态的
 ## 4.1 通算重叠不是免费的午餐：通信与计算同跑时，耗时发生的乘性膨胀 $t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k$
 
 在很多架构师的理想图纸上，通算重叠被描述成一个近乎无损的美好公式：
-$$\text{Ideal Overlap Time} = \max(T_{\text{compute}}, T_{\text{communication}})$$
+
+$$
+\text{Ideal Overlap Time} = \max(T_{\text{compute}}, T_{\text{communication}})
+$$
 
 然而，一旦你把通信 Kernel 与计算 Kernel 真实地挂到两个不同的 CUDA Stream 上并发运行，拿出 Nsight Systems 抓包，你会被冰冷的现实迎头痛击：
 **原本单独执行只需 1.0 毫秒的通信操作，在与计算重叠执行时，耗时居然悄悄膨胀到了 1.3 甚至 1.5 毫秒！**
 
 通信耗时相比单独独占执行，会出现一个明显的乘性膨胀系数 $k$：
-$$t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k \quad (k > 1.0)$$
+
+$$
+t_{\text{comm\\_overlap}} = t_{\text{comm\\_solo}} \times k \quad (k > 1.0)
+$$
 
 在大模型训练小规模集群的真实测试中：
 - 当与 Compute-Bound 的大 GEMM 算子重叠时，竞争相对缓和，$k \approx 1.05 \sim 1.15$；

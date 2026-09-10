@@ -147,28 +147,64 @@
 设基座模型参数量为 $\Phi$，混合精度训练（FP16/BF16 权重与梯度，FP32 AdamW 状态）：
 
 1. **Full-Parameter SFT 静态显存公式**：
-   $$\text{Memory}_{\text{static\\_SFT}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{opt}}$$
+
+   $$
+   \text{Memory}_{\text{static\\_SFT}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{opt}}
+   $$
+
    - 权重（FP16）：$2\Phi$ 字节
    - 梯度（FP16）：$2\Phi$ 字节
    - AdamW 优化器状态（FP32 Master Weights + FP32 Momentum + FP32 Variance）：$4\Phi + 4\Phi + 4\Phi = 12\Phi$ 字节
-   $$\text{Memory}_{\text{static\\_SFT}} = 16\Phi\text{ bytes}$$
+
+   $$
+   \text{Memory}_{\text{static\\_SFT}} = 16\Phi\text{ bytes}
+   $$
+
    对于 $\Phi = 70\times 10^9$（70B）：
-   $$\text{Memory}_{\text{static\\_SFT}} = 16 \times 70\text{ GB} = 1120\text{ GB} \approx 1.12\text{ TB}$$
+
+   $$
+   \text{Memory}_{\text{static\\_SFT}} = 16 \times 70\text{ GB} = 1120\text{ GB} \approx 1.12\text{ TB}
+   $$
+
    若采用 ZeRO-3 将参数、梯度、优化器切分到 $N$ 张 GPU，每张卡静态保底：
-   $$M_{\text{per\\_gpu}} = \frac{1120}{N}\text{ GB}$$
+
+   $$
+   M_{\text{per\\_gpu}} = \frac{1120}{N}\text{ GB}
+   $$
+
    当 $N = 16$ 时，每张卡静态占用 **70 GB**，逼近 80GB 极限。
 
 2. **LoRA 显存公式**：
    基座模型权重冻结（仅需推导或前向传递，无需梯度与优化器状态）：
-   $$M_{\text{base}} = 2\Phi\text{ bytes}$$
+
+   $$
+   M_{\text{base}} = 2\Phi\text{ bytes}
+   $$
+
    若采用 QLoRA（4-bit NormalFloat 量化），基座权重仅需：
-   $$M_{\text{base\\_qlora}} = 0.5\Phi\text{ bytes}$$
+
+   $$
+   M_{\text{base\\_qlora}} = 0.5\Phi\text{ bytes}
+   $$
+
    设微调层为 Attention 的 $W_q, W_v$，每层维度为 $d$，LoRA 秩为 $r$，层数为 $L$：
-   $$\Phi_{\text{LoRA}} = 2 \times 2 \times L \times d \times r$$
+
+   $$
+   \Phi_{\text{LoRA}} = 2 \times 2 \times L \times d \times r
+   $$
+
    对于 70B 模型（$L=80, d=8192, r=16$）：
-   $$\Phi_{\text{LoRA}} = 4 \times 80 \times 8192 \times 16 \approx 4.19 \times 10^7 \approx 0.042\text{ B (仅为基座的 0.06\%)!}$$
+
+   $$
+   \Phi_{\text{LoRA}} = 4 \times 80 \times 8192 \times 16 \approx 4.19 \times 10^7 \approx 0.042\text{ B (仅为基座的 0.06\%)!}
+   $$
+
    LoRA 参数对应的梯度与 AdamW 状态：
-   $$\text{Memory}_{\text{LoRA\\_trainable}} = 16 \times \Phi_{\text{LoRA}} = 16 \times 42\text{ MB} \approx 672\text{ MB}$$
+
+   $$
+   \text{Memory}_{\text{LoRA\\_trainable}} = 16 \times \Phi_{\text{LoRA}} = 16 \times 42\text{ MB} \approx 672\text{ MB}
+   $$
+
    **结论**：LoRA 的优化器状态显存消耗从 **840 GB 坍缩为不足 1 GB**！
    总静态显存：
    - 16-bit LoRA：$140\text{ GB} + 0.67\text{ GB} \approx 140.7\text{ GB}$（2 张 80G 卡即可装下基座）
@@ -179,7 +215,10 @@
 ### 2.2 推导 2：RLHF PPO 四模型显存膨胀与 Rollout 显存浪涌
 
 在标准 PPO 中，显存由四部分构成：
-$$\text{Memory}_{\text{PPO}} = \text{Mem}(\text{Actor}) + \text{Mem}(\text{Critic}) + \text{Mem}(\text{Reference}) + \text{Mem}(\text{Reward}) + \text{Mem}(\text{KV\\_Cache}) + \text{Mem}(\text{Activations})$$
+
+$$
+\text{Memory}_{\text{PPO}} = \text{Mem}(\text{Actor}) + \text{Mem}(\text{Critic}) + \text{Mem}(\text{Reference}) + \text{Mem}(\text{Reward}) + \text{Mem}(\text{KV\\_Cache}) + \text{Mem}(\text{Activations})
+$$
 
 假设基座与评判模型同等规模（$70\text{B}$）：
 - **Actor**（需反向更新）：$16 \times 70\text{B} = 1120\text{ GB}$
@@ -187,16 +226,31 @@ $$\text{Memory}_{\text{PPO}} = \text{Mem}(\text{Actor}) + \text{Mem}(\text{Criti
 - **Reference**（只读前向）：$2 \times 70\text{B} = 140\text{ GB}$
 - **Reward**（只读前向）：$2 \times 70\text{B} = 140\text{ GB}$
 - **合计静态显存**（同尺寸全模态）：
-  $$\text{Static}_{\text{Total}} = 1120 + 1120 + 140 + 140 = 2520\text{ GB} \approx 2.52\text{ TB}！$$
+
+  $$
+  \text{Static}_{\text{Total}} = 1120 + 1120 + 140 + 140 = 2520\text{ GB} \approx 2.52\text{ TB}！
+  $$
 
 #### 动态 Rollout 浪涌模型：
 在自回归生成时，Actor 必须维护 KV Cache。
 单并发、序列长度为 $S = S_{\text{prompt}} + S_{\text{gen}}$ 时，KV Cache 尺寸为：
-$$\text{KV}_{\text{req}} = 2 \times 2 \times L \times H_{\text{kv}} \times D_{\text{head}} \times S \times \text{BytesPerElem}$$
+
+$$
+\text{KV}_{\text{req}} = 2 \times 2 \times L \times H_{\text{kv}} \times D_{\text{head}} \times S \times \text{BytesPerElem}
+$$
+
 对于 LLaMA-3-70B（$L=80, H_{\text{kv}}=8, D_{\text{head}}=128$，FP16）：
-$$\text{KV}_{\text{per\\_token}} = 2 \times 2 \times 80 \times 8 \times 128 \times 2 = 655,360\text{ bytes} \approx 0.625\text{ MB/token}$$
+
+$$
+\text{KV}_{\text{per\\_token}} = 2 \times 2 \times 80 \times 8 \times 128 \times 2 = 655,360\text{ bytes} \approx 0.625\text{ MB/token}
+$$
+
 若 Batch Size 为 32，平均生成长度达到 4096 Token：
-$$\text{Memory}_{\text{KV\\_Batch}} = 32 \times 4096 \times 0.625\text{ MB} \approx 81,920\text{ MB} = 80\text{ GB}！$$
+
+$$
+\text{Memory}_{\text{KV\\_Batch}} = 32 \times 4096 \times 0.625\text{ MB} \approx 81,920\text{ MB} = 80\text{ GB}！
+$$
+
 **这 80 GB 的纯推理 KV Cache 浪涌，叠加上静态的 2.52 TB，就是导致上述事故中集群瞬间 OOM 的直接真凶！**
 
 ---
@@ -238,12 +292,20 @@ $$\text{Memory}_{\text{KV\\_Batch}} = 32 \times 4096 \times 0.625\text{ MB} \app
 
 #### GRPO 核心优势函数推导：
 在传统 PPO 中，优势函数 Generalized Advantage Estimation (GAE) 依赖 Critic 预测基线价值 $V(s_t)$：
-$$A_t^{\text{GAE}} = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}^V, \quad \delta_t^V = r_t + \gamma V(s_{t+1}) - V(s_t)$$
+
+$$
+A_t^{\text{GAE}} = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}^V, \quad \delta_t^V = r_t + \gamma V(s_{t+1}) - V(s_t)
+$$
+
 为了估计 $V(s)$，不仅要训练一个参数量等同于大语言模型的 Critic，还要计算每个 Token 的价值误差。
 
 而在 **GRPO (Group Relative Policy Optimization)** 中，对每个 Prompt $q$，Actor 模型直接采样输出 $G$ 个候选回答 $\{o_1, o_2, \dots, o_G\}$。
 环境给每个回答打出奖励分 $\{r_1, r_2, \dots, r_G\}$（在数学推导或代码题中，直接由代码编译器或答案判定器给出 0/1 真实奖励），**优势函数直接进行群内无偏归一化**：
-$$A_i = \frac{r_i - \text{mean}(\{r_1, \dots, r_G\})}{\text{std}(\{r_1, \dots, r_G\}) + \epsilon}$$
+
+$$
+A_i = \frac{r_i - \text{mean}(\{r_1, \dots, r_G\})}{\text{std}(\{r_1, \dots, r_G\}) + \epsilon}
+$$
+
 **系统级收益**：
 1. **彻底拔除 Critic 模型**：为集群凭空省下上千 GB 的 GPU 显存，减少了整整一个大模型的参数同步与反向传播；
 2. **无需每步价值估计**：直接采用序列级最终奖励，彻底避开了变长序列下 Token-level Value 反向传播产生的巨量激活值占用；
@@ -301,7 +363,11 @@ $$A_i = \frac{r_i - \text{mean}(\{r_1, \dots, r_G\})}{\text{std}(\{r_1, \dots, r
 
 ### 4.1 传统 Serving 遇到 Multi-LoRA 的溃败
 传统批处理（Batched GEMM）要求参与计算的矩阵尺寸与权重完全一致：
-$$Y = X \cdot W_0$$
+
+$$
+Y = X \cdot W_0
+$$
+
 如果当前 Batch 中有 4 个请求，分别来自客户 A（LoRA A）、客户 B（LoRA B）、客户 C（LoRA C）、客户 D（无微调）：
 传统做法只能将 Batch 拆分为 4 个单请求依次串行计算，或者将每个 LoRA 权重强制融合成完整权重。这直接破坏了连续批处理（Continuous Batching），GPU 算力利用率从 50% 暴跌至不足 5%！
 
@@ -1044,5 +1110,3 @@ if __name__ == "__main__":
    - **BGMV / SGMV 定制算子**：开发专属 CUDA Kernel，使 GPU 在一个流处理器内，根据不同 Token 的元数据指针，并行从显存池拉取对应租户的微型 LoRA 矩阵并完成旁路累加；
    - **显存与主机内存分页管理（Unified Paging）**：将 LoRA 权重切分成固定大小的 Page，热点在 HBM，冷门在 Host RAM，按需动态换入换出，彻底消除显存碎片；
    - **调度器感知感知批处理（Adapter-Aware Scheduling）**：在组装当前 Step 的 Batch 时，优先聚集相同 LoRA 的请求，最大化复用已在缓存中的 Adapter。
-
-

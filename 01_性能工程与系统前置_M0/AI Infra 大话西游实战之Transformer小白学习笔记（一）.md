@@ -121,14 +121,19 @@ GPT 系列（以及后来的 LLaMA、Mistral、Qwen、DeepSeek 等）证明了�
 
 ### 经典三段式数据流动流程：
 1. **输入阶段（Input Stage）**：
+
    $$
    \text{Prompt Tokens} \longrightarrow \text{Token Embedding (词表查找)} \longrightarrow \text{注入位置编码 (如 RoPE)}
    $$
+
 2. **核心堆叠阶段（Repeated N Blocks）**：
+
    $$
    X_{l+1} = X_l + \text{Self-Attention}(\text{Norm}(X_l)) + \text{FFN}(\text{Norm}(\dots))
    $$
+
 3. **输出阶段（Output Stage）**：
+
    $$
    \text{Final Norm} \longrightarrow \text{LM Head 线性映射} \longrightarrow \text{Softmax 采样} \longrightarrow \text{预测下一个 Token}
    $$
@@ -168,6 +173,7 @@ $$
 - 它需要知道“谁在吃”（小明，占 10% 注意力）；
 - “吃什么”（苹果，占 70% 注意力）；
 - 最终 `吃` 这个词更新后的特征向量为：
+
   $$
   \text{New\\_Feature}_{\text{吃}} = 0.1 \times \text{小明} + 0.1 \times \text{喜欢} + 0.1 \times \text{吃} + 0.7 \times \text{苹果}
   $$
@@ -200,6 +206,7 @@ $$
 $$
 Q = X W_Q, \quad K = X W_K, \quad V = X W_V
 $$
+
 其中 $X \in \mathbb{R}^{N \times d}$，$W_Q, W_K, W_V \in \mathbb{R}^{d \times d}$，输出的 $Q, K, V$ 形状均为 $(N, d)$。
 > 🛠️ **AI Infra 视点**：这是 3 次标准的 GEMM（通用矩阵乘法）操作，Tensor Core 的绝对主场。
 
@@ -207,16 +214,20 @@ $$
 
 ### 步骤 2：计算注意力原始分数（$Q K^T$）
 衡量每对 token 之间的相关程度：
+
 $$
 S = Q K^T \in \mathbb{R}^{N \times N}
 $$
+
 $S[i][j]$ 表示第 $i$ 个 token 对第 $j$ 个 token 的原始打分。
 
 _小白极简数值推导_：
 若 $q = [1, 2]$，$k = [3, 4]$，则：
+
 $$
 q \cdot k^T = 1 \times 3 + 2 \times 4 = 11
 $$
+
 点积数值越大，说明两个向量的方向越接近、语义越相关。
 
 ---
@@ -225,6 +236,7 @@ $$
 $$
 S_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}}
 $$
+
 > 👓 **Ringi 划重点（公式兼容与原理解析）**：
 > 当维度 $d_k$ 很大时（例如 $d_k = 128$），$Q$ 和 $K$ 的点积相当于 128 个独立分量相乘求和，方差会放大到 $d_k$。
 > 这会导致点积数值极其巨大（比如上百），送入 Softmax 后输出会被“推向饱和区”——最大值变成 1，其他全变成 0，**梯度几乎完全消失（Gradient Vanishing）**！
@@ -236,7 +248,9 @@ $$
 $$
 A = \text{softmax}(S_{\text{scaled}}) \in \mathbb{R}^{N \times N}
 $$
+
 对 $S_{\text{scaled}}$ 矩阵的每一行进行 Softmax，使每行所有元素变成正数且和为 1：
+
 $$
 A[i][j] = \frac{e^{S_{\text{scaled}}[i][j]}}{\sum_{k=1}^{N} e^{S_{\text{scaled}}[i][k]}}
 $$
@@ -247,6 +261,7 @@ $$
 $$
 \text{Output} = A \cdot V \in \mathbb{R}^{N \times d}
 $$
+
 第 $i$ 个 token 的新向量就是序列中所有 token 的 $V$ 按照第 $i$ 行权重 $A[i]$ 进行加权融合。
 
 ---
@@ -255,6 +270,7 @@ $$
 $$
 \text{Final} = \text{Output} \cdot W_O \in \mathbb{R}^{N \times d}
 $$
+
 经过权重矩阵 $W_O \in \mathbb{R}^{d \times d}$ 映射，完成当前多头特征的综合整理。
 
 ---
@@ -337,6 +353,7 @@ Q (N × d)  ×  K^T (d × N)  ───>  S (N × N 注意力矩阵)
 ## 4.2 结构解析：为什么先升维再降维？
 
 标准 FFN 结构为两层全连接：
+
 $$
 \text{FFN}(x) = W_2 \cdot \text{activation}(W_1 x + b_1) + b_2
 $$
@@ -372,18 +389,21 @@ $$
 $$
 \text{ReLU}(x) = \max(0, x)
 $$
+
 缺点：当输入为负时导数为 0，神经元容易“永久死亡”。
 
 ### 2. GELU（高斯误差线性单元）
 $$
 \text{GELU}(x) = x \cdot \Phi(x) = x \cdot P(X \le x), \quad X \sim \mathcal{N}(0, 1)
 $$
+
 不是生硬地开/关，而是根据输入大小赋予平滑的通过概率，GPT-2/3、BERT 广泛采用。
 
 ### 3. SwiGLU（现代大模型标配）
 $$
 \text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
 $$
+
 其中 $\text{Swish}(z) = z \cdot \sigma(z)$，$\odot$ 为逐元素相乘。
 > 🌟 **优势**：引入了一个专门负责**“把关”**的门控分支 $W_{\text{gate}}$，动态控制每个特征通道的放行比例，表达能力远超单个激活函数。
 
@@ -402,12 +422,14 @@ $$
 ## 5.2 经典方案：Sinusoidal 正余弦位置编码
 
 2017 年原始 Transformer 采用基于不同频率正弦/余弦的固定绝对位置编码：
+
 $$
 \begin{aligned}
 \text{PE}_{(\text{pos}, 2i)} &= \sin\left(\frac{\text{pos}}{10000^{2i / d_{\text{model}}}}\right) \\
 \text{PE}_{(\text{pos}, 2i+1)} &= \cos\left(\frac{\text{pos}}{10000^{2i / d_{\text{model}}}}\right)
 \end{aligned}
 $$
+
 - **直觉**：类似于时钟系统，低维分量变化极快（像“秒针”），高维分量变化极慢（像“时针”），组合起来构成每个位置的唯一时间戳。
 - **缺点**：直接加到 Embedding 上，随着层数加深会被网络变换逐渐稀释，且长文本外推能力差。
 
@@ -434,6 +456,7 @@ $$
 
 ### 神奇的数学特性：相对位置自然涌现
 两个旋转后的向量做内积时，发生复数共轭相乘，**绝对位置消去，结果仅依赖于它们的相对距离 $(m - n)$**：
+
 $$
 \langle \text{RoPE}(q, m), \text{RoPE}(k, n) \rangle = g(q, k, m - n)
 $$
@@ -452,15 +475,18 @@ $$
 ![Ringi 导师解构：残差连接与 Pre-Norm 梯度高速公路](assets/ringi_residual_highway.jpg)
 
 数学公式极简：
+
 $$
 y = x + \text{SubLayer}(x)
 $$
 
 ### 为什么要加这条捷径？
 1. **彻底解决梯度消失**：反向传播求导时：
+
    $$
    \frac{\partial y}{\partial x} = 1 + \frac{\partial \text{SubLayer}(x)}{\partial x}
    $$
+
    因为始终存在一个恒等项 $+1$，梯度可以沿着主干道无损直达最浅层，使得堆叠 100 层以上的超深网络成为可能。
 2. **增量学习**：模型只需要学习每一层对输入的“微调增量”（Delta），学习难度大幅降低。
 
@@ -469,9 +495,11 @@ $$
 ## 6.2 LayerNorm：特征维度的信号调节器
 
 对单个 Token 向量在所有特征维度上做均值/方差归一化：
+
 $$
 \text{LayerNorm}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta
 $$
+
 其中 $\mu$ 为均值，$\sigma^2$ 为方差，$\gamma, \beta$ 为可学习的缩放与平移参数。
 
 > 🛠️ **现代演进：RMSNorm**
@@ -540,18 +568,25 @@ $$
 
 ### 1. 单个 Decoder Block 的参数量手算
 - **Attention 部分**：
+
   $$
   W_Q, W_K, W_V, W_O \implies 4 \times (4096 \times 4096) = 4 \times 16,777,216 \approx \mathbf{67.11\text{ M}}
   $$
+
 - **FFN (SwiGLU) 部分**：
+
   $$
   W_{\text{gate}}, W_{\text{up}}, W_{\text{down}} \implies 3 \times (4096 \times 11008) = 3 \times 45,088,768 \approx \mathbf{135.27\text{ M}}
   $$
+
 - **RMSNorm 缩放参数**：
+
   $$
   2 \times 4096 \approx \mathbf{8.19\text{ K}}
   $$
+
 - **单层合计**：
+
   $$
   67.11\text{M} + 135.27\text{M} \approx \mathbf{202.38\text{ M}}
   $$
@@ -561,6 +596,7 @@ $$
 - **Token Embedding**：$32000 \times 4096 \approx \mathbf{131.07\text{ M}}$
 - **LM Head 输出头**：$4096 \times 32000 \approx \mathbf{131.07\text{ M}}$
 - **全模型精确总计**：
+
   $$
   6,476\text{M} + 131\text{M} + 131\text{M} \approx \mathbf{6.738\text{ B}} \approx \mathbf{7\text{B}}
   $$
@@ -578,21 +614,29 @@ $$
 ```
 
 1. **纯模型权重（FP16 / BF16，每个参数 2 字节）**：
+
    $$
    6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
    $$
+
 2. **反向传播梯度（FP16，每个参数 2 字节）**：
+
    $$
    6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
    $$
+
 3. **AdamW 优化器状态（FP32 Master 权重 + 一阶动量 + 二阶动量 = 每个参数 16 字节）**：
+
    $$
    6.74\text{B} \times 16\text{ Bytes} \approx \mathbf{107.84\text{ GB}}
    $$
+
 4. **训练静态显存总计**：
+
    $$
    13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}} \quad (\gg 80\text{ GB}!)
    $$
+
    > 💡 这就是为什么必须使用 **ZeRO / FSDP** 显存切分技术，将优化器状态分摊到多张显卡上！
 
 ---
@@ -644,16 +688,21 @@ LLM 在线推理分为性质完全不同的两个阶段：
 $$
 \text{单 Token 显存} = 2 \times (\text{层数 } L) \times (\text{头数 } h) \times (\text{头维度 } d_k) \times (\text{精度字节数})
 $$
+
 代入 LLaMA-2-7B（32 层，32 头，每头 128 维，FP16 占 2 字节）：
+
 $$
 \text{单 Token 显存} = 2 \times 32 \times 32 \times 128 \times 2\text{ Bytes} = \mathbf{524,288\text{ Bytes}} = \mathbf{512\text{ KB}}
 $$
 
 - 若一个请求长 **4096 Token**：
+
   $$
   4096 \times 512\text{ KB} = \mathbf{2\text{ GB}}
   $$
+
 - 若并发 Batch Size 为 **16**：
+
   $$
   16 \times 2\text{ GB} = \mathbf{32\text{ GB}} \quad (\text{已占据 80GB 显卡的近一半显存！})
   $$

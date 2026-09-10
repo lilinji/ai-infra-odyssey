@@ -1071,13 +1071,16 @@ flowchart TD
 ### 2. 标准训练 vs 重计算训练的总 FLOPs 对比
 
 - **标准训练（No Checkpointing）总计算量**：
+
   $$
   \text{FLOPs}_{\text{standard}} = \text{Forward} + \text{Backward} = 2P + 4P = 6P\text{ FLOPs/token}
   $$
+
 - **开启全量激活值重计算（Full Activation Checkpointing）总计算量**：
   - 前向传播跑一遍：$2P$；
   - 反向传播时，每个 Block 的前向必须重新跑一遍：额外增加 **$2P$**；
   - 反向求导计算本身保持不变：$4P$；
+
     $$
     \text{FLOPs}_{\text{checkpointing}} = 2P + 2P + 4P = 8P\text{ FLOPs/token}
     $$
@@ -1104,9 +1107,11 @@ $$
 - 我们只在段与段之间设置 Checkpoint，反向时只在段内重算；
 - 总显存占用为：保存 Checkpoint 的开销 $O(k)$ + 段内最大前向激活值开销 $O(L/k)$；
 - 根据均值不等式，当 $k = \frac{L}{k}$，即 $k = \sqrt{L}$ 时，总显存开销取得数学极小值：
+
   $$
   \text{Memory}_{\min} = O(\sqrt{L})
   $$
+
 - 这就是著名的 **$\sqrt{L}$ 亚线性显存优化算法**！
 
 ### 2. 现代大模型工业标准：Block-level 全量重计算（Full Block Checkpointing）
@@ -1204,13 +1209,17 @@ $$
 
 - 设 $B=2, n=32, S=8192$（区区 8K 上下文），精度为 FP16（2 字节）；
 - 单个 Block 的 Softmax 概率矩阵 $P$ 占用的显存为：
+
   $$
   \text{VRAM}_{\text{softmax}} = 2 \times B \times n \times S^2 = 2 \times 2 \times 32 \times (8192)^2 = 8,589,934,592\text{ 字节} \approx \mathbf{8.59\text{ GB}}!
   $$
+
 - 如果模型有 32 个 Block，仅仅保存这一个算子的前向激活值，就需要：
+
   $$
   8.59\text{ GB} \times 32 = \mathbf{274.88\text{ GB}}!
   $$
+
   **整整 275 GB 显存！即使把 3 张 80GB 的 A100 全拔过来装激活值都不够！**  
   这就是为什么在过去，训练长上下文模型被认为是不可能完成的任务！
 
@@ -1697,29 +1706,40 @@ if __name__ == "__main__":
 1. **FLOPs 精确推导**：
    - 设模型参数量为 $P$。处理一个 Token 时：
      - **前向 GEMM**：$Y = XW$，计算量为 $2 \times M \times K \times N$。对于全网参数，前向浮点计算量为：
+
        $$
        \text{FLOPs}_{\text{fwd}} = 2P\text{ FLOPs/token}
        $$
+
      - **反向 GEMM**：根据矩阵微分：
+
        $$
        \nabla_X = \nabla_Y W^T \implies 2P\text{ FLOPs}
        $$
+
        $$
        \nabla_W = X^T \nabla_Y \implies 2P\text{ FLOPs}
        $$
+
        因此标准反向计算量严格为：
+
        $$
        \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P\text{ FLOPs/token}
        $$
+
      - **标准总计算量**：$\text{FLOPs}_{\text{std}} = 2P + 4P = 6P$；
      - **重计算总计算量**：反向传播时将前向再次计算一次，多耗费 $2P$：
+
        $$
        \text{FLOPs}_{\text{ckpt}} = 2P (\text{fwd}) + 2P (\text{recompute}) + 4P (\text{bwd}) = 8P
        $$
+
      - **理论开销比**：
+
        $$
        \frac{\text{FLOPs}_{\text{ckpt}} - \text{FLOPs}_{\text{std}}}{\text{FLOPs}_{\text{std}}} = \frac{8P - 6P}{6P} = \frac{2P}{6P} = \frac{1}{3} \approx 33.33\%
        $$
+
 2. **显存临界判定条件**：
    - 显存四账本：$M_{\text{total}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{optimizer}} + M_{\text{activation}}$；
    - 当不开启重计算时，$M_{\text{activation}} \propto O(L \cdot B \cdot S \cdot h)$；

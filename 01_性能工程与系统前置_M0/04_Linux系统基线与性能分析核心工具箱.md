@@ -462,9 +462,11 @@ nvme0n1  12.0  1500.0     128.0  750000.0    0.00   85.00   0.00   5.36     0.45
 
 ### 2. 排队论（Little's Law）在存储 IO 中的第一性原理
 根据经典排队论 **利特尔法则（Little's Law）**：
+
 $$
 L = \lambda \cdot W
 $$
+
 - $L$：系统内平均排队请求数（`aqu-sz`）；
 - $\lambda$：到达吞吐率（$\text{IOPS} = r/s + w/s$）；
 - $W$：平均等待与服务时间（`await`）。
@@ -592,9 +594,11 @@ perf stat -p <PID> sleep 5
 ```
 
 > 🔍 **核心指标第一性原理：IPC（Instructions Per Cycle，每时钟周期指令数）**：  
+>
 > $$
 > \text{IPC} = \frac{\text{instructions}}{\text{cycles}}
 > $$
+>
 > - **现代高端 CPU 理论峰值 IPC**：通常可达 **3.0 ~ 4.0**（超标量乱序执行多发射）；
 > - **IPC > 1.5**：说明程序计算流水线饱满，属于**算力密集型（Compute-Bound）**；
 > - **IPC < 0.7 甚至 < 0.3**：说明 CPU 大量时钟周期在“空转等待”（Stall），主要由于 **Cache Miss（等待内存读取）**、分支预测失败或内存总线拥塞导致，属于典型的**访存受限型（Memory-Bound）**！

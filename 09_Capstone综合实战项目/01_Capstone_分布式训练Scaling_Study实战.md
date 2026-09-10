@@ -97,7 +97,11 @@ math: true
 随后，为了在产品上线前 15 天内强行赶完 1T Tokens 的训练预算，领导拍板紧急追加租赁了 7 台同规格的 8 卡 H100 节点，将训练集群规模一举推升到 **64 卡（8 节点）**。
 
 按照线性外推的直觉小算盘：
-$$\text{预期总吞吐} = 4,200 \times 64 = 268,800 \text{ Tokens/s}$$
+
+$$
+\text{预期总吞吐} = 4,200 \times 64 = 268,800 \text{ Tokens/s}
+$$
+
 整个训练周期预计能从原来的 33 天压缩到仅仅 **4.3 天**。
 
 然而，当 64 卡的 PyTorch DDP 任务启动后，监控大屏上的数据让所有人大惊失色：
@@ -178,27 +182,56 @@ MFU 就像汽车引擎的“有效热效率”。即使你的油门踩到底（G
 - 对于每个 Token，前向传播大约需要 $2P$ 次浮点运算（乘加算 2 次 FLOPs）；
 - 反向传播需要计算输入梯度和权重梯度，算力开销是前向的 2 倍，即 $4P$ FLOPs；
 - 因此，每个 Token 在一个完整的 Step 中需要：
-  $$\text{FLOPs per Token} = 2P + 4P = 6P$$
+
+  $$
+  \text{FLOPs per Token} = 2P + 4P = 6P
+  $$
+
 - 若采用了**全量激活值重计算（Full Activation Recomputation）**，前向传播重跑一遍，总算力变为：
-  $$\text{FLOPs per Token (with Recompute)} = 2P + 4P + 2P = 8P$$
+
+  $$
+  \text{FLOPs per Token (with Recompute)} = 2P + 4P + 2P = 8P
+  $$
 
 以一个拥有 $P = 7\text{B} = 7 \times 10^9$ 参数的模型为例：
 - 每个 Token 的理论浮点运算量为：
-  $$\text{FLOPs} = 6 \times 7 \times 10^9 = 4.2 \times 10^{10} \text{ FLOPs} = 42 \text{ GFLOPs}$$
+
+  $$
+  \text{FLOPs} = 6 \times 7 \times 10^9 = 4.2 \times 10^{10} \text{ FLOPs} = 42 \text{ GFLOPs}
+  $$
+
 - 若单机 8 卡每秒处理 $33,600$ Tokens（单卡 4,200 Tokens/s），则 8 卡集群的实测有效算力为：
-  $$\text{Achieved TFLOPS} = \frac{33,600 \times 42 \times 10^9}{10^{12}} = 1,411.2 \text{ TFLOPS}$$
+
+  $$
+  \text{Achieved TFLOPS} = \frac{33,600 \times 42 \times 10^9}{10^{12}} = 1,411.2 \text{ TFLOPS}
+  $$
+
 - 单卡平均实测算力：
-  $$\text{Per-GPU TFLOPS} = \frac{1,411.2}{8} = 176.4 \text{ TFLOPS}$$
+
+  $$
+  \text{Per-GPU TFLOPS} = \frac{1,411.2}{8} = 176.4 \text{ TFLOPS}
+  $$
 
 #### 步骤 4：Formal Model（标准物理公式）
 已知一张 NVIDIA H100 SXM5（FP16/BF16 Tensor Core 密实算力，不含稀疏化）的标称峰值算力为：
-$$C_{\text{peak}} = 989 \text{ TFLOPS}$$
+
+$$
+C_{\text{peak}} = 989 \text{ TFLOPS}
+$$
+
 根据上述推导，MFU 的正式计算公式为：
-$$\text{MFU} = \frac{\text{Achieved FLOPs/s}}{N \times C_{\text{peak}}} = \frac{\text{Tokens/sec} \times 6P}{N \times C_{\text{peak}}}$$
+
+$$
+\text{MFU} = \frac{\text{Achieved FLOPs/s}}{N \times C_{\text{peak}}} = \frac{\text{Tokens/sec} \times 6P}{N \times C_{\text{peak}}}
+$$
 
 #### 步骤 5：Sanity Check（数量级校验）
 将单机 8 卡的实测数据代入：
-$$\text{MFU}_{\text{8-GPU}} = \frac{176.4 \text{ TFLOPS}}{989 \text{ TFLOPS}} \approx 17.84\%$$
+
+$$
+\text{MFU}_{\text{8-GPU}} = \frac{176.4 \text{ TFLOPS}}{989 \text{ TFLOPS}} \approx 17.84\%
+$$
+
 *注：若采用 H100 理论峰值（989 TFLOPS），未开启重计算与 FlashAttention-2 极限超频时，17.8% 属于常见基础基准；而在 A100（峰值 312 TFLOPS）上，该吞吐对应的 MFU 将高达 $176.4 / 312 = 56.5\%$！这就严密印证了不同硬件基线对 MFU 计算的影响。*
 
 ---
@@ -265,17 +298,32 @@ DDP 性能极高的核心秘诀，在于**反向计算与通信的并行重叠�
 #### 临界重叠方程（Critical Overlap Equation）
 设反向传播总耗时为 $T_{\text{bwd}}$，全模型梯度总大小为 $S_{\text{grad}}$，有效网络集合通信带宽为 $B_{\text{comm}}$。
 全归约总通信耗时为：
-$$T_{\text{comm}} \approx \frac{2 \times S_{\text{grad}}}{B_{\text{comm}}}$$
+
+$$
+T_{\text{comm}} \approx \frac{2 \times S_{\text{grad}}}{B_{\text{comm}}}
+$$
 
 - **黄金无感区（Compute-Bound / Perfect Overlap）**：
   若满足：
-  $$T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first\\_bucket\\_wait}}$$
+
+  $$
+  T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first\\_bucket\\_wait}}
+  $$
+
   通信被反向计算完全掩盖在阴影之下，对外表现出来的通信损耗**几乎为零**！
 - **性能悬崖区（Communication-Bound / Exposed Bubble）**：
   若因为卡数激增、网络带宽骤降，导致：
-  $$T_{\text{comm}} > T_{\text{bwd}}$$
+
+  $$
+  T_{\text{comm}} > T_{\text{bwd}}
+  $$
+
   此时计算已经全部结束，GPU 算力核心被迫停工挂起，裸露出来的通信气泡为：
-  $$T_{\text{bubble}} = T_{\text{comm}} - T_{\text{bwd}}$$
+
+  $$
+  T_{\text{bubble}} = T_{\text{comm}} - T_{\text{bwd}}
+  $$
+
   **暴露的通信气泡直接拉长单步耗时，导致 MFU 断崖式崩塌！**
 
 ---
@@ -292,9 +340,16 @@ DDP 采用的是最质朴的**数据并行范式**：每一张 GPU 都必须常�
 1. **模型权重（FP16/BF16）**：$7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
 2. **模型梯度（FP16/BF16）**：$7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
 3. **优化器状态（FP32 Master Weight + 动量 + 方差）**：
-   $$7 \times 10^9 \times (4 + 4 + 4)\text{ Bytes} = 84\text{ GB}$$
+
+   $$
+   7 \times 10^9 \times (4 + 4 + 4)\text{ Bytes} = 84\text{ GB}
+   $$
+
 4. **静态显存刚性总需求**：
-   $$\text{Memory}_{\text{static}} = 14 + 14 + 84 = 112\text{ GB}$$
+
+   $$
+   \text{Memory}_{\text{static}} = 14 + 14 + 84 = 112\text{ GB}
+   $$
 
 对于常见的 80GB 显卡（A100/H100 80GB），**哪怕 Micro Batch 设为 1，连静态优化器状态都根本放不下，直接爆出 CUDA OOM 惨烈崩溃！**
 
@@ -333,12 +388,19 @@ graph LR
 #### 通信量定量对比账本：
 设模型参数量对应的数据字节数为 $M$：
 - **DDP 通信量**：仅在反向阶段执行一次 AllReduce：
-  $$\text{Volume}_{\text{DDP}} = 2 \times \frac{N-1}{N} \times M \approx 2M$$
+
+  $$
+  \text{Volume}_{\text{DDP}} = 2 \times \frac{N-1}{N} \times M \approx 2M
+  $$
+
 - **FSDP 通信量**：
   - 前向 AllGather：$\frac{N-1}{N} \times M \approx M$；
   - 反向 AllGather：$\frac{N-1}{N} \times M \approx M$；
   - 反向 ReduceScatter：$\frac{N-1}{N} \times M \approx M$；
-  $$\text{Volume}_{\text{FSDP}} = M + M + M = 3M$$
+
+  $$
+  \text{Volume}_{\text{FSDP}} = M + M + M = 3M
+  $$
 
 **FSDP 的全生命周期通信量是 DDP 的整整 1.5 倍！**  
 如果你的网络带宽本来就捉襟见肘，盲目开启 FSDP 只会让扩展性雪上加霜。
@@ -354,15 +416,26 @@ graph LR
 在单机 8 卡内部，GPU 之间依靠第四代 NVLink 互联：
 - **NVLink 双向带宽**：高达 **900 GB/s**；
 - **传输 25MB 的 Bucket**：理论硬件传输时间仅需：
-  $$T_{\text{NVLink}} = \frac{25 \times 10^6 \text{ Bytes}}{900 \times 10^9 \text{ Bytes/s}} \approx 0.027 \text{ ms} = 27 \mu\text{s}$$
+
+  $$
+  T_{\text{NVLink}} = \frac{25 \times 10^6 \text{ Bytes}}{900 \times 10^9 \text{ Bytes/s}} \approx 0.027 \text{ ms} = 27 \mu\text{s}
+  $$
+
 这个时间比 GPU 算一个小线性层的耗时还要短几个数量级，DDP 的通信被完美吃进反向计算的阴影中。
 
 但在 64 卡（8 节点）跨机场景下，节点之间必须依赖 **RDMA over Converged Ethernet (RoCEv2)** 或 InfiniBand：
 - **主流网卡规格**：单机单网口常见配置为 400 Gbps（即便采用高端 8×400G 导轨网，跨机通信依然受限于网卡注入带宽）；
 - **物理带宽换算**：
-  $$400 \text{ Gbps} = \frac{400}{8} \text{ GB/s} = 50 \text{ GB/s}$$
+
+  $$
+  400 \text{ Gbps} = \frac{400}{8} \text{ GB/s} = 50 \text{ GB/s}
+  $$
+
 - **带宽落差**：
-  $$\text{Bandwidth Drop Ratio} = \frac{900 \text{ GB/s}}{50 \text{ GB/s}} = 18 \times$$
+
+  $$
+  \text{Bandwidth Drop Ratio} = \frac{900 \text{ GB/s}}{50 \text{ GB/s}} = 18 \times
+  $$
 
 **跨机带宽发生了整整 18 倍的断崖式暴跌！**
 
@@ -382,7 +455,10 @@ graph LR
 
 设网络点对点延迟为 $\alpha$，传输单位数据的时间为 $\beta = 1/B$。
 在一个包含 $N$ 张卡的 Ring-AllReduce 中，通信耗时为：
-$$T(N) = 2(N - 1)\alpha + 2\frac{N - 1}{N}\frac{S}{B}$$
+
+$$
+T(N) = 2(N - 1)\alpha + 2\frac{N - 1}{N}\frac{S}{B}
+$$
 
 当集群从单机 8 卡扩展到 64 卡时：
 1. **网络延迟项**：$2(N-1)\alpha$ 从 $14\alpha$ 激增到 $126\alpha$（增长了 **9 倍**）；
@@ -820,17 +896,37 @@ if __name__ == "__main__":
    - 采用环形传递，每个 GPU 每次向下一个邻居发送一块本地分块，并接收前一个邻居的分块累加到本地；
    - 完成全体累加需要传递 $N-1$ 轮；
    - 该阶段总发送数据量为：
-     $$\text{Data}_{\text{scatter}} = (N - 1) \times \frac{S}{N}$$
+
+     $$
+     \text{Data}_{\text{scatter}} = (N - 1) \times \frac{S}{N}
+     $$
+
 3. **阶段二：AllGather（全收集广播）**：
    - 将累加好的完整块广播到环上所有卡，同样需要传递 $N-1$ 轮；
    - 该阶段总发送数据量为：
-     $$\text{Data}_{\text{gather}} = (N - 1) \times \frac{S}{N}$$
+
+     $$
+     \text{Data}_{\text{gather}} = (N - 1) \times \frac{S}{N}
+     $$
+
 4. **单卡总通信量与耗时**：
-   $$\text{Data}_{\text{total}} = \text{Data}_{\text{scatter}} + \text{Data}_{\text{gather}} = 2 \times \frac{N - 1}{N} \times S$$
+
+   $$
+   \text{Data}_{\text{total}} = \text{Data}_{\text{scatter}} + \text{Data}_{\text{gather}} = 2 \times \frac{N - 1}{N} \times S
+   $$
+
    设网络单向物理带宽为 $B$：
-   $$T_{\text{AllReduce}} = 2 \times \frac{N - 1}{N} \times \frac{S}{B}$$
+
+   $$
+   T_{\text{AllReduce}} = 2 \times \frac{N - 1}{N} \times \frac{S}{B}
+   $$
+
    当 $N \ge 8$ 或更大时，$\frac{N-1}{N} \approx 1$：
-   $$\lim_{N \to \infty} T_{\text{AllReduce}} = \frac{2S}{B}$$
+
+   $$
+   \lim_{N \to \infty} T_{\text{AllReduce}} = \frac{2S}{B}
+   $$
+
    **证毕**：总通信时间收敛于常数 $\frac{2S}{B}$，在带宽恒定前提下与卡数 $N$ 脱钩，展示了 Ring 算法在大规模分布式系统中的优雅扩展力！
 
 ---
@@ -844,4 +940,3 @@ if __name__ == "__main__":
 2. **流水线气泡暴露**：
    - 到了反向传播快结束时，剩下的所有梯度一次性塞进一个超大包发射，此时浅层的前向和反向计算早已全部完毕；
    - GPU 计算核心彻底陷入没有活干的空转状态，原本能够并行的通信全部裸露在主时间线上，导致端到端耗时大幅恶化！
-

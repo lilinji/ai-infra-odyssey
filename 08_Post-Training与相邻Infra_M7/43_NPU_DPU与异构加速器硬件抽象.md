@@ -303,21 +303,39 @@
 #### 数学推导过程：
 考虑矩阵乘法 $C = A \times B$，其中 $A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times N}$。
 总乘加运算次数为 $M \times N \times K$ 个 MAC。由于每次 MAC 包含一次乘法与一次累加，对应浮点操作数为：
-$$\text{FLOPs} = 2 \times M \times N \times K$$
+
+$$
+\text{FLOPs} = 2 \times M \times N \times K
+$$
 
 1. **昇腾 DaVinci Cube 单元**：
    硬件设计尺寸固定为 $M=16, N=16, K=16$。
    单时钟周期（Clock Cycle）内，Cube 硬件流水线执行：
-   $$\text{Ops}_{\text{cube\\_cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}$$
+
+   $$
+   \text{Ops}_{\text{cube\\_cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}
+   $$
+
    设芯片主频为 $f_{\text{clk}}$，单芯片集成 $N_{\text{core}}$ 个 AI Core：
-   $$\text{Peak}_{\text{Cube}} = N_{\text{core}} \times 8192 \times f_{\text{clk}}$$
+
+   $$
+   \text{Peak}_{\text{Cube}} = N_{\text{core}} \times 8192 \times f_{\text{clk}}
+   $$
+
    当 $N_{\text{core}} = 32, f_{\text{clk}} = 1.8\text{ GHz}$ 时：
-   $$\text{Peak}_{\text{Cube}} = 32 \times 8192 \times 1.8 \times 10^9 \approx 4.718 \times 10^{14}\text{ FLOPS} \approx 471.8\text{ TFLOPS (FP16)}$$
+
+   $$
+   \text{Peak}_{\text{Cube}} = 32 \times 8192 \times 1.8 \times 10^9 \approx 4.718 \times 10^{14}\text{ FLOPS} \approx 471.8\text{ TFLOPS (FP16)}
+   $$
 
 2. **NVIDIA Hopper H100 SXM5 Tensor Core**：
    每个 SM 包含 4 个 4th-Gen Tensor Core。每个 Tensor Core 单周期支持执行 256 次 FP16 FMA（512 FLOPs）。
    每个 SM 单周期吞吐：
-   $$\text{Ops}_{\text{sm\\_cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}$$
+
+   $$
+   \text{Ops}_{\text{sm\\_cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}
+   $$
+
    H100 拥有 132 个活跃 SM，主频 $f_{\text{clk}} \approx 1.83\text{ GHz}$，加上 FP8/FP16 密集计算指令优化，单卡密集 FP16 峰值达 **989 TFLOPS**。
    **结论**：NVIDIA 凭借更多的 SM 阵列与更高的时钟频率在算力密度上占优，但昇腾单个 Cube 单元的单周期并发粒度更大（8192 vs 2048），更强依赖数据排布的分块饱满度！
 
@@ -326,16 +344,32 @@ $$\text{FLOPs} = 2 \times M \times N \times K$$
 ### 5.2 推导 2：隐式 Layout 转换引发的 Roofline 内存带宽灾难
 
 设张量维度为 $[B, S, H]$（如 $B=4, S=4096, H=8192$），FP16 数据类型，总数据量：
-$$\text{Size} = 4 \times 4096 \times 8192 \times 2\text{ bytes} \approx 268.4\text{ MB}$$
+
+$$
+\text{Size} = 4 \times 4096 \times 8192 \times 2\text{ bytes} \approx 268.4\text{ MB}
+$$
+
 若在计算图执行前，由于前后算子要求不同，被插入了一个隐式转置（Transpose / TransData）节点：
 - 转置操作必须将 268.4 MB 数据从 HBM 读入片上 SRAM，完成排布重组后再写回 HBM；
 - 总访存流量为读写两次：
-  $$\text{Traffic} = 2 \times 268.4\text{ MB} \approx 536.8\text{ MB}$$
+
+  $$
+  \text{Traffic} = 2 \times 268.4\text{ MB} \approx 536.8\text{ MB}
+  $$
+
 - 假设芯片 HBM 带宽为 $1.5\text{ TB/s}$（实际有效带宽按 80% 算为 $1.2\text{ TB/s}$）：
-  $$T_{\text{convert}} = \frac{536.8\text{ MB}}{1200\text{ GB/s}} \approx 0.447\text{ 毫秒}$$
+
+  $$
+  T_{\text{convert}} = \frac{536.8\text{ MB}}{1200\text{ GB/s}} \approx 0.447\text{ 毫秒}
+  $$
+
 - **灾难分析**：
   在一个典型的 80 层 Transformer 中，如果每层的前向与反向各有 2 次不当的隐式排布转换，单步训练将被硬生生插入 $80 \times 4 = 320$ 次额外转置！
-  $$T_{\text{waste}} = 320 \times 0.447\text{ ms} \approx 143\text{ 毫秒！}$$
+
+  $$
+  T_{\text{waste}} = 320 \times 0.447\text{ ms} \approx 143\text{ 毫秒！}
+  $$
+
   若模型单步迭代本身的有效计算时间仅为 300 毫秒，**近 33% 的宝贵算力时间直接被无用的内存搬砖操作彻底吃光！这就是很多团队发现 NPU 利用率只有个位数的深层死因！**
 
 ---
@@ -908,4 +942,3 @@ spec:
    - **协议栈完全下沉硬件 ASIC**：RoCEv2 网络的 QP（Queue Pair）状态机、硬件级选择性重传与精确拥塞控制（如毫秒级反应的 DCQCN/PFC 处理）全部在 DPU 硅片内线速闭环，彻底切断了对 Host CPU 的中断依赖，消除 Host 调度引入的一切抖动；
    - **在网计算（In-Network Computing / SHARP）**：利用网卡和交换机上的算术逻辑单元，在数据流经网络芯片的瞬间直接完成部分梯度的向量累加（Reduce），网络传输量直接砍半；
    - **存储与网络并发物理硬隔离**：DPU 拥有独立的 PCIe 物理通道与硬件队列，将 Checkpoint 写入的高突发存储流量与模型梯度同步的高灵敏度算力流量物理隔绝，杜绝拥塞交叉污染。
-

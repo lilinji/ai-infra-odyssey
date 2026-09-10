@@ -210,7 +210,9 @@ Step 1027 [48 Decodes]                ---> 耗时: 24.8ms  (打字机恢复，�
 
 所谓“自回归（Autoregressive）”，在数学上表达为一种**单向因果联合概率分解**：
 
-$$P(x_1, x_2, \dots, x_T) = \prod_{t=1}^T P(x_t \mid x_1, x_2, \dots, x_{t-1})$$
+$$
+P(x_1, x_2, \dots, x_T) = \prod_{t=1}^T P(x_t \mid x_1, x_2, \dots, x_{t-1})
+$$
 
 在物理时间轴上，这意味着一个铁律：
 > **第 $t$ 个 Token 的生成，必须以前面所有的 $t-1$ 个历史 Token 作为上下文输入；没有计算出第 $t$ 个 Token，整个世界没有任何人能知道第 $t+1$ 个 Token 的输入向量是什么！**
@@ -246,7 +248,9 @@ graph TD
 
 在 Prefill 阶段，输入 Tensor 的形状为：
 
-$$\mathbf{X}_{\text{prefill}} \in \mathbb{R}^{B \times S \times d_{\text{model}}}$$
+$$
+\mathbf{X}_{\text{prefill}} \in \mathbb{R}^{B \times S \times d_{\text{model}}}
+$$
 
 其中 $B$ 为 Batch Size（通常为 1 到数十），$S$ 为输入 Prompt 序列长度（数十到数万不等），$d_{\text{model}}$ 为模型隐层维度（如 LLaMA-3 70B 为 8192）。
 
@@ -269,7 +273,9 @@ $$\mathbf{X}_{\text{prefill}} \in \mathbb{R}^{B \times S \times d_{\text{model}}
 
 在 Decode 的每一个独立 Step 中，对于某一个特定的请求，输入的 Tensor 形状缩水为：
 
-$$\mathbf{X}_{\text{decode}} \in \mathbb{R}^{B \times 1 \times d_{\text{model}}}$$
+$$
+\mathbf{X}_{\text{decode}} \in \mathbb{R}^{B \times 1 \times d_{\text{model}}}
+$$
 
 注意中间那个刺眼的数字：**$S = 1$**！每一个正在生成的请求，在这一步仅仅贡献了 **1 个 Token**！
 
@@ -291,7 +297,7 @@ $$\mathbf{X}_{\text{decode}} \in \mathbb{R}^{B \times 1 \times d_{\text{model}}}
 | 特征维度 | Prefill 阶段（预填充） | Decode 阶段（自回归逐字解码） | 体系结构根因与工程映射 |
 | :--- | :--- | :--- | :--- |
 | **执行时序与次数** | 请求到达后仅执行 **1 次** | 随生成序列长度串行循环执行 **$S_{\text{out}} - 1$ 次** | Decode 构成了端到端时间的大头 |
-| **单步 Token 吞吐形态** | 整段 Prompt（$S_{\text{in}} \in [几十, 数万]$）一次性输入 | 每步每个请求仅输入 **1 个 Token** | 一个是批处理吞吐模式，一个是逐点迭代模式 |
+| **单步 Token 吞吐形态** | 整段 Prompt（$S_{\text{in}} \in [\text{几十}, \text{数万}]$）一次性输入 | 每步每个请求仅输入 **1 个 Token** | 一个是批处理吞吐模式，一个是逐点迭代模式 |
 | **底层代数算子形态** | **GEMM（矩阵 × 矩阵）**，高维度密集阵列乘 | **GEMV（矩阵 × 向量）** 或 小 Batch GEMM | 代数运算维度直接决定了片上数据复用度（Data Reuse） |
 | **片上数据复用率** | **极高**（同一个权重参数被 $S_{\text{in}}$ 个 Token 共享） | **极低**（单个权重参数仅被 $B$ 个 Token 共享，若 $B=1$ 则无复用） | 片上 SRAM 无法对跨 Step 的权重做长时间缓存 |
 | **算术强度（AI）** | 极高（通常在 $200 \sim 2000\text{ FLOP/Byte}$） | 极低（小 Batch 下仅为 $1 \sim 20\text{ FLOP/Byte}$） | 算术强度彻底跨越了 GPU Roofline 拐点两侧 |
@@ -313,7 +319,9 @@ Roofline 模型建立在两个最基础的物理现实之上：
 
 连接计算与搬运两个维度的桥梁，叫做 **算术强度（Arithmetic Intensity, $I$）**：
 
-$$I = \frac{\text{任务总浮点运算量 (FLOPs)}}{\text{从底层显存搬运的总数据量 (Bytes)}} \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]$$
+$$
+I = \frac{\text{任务总浮点运算量 (FLOPs)}}{\text{从底层显存搬运的总数据量 (Bytes)}} \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]
+$$
 
 直白地说：**算术强度代表每从显存里费劲搬运出 1 个字节的数据，能顺带在片上完成多少次浮点加法或乘法操作。**
 - 如果 $I$ 极高：意味着数据搬上芯片后被反复复用计算了上千次，此时访存时间可以被繁重的计算完全掩盖，GPU 达到性能天花板 $P_{\text{peak}}$，称为 **算力受限（Compute-Bound）**；
@@ -340,22 +348,30 @@ $$I = \frac{\text{任务总浮点运算量 (FLOPs)}}{\text{从底层显存搬运
 
 带入手算：
 
-$$I_{\text{balance}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} \approx \mathbf{295.2\text{ FLOP/Byte}}$$
+$$
+I_{\text{balance}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} \approx \mathbf{295.2\text{ FLOP/Byte}}
+$$
 
 再算一个老当益壮的 **NVIDIA A100 SXM (80GB HBM2e)**：
 - BF16 Tensor Core 算力：$P_{\text{peak}} = 312\text{ TFLOPS}$；
 - HBM2e 显存带宽：$B_{\text{peak}} \approx 2.039\text{ TB/s}$。
 
-$$I_{\text{balance}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx \mathbf{153.0\text{ FLOP/Byte}}$$
+$$
+I_{\text{balance}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx \mathbf{153.0\text{ FLOP/Byte}}
+$$
 
 #### ④ Formal Model（标准公式与 GPU 算子/内存映射）
 对于任意加速硬件与精度格式，硬件平衡点定义为：
 
-$$I_{\text{balance}} = \frac{P_{\text{peak}}(\text{Precision})}{B_{\text{peak}}(\text{Device})} \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]$$
+$$
+I_{\text{balance}} = \frac{P_{\text{peak}}(\text{Precision})}{B_{\text{peak}}(\text{Device})} \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]
+$$
 
 在 Roofline 双对数坐标系中，系统的实际执行算力 $P$ 严格服从：
 
-$$P(I) = \min\left(P_{\text{peak}}, \; I \times B_{\text{peak}}\right)$$
+$$
+P(I) = \min\left(P_{\text{peak}}, \; I \times B_{\text{peak}}\right)
+$$
 
 ```text
 实际算力 P (TFLOPS)
@@ -395,11 +411,22 @@ $$P(I) = \min\left(P_{\text{peak}}, \; I \times B_{\text{peak}}\right)$$
 
 #### 案例 A：单请求 Decode 阶段（$B=1, S=1$）
 - **计算量（FLOPs）**：根据 Transformer 的前向计算公式，每个参数对 1 个输入 Token 贡献一次乘法和一次加法（1 MAC = 2 FLOPs），因此总计算量为：
-  $$\text{FLOPs} = 2 \times W \times 1 = 2W\text{ FLOPs}$$
+
+  $$
+  \text{FLOPs} = 2 \times W \times 1 = 2W\text{ FLOPs}
+  $$
+
 - **访存量（Bytes）**：必须把模型的所有权重从 HBM 加载到 SRAM 一次（忽略极小的单 Token KV Cache），数据量为：
-  $$\text{Bytes} = 2W\text{ Bytes}$$
+
+  $$
+  \text{Bytes} = 2W\text{ Bytes}
+  $$
+
 - **单请求 Decode 算术强度**：
-  $$I_{\text{decode}}(B=1) = \frac{2W\text{ FLOPs}}{2W\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}} \quad \text{！！！}$$
+
+  $$
+  I_{\text{decode}}(B=1) = \frac{2W\text{ FLOPs}}{2W\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}} \quad \text{！！！}
+  $$
 
 **惊天结论**：
 在 $B=1$ 时，大模型 Decode 的算术强度**仅仅是 1 FLOP/Byte**！
@@ -407,20 +434,31 @@ $$P(I) = \min\left(P_{\text{peak}}, \; I \times B_{\text{peak}}\right)$$
 这意味着什么？
 在 H100 上跑单请求 Decode，实际能达到的算力为：
 
-$$P = 1.0\text{ FLOP/Byte} \times 3.35\text{ TB/s} = \mathbf{3.35\text{ TFLOPS}}$$
+$$
+P = 1.0\text{ FLOP/Byte} \times 3.35\text{ TB/s} = \mathbf{3.35\text{ TFLOPS}}
+$$
 
 它在 H100 额定的 989 TFLOPS 稠密算力面前，利用率只有：
 
-$$\text{MFU} = \frac{3.35}{989} \approx \mathbf{0.34\%} \quad \text{（百分之零点三四！）}$$
+$$
+\text{MFU} = \frac{3.35}{989} \approx \mathbf{0.34\%} \quad \text{（百分之零点三四！）}
+$$
 
 **硬件上超过 99.6% 的计算晶体管在彻底闲置！**
 
 #### 案例 B：Prefill 阶段（$B=1, S=1024$）
 - **计算量**：$S=1024$ 个 Token 同时进网络，每个参数被 1024 个 Token 共同复用：
-  $$\text{FLOPs} = 2 \times W \times 1024 = 2048W\text{ FLOPs}$$
+
+  $$
+  \text{FLOPs} = 2 \times W \times 1024 = 2048W\text{ FLOPs}
+  $$
+
 - **访存量**：静态权重依然只从 HBM 读取一次，数据量为 $2W\text{ Bytes}$（暂时忽略 Attention 激活值）：
 - **Prefill 算术强度**：
-  $$I_{\text{prefill}} = \frac{2048W}{2W} = \mathbf{1024\text{ FLOP/Byte}}$$
+
+  $$
+  I_{\text{prefill}} = \frac{2048W}{2W} = \mathbf{1024\text{ FLOP/Byte}}
+  $$
 
 因为 $1024 \gg 295$，Prefill 远远落在了水平的 Compute-Bound 区域！H100 的 Tensor Core 能够全速满血轰鸣。
 
@@ -434,10 +472,17 @@ $$\text{MFU} = \frac{3.35}{989} \approx \mathbf{0.34\%} \quad \text{（百分之
 
 审视 Decode 的算术强度公式：如果我们把并发请求打包成一个大小为 $B$ 的 Batch，输入维度变为 $[B, 1, d_{\text{model}}]$：
 - **计算量**：$B$ 个 Token 同时计算，总运算量线性增加为：
-  $$\text{FLOPs} = 2 \times W \times B$$
+
+  $$
+  \text{FLOPs} = 2 \times W \times B
+  $$
+
 - **权重访存量**：妙处正在于此——**这 $B$ 个 Token 共享相同的模型权重！** 模型权重依然只需要从 HBM 读取一次，权重搬运量仍为 $2W\text{ Bytes}$（假设忽略随 $B$ 增长的 KV Cache 访存）：
 - **组批后的算术强度**：
-  $$I_{\text{decode}}(B) \approx \frac{2 \times W \times B}{2W} = \mathbf{B\text{ FLOP/Byte}}$$
+
+  $$
+  I_{\text{decode}}(B) \approx \frac{2 \times W \times B}{2W} = \mathbf{B\text{ FLOP/Byte}}
+  $$
 
 **这一推导揭示了为什么整个大模型推理工程都在拼了命做 Batching：**
 - 当 $B=1$ 时，$I = 1\text{ FLOP/Byte}$，利用率 0.3%；
@@ -458,7 +503,9 @@ $$\text{MFU} = \frac{3.35}{989} \approx \mathbf{0.34\%} \quad \text{（百分之
 
 回顾 Attention 的经典计算范式：
 
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V$$
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V
+$$
 
 在 Decode 的第 $t$ 步：
 - 当前输入的仅仅是第 $t$ 个 Token，它通过线性投影产生当前的查询向量 $q_t \in \mathbb{R}^{1 \times d_k}$；
@@ -469,7 +516,10 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right
 - 生成第 2 个 Token 时，重新把第 1、2 个 Token 走一遍模型算 $K_1, K_2, V_1, V_2$；
 - 生成第 $S$ 个 Token 时，必须把前 $S-1$ 个历史 Token 全量重算一遍；
 - 总浮点运算量关于序列长度呈现悲惨的二次方爆炸：
-  $$\sum_{t=1}^S \mathcal{O}(t) = \mathcal{O}(S^2)$$
+
+  $$
+  \sum_{t=1}^S \mathcal{O}(t) = \mathcal{O}(S^2)
+  $$
 
 **做 KV Cache（空间换时间）**：
 - 在第 1 步（Prefill）算完后，把所有 Prompt Token 的 $K$ 和 $V$ 矩阵保存在显存中；
@@ -477,7 +527,10 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right
 - 把新算出的 $k_t, v_t$ 追加写入缓存；
 - $q_t$ 直接与显存里的全量历史 $K_{1:t}, V_{1:t}$ 做点乘（此时只需一次矩阵-向量乘法）；
 - 每步计算量从 $O(t)$ 降为 $O(1)$，全流程计算量降至线性：
-  $$\sum_{t=1}^S \mathcal{O}(1) = \mathcal{O}(S)$$
+
+  $$
+  \sum_{t=1}^S \mathcal{O}(1) = \mathcal{O}(S)
+  $$
 
 代价是什么？**代价是显存必须像蓄水池一样，永远为所有并发请求保留不断变长的历史 $K$ 和 $V$ 张量！**
 
@@ -505,11 +558,13 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right
 
 带入小算盘：
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 \text{Bytes}_{\text{token}}^{\text{8B}} &= 2 \times L \times H_{\text{kv}} \times d_{\text{head}} \times \text{Precision} \\
 &= 2 \times 32 \times 8 \times 128 \times 2 \\
 &= 131,072\text{ Bytes} = \mathbf{128\text{ KB/Token}}
-\end{aligned}$$
+\end{aligned}
+$$
 
 **案例 2：LLaMA-3 70B (采用 GQA，8 对 KV Heads)**
 - 层数 $L = 80$；
@@ -517,28 +572,42 @@ $$\begin{aligned}
 - 头的维度 $d_{\text{head}} = 128$；
 - 存储精度：FP16（2 字节）。
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 \text{Bytes}_{\text{token}}^{\text{70B}} &= 2 \times 80 \times 8 \times 128 \times 2 \\
 &= 327,680\text{ Bytes} = \mathbf{320\text{ KB/Token}}
-\end{aligned}$$
+\end{aligned}
+$$
 
 #### ④ Formal Model（标准公式）
 对于任意 Transformer 模型，单个 Token 在全局 KV Cache 中占据的字节数为：
 
-$$\text{KV}_{\text{token}} = 2 \times L \times H_{\text{kv}} \times d_{\text{head}} \times P_{\text{bytes}}$$
+$$
+\text{KV}_{\text{token}} = 2 \times L \times H_{\text{kv}} \times d_{\text{head}} \times P_{\text{bytes}}
+$$
 
 对于一个并发数为 $B$、平均上下文长度为 $S$ 的在线服务，KV Cache 消耗的显存物理总量为：
 
-$$\text{Memory}_{\text{KV\\_Total}} = B \times S \times \text{KV}_{\text{token}} \quad (\text{Bytes})$$
+$$
+\text{Memory}_{\text{KV\\_Total}} = B \times S \times \text{KV}_{\text{token}} \quad (\text{Bytes})
+$$
 
 #### ⑤ Sanity Check（数量级校验与震惊时刻）
 以 LLaMA-3 70B 为例：
 - 单个 Token 占用 $320\text{ KB}$；
 - **长文本场景（32K 上下文）**：
-  $$\text{单请求 KV Cache} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}} \quad \text{！！！}$$
+
+  $$
+  \text{单请求 KV Cache} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}} \quad \text{！！！}
+  $$
+
   仅仅这一个长文本会话，光是它的 KV 历史就要吃掉一张 A100 80GB 卡上超过八分之一的显存！
 - **并发场景（并发数 $B=64$，平均长度 4K）**：
-  $$\text{总 KV Cache} = 64 \times 4096 \times 320\text{ KB} \approx \mathbf{83.88\text{ GB}}$$
+
+  $$
+  \text{总 KV Cache} = 64 \times 4096 \times 320\text{ KB} \approx \mathbf{83.88\text{ GB}}
+  $$
+
   整整需要一张额外的 80GB GPU 才能装得下这些缓存！
 
 ---
@@ -576,7 +645,9 @@ $$\text{Memory}_{\text{KV\\_Total}} = B \times S \times \text{KV}_{\text{token}}
 
 仔细审视单 Token KV Cache 计算公式：
 
-$$\text{KV}_{\text{token}} = 2 \times L \times \mathbf{H_{\text{kv}}} \times d_{\text{head}} \times \text{Precision}$$
+$$
+\text{KV}_{\text{token}} = 2 \times L \times \mathbf{H_{\text{kv}}} \times d_{\text{head}} \times \text{Precision}
+$$
 
 在这几个参数中：
 - 层数 $L$ 与隐层维度 $d_{\text{model}} = H \times d_{\text{head}}$ 直接决定了模型容量，不能轻易缩减；
@@ -644,14 +715,22 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 #### 1. TTFT（Time To First Token，首字延迟）
 - **定义**：从客户端发送 HTTP/gRPC 请求开始，到客户端接收并渲染出**第一个生成的 Token** 的完整耗时；
 - **物理构成**：
-  $$\text{TTFT} = T_{\text{network\\_in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network\\_out}}$$
+
+  $$
+  \text{TTFT} = T_{\text{network\\_in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network\\_out}}
+  $$
+
 - **核心主导项**：在服务端高负载排队时受 $T_{\text{queue}}$ 主导；在平稳运行时受 $T_{\text{prefill}}$ 主导；
 - **用户心智阈值**：人机交互黄金定律规定，TTFT 超过 **1.0 秒** 用户便开始感知迟钝，超过 **2.0 秒** 会引发用户二次刷新或放弃任务。
 
 #### 2. TPOT（Time Per Output Token，每输出字延迟）/ ITL（Inter-Token Latency，字间延迟）
 - **定义**：在进入自回归流式输出后，相邻两个 Token 之间的平均吐字时间间隔；
 - **业界标准计量（NVIDIA GenAI-Perf 口径）**：
-  $$\text{TPOT} = \text{ITL} = \frac{\text{E2E Latency} - \text{TTFT}}{S_{\text{out}} - 1}$$
+
+  $$
+  \text{TPOT} = \text{ITL} = \frac{\text{E2E Latency} - \text{TTFT}}{S_{\text{out}} - 1}
+  $$
+
 - **用户心智阈值**：
   - 人类的正常默读速度约为每秒 5~10 个汉字/单词（对应 TPOT 为 $100 \sim 200\text{ ms}$）；
   - 极佳的打字机视觉流速应维持在每秒 20~40 个 Token，即 **$\text{TPOT} \le 25 \sim 50\text{ ms}$**；
@@ -659,7 +738,10 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 
 #### 3. E2E Latency（端到端总延迟）
 - **数学建模**：
-  $$\text{Latency}_{\text{E2E}} = \text{TTFT} + \text{TPOT} \times (S_{\text{out}} - 1)$$
+
+  $$
+  \text{Latency}_{\text{E2E}} = \text{TTFT} + \text{TPOT} \times (S_{\text{out}} - 1)
+  $$
 
 > ⚠️ **生产架构决策暗礁：你的场景被谁主导？**
 > - **短输出场景（如搜索引擎摘要、分类标注、$S_{\text{out}} = 20$）**：
@@ -729,9 +811,13 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 #### 1. Goodput 定义
 **只有当一个请求的端到端指标严格满足预设的 SLO 条件时，它所产出的 Token 才被算作“有效 Token”；一切超时的 Token，哪怕 GPU 算得再辛苦，在商业和业务意义上均被视作“无效废物（Badput）”！**
 
-$$\text{Goodput} = \frac{\sum_{i \in \text{Successful Requests}} \text{Tokens}_i}{T}$$
+$$
+\text{Goodput} = \frac{\sum_{i \in \text{Successful Requests}} \text{Tokens}_i}{T}
+$$
 
-$$\text{其中 Successful 严格受限于：} \begin{cases} \text{TTFT}_i \le \text{SLO}_{\text{TTFT}} & (\text{如 } \le 800\text{ ms}) \\ \text{TPOT}_i \le \text{SLO}_{\text{TPOT}} & (\text{如 } \le 50\text{ ms}) \end{cases}$$
+$$
+\text{其中 Successful 严格受限于：} \begin{cases} \text{TTFT}_i \le \text{SLO}_{\text{TTFT}} & (\text{如 } \le 800\text{ ms}) \\ \text{TPOT}_i \le \text{SLO}_{\text{TPOT}} & (\text{如 } \le 50\text{ ms}) \end{cases}
+$$
 
 #### 2. Pareto 最优前沿面（Pareto Frontier）
 在大模型容量规划与压测中，我们永远无法单方面追求“最低延迟”或“最高吞吐”。工程师的职责是在二者之间绘制出系统的 **Pareto 边界曲线**：
@@ -797,7 +883,9 @@ Continuous Batching 将 GPU 算力的吞吐量瞬间提升了 2 到 4 倍，直�
 
 此时，这一步的计算总量变成了：
 
-$$\text{Step Tokens} = \underbrace{S_{\text{prompt}}}_{\text{比如 4000 Tokens}} + \underbrace{B_{\text{decode}} \times 1}_{\text{比如 16 个 Decode}}$$
+$$
+\text{Step Tokens} = \underbrace{S_{\text{prompt}}}_{\text{比如 4000 Tokens}} + \underbrace{B_{\text{decode}} \times 1}_{\text{比如 16 个 Decode}}
+$$
 
 - GPU 的 Tensor Core 必须执行极其沉重的 $[4016 \times d_{\text{model}}]$ 级前向传播；
 - 这一步的物理耗时从平时的 25ms **瞬间暴增至 300ms**；
@@ -939,10 +1027,17 @@ graph TD
 #### 一笔令人不寒而栗的网络账本：
 以 LLaMA-3 70B（80 层，8 个 KV 头，FP16，单 Token 约 320 KB）为例：
 - 一个 **32,768 Token（32K）的长上下文请求**，其生成的 KV Cache 总量高达：
-  $$\text{KV Size} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}}$$
+
+  $$
+  \text{KV Size} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}}
+  $$
+
 - 假设集群配备了工业顶级的 **400 Gbps InfiniBand / RoCE 网卡**（单向理论有效带宽约为 $45\sim 48\text{ GB/s}$）；
 - 纯网络硬件传输这一份 KV Cache 的理论物理耗时下限为：
-  $$T_{\text{network}} = \frac{10.48\text{ GB}}{48\text{ GB/s}} \approx \mathbf{218\text{ ms}} \quad \text{！！！}$$
+
+  $$
+  T_{\text{network}} = \frac{10.48\text{ GB}}{48\text{ GB/s}} \approx \mathbf{218\text{ ms}} \quad \text{！！！}
+  $$
 
 如果加上网卡驱动协议栈开销、两端 GPU Direct RDMA（GDR）内存注册与同步耗时，**网络传输本身就要额外给用户的首字延迟（TTFT）硬生生加上 250~300ms！**
 
@@ -1372,29 +1467,60 @@ if __name__ == "__main__":
 #### 💡 详细推导过程
 **步骤一：手算静态模型权重显存**
 - 70B 模型（700 亿参数），半精度 FP16（每参数 2 字节）：
-  $$\text{Memory}_{\text{Weights}} = 70 \times 10^9 \times 2\text{ Bytes} = 140\text{ GB}$$
+
+  $$
+  \text{Memory}_{\text{Weights}} = 70 \times 10^9 \times 2\text{ Bytes} = 140\text{ GB}
+  $$
+
 - 在 8 卡 H100（TP=8）集群上，单卡均摊静态权重为：
-  $$\text{Weight}_{\text{Per\\_GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}$$
+
+  $$
+  \text{Weight}_{\text{Per\\_GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}
+  $$
 
 **步骤二：手算动态 KV Cache 总显存**
 - LLaMA-3 70B 架构参数：层数 $L = 80$，$H_{\text{kv}} = 8$，$d_{\text{head}} = 128$，$\text{Precision} = 2$ 字节；
 - 单 Token 全局 KV 增量：
-  $$\text{KV}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = 327,680\text{ Bytes} \approx \mathbf{320\text{ KB/Token}}$$
+
+  $$
+  \text{KV}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = 327,680\text{ Bytes} \approx \mathbf{320\text{ KB/Token}}
+  $$
+
 - 并发 $B = 128$，平均长度 $S = 4096$：
-  $$\text{KV}_{\text{Total}} = 128 \times 4096 \times 320\text{ KB} = 128 \times 4096 \times 0.3125\text{ MB} = 163,840\text{ MB} = \mathbf{160\text{ GB}}$$
+
+  $$
+  \text{KV}_{\text{Total}} = 128 \times 4096 \times 320\text{ KB} = 128 \times 4096 \times 0.3125\text{ MB} = 163,840\text{ MB} = \mathbf{160\text{ GB}}
+  $$
+
 - 在 TP=8 下，KV 头数按卡均分（每张卡分到 $8 / 8 = 1$ 个 KV 头），单卡均摊 KV Cache 为：
-  $$\text{KV}_{\text{Per\\_GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}$$
+
+  $$
+  \text{KV}_{\text{Per\\_GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}
+  $$
+
 - **单卡显存总占用**：
-  $$\text{Total}_{\text{Per\\_GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}$$
+
+  $$
+  \text{Total}_{\text{Per\\_GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}
+  $$
+
   （完全安全地落在 H100 80GB 的显存预算内，剩余约 42.5GB 充当额外安全裕量）。
 
 **步骤三：推导 H100 上的单步理论 TPOT 物理下限**
 - 单卡单步需要从 HBM 搬运的数据量：
-  $$\text{Data}_{\text{Per\\_Step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}$$
+
+  $$
+  \text{Data}_{\text{Per\\_Step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}
+  $$
+
 - 单张 H100 SXM5 的物理理论显存带宽为 $B_{\text{peak}} = 3.35\text{ TB/s} = 3350\text{ GB/s}$；
 - 假定显存总线带宽利用率为极高水平的 80%（有效带宽 $3350 \times 0.8 = 2680\text{ GB/s}$）；
 - 单步仅搬运数据所需的物理耗时下限为：
-  $$T_{\text{step\\_min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}$$
+
+  $$
+  T_{\text{step\\_min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}
+  $$
+
 - **标准答案结论**：在并发 128、4K 上下文下，单卡仅需 37.5GB 显存；H100 上的单步纯搬运理论 TPOT 下限约为 **14ms 左右**（对应单用户感知流速最高约 71 Token/s）。
 
 ---

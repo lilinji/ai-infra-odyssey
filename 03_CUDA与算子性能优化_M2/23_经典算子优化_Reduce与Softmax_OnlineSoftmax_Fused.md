@@ -114,7 +114,10 @@ math: true
 ### 0.1 真实工程矛盾：为什么长文本一开，Softmax 成了显存吞噬兽？
 
 在 Transformer 架构中，自注意力机制（Self-Attention）的核心计算公式天下皆知：
-$$\text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+
+$$
+\text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V
+$$
 
 当序列长度（Sequence Length $N$）从 2K、8K 扩展到长上下文的 32K、128K 乃至 1M 时，一个极其残酷的算力矛盾暴露无遗：
 计算矩阵乘 $S = QK^T$ 是典型的 **Compute-Bound（计算密集型）** 任务，在 NVIDIA A100/H100 的 Tensor Core 上可以跑出 300~1000 TFLOPS 的恐怖峰值算力；
@@ -153,7 +156,11 @@ for(int i = 0; i < N; ++i) {
 
 **这一行代码成了致命的地雷！**
 在 IEEE-754 半精度浮点数（FP16）规范中，最大能表示的正实数仅为 $65504$。而在反向推导中：
-$$\ln(65504) \approx 11.0898$$
+
+$$
+\ln(65504) \approx 11.0898
+$$
+
 这意味着：**只要注意力得分矩阵中有任何一个位置的数值超过了 11.1，$\exp(x_i)$ 就会立刻溢出为浮点正无穷（`+Inf`）！**
 接下来，任何数值除以 `+Inf`，或者 `+Inf` 减去 `+Inf`，整个张量就会像瘟疫一样瞬间被染成全是 `NaN`！
 
@@ -186,7 +193,10 @@ $$\ln(65504) \approx 11.0898$$
 ### 1.1 规约操作在 AI 算子中的统治地位
 
 在并行计算领域，**规约（Reduction）** 的定义是将一个数组中的 $N$ 个元素，通过一个满足结合律的二元操作符 $\oplus$（如加法、乘法、求最大值、求最小值），逐步聚合为一个单一标量标量的过程：
-$$y = x_0 \oplus x_1 \oplus x_2 \oplus \dots \oplus x_{N-1}$$
+
+$$
+y = x_0 \oplus x_1 \oplus x_2 \oplus \dots \oplus x_{N-1}
+$$
 
 在大模型底层体系结构中，规约是出现频次仅次于矩阵乘（GEMM）的第二大类算子：
 
@@ -317,7 +327,10 @@ __device__ inline float warpReduceSum(float val) {
 ### 2.1 IEEE-754 浮点数的物理边界：FP16 与 FP32 的溢出悬崖
 
 在标准数学定义中：
-$$\text{Softmax}(x)_i = \frac{e^{x_i}}{\sum_{j=1}^N e^{x_j}}$$
+
+$$
+\text{Softmax}(x)_i = \frac{e^{x_i}}{\sum_{j=1}^N e^{x_j}}
+$$
 
 在理想数学世界中，这个公式完美无瑕。但在由硅片晶体管构筑的有限精度浮点世界（IEEE-754 标准）中，它是一座极其危险的活火山。
 
@@ -355,29 +368,54 @@ $$\text{Softmax}(x)_i = \frac{e^{x_i}}{\sum_{j=1}^N e^{x_j}}$$
 设输入向量只有 3 个小数字：$X = [2.0, 4.0, 1.0]$。
 
 - **第一步：求最大值**
-  $$m = \max(2.0, 4.0, 1.0) = 4.0$$
+
+  $$
+  m = \max(2.0, 4.0, 1.0) = 4.0
+  $$
+
 - **第二步：平移输入向量**
-  $$\tilde{X} = X - m = [2 - 4, 4 - 4, 1 - 4] = [-2.0, 0.0, -3.0]$$
+
+  $$
+  \tilde{X} = X - m = [2 - 4, 4 - 4, 1 - 4] = [-2.0, 0.0, -3.0]
+  $$
+
 - **第三步：求指数与和**
-  $$e^{\tilde{x}_0} = e^{-2} \approx 0.1353, \quad e^{\tilde{x}_1} = e^0 = 1.0000, \quad e^{\tilde{x}_2} = e^{-3} \approx 0.0498$$
-  $$d = \sum e^{\tilde{x}_i} = 0.1353 + 1.0000 + 0.0498 = 1.1851$$
+
+  $$
+  e^{\tilde{x}_0} = e^{-2} \approx 0.1353, \quad e^{\tilde{x}_1} = e^0 = 1.0000, \quad e^{\tilde{x}_2} = e^{-3} \approx 0.0498
+  $$
+
+  $$
+  d = \sum e^{\tilde{x}_i} = 0.1353 + 1.0000 + 0.0498 = 1.1851
+  $$
+
 - **第四步：归一化**
-  $$y = \left[ \frac{0.1353}{1.1851}, \frac{1.0000}{1.1851}, \frac{0.0498}{1.1851} \right] \approx [0.1142, 0.8438, 0.0420]$$
+
+  $$
+  y = \left[ \frac{0.1353}{1.1851}, \frac{1.0000}{1.1851}, \frac{0.0498}{1.1851} \right] \approx [0.1142, 0.8438, 0.0420]
+  $$
+
   检查总和：$0.1142 + 0.8438 + 0.0420 = 1.0000$。数值完全正确！
 
 ##### ④ Formal Model（标准公式）
 
 定义 Safe Softmax 标准数学模型：
 
-$$m = \max_{1 \le k \le N} x_k$$
+$$
+m = \max_{1 \le k \le N} x_k
+$$
 
-$$\text{SafeSoftmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}}$$
+$$
+\text{SafeSoftmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}}
+$$
 
 ##### ⑤ Sanity Check（代数恒等证明）
 
 我们证明该平移操作不改变数学本质：
 
-$$\frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}} = \frac{e^{x_i} \cdot e^{-m}}{\sum_{j=1}^N (e^{x_j} \cdot e^{-m})} = \frac{e^{x_i} \cdot e^{-m}}{e^{-m} \cdot \sum_{j=1}^N e^{x_j}} = \frac{e^{x_i}}{\sum_{j=1}^N e^{x_j}} = \text{Softmax}(x)_i$$
+$$
+\frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}} = \frac{e^{x_i} \cdot e^{-m}}{\sum_{j=1}^N (e^{x_j} \cdot e^{-m})} = \frac{e^{x_i} \cdot e^{-m}}{e^{-m} \cdot \sum_{j=1}^N e^{x_j}} = \frac{e^{x_i}}{\sum_{j=1}^N e^{x_j}} = \text{Softmax}(x)_i
+$$
 
 **证毕！** 数学上严格恒等，物理上彻底杜绝上溢。
 
@@ -426,19 +464,32 @@ sequenceDiagram
 他们的核心洞察极其优美：
 我们在流式遍历一个数组时，分母之所以不能提前算，是因为**当前已见的最大值可能会在后面被推翻**。
 设我们在处理前 $k$ 个元素时，当前的最大值是 $m_{\text{old}}$，累加的指数和是：
-$$d_{\text{old}} = \sum_{j=1}^k e^{x_j - m_{\text{old}}}$$
+
+$$
+d_{\text{old}} = \sum_{j=1}^k e^{x_j - m_{\text{old}}}
+$$
+
 如果在读到第 $k+1$ 个元素 $x_{k+1}$ 时，突然发现它比历史最大值还要大（$x_{k+1} > m_{\text{old}}$），此时新的最大值变成了：
-$$m_{\text{new}} = x_{k+1}$$
+
+$$
+m_{\text{new}} = x_{k+1}
+$$
+
 按照传统思维，前面 $k$ 个元素全算错了，必须推倒重来。
 **但且慢！真的需要重算吗？**
 让我们观察如果用新的 $m_{\text{new}}$ 来衡量历史总和，历史总和应该变成什么：
-$$d_{\text{correct}} = \sum_{j=1}^k e^{x_j - m_{\text{new}}} = \sum_{j=1}^k e^{(x_j - m_{\text{old}}) + (m_{\text{old}} - m_{\text{new}})} = \left(\sum_{j=1}^k e^{x_j - m_{\text{old}}}\right) \cdot e^{m_{\text{old}} - m_{\text{new}}}$$
+
+$$
+d_{\text{correct}} = \sum_{j=1}^k e^{x_j - m_{\text{new}}} = \sum_{j=1}^k e^{(x_j - m_{\text{old}}) + (m_{\text{old}} - m_{\text{new}})} = \left(\sum_{j=1}^k e^{x_j - m_{\text{old}}}\right) \cdot e^{m_{\text{old}} - m_{\text{new}}}
+$$
 
 请屏住呼吸盯着这个公式：
 括号里的东西，不正是我们刚才已经累加好的 **$d_{\text{old}}$** 吗？！
 这意味着：**面对新的更大值，历史上的分母根本不需要重新计算，只需要乘以一个动态缩放因子（Rescale Factor）：**
 
-$$\alpha = e^{m_{\text{old}} - m_{\text{new}}}$$
+$$
+\alpha = e^{m_{\text{old}} - m_{\text{new}}}
+$$
 
 然后再加上新元素的贡献 $e^{x_{k+1} - m_{\text{new}}}$，就得到了最新的总分母！
 
@@ -465,18 +516,39 @@ $$\alpha = e^{m_{\text{old}} - m_{\text{new}}}$$
 继续使用刚才的数组：$X = [2.0, 4.0, 1.0]$。初始状态设为：$m_0 = -\infty, d_0 = 0.0$。
 
 - **处理元素 $x_1 = 2.0$**：
-  $$m_1 = \max(-\infty, 2.0) = 2.0$$
-  $$d_1 = 0.0 \cdot e^{-\infty - 2.0} + e^{2.0 - 2.0} = 0 + 1.0 = 1.0$$
+
+  $$
+  m_1 = \max(-\infty, 2.0) = 2.0
+  $$
+
+  $$
+  d_1 = 0.0 \cdot e^{-\infty - 2.0} + e^{2.0 - 2.0} = 0 + 1.0 = 1.0
+  $$
+
   _状态：$m_1 = 2.0, d_1 = 1.0$_。
 
 - **处理元素 $x_2 = 4.0$（出现更大值！）**：
-  $$m_2 = \max(2.0, 4.0) = 4.0$$
-  $$d_2 = d_1 \cdot e^{m_1 - m_2} + e^{x_2 - m_2} = 1.0 \cdot e^{2.0 - 4.0} + e^{4.0 - 4.0} = e^{-2} + 1.0 \approx 0.1353 + 1.0 = 1.1353$$
+
+  $$
+  m_2 = \max(2.0, 4.0) = 4.0
+  $$
+
+  $$
+  d_2 = d_1 \cdot e^{m_1 - m_2} + e^{x_2 - m_2} = 1.0 \cdot e^{2.0 - 4.0} + e^{4.0 - 4.0} = e^{-2} + 1.0 \approx 0.1353 + 1.0 = 1.1353
+  $$
+
   _状态：$m_2 = 4.0, d_2 = 1.1353$_。
 
 - **处理元素 $x_3 = 1.0$（小于当前最大值）**：
-  $$m_3 = \max(4.0, 1.0) = 4.0$$
-  $$d_3 = d_2 \cdot e^{4.0 - 4.0} + e^{1.0 - 4.0} = 1.1353 \cdot 1.0 + e^{-3} \approx 1.1353 + 0.0498 = \mathbf{1.1851}$$
+
+  $$
+  m_3 = \max(4.0, 1.0) = 4.0
+  $$
+
+  $$
+  d_3 = d_2 \cdot e^{4.0 - 4.0} + e^{1.0 - 4.0} = 1.1353 \cdot 1.0 + e^{-3} \approx 1.1353 + 0.0498 = \mathbf{1.1851}
+  $$
+
   _状态：$m_3 = 4.0, d_3 = 1.1851$_。
 
 **对比检验**：在 2.2 节用传统三遍法算出来的分母正是 **$1.1851$**！
@@ -486,9 +558,13 @@ $$\alpha = e^{m_{\text{old}} - m_{\text{new}}}$$
 
 对于序列中的任意新元素 $x_k$：
 
-$$m_k = \max(m_{k-1}, x_k)$$
+$$
+m_k = \max(m_{k-1}, x_k)
+$$
 
-$$d_k = d_{k-1} \cdot e^{m_{k-1} - m_k} + e^{x_k - m_k}$$
+$$
+d_k = d_{k-1} \cdot e^{m_{k-1} - m_k} + e^{x_k - m_k}
+$$
 
 ##### ⑤ Sanity Check（数值安全性）
 
@@ -507,22 +583,46 @@ $$d_k = d_{k-1} \cdot e^{m_{k-1} - m_k} + e^{x_k - m_k}$$
 
 设数据集合 $A$ 的元素为 $x_i$，集合 $B$ 的元素为 $x_j$。
 定义：
-$$m_A = \max_{i \in A} x_i, \quad d_A = \sum_{i \in A} e^{x_i - m_A}$$
-$$m_B = \max_{j \in B} x_j, \quad d_B = \sum_{j \in B} e^{x_j - m_B}$$
+
+$$
+m_A = \max_{i \in A} x_i, \quad d_A = \sum_{i \in A} e^{x_i - m_A}
+$$
+
+$$
+m_B = \max_{j \in B} x_j, \quad d_B = \sum_{j \in B} e^{x_j - m_B}
+$$
 
 对于合并后的全集 $C = A \cup B$：
 
 1. **合并最大值**：
-   $$m_C = \max(m_A, m_B)$$
+
+   $$
+   m_C = \max(m_A, m_B)
+   $$
+
 2. **合并总分母**：
-   $$d_C = \sum_{k \in C} e^{x_k - m_C} = \sum_{i \in A} e^{x_i - m_C} + \sum_{j \in B} e^{x_j - m_C}$$
+
+   $$
+   d_C = \sum_{k \in C} e^{x_k - m_C} = \sum_{i \in A} e^{x_i - m_C} + \sum_{j \in B} e^{x_j - m_C}
+   $$
+
    将 $m_A$ 和 $m_B$ 拆解代入：
-   $$d_C = \sum_{i \in A} \left(e^{x_i - m_A} \cdot e^{m_A - m_C}\right) + \sum_{j \in B} \left(e^{x_j - m_B} \cdot e^{m_B - m_C}\right)$$
+
+   $$
+   d_C = \sum_{i \in A} \left(e^{x_i - m_A} \cdot e^{m_A - m_C}\right) + \sum_{j \in B} \left(e^{x_j - m_B} \cdot e^{m_B - m_C}\right)
+   $$
+
    提公因式：
-   $$d_C = \left(\sum_{i \in A} e^{x_i - m_A}\right) \cdot e^{m_A - m_C} + \left(\sum_{j \in B} e^{x_j - m_B}\right) \cdot e^{m_B - m_C}$$
+
+   $$
+   d_C = \left(\sum_{i \in A} e^{x_i - m_A}\right) \cdot e^{m_A - m_C} + \left(\sum_{j \in B} e^{x_j - m_B}\right) \cdot e^{m_B - m_C}
+   $$
+
    代入 $d_A, d_B$：
 
-$$d_{\text{merged}} = d_A \cdot e^{m_A - m_{\text{merged}}} + d_B \cdot e^{m_B - m_{\text{merged}}}$$
+$$
+d_{\text{merged}} = d_A \cdot e^{m_A - m_{\text{merged}}} + d_B \cdot e^{m_B - m_{\text{merged}}}
+$$
 
 **这个公式具有神圣的对称性与结合律！**
 它证明了：无论你是单线程增量处理，还是用 32 个线程做 Warp Shuffle 规约，亦或是跨 Warp 做 Block 级树形合并，**都可以直接套用这个二元合并算子**！
@@ -589,7 +689,11 @@ __device__ inline void warpReduceOnline(float& m, float& d) {
 ```
 
 当矩阵的行宽 $N$ 在大模型常见隐藏层维度内（例如 $N \le 4096$ 或 $N \le 8192$）时，如果每个 Block 分配 256 个线程：
-$$\text{每个线程需要处理的元素数} = \frac{4096}{256} = 16 \text{ 个 float}$$
+
+$$
+\text{每个线程需要处理的元素数} = \frac{4096}{256} = 16 \text{ 个 float}
+$$
+
 16 个 float 仅仅消耗每个线程 **16 个 32-bit 寄存器**！
 而 A100 每个线程拥有高达 255 个寄存器可用。我们完全可以声明一个局部数组 `float reg_cache[16]`。
 在第 1 遍从全局显存读取时，**顺手将数据保存在寄存器数组中**；规约完成后，第 2 遍直接从寄存器中取数写出！
@@ -654,7 +758,9 @@ Tri Dao 等人的思路极其震撼：
 - **最关键的神来之笔——如何更新已经算出来的输出矩阵 $O$？**
   利用完全相同的 Rescale 因子：
 
-$$O^{\text{new}} = \text{diag}\left(e^{m^{(1)} - m^{\text{new}}}\right) O^{(1)} + P^{(2)} V_2$$
+$$
+O^{\text{new}} = \text{diag}\left(e^{m^{(1)} - m^{\text{new}}}\right) O^{(1)} + P^{(2)} V_2
+$$
 
 在遍历完所有分块后，只需在最终做一次全局除法：$O = O / d^{\text{final}}$！
 
@@ -1499,19 +1605,41 @@ Warp 直通五步跃，寄存器里把和接。
 - **第一步：写出单元素增量递推公式**
   设已见前 $k$ 个元素最大值为 $m_k$，分母为 $d_k = \sum_{i=1}^k e^{x_i - m_k}$。
   新加入元素 $x_{k+1}$ 时：
-  $$m_{k+1} = \max(m_k, x_{k+1})$$
-  $$d_{k+1} = \sum_{i=1}^{k+1} e^{x_i - m_{k+1}} = \left(\sum_{i=1}^k e^{x_i - m_k}\right) e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}} = d_k \cdot e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}}$$
+
+  $$
+  m_{k+1} = \max(m_k, x_{k+1})
+  $$
+
+  $$
+  d_{k+1} = \sum_{i=1}^{k+1} e^{x_i - m_{k+1}} = \left(\sum_{i=1}^k e^{x_i - m_k}\right) e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}} = d_k \cdot e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}}
+  $$
+
 - **第二步：写出两块独立状态合并公式**
   设两块数据状态分别为 $(m_1, d_1)$ 和 $(m_2, d_2)$：
-  $$m_{\text{merged}} = \max(m_1, m_2)$$
-  $$d_{\text{merged}} = d_1 \cdot e^{m_1 - m_{\text{merged}}} + d_2 \cdot e^{m_2 - m_{\text{merged}}}$$
+
+  $$
+  m_{\text{merged}} = \max(m_1, m_2)
+  $$
+
+  $$
+  d_{\text{merged}} = d_1 \cdot e^{m_1 - m_{\text{merged}}} + d_2 \cdot e^{m_2 - m_{\text{merged}}}
+  $$
+
 - **第三步：证明结合律 $[ (A \oplus B) \oplus C = A \oplus (B \oplus C) ]$**
   定义状态合并算子 $\oplus$：$(m_1, d_1) \oplus (m_2, d_2) = (m_{12}, d_{12})$。
   易知 $m_{(12)3} = \max(\max(m_1, m_2), m_3) = \max(m_1, m_2, m_3) = M$ 显然满足结合律。
   再考察分母：
-  $$d_{(12)3} = d_{12} \cdot e^{m_{12} - M} + d_3 \cdot e^{m_3 - M} = \left( d_1 e^{m_1 - m_{12}} + d_2 e^{m_2 - m_{12}} \right) e^{m_{12} - M} + d_3 e^{m_3 - M}$$
+
+  $$
+  d_{(12)3} = d_{12} \cdot e^{m_{12} - M} + d_3 \cdot e^{m_3 - M} = \left( d_1 e^{m_1 - m_{12}} + d_2 e^{m_2 - m_{12}} \right) e^{m_{12} - M} + d_3 e^{m_3 - M}
+  $$
+
   指数展开相乘：
-  $$d_{(12)3} = d_1 e^{m_1 - M} + d_2 e^{m_2 - M} + d_3 e^{m_3 - M}$$
+
+  $$
+  d_{(12)3} = d_1 e^{m_1 - M} + d_2 e^{m_2 - M} + d_3 e^{m_3 - M}
+  $$
+
   同理计算 $d_{1(23)}$，展开后完全一致。**结合律获证！** 这意味着无论 GPU 的线程树如何分叉折叠，最终结果严格恒等。
 
 ---
@@ -1571,11 +1699,22 @@ Warp 直通五步跃，寄存器里把和接。
 2. **推导局部与全局更新**：
    设第 $j$ 块计算出的局部得分为 $S_j = Q K_j^T$，局部最大值为 $m_j$，局部指数为 $P_j = \exp(S_j - m_j)$，局部总和为 $l_j = \text{rowsum}(P_j)$；
    维护全局状态：
-   $$m_{\text{new}} = \max(m_{\text{old}}, m_j)$$
-   $$d_{\text{new}} = d_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + l_j \cdot e^{m_j - m_{\text{new}}}$$
+
+   $$
+   m_{\text{new}} = \max(m_{\text{old}}, m_j)
+   $$
+
+   $$
+   d_{\text{new}} = d_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + l_j \cdot e^{m_j - m_{\text{new}}}
+   $$
+
 3. **输出矩阵 $O$ 的流式更新**：
    在尚未做全局除法前，输出累加量 $O$ 维护的是 $\sum P_i V_i$ 的分子部分：
-   $$O_{\text{new}} = O_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + P_j V_j \cdot e^{m_j - m_{\text{new}}}$$
+
+   $$
+   O_{\text{new}} = O_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + P_j V_j \cdot e^{m_j - m_{\text{new}}}
+   $$
+
 4. **彻底省去 $S$ 的物理原因**：
    因为 $P_j$ 在片上 SRAM 算出来后，**立即与 $V_j$ 相乘并累加进了 $O$ 中**！完成累加后，局部矩阵 $S_j$ 和 $P_j$ 的使命彻底终结，可以直接丢弃覆写，完全无需向全局显存写回哪怕一个元素，显存复杂度从 $O(N^2)$ 骤降至 $O(N)$。
 

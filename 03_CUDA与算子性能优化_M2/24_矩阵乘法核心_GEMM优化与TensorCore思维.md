@@ -198,21 +198,38 @@ C[row * N + col] = sum;
 
 要优化一个算子，首先必须在草稿纸上算清它的“理论账本”。
 对于标准通用矩阵乘法：
-$$C = A \times B, \quad A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times N}, C \in \mathbb{R}^{M \times N}$$
+
+$$
+C = A \times B, \quad A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times N}, C \in \mathbb{R}^{M \times N}
+$$
 
 1. **计算量账本（FLOPs）**：
    矩阵 $C$ 共有 $M \times N$ 个元素。每个元素的产生，都需要将 $A$ 的一行（$K$ 个数）与 $B$ 的一列（$K$ 个数）做点积内积。
    每个数参与 1 次乘法和 1 次加法（FMA，Fused Multiply-Add），共计 2 次浮点运算。
-   $$\text{Total FLOPs} = 2 \times M \times N \times K$$
+
+   $$
+   \text{Total FLOPs} = 2 \times M \times N \times K
+   $$
+
    当 $M = N = K = 4096$ 时：
-   $$\text{Total FLOPs} = 2 \times 4096^3 \approx \mathbf{1.374 \times 10^{11} \text{ FLOPs (137.4 GFLOPs)}}$$
+
+   $$
+   \text{Total FLOPs} = 2 \times 4096^3 \approx \mathbf{1.374 \times 10^{11} \text{ FLOPs (137.4 GFLOPs)}}
+   $$
 
 2. **存储量账本（Bytes）**：
    输入矩阵 $A$ 包含 $M \times K$ 个数，矩阵 $B$ 包含 $K \times N$ 个数，输出矩阵 $C$ 包含 $M \times N$ 个数。
    采用单精度 FP32（每个元素 4 字节）：
-   $$\text{Data Volume} = 4 \times (M \cdot K + K \cdot N + M \cdot N) \text{ Bytes}$$
+
+   $$
+   \text{Data Volume} = 4 \times (M \cdot K + K \cdot N + M \cdot N) \text{ Bytes}
+   $$
+
    当 $M = N = K = 4096$ 时：
-   $$\text{Data Volume} = 4 \times (3 \times 4096^2) = 4 \times 50,331,648 \text{ Bytes} \approx \mathbf{201.3 \text{ MB}}$$
+
+   $$
+   \text{Data Volume} = 4 \times (3 \times 4096^2) = 4 \times 50,331,648 \text{ Bytes} \approx \mathbf{201.3 \text{ MB}}
+   $$
 
 ---
 
@@ -241,26 +258,46 @@ $$C = A \times B, \quad A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \time
 
 - **朴素实现（无复用）**：
   计算每个 $C[i][j]$，读取 $A$ 的 4 个数和 $B$ 的 4 个数（共 $8 \times 4\text{B} = 32\text{B}$），完成 $2 \times 4 = 8$ 次计算。
-  $$\text{算术强度} = \frac{8 \text{ FLOPs}}{32 \text{ Bytes}} = \mathbf{0.25 \text{ FLOPs/Byte}}$$
+
+  $$
+  \text{算术强度} = \frac{8 \text{ FLOPs}}{32 \text{ Bytes}} = \mathbf{0.25 \text{ FLOPs/Byte}}
+  $$
+
 - **理想完全分块（全部放入片上复用）**：
   总共把 $A(16 \text{数}) + B(16 \text{数})$ 搬进片上（共 $32 \times 4\text{B} = 128\text{B}$），算出 $C(16 \text{数})$ 写出（$16 \times 4\text{B} = 64\text{B}$），总流量 192 Bytes。
   总运算量为 $2 \times 4^3 = 128$ FLOPs。
-  $$\text{算术强度} = \frac{128 \text{ FLOPs}}{192 \text{ Bytes}} \approx \mathbf{0.67 \text{ FLOPs/Byte}}$$
+
+  $$
+  \text{算术强度} = \frac{128 \text{ FLOPs}}{192 \text{ Bytes}} \approx \mathbf{0.67 \text{ FLOPs/Byte}}
+  $$
+
   如果规模扩大到 $4096 \times 4096$，理想算术强度将直接飙升至：
-  $$I_{\text{ideal}} = \frac{2 \times 4096^3}{4 \times 3 \times 4096^2} = \frac{4096}{6} \approx \mathbf{682.6 \text{ FLOPs/Byte}}$$
+
+  $$
+  I_{\text{ideal}} = \frac{2 \times 4096^3}{4 \times 3 \times 4096^2} = \frac{4096}{6} \approx \mathbf{682.6 \text{ FLOPs/Byte}}
+  $$
 
 ##### ④ Formal Model（算术强度与硬件平衡点）
 
 硬件平台的 **Roofline 平衡点（Balance Point）** 定义为：
 
-$$\text{Balance Point} = \frac{\text{Peak Compute Throughput (FLOPS)}}{\text{Peak Memory Bandwidth (Bytes/s)}}$$
+$$
+\text{Balance Point} = \frac{\text{Peak Compute Throughput (FLOPS)}}{\text{Peak Memory Bandwidth (Bytes/s)}}
+$$
 
 以 **NVIDIA A100-SXM4-80GB** 为例：
 
 - **CUDA Core FP32 峰值**：$19.5 \text{ TFLOPS}$，HBM 带宽：$2039 \text{ GB/s}$。
-  $$\text{Balance Point}_{\text{FP32}} = \frac{19.5 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{9.56 \text{ FLOPs/Byte}}$$
+
+  $$
+  \text{Balance Point}_{\text{FP32}} = \frac{19.5 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{9.56 \text{ FLOPs/Byte}}
+  $$
+
 - **Tensor Core FP16 峰值**：$312 \text{ TFLOPS}$，HBM 带宽：$2039 \text{ GB/s}$。
-  $$\text{Balance Point}_{\text{TensorCore}} = \frac{312 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{153.0 \text{ FLOPs/Byte}}$$
+
+  $$
+  \text{Balance Point}_{\text{TensorCore}} = \frac{312 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{153.0 \text{ FLOPs/Byte}}
+  $$
 
 ##### ⑤ Sanity Check（残酷的数量级校验）
 
@@ -373,17 +410,30 @@ for (int k = 0; k < K; ++k) {
 让我们算一算引入 Shared Memory 分块后的真实收益：
 
 - 在这个 $BM \times BN$ 的输出块中，完成一个 $BK$ 步长所需的浮点运算量为：
-  $$\text{FLOPs} = 2 \times BM \times BN \times BK$$
+
+  $$
+  \text{FLOPs} = 2 \times BM \times BN \times BK
+  $$
+
 - 从全局显存读取的数据量仅为：
-  $$\text{Global Read Bytes} = 4 \times (BM \times BK + BK \times BN)$$
+
+  $$
+  \text{Global Read Bytes} = 4 \times (BM \times BK + BK \times BN)
+  $$
+
 - 此时全局显存的算术强度提升为：
 
-$$I_{\text{block\\_tiled}} = \frac{2 \cdot BM \cdot BN \cdot BK}{4 \cdot BK \cdot (BM + BN)} = \frac{BM \cdot BN}{2 \cdot (BM + BN)}$$
+$$
+I_{\text{block\\_tiled}} = \frac{2 \cdot BM \cdot BN \cdot BK}{4 \cdot BK \cdot (BM + BN)} = \frac{BM \cdot BN}{2 \cdot (BM + BN)}
+$$
 
 ##### 极简数字代入：
 
 若设 $BM = BN = 128$：
-$$I_{\text{block\\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac{16384}{512} = \mathbf{32.0 \text{ FLOPs/Byte}}$$
+
+$$
+I_{\text{block\\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac{16384}{512} = \mathbf{32.0 \text{ FLOPs/Byte}}
+$$
 
 从原本的 **0.25** 骤增至 **32.0**！**算术强度整整放大了 128 倍！**
 全局显存的带宽不再是致命瓶颈，算子性能直接从 1.2% 跃升到 20% 以上！
@@ -450,7 +500,11 @@ $$I_{\text{block\\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac
 
 - 如果用传统的内积计算，两个长度为 8 的向量点乘，读取 16 个数，只产生 16 次 FLOPs；
 - 但如果将 $A$ 的 $8 \times 1$ 列向量与 $B$ 的 $1 \times 8$ 行向量做**外积（Outer Product）**：
-  $$C_{\text{accum}}[i][j] += r\\_a[i] \times r\\_b[j], \quad \forall i \in [0, 7], j \in [0, 7]$$
+
+  $$
+  C_{\text{accum}}[i][j] += r\\_a[i] \times r\\_b[j], \quad \forall i \in [0, 7], j \in [0, 7]
+  $$
+
   **只从 Shared Memory 读取了 16 个数，就在片上寄存器里瞬间爆发了 64 次乘加（128 FLOPs）！**
 
 ---
@@ -462,10 +516,16 @@ $$I_{\text{block\\_tiled}} = \frac{128 \times 128}{2 \times (128 + 128)} = \frac
 完成的计算量为 $2 \times TM \times TN$ FLOPs。
 共享内存的算术强度提升为：
 
-$$I_{\text{reg}} = \frac{2 \cdot TM \cdot TN}{4 \cdot (TM + TN)} = \frac{TM \cdot TN}{2 \cdot (TM + TN)}$$
+$$
+I_{\text{reg}} = \frac{2 \cdot TM \cdot TN}{4 \cdot (TM + TN)} = \frac{TM \cdot TN}{2 \cdot (TM + TN)}
+$$
 
 - 当 $TM = TN = 8$ 时：
-  $$I_{\text{reg}} = \frac{64}{2 \times 16} = \mathbf{2.0 \text{ FLOPs/Byte}}$$
+
+  $$
+  I_{\text{reg}} = \frac{64}{2 \times 16} = \mathbf{2.0 \text{ FLOPs/Byte}}
+  $$
+
 - 相比原本 $1 \times 1$ 的 0.25，**共享内存的数据读取量被直接砍掉了 87.5%！**
   原本被共享内存带宽卡死的计算核心瞬间彻底松绑，实测算力直接冲上 **14~18 TFLOPS（理论峰值的 75%~90%）**！
 
@@ -508,7 +568,11 @@ float4 val = *reinterpret_cast<const float4*>(&global_ptr[idx]);
 ### 4.3 软流水线（Software Pipelining）与双缓冲（Ping-Pong Buffer）
 
 在上述分块计算中，主循环存在严格的“停顿同步”：
-$$\dots \rightarrow \text{读第 } k \text{ 块数据} \rightarrow \text{同步等待} \rightarrow \text{计算第 } k \text{ 块} \rightarrow \text{读第 } k+1 \text{ 块} \rightarrow \text{同步等待} \rightarrow \dots$$
+
+$$
+\dots \rightarrow \text{读第 } k \text{ 块数据} \rightarrow \text{同步等待} \rightarrow \text{计算第 } k \text{ 块} \rightarrow \text{读第 } k+1 \text{ 块} \rightarrow \text{同步等待} \rightarrow \dots
+$$
+
 在读全局显存的 400 个周期里，ALU 是完全停工发呆的！
 
 **双缓冲（Double Buffering）** 彻底打破了这一依赖：
@@ -566,7 +630,11 @@ NVIDIA 从 Volta 架构开始引入、在 Ampere/Hopper 上发扬光大的 **Ten
 
 - **传统 CUDA Core**：纯标量执行单元。每个周期、每个线程发射 1 条指令，处理 1 对标量的乘加（$a \times b + c$）；
 - **Tensor Core**：**微观脉动阵列（Systolic-like Tensor Array）**。它直接以矩阵乘累加作为单条硬件指令的执行基元：
-  $$D = A \times B + C$$
+
+  $$
+  D = A \times B + C
+  $$
+
   在 A100 上，一个 SM 内部包含 4 个独立的第三代 Tensor Core。在每个时钟周期内，每个 Tensor Core 可以完成高达 **$8 \times 4 \times 8$ 的矩阵乘累加**，单周期直接吞吐 **256 次浮点运算**！全卡半精度（FP16/BF16）算力高达 **312 TFLOPS**！
 
 ---
@@ -1364,13 +1432,25 @@ int main() {
 
 - **第一步：朴素 GEMM（无复用）**
   计算 1 个 $C$ 元素需要 $K$ 次乘加（$2K$ FLOPs），从全局显存读取 $A$ 的 $K$ 个数与 $B$ 的 $K$ 个数（$2K \times 4$ 字节）。
-  $$I_{\text{naive}} = \frac{2K}{8K} = \mathbf{0.25 \text{ FLOPs/Byte}}$$
+
+  $$
+  I_{\text{naive}} = \frac{2K}{8K} = \mathbf{0.25 \text{ FLOPs/Byte}}
+  $$
+
 - **第二步：Shared Memory Block Tiling（一级复用）**
   在 $BM \times BN$ 分块内部，每个 $BK$ 窗口完成运算量 $2 \cdot BM \cdot BN \cdot BK$ FLOPs，从全局读取 $4 \cdot BK \cdot (BM + BN)$ 字节。
-  $$I_{\text{block}} = \frac{BM \cdot BN}{2 \cdot (BM + BN)} \xrightarrow{BM=BN=128} \mathbf{32.0 \text{ FLOPs/Byte}}$$
+
+  $$
+  I_{\text{block}} = \frac{BM \cdot BN}{2 \cdot (BM + BN)} \xrightarrow{BM=BN=128} \mathbf{32.0 \text{ FLOPs/Byte}}
+  $$
+
 - **第三步：2D Register Tiling（二级外积复用）**
   每个线程负责 $TM \times TN$ 局部块。在每个 $K$ 步长中，从 Shared Memory 读取 $(TM + TN) \times 4$ 字节，在寄存器中产生 $TM \times TN$ 次乘加（$2 \cdot TM \cdot TN$ FLOPs）。
-  $$I_{\text{thread}} = \frac{TM \cdot TN}{2 \cdot (TM + TN)}$$
+
+  $$
+  I_{\text{thread}} = \frac{TM \cdot TN}{2 \cdot (TM + TN)}
+  $$
+
 - **第四步：论证 $8 \times 8$ 为什么是黄金平衡点**
   - 若取 $TM = TN = 4$：$I_{\text{thread}} = 16 / 16 = 1.0$ FLOPs/Byte，共享内存带宽仍显局促；
   - 若取 $TM = TN = 8$：$I_{\text{thread}} = 64 / 32 = 2.0$ FLOPs/Byte，共享内存带宽压力骤减 87.5%；此时单个线程占用 64 个累加寄存器 + 16 个缓存寄存器 $\approx 80$ 个寄存器。A100 单线程上限 255 个，80 个寄存器刚好保证 50%~62.5% 的高 Occupancy 且**绝不发生 Register Spilling**；
@@ -1409,7 +1489,11 @@ int main() {
 
 1. **对比单缓冲与双缓冲的时序差异**：
    - **单缓冲串行等待**：
-     $$[\text{Load Tile 0}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 0}] \rightarrow [\text{Load Tile 1}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 1}]$$
+
+     $$
+     [\text{Load Tile 0}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 0}] \rightarrow [\text{Load Tile 1}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 1}]
+     $$
+
      总耗时为 $\sum (\text{Time}_{\text{load}} + \text{Time}_{\text{compute}})$，硬件长期处于“走廊跑步”与“厨房炒菜”交替停滞状态；
    - **双缓冲流水重叠**：
      在 Shared Memory 中开辟两套缓冲 `Buffer[2]`。
@@ -1431,7 +1515,11 @@ int main() {
 
 1. **原语定义**：
    `mma.sync.aligned.m16n8k16.row.col` 表示一个 Warp（32 线程）协作计算矩阵乘加：
-   $$D (16 \times 8) = A (16 \times 16) \times B (16 \times 8) + C (16 \times 8)$$
+
+   $$
+   D (16 \times 8) = A (16 \times 16) \times B (16 \times 8) + C (16 \times 8)
+   $$
+
 2. **输入矩阵 $A$ 的碎片分布（Row-Major）**：
    - 矩阵 $A$ 大小为 $16 \times 16 = 256$ 个 FP16 元素（共 512 字节）；
    - Warp 内 32 个线程，每个线程分配 $256 / 32 = 8$ 个 FP16 元素；

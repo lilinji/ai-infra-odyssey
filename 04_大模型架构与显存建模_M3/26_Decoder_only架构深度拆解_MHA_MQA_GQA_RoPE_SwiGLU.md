@@ -240,25 +240,35 @@ Prompt 与 Generation 在底层统一，KV Cache 从第 0 个 Token 到最后一
 
 早期的原始 Transformer（Attention Is All You Need）与 BERT 均采用 **Post-LN** 结构。其数学表达为：
 
-$$x_{l+1} = \text{LayerNorm}(x_l + \text{SubLayer}(x_l))$$
+$$
+x_{l+1} = \text{LayerNorm}(x_l + \text{SubLayer}(x_l))
+$$
 
 我们来拆解它的梯度反向传播。当深层网络（如 80 层大模型）执行链式求导时：
 
-$$\frac{\partial x_L}{\partial x_0} = \prod_{l=0}^{L-1} \frac{\partial \text{LayerNorm}(\cdot)}{\partial (\cdot)} \left( I + \frac{\partial \text{SubLayer}(x_l)}{\partial x_l} \right)$$
+$$
+\frac{\partial x_L}{\partial x_0} = \prod_{l=0}^{L-1} \frac{\partial \text{LayerNorm}(\cdot)}{\partial (\cdot)} \left( I + \frac{\partial \text{SubLayer}(x_l)}{\partial x_l} \right)
+$$
 
 因为每个 Block 外部都包裹着一层非线性的 `LayerNorm`，求导时雅可比矩阵（Jacobian）必须连续乘上 $L$ 次 LayerNorm 的导数。当模型层数一旦超过 30 层，梯度在穿透数十个 LayerNorm 之后会急剧衰减（或在初始化阶段因方差过大而剧烈发散），导致没有极度精细的 Warmup 策略时模型根本无法收敛。
 
 而现代大模型全线采用 **Pre-LN**：
 
-$$x_{l+1} = x_l + \text{SubLayer}(\text{LayerNorm}(x_l))$$
+$$
+x_{l+1} = x_l + \text{SubLayer}(\text{LayerNorm}(x_l))
+$$
 
 展开到第 $L$ 层，其前向输出天然为一条高速公路：
 
-$$x_L = x_0 + \sum_{l=0}^{L-1} \text{SubLayer}(\text{LayerNorm}(x_l))$$
+$$
+x_L = x_0 + \sum_{l=0}^{L-1} \text{SubLayer}(\text{LayerNorm}(x_l))
+$$
 
 对输入求导时：
 
-$$\frac{\partial x_L}{\partial x_0} = I + \sum_{l=0}^{L-1} \frac{\partial \text{SubLayer}(\text{LayerNorm}(x_l))}{\partial x_0}$$
+$$
+\frac{\partial x_L}{\partial x_0} = I + \sum_{l=0}^{L-1} \frac{\partial \text{SubLayer}(\text{LayerNorm}(x_l))}{\partial x_0}
+$$
 
 **核心物理结论**：恒等矩阵 $I$ 永远存在！主干残差流（Residual Stream）如同一根贯穿 80 层甚至上百层的“超导铜线”，浅层梯度可以直接无阻碍地由 $I$ 传输回底层，彻底根除了深层大模型的训练崩塌风险。
 
@@ -270,7 +280,9 @@ $$\frac{\partial x_L}{\partial x_0} = I + \sum_{l=0}^{L-1} \frac{\partial \text{
 
 标准 LayerNorm 的公式为：
 
-$$y = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta$$
+$$
+y = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta
+$$
 
 其中均值 $\mu = \frac{1}{d} \sum_{i=1}^d x_i$，方差 $\sigma^2 = \frac{1}{d} \sum_{i=1}^d (x_i - \mu)^2$。
 
@@ -279,9 +291,13 @@ $$y = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta$$
 
 因此，**RMSNorm（Root Mean Square Normalization）**直接砍掉了均值项：
 
-$$\text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2 + \epsilon}$$
+$$
+\text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2 + \epsilon}
+$$
 
-$$y = \frac{x}{\text{RMS}(x)} \odot \gamma$$
+$$
+y = \frac{x}{\text{RMS}(x)} \odot \gamma
+$$
 
 同时，大部分现代模型（如 LLaMA）直接去掉了偏置项 $\beta$。
 
@@ -324,18 +340,24 @@ $$y = \frac{x}{\text{RMS}(x)} \odot \gamma$$
 #### ④ Formal Model（标准公式与映射）
 对于一个 $L$ 层、隐藏层大小 $d_{\text{model}}$、Query 头数 $H_q$、KV 头数 $H_{kv}$、Head 维度 $d_h = d_{\text{model}} / H_q$ 的模型，存储单个 Token 在全模型所有层中占用的 KV Cache 物理显存为：
 
-$$\text{KV\\_Size\\_Per\\_Token} = 2 \times 2 \times L \times H_{kv} \times d_h \quad (\text{Bytes})$$
+$$
+\text{KV\\_Size\\_Per\\_Token} = 2 \times 2 \times L \times H_{kv} \times d_h \quad (\text{Bytes})
+$$
 
 其中：
 - 第一个 $2$：分别代表 Key 张量与 Value 张量；
 - 第二个 $2$：数据精度为 FP16 或 BF16（每个元素 2 字节）；
 - $H_{kv} \times d_h$：每一层单个 Token 的 KV 维度。将其改写为全模型总维度 $d_{\text{model}}$ 的比例形式：
 
-$$\text{KV\\_Size\\_Per\\_Token} = 4 \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+$$
+\text{KV\\_Size\\_Per\\_Token} = 4 \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
+$$
 
 当并发 Batch 为 $B$，上下文总长度为 $S$ 时，集群需常驻的 KV Cache 物理总量为：
 
-$$M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+$$
+M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 以经典的 **LLaMA-3-70B** 为例：
@@ -345,11 +367,19 @@ $$M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \l
 - 上下文长度 $S = 8192$（8K），并发 $B = 16$
 
 如果采用传统 **MHA**（$H_{kv} = 64$，比例为 1）：
-$$M_{\text{kv\\_MHA}} = 4 \times 16 \times 8192 \times 80 \times 8192 \times 1 = 343,597,383,680\text{ 字节} \approx \mathbf{320\text{ GB}}!$$
+
+$$
+M_{\text{kv\\_MHA}} = 4 \times 16 \times 8192 \times 80 \times 8192 \times 1 = 343,597,383,680\text{ 字节} \approx \mathbf{320\text{ GB}}!
+$$
+
 四张 80GB 的 A100/H100 显卡连权重都不存，光塞这 16 个并发的 KV Cache 就直接爆仓熔断！
 
 而采用现代标准的 **GQA**（$H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$）：
-$$M_{\text{kv\\_GQA}} = \frac{320\text{ GB}}{8} = \mathbf{40\text{ GB}}!$$
+
+$$
+M_{\text{kv\\_GQA}} = \frac{320\text{ GB}}{8} = \mathbf{40\text{ GB}}!
+$$
+
 显存开销瞬间暴降 **87.5%**！在 8 卡 TP 并行下，单卡仅占 5 GB，原本无法上线的服务直接顺畅跑飞。
 
 ---
@@ -388,14 +418,24 @@ KV Groups (4)   :   [KV0]         [KV1]         [KV2]         [KV3]
 - **访存量（Memory Access）**：必须从 HBM 完整加载所有的历史 Key 和 Value。
 
 在 **MHA** 模式下：
-$$\text{Memory Access} = 2 \times H_q \times S \times d_h \times 2\text{ Bytes}$$
-$$\text{算术强度 (Arithmetic Intensity)} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{2 \cdot H_q \cdot S \cdot d_h}{4 \cdot H_q \cdot S \cdot d_h} = \mathbf{0.5\text{ FLOP/Byte}}$$
+
+$$
+\text{Memory Access} = 2 \times H_q \times S \times d_h \times 2\text{ Bytes}
+$$
+
+$$
+\text{算术强度 (Arithmetic Intensity)} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{2 \cdot H_q \cdot S \cdot d_h}{4 \cdot H_q \cdot S \cdot d_h} = \mathbf{0.5\text{ FLOP/Byte}}
+$$
 
 **惊天结论**：在 A100 GPU（算力 312 TFLOPS，带宽 2.0 TB/s，平衡拐点约为 $156\text{ FLOP/Byte}$）上，MHA 的 Decode 算术强度只有可怜的 **0.5**！这意味着 GPU 算力利用率不足 **0.5%**，硬件 99.5% 的时间都在空等内存搬运！
 
 在 **GQA**（假设分组比 $G = \frac{H_q}{H_{kv}} = 8$）模式下：
 由于多个 Query Head 可以复用同一份从 HBM 加载到 SM 共享内存/寄存器中的 Key/Value 向量：
-$$\text{算术强度} = 0.5 \times G = 0.5 \times 8 = \mathbf{4.0\text{ FLOP/Byte}}$$
+
+$$
+\text{算术强度} = 0.5 \times G = 0.5 \times 8 = \mathbf{4.0\text{ FLOP/Byte}}
+$$
+
 **访存带宽压力直接降低 8 倍，算术强度翻了 8 倍，Decode 阶段端到端吞吐量直接成倍暴涨！**
 
 | 架构变体 | KV 头数比例 ($H_{kv} / H_q$) | KV Cache 显存占用 | Decode 访存带宽需求 | 算术强度提升 | 语义表达精度损失 |
@@ -414,7 +454,11 @@ $$\text{算术强度} = 0.5 \times G = 0.5 \times 8 = \mathbf{4.0\text{ FLOP/Byt
 **两个 Token 之间的关联度，应当取决于它们之间的“相对距离”，而不是它们所处的“绝对下标”。**
 
 - **绝对位置编码（Absolute Position Embedding, 如 GPT-2）**：将位置向量 $p_m, p_n$ 直接加到词嵌入上：$\tilde{q}_m = q_m + p_m$。展开内积后：
-  $$\tilde{q}_m^T \tilde{k}_n = q_m^T k_n + q_m^T p_n + p_m^T k_n + p_m^T p_n$$
+
+  $$
+  \tilde{q}_m^T \tilde{k}_n = q_m^T k_n + q_m^T p_n + p_m^T k_n + p_m^T p_n
+  $$
+
   其中包含了大量绝对位置与内容的杂质交叉项，且一旦推理长度超过训练时的最大预设长度 $S_{\text{train}}$，未见过的位置 Embedding 根本不存在，外推性彻底归零；
 - **ALiBi（Attention with Linear Biases, Press et al. 2021）**：直接在注意力矩阵上施加绝对距离惩罚项：$-m \cdot |i - j|$。虽然具备一定的外推能力，但它强行施加单调线性衰减，破坏了神经网络自主学习复杂周期性与长程引用的能力，在现代超大规模稠密模型中已被淘汰。
 
@@ -427,33 +471,47 @@ Su Jianlin 等人在 2021 年提出的 **RoPE（Rotary Position Embedding）**�
 #### 核心数学目标：
 寻找一个算子 $\mathcal{R}(x, m)$，给处于位置 $m$ 的向量 $q$ 注入位置信息，使得变换后的内积函数满足：
 
-$$\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = g(q, k, m - n)$$
+$$
+\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = g(q, k, m - n)
+$$
 
 即：内积结果**严格仅由向量 $q, k$ 以及相对位移 $(m - n)$ 决定**！
 
 #### 2D 复数平面推导：
 先看最简二维情形。将 2 维向量 $q = (q_0, q_1)^T$ 映射为复数：
 
-$$\mathbf{q} = q_0 + i q_1$$
+$$
+\mathbf{q} = q_0 + i q_1
+$$
 
 在复数域中，旋转一个角度 $\theta$ 相当于乘以单位复数 $e^{i \theta}$。处于位置 $m$ 的旋转算子定义为：
 
-$$\mathcal{R}(q, m) \equiv \mathbf{q} \cdot e^{i m \theta} = (q_0 + i q_1)(\cos m\theta + i \sin m\theta)$$
+$$
+\mathcal{R}(q, m) \equiv \mathbf{q} \cdot e^{i m \theta} = (q_0 + i q_1)(\cos m\theta + i \sin m\theta)
+$$
 
 展开实部与虚部：
 
-$$\mathcal{R}(q, m) = (q_0 \cos m\theta - q_1 \sin m\theta) + i (q_0 \sin m\theta + q_1 \cos m\theta)$$
+$$
+\mathcal{R}(q, m) = (q_0 \cos m\theta - q_1 \sin m\theta) + i (q_0 \sin m\theta + q_1 \cos m\theta)
+$$
 
 写成矩阵形式（2D Givens 旋转矩阵）：
 
-$$\mathcal{R}_{\Theta, m} q = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix} \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}$$
+$$
+\mathcal{R}_{\Theta, m} q = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix} \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}
+$$
 
 #### 相对位置不变性严格证明：
 利用复数内积性质 $\langle \mathbf{z}_1, \mathbf{z}_2 \rangle = \text{Re}(\mathbf{z}_1 \mathbf{z}_2^*)$（其中 $*$ 表示共轭复数）：
 
-$$\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = \text{Re} \left[ (\mathbf{q} e^{i m \theta}) \cdot (\mathbf{k} e^{i n \theta})^* \right]$$
+$$
+\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = \text{Re} \left[ (\mathbf{q} e^{i m \theta}) \cdot (\mathbf{k} e^{i n \theta})^* \right]
+$$
 
-$$= \text{Re} \left[ \mathbf{q} e^{i m \theta} \cdot \mathbf{k}^* e^{-i n \theta} \right] = \text{Re} \left[ \mathbf{q} \mathbf{k}^* \cdot e^{i (m - n)\theta} \right]$$
+$$
+= \text{Re} \left[ \mathbf{q} e^{i m \theta} \cdot \mathbf{k}^* e^{-i n \theta} \right] = \text{Re} \left[ \mathbf{q} \mathbf{k}^* \cdot e^{i (m - n)\theta} \right]
+$$
 
 **证毕！**  
 整个注意力打分项中，绝对位置下标 $m$ 和 $n$ 彻底消失，只剩下了优雅纯净的相对距离 $(m - n)$！
@@ -464,16 +522,20 @@ $$= \text{Re} \left[ \mathbf{q} e^{i m \theta} \cdot \mathbf{k}^* e^{-i n \theta
 
 对于高维向量（维度为 $d_h$，通常为 128），正交旋转矩阵扩展为分块对角矩阵（Block Diagonal Matrix）：
 
-$$R_{\Theta, m}^{d_h} = \begin{pmatrix}
+$$
+R_{\Theta, m}^{d_h} = \begin{pmatrix}
 R_{\theta_0, m} & 0 & \cdots & 0 \\
 0 & R_{\theta_1, m} & \cdots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & \cdots & R_{\theta_{d_h/2 - 1}, m}
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
 其中频率基底继承自 Transformer 的经典衰减规律：
 
-$$\theta_i = b^{-2i / d_h}, \quad i \in \left[ 0, 1, \dots, \frac{d_h}{2} - 1 \right]$$
+$$
+\theta_i = b^{-2i / d_h}, \quad i \in \left[ 0, 1, \dots, \frac{d_h}{2} - 1 \right]
+$$
 
 在 LLaMA-3 中，Base 底数 $b$ 从早期的 10,000 被激进地拉升至 **500,000**，以支撑超长上下文。
 
@@ -481,12 +543,17 @@ $$\theta_i = b^{-2i / d_h}, \quad i \in \left[ 0, 1, \dots, \frac{d_h}{2} - 1 \r
 如果在 GPU 上真去构造这个稀疏的分块矩阵做矩阵乘法，显存与计算开销将不可接受。  
 在实际 Kernel（如 HuggingFace Transformers 与 vLLM）中，采用的是**向量逐元素乘法（Elementwise Hadamard Product）**：
 
-$$\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\\_half}(x) \odot \sin(m\Theta)$$
+$$
+\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\\_half}(x) \odot \sin(m\Theta)
+$$
 
 其中：
 - $\cos(m\Theta)$ 与 $\sin(m\Theta)$ 预先计算并在序列维度广播；
 - 对于输入分块 $x = [x_1, x_2]$（前后对半拆分），定义：
-  $$\text{rotate\\_half}(x) = [-x_2, x_1]$$
+
+  $$
+  \text{rotate\\_half}(x) = [-x_2, x_1]
+  $$
 
 只需一次内存连续加载，在寄存器中对半交换符号，即可在 1 个时钟周期内完成正交旋转变换！
 
@@ -504,7 +571,11 @@ $$\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\\_half}(x) \odot \sin
 #### 解决方案谱系演进：
 1. **线性内插（Linear Position Interpolation, PI）**：将位置直接压缩 $\alpha$ 倍：$m' = m / \alpha$。虽然保证了所有角度不超标，但将高频局部特征强行挤压，严重损害了短文本检索的微观精度；
 2. **NTK-Aware 缩放**：根据神经常微分方程与神经正切核（NTK）理论，高频应该少缩放（保持局部空间分辨率），低频应该大幅缩放（拓展长程容量）。其核心是将 Base 底数进行非线性放大：
-   $$b' = b \times \alpha^{\frac{d_h}{d_h - 2}}$$
+
+   $$
+   b' = b \times \alpha^{\frac{d_h}{d_h - 2}}
+   $$
+
 3. **YaRN（Yet another RoPE extensioN method）**：引入注意力分布的温度调节系数 $\sqrt{t}$，并将不同维度的分量严格切分为“不插值区（完全保持高频）”、“线性过渡区”与“完全内插区（低频）”，成为当前开源界 128K~1M 超长文本外推的首选方案。
 
 ---
@@ -517,11 +588,15 @@ $$\text{RoPE}(x, m) = x \odot \cos(m\Theta) + \text{rotate\\_half}(x) \odot \sin
 
 经典 Transformer 的 FFN 为双层线性变换加激活函数：
 
-$$\text{FFN}(x) = \text{Activation}(x W_1 + b_1) W_2 + b_2$$
+$$
+\text{FFN}(x) = \text{Activation}(x W_1 + b_1) W_2 + b_2
+$$
 
 而在 2020 年，Noam Shazeer 提出了 **GLU（Gated Linear Unit，门控线性单元）** 变体。现代大模型（LLaMA/Mistral/DeepSeek）一致采用了 **SwiGLU**：
 
-$$\text{SwiGLU}(x) = \left( \text{Swish}_1(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}$$
+$$
+\text{SwiGLU}(x) = \left( \text{Swish}_1(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
+$$
 
 其中：
 - $\text{Swish}_1(z) = \text{SiLU}(z) = z \cdot \sigma(z) = \frac{z}{1 + e^{-z}}$；
@@ -552,9 +627,13 @@ $$\text{SwiGLU}(x) = \left( \text{Swish}_1(x W_{\text{gate}}) \odot (x W_{\text{
 
 建立守恒方程：
 
-$$3 \times d \times d_{\text{ffn}} = 8d^2$$
+$$
+3 \times d \times d_{\text{ffn}} = 8d^2
+$$
 
-$$d_{\text{ffn}} = \frac{8}{3}d \approx 2.667d$$
+$$
+d_{\text{ffn}} = \frac{8}{3}d \approx 2.667d
+$$
 
 #### 工业生产对齐规约（Hardware Alignment）：
 在实际 GPU 体系结构中，Tensor Core 对矩阵乘法的维度有严格的字节对齐约束（如 128 字节 / 256 字节对齐）。如果 $d_{\text{ffn}}$ 随意取非整倍数，在底层 CUDA 内核执行时会破坏合并访存（Memory Coalescing），甚至退化到低效的通用排队指令。
@@ -636,7 +715,11 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 - $W_v$ 权重：$d \times d_{kv}$
 - $W_o$ 权重：$d \times d$
 - **单层 Attention 总参数量**：
-  $$P_{\text{attn\\_layer}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)$$
+
+  $$
+  P_{\text{attn\\_layer}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)
+  $$
+
   - 若为传统 MHA（$H_{kv} = H_q$）：$P_{\text{attn\\_layer}} = 4d^2$；
   - 若为 1:8 GQA（$H_{kv} = \frac{1}{8} H_q$）：$P_{\text{attn\\_layer}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
 
@@ -645,19 +728,31 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 - $W_{\text{up}}$ 权重：$d \times d_{\text{ffn}}$
 - $W_{\text{down}}$ 权重：$d_{\text{ffn}} \times d$
 - **单层 FFN 总参数量**：
-  $$P_{\text{ffn\\_layer}} = 3 \times d \times d_{\text{ffn}}$$
+
+  $$
+  P_{\text{ffn\\_layer}} = 3 \times d \times d_{\text{ffn}}
+  $$
+
   若按 $d_{\text{ffn}} = \frac{8}{3}d$：
-  $$P_{\text{ffn\\_layer}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}$$
+
+  $$
+  P_{\text{ffn\\_layer}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}
+  $$
 
 #### 3. 其他非重要参数（Norm 等）：
 - 两个 RMSNorm 的可学习缩放向量 $\gamma$：$2 \times d$（与矩阵参数相比完全可忽略不计）。
 
 #### 4. 单层 Block 总参数量：
-$$P_{\text{layer}} = P_{\text{attn\\_layer}} + P_{\text{ffn\\_layer}} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right) + 3d \cdot d_{\text{ffn}}$$
+$$
+P_{\text{layer}} = P_{\text{attn\\_layer}} + P_{\text{ffn\\_layer}} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right) + 3d \cdot d_{\text{ffn}}
+$$
 
 #### 5. 全模型参数量（含 Embedding）：
 全模型包含 $L$ 个 Block，以及输入 Embedding 矩阵和通常解绑的 LM Head 输出投射矩阵：
-$$P_{\text{total}} = L \times P_{\text{layer}} + 2 \times V \times d$$
+
+$$
+P_{\text{total}} = L \times P_{\text{layer}} + 2 \times V \times d
+$$
 
 以 **LLaMA-3-8B** 真实配置验算：
 $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
@@ -680,14 +775,18 @@ $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
 每个点积包含：$K$ 次浮点乘法 + $K$ 次浮点加法 = **$2K$ 次 FLOPs**。
 因此，整个矩阵乘法的总计算量为：
 
-$$\text{FLOPs} = 2 \times M \times K \times N$$
+$$
+\text{FLOPs} = 2 \times M \times K \times N
+$$
 
 #### 1. 前向传播（Forward Pass）：$2P$ FLOPs/token
 在前向传播中，输入每个 Token 经过模型权重参数。设模型非 Embedding 参数量为 $P$。
 每一个权重参数 $W_{ij}$，在与输入向量点积时，都参与了且仅参与了 **1 次乘法** 与 **1 次累加**。
 因此，对于每个 Token：
 
-$$\text{FLOPs}_{\text{forward}} = 2 \times P \quad (\text{FLOPs/token})$$
+$$
+\text{FLOPs}_{\text{forward}} = 2 \times P \quad (\text{FLOPs/token})
+$$
 
 （注：Attention 中的 $QK^T$ 和 $\text{Attn} \cdot V$ 带来的计算量为 $4 \cdot L \cdot S \cdot d$。当序列长度 $S$ 远小于模型维度膨胀规模时，矩阵乘参数占绝对统治地位；严格计算下前向为 $2P + 4LSd$）。
 
@@ -697,23 +796,38 @@ $$\text{FLOPs}_{\text{forward}} = 2 \times P \quad (\text{FLOPs/token})$$
 
 在反向传播时，上一层传回的损失梯度为 $\frac{\partial \mathcal{L}}{\partial Y}$：
 1. **第一步：计算对输入激活值的梯度（激活反传，用于传给前一层）**：
-   $$\frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} \cdot W^T$$
+
+   $$
+   \frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} \cdot W^T
+   $$
+
    维度：$[B \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [B \times d_{\text{in}}]$。
    计算量等价于一次完整的前向矩阵乘：**$2P$ FLOPs**！
 2. **第二步：计算对权重的梯度（权重求导，用于更新参数）**：
-   $$\frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \frac{\partial \mathcal{L}}{\partial Y}$$
+
+   $$
+   \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \frac{\partial \mathcal{L}}{\partial Y}
+   $$
+
    维度：$[d_{\text{in}} \times B] \times [B \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}]$。
    计算量同样是一次完整的同尺寸矩阵乘：**$2P$ FLOPs**！
 
 两个矩阵乘法合计：
 
-$$\text{FLOPs}_{\text{backward}} = 2P + 2P = \mathbf{4P} \quad (\text{FLOPs/token})$$
+$$
+\text{FLOPs}_{\text{backward}} = 2P + 2P = \mathbf{4P} \quad (\text{FLOPs/token})
+$$
 
 #### 核心黄金定理：
-$$\text{全模型训练总计算量} = \text{Forward} + \text{Backward} = 2P + 4P = \mathbf{6P} \quad (\text{FLOPs/token})$$
+$$
+\text{全模型训练总计算量} = \text{Forward} + \text{Backward} = 2P + 4P = \mathbf{6P} \quad (\text{FLOPs/token})
+$$
 
 如果训练开启了**全激活重算（Full Activation Checkpointing）**，由于前向过程被多算了一次：
-$$\text{总计算量} = 2P (\text{前向}) + 2P (\text{重算前向}) + 4P (\text{反向}) = \mathbf{8P} \quad (\text{FLOPs/token})$$
+
+$$
+\text{总计算量} = 2P (\text{前向}) + 2P (\text{重算前向}) + 4P (\text{反向}) = \mathbf{8P} \quad (\text{FLOPs/token})
+$$
 
 这正是为什么在不增加硬件显存容量时，全重算会付出整整 **33.3%** 额外算力开销的数学来源！
 
@@ -731,10 +845,18 @@ $$\text{总计算量} = 2P (\text{前向}) + 2P (\text{重算前向}) + 4P (\tex
 
 1. **模型权重（Model Weights）**：
    - 采用 FP16/BF16 存储，每个参数占用 2 字节：
-   $$M_{\text{weights}} = 2\Psi \quad (\text{Bytes})$$
+
+   $$
+   M_{\text{weights}} = 2\Psi \quad (\text{Bytes})
+   $$
+
 2. **梯度（Gradients）**：
    - 同样以 FP16/BF16 反向累加，每个参数占用 2 字节：
-   $$M_{\text{gradients}} = 2\Psi \quad (\text{Bytes})$$
+
+   $$
+   M_{\text{gradients}} = 2\Psi \quad (\text{Bytes})
+   $$
+
 3. **优化器状态（Optimizer States - AdamW）**：
    - 工业界训练大模型标配 AdamW 优化器，为了保证数值更新稳定性，状态必须全部保留为 **FP32（4 字节/元素）**：
      - **FP32 权重主副本（Master Weights）**：$4\Psi$ 字节；
@@ -743,12 +865,18 @@ $$\text{总计算量} = 2P (\text{前向}) + 2P (\text{重算前向}) + 4P (\tex
    - 优化器状态总计：$4 + 4 + 4 = \mathbf{12\Psi}$ 字节！
 
 #### 静态显存大一统公式：
-$$M_{\text{static}} = M_{\text{weights}} + M_{\text{gradients}} + M_{\text{optimizer}} = 2\Psi + 2\Psi + 12\Psi = \mathbf{16\Psi} \quad (\text{Bytes})$$
+$$
+M_{\text{static}} = M_{\text{weights}} + M_{\text{gradients}} + M_{\text{optimizer}} = 2\Psi + 2\Psi + 12\Psi = \mathbf{16\Psi} \quad (\text{Bytes})
+$$
 
 > **注**：在部分早期实现或特定混合精度框架中，若将梯度保留在 FP32 中累加，则为 $2\Psi + 4\Psi + 12\Psi = \mathbf{18\Psi}$。通常基线按 **$16\Psi$** 严格手算。
 
 这意味着：**对于一个 70B 模型（$\Psi = 70 \times 10^9$），单张卡根本不可承受，仅静态显存就需要：**
-$$70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}!$$
+
+$$
+70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}!
+$$
+
 必须使用至少 **14 张 80GB 的 GPU**，通过 ZeRO 技术切分才能装下静态状态！
 
 | 并行切分方案 | 权重占用 | 梯度占用 | 优化器状态占用 | 70B 模型单卡静态显存需求 (N=8卡) |
@@ -771,11 +899,15 @@ $$70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}!$$
 #### 2. 推理动态显存：KV Cache 黄金底账
 推理阶段无反向传播、无优化器状态、无梯度，动态显存 95% 以上由 **KV Cache** 占据。
 
-$$M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+$$
+M_{\text{kv}} = 4 \times B \times S \times L \times d_{\text{model}} \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
+$$
 
 在推理集群做容量规划（Capacity Planning）时，必须按以下推论计算最大承载并发 $B_{\max}$：
 
-$$B_{\max} = \left\lfloor \frac{M_{\text{GPU\\_Total}} - M_{\text{Weights}} - M_{\text{CUDA\\_Runtime}}}{M_{\text{kv\\_per\\_seq}}} \right\rfloor$$
+$$
+B_{\max} = \left\lfloor \frac{M_{\text{GPU\\_Total}} - M_{\text{Weights}} - M_{\text{CUDA\\_Runtime}}}{M_{\text{kv\\_per\\_seq}}} \right\rfloor
+$$
 
 ---
 
@@ -1163,15 +1295,27 @@ if __name__ == "__main__":
    - 并发大小 $B = 16$
    - 精度为 FP16/BF16（每元素 2 字节）
 2. **单 Token 全模型 KV Cache 尺寸公式**：
-   $$\text{Size}_{\text{token}} = 4 \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})$$
+
+   $$
+   \text{Size}_{\text{token}} = 4 \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
+   $$
+
 3. **计算不同方案**：
    - **MHA 方案**（$H_{kv} = 64$，比例为 1）：
-     $$\text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}$$
+
+     $$
+     \text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}
+     $$
+
      总显存（全集群）：$2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}$！
      8 卡 TP 并行下，单卡平摊：$640 / 8 = \mathbf{80\text{ GB}}$！
      **结论**：光是存 KV Cache 就直接把 80GB 单卡吃干抹净，连权重都塞不下，立刻 OOM 熔断！
    - **GQA 方案**（LLaMA-3 真实方案，$H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$）：
-     $$\text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}$$
+
+     $$
+     \text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}
+     $$
+
      总显存（全集群）：$640\text{ GB} / 8 = \mathbf{80\text{ GB}}$。
      8 卡 TP 并行下，单卡平摊：$80 / 8 = \mathbf{10\text{ GB}}$！
      **结论**：单卡仅占 10 GB 显存，留出超过 52 GB 裕量给静态权重与其他请求，稳如泰山！
@@ -1191,17 +1335,33 @@ if __name__ == "__main__":
    考虑单层线性投射：$Y = X W$，输入 $X \in \mathbb{R}^{1 \times d_{\text{in}}}$，权重 $W \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}}$。
    计算量为 $2 \times 1 \times d_{\text{in}} \times d_{\text{out}} = 2 \times \text{Params}$。
    累加所有参数后，每个 Token 前向计算量为：
-   $$\text{FLOPs}_{\text{fwd}} = 2P$$
+
+   $$
+   \text{FLOPs}_{\text{fwd}} = 2P
+   $$
+
 3. **反向求导过程（包含两步独立运算）**：
    已知后级传回的输出梯度张量 $\delta = \frac{\partial \mathcal{L}}{\partial Y} \in \mathbb{R}^{1 \times d_{\text{out}}}$：
    - **第一步：传回激活梯度（Input Gradient）**：
-     $$\frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])$$
+
+     $$
+     \frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])
+     $$
+
      计算量：$2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P$ FLOPs。此项必须传给前驱层；
    - **第二步：求参数更新梯度（Weight Gradient）**：
-     $$\frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])$$
+
+     $$
+     \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])
+     $$
+
      计算量：$2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P$ FLOPs。此项用于 AdamW 参数更新；
 4. **两项相加**：
-   $$\text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P$$
+
+   $$
+   \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P
+   $$
+
    全流程训练合计：$2P + 4P = \mathbf{6P}$ FLOPs/token。
 
 ---

@@ -263,25 +263,38 @@ torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.25 GiB (GPU
 - 单个请求平均实际消耗槽位：$250$；
 - 单个请求强制预分配槽位：$2048$；
 - **单请求内部利用率**：
-  $$\eta_{\text{internal}} = \frac{250}{2048} \approx \mathbf{12.2\%}$$
+
+  $$
+  \eta_{\text{internal}} = \frac{250}{2048} \approx \mathbf{12.2\%}
+  $$
+
 - 即使考虑会话过程中逐步追加写入的动态积分，有效时间-空间乘积（Area-Time Utilization）在数学期望上：
-  $$\eta_{\text{temporal}} = \frac{1}{S_{\text{actual}}} \int_0^{S_{\text{actual}}} \frac{t}{S_{\text{max}}} dt = \frac{1}{2} \times \frac{S_{\text{actual}}}{S_{\text{max}}} = \frac{1}{2} \times 12.2\% \approx \mathbf{6.1\%} \quad \text{！！！}$$
+
+  $$
+  \eta_{\text{temporal}} = \frac{1}{S_{\text{actual}}} \int_0^{S_{\text{actual}}} \frac{t}{S_{\text{max}}} dt = \frac{1}{2} \times \frac{S_{\text{actual}}}{S_{\text{max}}} = \frac{1}{2} \times 12.2\% \approx \mathbf{6.1\%} \quad \text{！！！}
+  $$
 
 #### ④ Formal Model（标准公式与数学证明）
 假设请求的实际生成长度 $s$ 服从概率密度函数 $p(s)$，定义域为 $[1, S_{\text{max}}]$。系统采用最大长度连续预分配策略。
 整个在线推理集群的 **显存空间静态利用率期望值 $\mathbb{E}[\mathcal{U}_{\text{static}}]$** 为：
 
-$$\mathbb{E}[\mathcal{U}_{\text{static}}] = \frac{\int_1^{S_{\text{max}}} s \cdot p(s) \, ds}{S_{\text{max}}} = \frac{\mathbb{E}[s]}{S_{\text{max}}}$$
+$$
+\mathbb{E}[\mathcal{U}_{\text{static}}] = \frac{\int_1^{S_{\text{max}}} s \cdot p(s) \, ds}{S_{\text{max}}} = \frac{\mathbb{E}[s]}{S_{\text{max}}}
+$$
 
 在真实互联网大模型会话场景中（如 Chatbot、Search 等），实际生成长度长尾分布极强，平均生成长度 $\mathbb{E}[s]$ 通常在 $200 \sim 400$ Token 之间，而系统配置的 $S_{\text{max}}$ 通常为 $2048 \sim 4096$。
 
 代入真实参数：
 
-$$\mathbb{E}[\mathcal{U}_{\text{static}}] = \frac{300}{2048} \approx \mathbf{14.6\%} \quad \text{至} \quad \frac{400}{4096} \approx \mathbf{9.7\%}$$
+$$
+\mathbb{E}[\mathcal{U}_{\text{static}}] = \frac{300}{2048} \approx \mathbf{14.6\%} \quad \text{至} \quad \frac{400}{4096} \approx \mathbf{9.7\%}
+$$
 
 如果再加上外部碎片导致的不可分配损耗系数 $\alpha_{\text{frag}} \approx 0.7$：
 
-$$\mathcal{U}_{\text{effective}} = \alpha_{\text{frag}} \times \mathbb{E}[\mathcal{U}_{\text{static}}] \le 0.7 \times 14.6\% \approx \mathbf{10.2\%}$$
+$$
+\mathcal{U}_{\text{effective}} = \alpha_{\text{frag}} \times \mathbb{E}[\mathcal{U}_{\text{static}}] \le 0.7 \times 14.6\% \approx \mathbf{10.2\%}
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 **残酷的数学事实**：在不采用虚拟内存分页的前提下，大模型推理集群在物理显存上的有效利用率在数学上被死死锁死在 **10% ~ 20%** 的超低区间。这就意味着：**你花了 1000 万元买的 GPU 集群，有 800 万元纯粹是在为连续内存的愚蠢假设买单！**
@@ -329,9 +342,13 @@ CPU 应用程序虚拟内存空间       <=======>    请求逻辑上下文序�
 #### 2. 显存物理块张量形状（Tensor Shape）
 在 GPU 显存底层，vLLM 会在服务启动时开辟一个庞大的物理块池，其张量形状被固化为：
 
-$$\mathbf{K}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times \frac{d_{\text{head}}}{x} \times B_{\text{size}} \times x}$$
+$$
+\mathbf{K}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times \frac{d_{\text{head}}}{x} \times B_{\text{size}} \times x}
+$$
 
-$$\mathbf{V}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times d_{\text{head}} \times B_{\text{size}}}$$
+$$
+\mathbf{V}_{\text{pool}} \in \mathbb{R}^{\text{num\\_blocks} \times H_{\text{kv}} \times d_{\text{head}} \times B_{\text{size}}}
+$$
 
 其中 $x$ 是为了满足 GPU 向量化加载（如 16 字节 `float4` 内存指令）设置的内嵌重排维度（通常为 8）。
 这个巨大的连续张量一旦分配，就再也不进行任何销毁与重分配，彻底规避了向操作系统反复申请释放显存的巨大开销。
@@ -539,7 +556,9 @@ stateDiagram-v2
 
 在上一讲的 Roofline 模型推导中，我们证明了 Decode 阶段的核心困局是：
 
-$$I_{\text{decode}}(B) \approx B \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]$$
+$$
+I_{\text{decode}}(B) \approx B \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]
+$$
 
 单步计算必须从显存搬运完整的模型权重，唯有做大并发 $B$，才能平摊权重搬运的开销。
 
@@ -602,7 +621,9 @@ Step 102: [██ 512 Chunk 3][■■■■■■■■■■■■ 32 Decodes] 
 
 在 V1 引擎源码（`vllm/v1/core/sched/scheduler.py`）中，传统的“Prefill 调度队列”与“Decode 调度队列”被全部废弃。取而代之的是一个无比凝练的统一抽象：
 
-$$\mathbf{Token\\_Budget} = \text{max\\_num\\_batched\\_tokens} \quad (\text{如 } 2048)$$
+$$
+\mathbf{Token\\_Budget} = \text{max\\_num\\_batched\\_tokens} \quad (\text{如 } 2048)
+$$
 
 对底层 GPU 执行器而言：
 - 一个做 Decode 的请求，本质是：**这一步需要处理 1 个 Token**；
@@ -673,7 +694,9 @@ vLLM 毫不犹豫地选择了选型 B。
 PCIe 4.0 x16 的双向带宽仅为 **$32\text{ GB/s}$**（PCIe 5.0 约为 **$64\text{ GB/s}$**）。
 如果一个 16K 的长上下文请求持有了约 5GB 的 KV Cache，将其换出到 CPU 内存需要耗费：
 
-$$T_{\text{swap}} = \frac{5\text{ GB}}{32\text{ GB/s}} \approx \mathbf{156\text{ ms}}$$
+$$
+T_{\text{swap}} = \frac{5\text{ GB}}{32\text{ GB/s}} \approx \mathbf{156\text{ ms}}
+$$
 
 在换出和换入的一来一回中，超过 300ms 的总线传输开销将完全暴露，对系统的吞吐和延迟产生不可忽视的次生冲击。
 
@@ -696,21 +719,40 @@ $$T_{\text{swap}} = \frac{5\text{ GB}}{32\text{ GB/s}} \approx \mathbf{156\text{
 
 设某请求已经累积生成的上下文长度为 $S$ Token，模型参数量为 $W$：
 - **方案 1：Swapping 跨 PCIe 搬运的总耗时（以 PCIe 4.0 32 GB/s 计）**：
-  $$\text{KV 字节数} = S \times \text{KV}_{\text{token}}$$
-  $$T_{\text{swap}}(S) = 2 \times \frac{S \times \text{KV}_{\text{token}}}{B_{\text{pcie}}} \quad (\text{乘 2 为一出一进})$$
+
+  $$
+  \text{KV 字节数} = S \times \text{KV}_{\text{token}}
+  $$
+
+  $$
+  T_{\text{swap}}(S) = 2 \times \frac{S \times \text{KV}_{\text{token}}}{B_{\text{pcie}}} \quad (\text{乘 2 为一出一进})
+  $$
+
 - **方案 2：Recomputation 重新 Prefill 跑一次的计算耗时（以 H100 实际 MFU 下算力 $P_{\text{eff}} \approx 500\text{ TFLOPS}$ 计）**：
-  $$T_{\text{recompute}}(S) = \frac{2 \times W \times S}{P_{\text{eff}}}$$
+
+  $$
+  T_{\text{recompute}}(S) = \frac{2 \times W \times S}{P_{\text{eff}}}
+  $$
 
 **寻找经济性交叉平衡点（Crossover Point）**：
 令 $T_{\text{swap}}(S) = T_{\text{recompute}}(S)$，两边的 $S$ 竟然直接对消！
 
-$$2 \times \frac{\text{KV}_{\text{token}}}{B_{\text{pcie}}} = \frac{2W}{P_{\text{eff}}} \implies \mathbf{B_{\text{pcie}} \times W = \text{KV}_{\text{token}} \times P_{\text{eff}}}$$
+$$
+2 \times \frac{\text{KV}_{\text{token}}}{B_{\text{pcie}}} = \frac{2W}{P_{\text{eff}}} \implies \mathbf{B_{\text{pcie}} \times W = \text{KV}_{\text{token}} \times P_{\text{eff}}}
+$$
 
 以 LLaMA-3 70B（$W = 70 \times 10^9$，单 Token KV $\approx 320\text{ KB}$）为例：
 - 重新计算该模型 1000 Token Prefill 的耗时：
-  $$T_{\text{recompute}} = \frac{2 \times 70 \times 10^9 \times 1000}{500 \times 10^{12}} = \mathbf{0.28\text{ 秒} (280\text{ ms})}$$
+
+  $$
+  T_{\text{recompute}} = \frac{2 \times 70 \times 10^9 \times 1000}{500 \times 10^{12}} = \mathbf{0.28\text{ 秒} (280\text{ ms})}
+  $$
+
 - 而跨 PCIe 4.0 换出再换入这 1000 个 Token 的 KV（约 $320\text{ MB}$）的耗时：
-  $$T_{\text{swap}} = 2 \times \frac{0.32\text{ GB}}{32\text{ GB/s}} = \mathbf{0.02\text{ 秒} (20\text{ ms})}$$
+
+  $$
+  T_{\text{swap}} = 2 \times \frac{0.32\text{ GB}}{32\text{ GB/s}} = \mathbf{0.02\text{ 秒} (20\text{ ms})}
+  $$
 
 **关键决策结论**：
 - **在中小模型或短上下文场景**：GPU 重算极快，Recomputation 简单高效，不吃 Host 内存；
@@ -1046,18 +1088,31 @@ if __name__ == "__main__":
 **步骤一：原生连续张量的地址推导**
 在原生连续内存中，给定请求索引 $b$、头索引 $h$、Token 序列位置 $t$、维度偏移 $d$：
 
-$$\text{Addr}_{\text{contiguous}} = \text{BasePtr} + b \times \text{Stride}_b + h \times \text{Stride}_h + t \times \text{Stride}_t + d$$
+$$
+\text{Addr}_{\text{contiguous}} = \text{BasePtr} + b \times \text{Stride}_b + h \times \text{Stride}_h + t \times \text{Stride}_t + d
+$$
 
 该地址在编译期或进入 Kernel 前即可算出一维步长，GPU 指令流水线可以使用基址变址寻址（Base + Offset），硬件发射效率极高。
 
 **步骤二：PagedAttention 的虚拟间接寻址推导**
 在 PagedAttention 中，物理内存被切分为块大小为 $B_{\text{size}}$ 的 Block：
 1. **计算逻辑块号与块内偏移**：
-   $$\text{logical\\_block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}$$
+
+   $$
+   \text{logical\\_block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}
+   $$
+
 2. **查块表拿到物理块编号（引入一次访存开销）**：
-   $$\text{physical\\_block} = \text{block\\_table}[b][\text{logical\\_block}]$$
+
+   $$
+   \text{physical\\_block} = \text{block\\_table}[b][\text{logical\\_block}]
+   $$
+
 3. **计算最终物理地址**：
-   $$\text{Addr}_{\text{paged}} = \text{K\\_Pool\\_Base} + \text{physical\\_block} \times \text{Block\\_Stride} + h \times \text{Head\\_Stride} + \text{offset} \times \text{Token\\_Stride} + d$$
+
+   $$
+   \text{Addr}_{\text{paged}} = \text{K\\_Pool\\_Base} + \text{physical\\_block} \times \text{Block\\_Stride} + h \times \text{Head\\_Stride} + \text{offset} \times \text{Token\\_Stride} + d
+   $$
 
 **步骤三：性能开销本质剖析**
 1. **额外的查表显存访问（Table Indirection Overhead）**：Kernel 在读取数据前必须先读取 `block_table`，虽然其较小通常能命中 L1/L2 Cache，但依然占用了片上寄存器资源；

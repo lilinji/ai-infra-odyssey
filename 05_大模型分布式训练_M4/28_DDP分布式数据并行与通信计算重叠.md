@@ -194,7 +194,11 @@ Rank 0: [A], Rank 1: [B], Rank 2: [C], Rank 3: [D] ───► Rank 0: [ A + B 
 ```
 
 **黄金拓扑定理**：
-$$\mathbf{AllReduce \equiv ReduceScatter + AllGather}$$
+
+$$
+\mathbf{AllReduce \equiv ReduceScatter + AllGather}
+$$
+
 一次完整的全局梯度求和同步，在底层实现上，严格等价于**先做一次 ReduceScatter 规约切片，再做一次 AllGather 拼接全量**！
 
 ---
@@ -217,7 +221,10 @@ $$\mathbf{AllReduce \equiv ReduceScatter + AllGather}$$
 - GPU 节点数 $N = 4$（Rank 0, 1, 2, 3 连成闭合环形逻辑拓扑）；
 - 模型全量梯度数据量为 $\Psi = 4\text{ MB}$；
 - 将数据均匀切分为 $N=4$ 个分块（Chunk），每个 Chunk 大小为：
-  $$\text{Chunk Size} = \frac{\Psi}{N} = \frac{4\text{ MB}}{4} = 1\text{ MB}$$
+
+  $$
+  \text{Chunk Size} = \frac{\Psi}{N} = \frac{4\text{ MB}}{4} = 1\text{ MB}
+  $$
 
 **第一阶段：ReduceScatter 环（累加聚合）**
 - 循环执行 $(N - 1) = 3$ 次数据传输；
@@ -225,28 +232,43 @@ $$\mathbf{AllReduce \equiv ReduceScatter + AllGather}$$
 - 3 次传输结束后，每张卡上都有一个分块完成了全局 4 卡的求和：
   - Rank 0 持有最终完成的 Chunk 0；Rank 1 持有 Chunk 1；Rank 2 持有 Chunk 2；Rank 3 持有 Chunk 3；
 - **ReduceScatter 阶段每卡发送数据量**：
-  $$\text{Data}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}$$
+
+  $$
+  \text{Data}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
+  $$
 
 **第二阶段：AllGather 环（广播分发）**
 - 同样循环执行 $(N - 1) = 3$ 次数据传输；
 - 每次传输：每张卡向右发送已经聚合好的完整 Chunk，向左接收新 Chunk 并覆盖；
 - 3 次传输结束后，所有 4 张卡都同步拥有了完整的 Chunk 0~3！
 - **AllGather 阶段每卡发送数据量**：
-  $$\text{Data}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}$$
+
+  $$
+  \text{Data}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
+  $$
 
 **每卡全流程总通信量手算结果**：
-$$\text{Total Sent Per GPU} = 3\text{ MB} + 3\text{ MB} = \mathbf{6\text{ MB}}$$
+
+$$
+\text{Total Sent Per GPU} = 3\text{ MB} + 3\text{ MB} = \mathbf{6\text{ MB}}
+$$
 
 #### ④ Formal Model（标准公式与渐进证明）
 对于拥有 $N$ 张 GPU、参数梯度量为 $\Psi$（以字节为单位）的系统，在 Ring-AllReduce 算法中，单张 GPU 发送（或接收）的总数据量严格为：
 
-$$\text{Comm}_{\text{Ring}} = 2 \times \left( \frac{N - 1}{N} \right) \times \Psi \quad (\text{Bytes})$$
+$$
+\text{Comm}_{\text{Ring}} = 2 \times \left( \frac{N - 1}{N} \right) \times \Psi \quad (\text{Bytes})
+$$
 
 当集群规模 $N$ 逐渐变大（如 $N = 64, 512, 1024$）时：
 
-$$\lim_{N \to \infty} \left( \frac{N - 1}{N} \right) = 1$$
+$$
+\lim_{N \to \infty} \left( \frac{N - 1}{N} \right) = 1
+$$
 
-$$\mathbf{\text{Comm}_{\text{Ring}} \approx 2\Psi \quad (\text{Bytes})}$$
+$$
+\mathbf{\text{Comm}_{\text{Ring}} \approx 2\Psi \quad (\text{Bytes})}
+$$
 
 #### ⑤ Sanity Check（数量级校验与惊天结论）
 以一个 7B 模型（参数梯度量 $\Psi = 14\text{ GB}$）为例：
@@ -263,7 +285,9 @@ $$\mathbf{\text{Comm}_{\text{Ring}} \approx 2\Psi \quad (\text{Bytes})}$$
 
 我们来算一笔**通信耗时（Latency vs Bandwidth）账**。集合通信的时间开销可以严密建模为：
 
-$$T_{\text{comm}} = \alpha \times (\text{传输步数}) + \beta \times (\text{每步传输量})$$
+$$
+T_{\text{comm}} = \alpha \times (\text{传输步数}) + \beta \times (\text{每步传输量})
+$$
 
 其中 $\alpha$ 为网络握手与硬件发射延迟（Latency），$\beta = \frac{1}{\text{Bandwidth}}$ 为带宽倒数。
 
@@ -777,15 +801,27 @@ if __name__ == "__main__":
    - 在第 $k$ 步（$k = 0, \dots, N-2$），每个 GPU $i$ 同时将自己的切片 $S_{(i - k) \bmod N}$ 发送给右邻居 $i+1$，并从左邻居 $i-1$ 接收切片并执行累加；
    - 每步传输的数据量为 $\frac{\Psi}{N}$；
    - $(N - 1)$ 步结束后，每张 GPU 恰好持有一份全局累加完成的切片：
-     $$\text{Comm}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})$$
+
+     $$
+     \text{Comm}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
+     $$
+
 3. **第二阶段：AllGather（全局收集）**：
    - 算法同样执行 $(N - 1)$ 轮迭代步；
    - 在每一步，各 GPU 将已经聚合好的切片像接力棒一样向右传递并覆盖本地内存；
    - 每步传输的数据量同样为 $\frac{\Psi}{N}$；
    - $(N - 1)$ 步结束后，所有 GPU 均拥有完整的 $N$ 个全局聚合切片：
-     $$\text{Comm}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})$$
+
+     $$
+     \text{Comm}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
+     $$
+
 4. **两阶段总和**：
-   $$\text{Comm}_{\text{Total}} = \text{Comm}_{\text{RS}} + \text{Comm}_{\text{AG}} = 2 \times \left( \frac{N - 1}{N} \right) \Psi \quad (\text{Bytes})$$
+
+   $$
+   \text{Comm}_{\text{Total}} = \text{Comm}_{\text{RS}} + \text{Comm}_{\text{AG}} = 2 \times \left( \frac{N - 1}{N} \right) \Psi \quad (\text{Bytes})
+   $$
+
    当 $N$ 较大时，$\frac{N-1}{N} \to 1$，单卡通信总量严格收敛为 **$2\Psi$**。
 
 ---
@@ -823,5 +859,3 @@ if __name__ == "__main__":
    - **判定准则**：
      - 若在 CPU-GPU 时间线上观察到大段空白，且 `ncclKernel_AllReduce` 占据了大量时间，点击该算子查看其内部的等待耗时；
      - 对比所有 Rank 的 Profiler 时间线：如果所有正常 Rank 的计算早已结束，全部堆积在 `cudaStreamSynchronize` 或 NCCL 等待上，而某一个特定 Rank 的前向/反向 GEMM 耗时明显拉长，即可一枪毙命精准锁定该故障慢节点！
-
-

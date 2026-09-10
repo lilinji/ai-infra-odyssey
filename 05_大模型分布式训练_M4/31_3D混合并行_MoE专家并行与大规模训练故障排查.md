@@ -269,7 +269,9 @@ math: true
 
 对于被激活的第 $i$ 个专家 $E_i$，其对最终输出的贡献为加权求和：
 
-$$y = \sum_{i \in \text{TopK}} G(x)_i \cdot \text{Expert}_i(x)$$
+$$
+y = \sum_{i \in \text{TopK}} G(x)_i \cdot \text{Expert}_i(x)
+$$
 
 ---
 
@@ -335,22 +337,31 @@ $$y = \sum_{i \in \text{TopK}} G(x)_i \cdot \text{Expert}_i(x)$$
    - GPU 1 算完该 Token 的 FFN 输出后，必须把这 8 字节的结果送回 GPU 0；
    - GPU 0 再次发出 8 字节，接收 8 字节；
 3. **单个 Token 全流程通信总量**：
-   $$\text{Total Comm per Token} = 8\text{ B (去程)} + 8\text{ B (回程)} = \mathbf{16\text{ 字节}} = \mathbf{2 \times h \times 2\text{ Bytes}}$$
+
+   $$
+   \text{Total Comm per Token} = 8\text{ B (去程)} + 8\text{ B (回程)} = \mathbf{16\text{ 字节}} = \mathbf{2 \times h \times 2\text{ Bytes}}
+   $$
 
 #### ④ Formal Model（标准公式）
 对于一个隐藏层维度为 $h$、序列长度为 $s$、批大小为 $b$ 的大模型，采用 $\text{Top-K}$ 路由：
 在包含 $N_{\text{ep}}$ 张 GPU 的专家并行组中，单张 GPU 在单个 MoE 层前向传播中发送的总通信量为：
 
-$$\text{Comm}_{\text{fwd, MoE}} = \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Dispatch 通信量}} + \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Combine 通信量}} \quad (\text{Bytes})$$
+$$
+\text{Comm}_{\text{fwd, MoE}} = \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Dispatch 通信量}} + \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Combine 通信量}} \quad (\text{Bytes})
+$$
 
 当 $N_{\text{ep}}$ 较大时，$\frac{N_{\text{ep}}-1}{N_{\text{ep}}} \to 1$：
 
-$$\mathbf{\text{Comm}_{\text{fwd, MoE}} \approx 4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}$$
+$$
+\mathbf{\text{Comm}_{\text{fwd, MoE}} \approx 4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
+$$
 
 在反向传播中，伴随梯度的反向回传，同样需要经历一次伴随的 Combine 梯度发送与 Dispatch 梯度回收，**反向通信量与前向完全对称**！  
 因此单层 MoE 在一个完整训练迭代中的总通信量严格等于：
 
-$$\mathbf{\text{Comm}_{\text{total, MoE}} \approx 8 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}$$
+$$
+\mathbf{\text{Comm}_{\text{total, MoE}} \approx 8 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 以 **DeepSeek-V3** 架构风格（$h = 7168$, 采用 $\text{Top-8}$ 路由，每个 Token 激活 8 个小专家）为例：
@@ -821,14 +832,26 @@ if __name__ == "__main__":
    - 假设路由均匀，每张 GPU 生成的 $K \times b \times s$ 个专家调用请求中，有 $\frac{N_{\text{ep}}-1}{N_{\text{ep}}}$ 的比例需要发送给其他远程 GPU；
    - 传输内容为原始激活向量 $x$（大小为 $h$ 浮点数，BF16 下为 $2h$ 字节）；
    - 单卡发送量：
-     $$\text{Comm}_{\text{dispatch}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})$$
+
+     $$
+     \text{Comm}_{\text{dispatch}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
+     $$
+
 3. **第二阶段：Token Combine（收集规约）**：
    - 远程 GPU 接收到 Token 并在本地完成专家 FFN 运算，得到输出张量（大小同样为 $h$ 浮点数，即 $2h$ 字节）；
    - 必须原路回传给最初发起该 Token 的原始 GPU 进行残差连接与最终加权求和；
    - 单卡发送量：
-     $$\text{Comm}_{\text{combine}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})$$
+
+     $$
+     \text{Comm}_{\text{combine}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
+     $$
+
 4. **单步前向两阶段总和**：
-   $$\text{Comm}_{\text{fwd}} = \text{Comm}_{\text{dispatch}} + \text{Comm}_{\text{combine}} = 2 \times \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \approx \mathbf{4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}$$
+
+   $$
+   \text{Comm}_{\text{fwd}} = \text{Comm}_{\text{dispatch}} + \text{Comm}_{\text{combine}} = 2 \times \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \approx \mathbf{4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
+   $$
+
 5. **结论阐明**：
    - 每个 Token 必须在网络上传输 2 次：**第 1 次是将输入送到专家所在的机器去算（去程），第 2 次是将算好的特征接回原始机器以供后续层继续使用（回程）**。加上反向求导的对称通信，单层单步通信量严格达到 **$8 \times K \cdot b \cdot s \cdot h$ 字节**。
 
@@ -869,4 +892,3 @@ if __name__ == "__main__":
      - 系统自动丢弃本步更新，阻断被污染的梯度注入优化器；
      - 触发训练调度器，从最近保存的健康 Checkpoint（依托异步 Checkpoint 缓存）快速热回滚；
      - 自动跳过引发突刺的该批次数据索引，并报警通知数据团队复检该样本。
-

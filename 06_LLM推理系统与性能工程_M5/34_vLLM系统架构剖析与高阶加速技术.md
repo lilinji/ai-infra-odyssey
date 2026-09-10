@@ -335,7 +335,11 @@ Radix Tree 前缀复用微观匹配流:
 前缀命中率 $\alpha = 0.9$（90% 的请求命中了 System Prompt）：
 - **无缓存时**：单请求 Prefill 需计算 2000 Token；
 - **有缓存时**：
-  $$\text{期望计算 Token 数} = 0.9 \times 200 + 0.1 \times 2000 = 180 + 200 = \mathbf{380\text{ Tokens}}$$
+
+  $$
+  \text{期望计算 Token 数} = 0.9 \times 200 + 0.1 \times 2000 = 180 + 200 = \mathbf{380\text{ Tokens}}
+  $$
+
 - **算力开销直接暴降**：$\frac{380}{2000} = \mathbf{19\%}$（计算量仅剩不到两成，理论提速超过 5 倍！）。
 
 #### ④ Formal Model（标准公式）
@@ -343,16 +347,22 @@ Radix Tree 前缀复用微观匹配流:
 在没有网络排队前提下，首字延迟与 Prefill 计算量呈高度线性关系：$T_{\text{prefill}}(L) \approx k \cdot L$。
 平均首字延迟期望值 $\mathbb{E}[\text{TTFT}]$ 满足：
 
-$$\mathbb{E}[\text{TTFT}] = (1 - \alpha) \cdot k \cdot S + \alpha \cdot k \cdot (S - S_{\text{prefix}}) = k \cdot \left[ S - \alpha \cdot S_{\text{prefix}} \right]$$
+$$
+\mathbb{E}[\text{TTFT}] = (1 - \alpha) \cdot k \cdot S + \alpha \cdot k \cdot (S - S_{\text{prefix}}) = k \cdot \left[ S - \alpha \cdot S_{\text{prefix}} \right]
+$$
 
 系统在 Prefill 受限场景下的 **吞吐放大系数（Throughput Speedup Factor, $\mathcal{S}_{\text{throughput}}$）** 为：
 
-$$\mathcal{S}_{\text{throughput}} = \frac{S}{S - \alpha \cdot S_{\text{prefix}}} = \frac{1}{1 - \alpha \cdot \left(\frac{S_{\text{prefix}}}{S}\right)}$$
+$$
+\mathcal{S}_{\text{throughput}} = \frac{S}{S - \alpha \cdot S_{\text{prefix}}} = \frac{1}{1 - \alpha \cdot \left(\frac{S_{\text{prefix}}}{S}\right)}
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 如果在一个重度依赖大上下文知识库的 Agent 场景中，$S_{\text{prefix}} / S = 0.95$（前缀占 95%），命中率 $\alpha = 0.9$：
 
-$$\mathcal{S}_{\text{throughput}} = \frac{1}{1 - 0.9 \times 0.95} = \frac{1}{1 - 0.855} \approx \mathbf{6.9\text{ 倍！}}$$
+$$
+\mathcal{S}_{\text{throughput}} = \frac{1}{1 - 0.9 \times 0.95} = \frac{1}{1 - 0.855} \approx \mathbf{6.9\text{ 倍！}}
+$$
 
 **这绝不是几百分点的微调，而是直接将服务器的采购需求斩断到原本的七分之一！**
 
@@ -378,7 +388,11 @@ $$\mathcal{S}_{\text{throughput}} = \frac{1}{1 - 0.9 \times 0.95} = \frac{1}{1 -
 - CPU 必须通过 Python 循环，一个接一个调用 CUDA Runtime API 发射每个算子；
 - 每次发射需要经历驱动参数打包、Stream 队列同步检查，开销约为 **$3 \sim 5\text{ 微秒}$**；
 - 350 个算子仅在 CPU 发射上就要烧掉：
-  $$T_{\text{cpu\\_launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}$$
+
+  $$
+  T_{\text{cpu\\_launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}
+  $$
+
 - 如果此时 GPU 执行一个 Batch=1 的 Decode 算子只需要 **1.0 ms**，那么整个系统的耗时为 $1.4 + 1.0 = \mathbf{2.4\text{ ms}}$——**超过 58% 的时间死在 CPU 派发指令的路上！**
 
 ---
@@ -557,12 +571,20 @@ Step 4 (70B): 25ms ──► 产出 1 Token
 1. **接受判定（Acceptance Rule）**：
    从均匀分布 $U \sim [0, 1]$ 中抽取一个随机数。
    如果满足：
-   $$U \le \min\left(1, \; \frac{p(x)}{q(x)}\right)$$
+
+   $$
+   U \le \min\left(1, \; \frac{p(x)}{q(x)}\right)
+   $$
+
    **该候选词被正式接受（Accept）！** 意味着小模型的预测得到了大模型的背书；
 2. **拒绝与即时重采样（Rejection & Resampling Rule）**：
    一旦在第 $i$ 个词触发了不满足上述不等式，**系统立刻坚决拒绝（Reject）该词及后续所有猜测！**
    并且，系统**绝不重算**，而是直接从修正后的差值残差分布中抽取一个新词作为替代：
-   $$P_{\text{recover}}(x) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}$$
+
+   $$
+   P_{\text{recover}}(x) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}
+   $$
+
    随后该轮投机立即宣告结束。
 
 **数学保证**：
@@ -596,11 +618,15 @@ Step 4 (70B): 25ms ──► 产出 1 Token
 设大模型单步耗时为 $T_{\text{target}}$，小模型单步耗时为 $T_{\text{draft}}$，每次投机 $K$ 个词，平均词接受率为 $\alpha \in [0, 1]$。
 平均每轮成功产出的 Token 期望值为：
 
-$$\mathbb{E}[\text{Accepted Tokens}] = \frac{1 - \alpha^{K+1}}{1 - \alpha}$$
+$$
+\mathbb{E}[\text{Accepted Tokens}] = \frac{1 - \alpha^{K+1}}{1 - \alpha}
+$$
 
 系统的最终实际加速比 $\text{Speedup}$ 满足：
 
-$$\text{Speedup} = \frac{\mathbb{E}[\text{Accepted Tokens}] \times T_{\text{target}}}{K \cdot T_{\text{draft}} + T_{\text{target}}}$$
+$$
+\text{Speedup} = \frac{\mathbb{E}[\text{Accepted Tokens}] \times T_{\text{target}}}{K \cdot T_{\text{draft}} + T_{\text{target}}}
+$$
 
 ```text
 不同业务场景下的投机采样真实命运:
@@ -942,35 +968,47 @@ if __name__ == "__main__":
 **步骤一：计算单个候选词 $x$ 被接受的概率**
 根据规则，当小模型采出 $x$ 时，大模型接受它的条件概率为：
 
-$$P(\text{Accept} \mid x) = \min\left(1, \; \frac{p(x)}{q(x)}\right)$$
+$$
+P(\text{Accept} \mid x) = \min\left(1, \; \frac{p(x)}{q(x)}\right)
+$$
 
 因此，词 $x$ 被小模型提出且最终被大模型接受的联合概率为：
 
-$$P(\text{Accepted as } x) = q(x) \times \min\left(1, \; \frac{p(x)}{q(x)}\right) = \min(q(x), \; p(x))$$
+$$
+P(\text{Accepted as } x) = q(x) \times \min\left(1, \; \frac{p(x)}{q(x)}\right) = \min(q(x), \; p(x))
+$$
 
 **步骤二：计算整轮判定中发生“拒绝（Rejection）”的总概率**
 全集拒绝概率等于 1 减去所有可能被接受的词的概率和：
 
-$$P(\text{Reject}) = 1 - \sum_y \min(q(y), \; p(y)) = \sum_y \max(0, \; p(y) - q(y))$$
+$$
+P(\text{Reject}) = 1 - \sum_y \min(q(y), \; p(y)) = \sum_y \max(0, \; p(y) - q(y))
+$$
 
 **步骤三：计算被拒绝后，从修正分布中采出词 $x$ 的概率**
 根据算法，一旦被拒绝，系统从归一化的残差正分布中抽取新词：
 
-$$P(\text{Resampled as } x \mid \text{Reject}) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}$$
+$$
+P(\text{Resampled as } x \mid \text{Reject}) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}
+$$
 
 **步骤四：全概率公式闭环求和**
 最终任何一个词 $x$ 被系统输出的总概率，等于“直接被接受”与“被拒绝后重新采出”的概率之和：
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 P_{\text{final}}(x) &= P(\text{Accepted as } x) + P(\text{Reject}) \times P(\text{Resampled as } x \mid \text{Reject}) \\
 &= \min(q(x), \; p(x)) + \left[\sum_y \max(0, \; p(y) - q(y))\right] \times \left[\frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}\right] \\
 &= \min(q(x), \; p(x)) + \max(0, \; p(x) - q(x))
-\end{aligned}$$
+\end{aligned}
+$$
 
 根据初等数学恒等式：对任意实数 $a, b$，恒有 $\min(a, b) + \max(0, b - a) = b$。
 令 $a = q(x), b = p(x)$：
 
-$$\mathbf{P_{\text{final}}(x) = p(x)} \quad \text{Q.E.D. (证明完毕！)}$$
+$$
+\mathbf{P_{\text{final}}(x) = p(x)} \quad \text{Q.E.D. (证明完毕！)}
+$$
 
 **大厂标准结论**：不论小模型多么糟糕、猜测多么离谱，最终产出的每一个 Token 在数学上严格等价于由大模型亲自生成，绝对零精度损失！
 

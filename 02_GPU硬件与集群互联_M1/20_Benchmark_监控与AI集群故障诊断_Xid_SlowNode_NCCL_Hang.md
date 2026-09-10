@@ -198,7 +198,9 @@ math: true
 
 单步训练迭代耗时（Step Time）由计算与未被重叠隐藏的通信共同组成：
 
-$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}$$
+$$
+T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}
+$$
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -238,7 +240,9 @@ $$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}$$
 
 如果第一层判定瓶颈在暴露通信，依据 Alpha-Beta 模型对其进行解剖：
 
-$$T_{\text{comm}} = \alpha + \frac{M}{\beta}$$
+$$
+T_{\text{comm}} = \alpha + \frac{M}{\beta}
+$$
 
 1. **时延受限（Latency-Bound）**：
    - 特征：张量切片极小（$M < 1\,\text{MB}$），通信耗时被单步网络启动时延 $\alpha$ 和跨机跳步主导；
@@ -261,7 +265,9 @@ $$T_{\text{comm}} = \alpha + \frac{M}{\beta}$$
 - 设集群总卡数为 $N$，单卡硬件理论峰值算力为 $P_{\text{peak}}$（如 H100 SXM 为 989 TFLOPS BF16）；
 - 实测单步迭代耗时为 $T_{\text{step}}$（秒）：
 
-$$\mathbf{\text{MFU} = \frac{\text{FLOPs}_{\text{step}}}{T_{\text{step}} \times N \times P_{\text{peak}}}}$$
+$$
+\mathbf{\text{MFU} = \frac{\text{FLOPs}_{\text{step}}}{T_{\text{step}} \times N \times P_{\text{peak}}}}
+$$
 
 ```text
 算力账本健康度标尺：

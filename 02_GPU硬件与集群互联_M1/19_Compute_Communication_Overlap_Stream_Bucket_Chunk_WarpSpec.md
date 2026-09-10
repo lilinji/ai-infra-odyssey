@@ -266,13 +266,22 @@ torch.cuda.nvtx.range_pop()
 
 ### 4. Formal Model（标准形式化公式）：
 单步执行总时间（Step Time）的通用数学模型为：
-$$T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}$$
+
+$$
+T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed\\_comm}}
+$$
 
 其中，暴露通信时间定义为：
-$$\mathbf{T_{\text{exposed\\_comm}} = \max\left(0, \, T_{\text{comm}} - T_{\text{compute\\_overlap}}\right)}$$
+
+$$
+\mathbf{T_{\text{exposed\\_comm}} = \max\left(0, \, T_{\text{comm}} - T_{\text{compute\\_overlap}}\right)}
+$$
 
 如果考虑到资源争抢惩罚因子 $k \ge 1.0$（第 5 节将深度推导），实际总时间将被修正为：
-$$T_{\text{step\\_real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)$$
+
+$$
+T_{\text{step\\_real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)
+$$
 
 ---
 
@@ -473,7 +482,10 @@ FSDP 的破局之道是构建精密的 **前向预取流水线（Prefetch Pipeli
 为了破解 TP 的关键路径死结，Megatron Core 引入了 **TP Comm Overlap（Chunk 微流水线）**：
 - **第一性原理切入点**：矩阵乘法 $Y = X \cdot W$ 在行维度上是完全解耦的！
 - 将输入的激活值张量按照 Sequence（或 Batch）维度均匀切分为 $K$ 个分块（通常 $K=2$ 或 $K=4$）：
-  $$X = [X_0, \, X_1, \, \dots, \, X_{K-1}]$$
+
+  $$
+  X = [X_0, \, X_1, \, \dots, \, X_{K-1}]
+  $$
 
 ---
 
@@ -513,11 +525,16 @@ FSDP 的破局之道是构建精密的 **前向预取流水线（Prefetch Pipeli
 ## 5.1 为什么并发后的耗时不是 $\max(T_{\text{comp}}, T_{\text{comm}})$？
 
 初学者在画甘特图时，总是习惯性地写下：
-$$T_{\text{ideal}} = \max(T_{\text{compute}}, \, T_{\text{comm}})$$
+
+$$
+T_{\text{ideal}} = \max(T_{\text{compute}}, \, T_{\text{comm}})
+$$
 
 但在真实的 GPU 芯片上，实测总耗时总是令人沮丧地大于理论值。这背后的隐形刺客就是**硬件资源冲突带来的惩罚因子（Penalty Factor $k$）**：
 
-$$\mathbf{T_{\text{real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)} \quad (k \ge 1.0)$$
+$$
+\mathbf{T_{\text{real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)} \quad (k \ge 1.0)
+$$
 
 ---
 
@@ -551,7 +568,10 @@ $$\mathbf{T_{\text{real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, 
 ## 5.5 惩罚因子的数学建模与生产评估公式
 
 大厂性能工程团队将惩罚因子建模为并发访存强度的连续函数：
-$$k_{\text{comp}} = 1.0 + \gamma \cdot \left(\frac{\text{BW}_{\text{comm\\_HBM}}}{\text{BW}_{\text{HBM\\_peak}}}\right) \cdot \left(\frac{1}{\text{AI}_{\text{comp}}}\right)$$
+
+$$
+k_{\text{comp}} = 1.0 + \gamma \cdot \left(\frac{\text{BW}_{\text{comm\\_HBM}}}{\text{BW}_{\text{HBM\\_peak}}}\right) \cdot \left(\frac{1}{\text{AI}_{\text{comp}}}\right)
+$$
 
 - 当算子算术强度 $\text{AI} \to \infty$（如超大 GEMM），$k \to 1.0$；
 - 当算子算术强度低且通信吞吐极高，惩罚项急剧发散，甚至会导致 Overlap 后的耗时反超纯串行耗时！
@@ -933,7 +953,11 @@ FSDP 预取下一层，显存通信双平衡。
    - 只要单桶计算时间满足 $t_{\text{comp}} \ge t_{\text{comm}}$（计算吞吐大于通信吞吐）；
    - 则第 $0$ 至第 $N-2$ 个桶的通信时间均被完全重叠在下一桶的计算窗口内部；
    - **最终暴露在关键路径上的通信时间，仅为最后一个桶（Bucket $N-1$）的收尾通信时间**：
-     $$T_{\text{exposed\\_ideal}} = t_{\text{comm\\_last\\_bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}$$
+
+     $$
+     T_{\text{exposed\\_ideal}} = t_{\text{comm\\_last\\_bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}
+     $$
+
    - 相对整步数百毫秒的计算而言，暴露时间无限趋近于 0！
 
 ---
@@ -949,11 +973,19 @@ FSDP 预取下一层，显存通信双平衡。
    - 集群卡数为 $P$，在 FSDP 中，单卡仅驻留分片权重 $\frac{S_{\text{layer}}}{P}$；
    - 若预取深度设为 $D$（即当前计算第 $N$ 层时，显存中同时保存从 $N$ 到 $N+D$ 层的全量解包权重）；
    - 预取引入的额外驻留显存为：
-     $$\Delta M_{\text{prefetch}} = D \times \left(1 - \frac{1}{P}\right) S_{\text{layer}} \approx D \cdot S_{\text{layer}}$$
+
+     $$
+     \Delta M_{\text{prefetch}} = D \times \left(1 - \frac{1}{P}\right) S_{\text{layer}} \approx D \cdot S_{\text{layer}}
+     $$
+
 2. **流水线气泡与临界深度推导**：
    - 设单层的纯计算耗时为 $T_{\text{comp}}$，单层参数的 AllGather 通信耗时为 $T_{\text{comm}}$；
    - 要实现无气泡的完全重叠，所需的预取准备时间必须满足：
-     $$D \cdot T_{\text{comp}} \ge T_{\text{comm}} \implies D \ge \left\lceil \frac{T_{\text{comm}}}{T_{\text{comp}}} \right\rceil$$
+
+     $$
+     D \cdot T_{\text{comp}} \ge T_{\text{comm}} \implies D \ge \left\lceil \frac{T_{\text{comm}}}{T_{\text{comp}}} \right\rceil
+     $$
+
 3. **工业生产权衡（Trade-off）结论**：
    - 在现代高速网络（NVLink 或 400G IB）环境下，单层通信通常快于或接近单层计算（即 $\frac{T_{\text{comm}}}{T_{\text{comp}}} \le 1.0$）；
    - 此时取 **$D = 1$** 即可实现 $100\%$ 的流水线隐藏；

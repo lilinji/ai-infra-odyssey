@@ -198,7 +198,9 @@ math: true
 
 大模型的核心是由密集的通用矩阵乘法（GEMM）构成的。无论是注意力模块的 $Q, K, V$ 投影与输出投影，还是 MLP 模块的双层前馈网络，本质上都在反复计算：
 
-$$Y = X \cdot W$$
+$$
+Y = X \cdot W
+$$
 
 其中：
 - $X$ 是输入激活张量，Shape 为 $[b, s, h]$（Batch Size $\times$ 序列长度 $\times$ 隐藏层维度）；
@@ -216,17 +218,23 @@ Megatron-LM 论文（Shoeybi et al., 2019）提出了开创性的解决方案：
 #### ① 切分方式
 将权重矩阵 $W \in \mathbb{R}^{h \times h_{\text{out}}}$ 沿**列方向（输出特征维度）**均匀切分成 $N$ 份（$N$ 为 TP 度，通常为 8）：
 
-$$W = \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix}, \quad W_i \in \mathbb{R}^{h \times \frac{h_{\text{out}}}{N}}$$
+$$
+W = \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix}, \quad W_i \in \mathbb{R}^{h \times \frac{h_{\text{out}}}{N}}
+$$
 
 #### ② 计算过程
 每张 GPU 独立持有完整的输入激活 $X$ 以及自己负责的那一列权重分片 $W_i$。各卡在本地独立执行矩阵乘法：
 
-$$Y_i = X \cdot W_i, \quad Y_i \in \mathbb{R}^{b \times s \times \frac{h_{\text{out}}}{N}}$$
+$$
+Y_i = X \cdot W_i, \quad Y_i \in \mathbb{R}^{b \times s \times \frac{h_{\text{out}}}{N}}
+$$
 
 #### ③ 输出拼接与通信
 各卡计算出的 $Y_i$ 恰好拼成完整的输出矩阵 $Y$：
 
-$$Y = X \cdot W = X \cdot \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix} = \begin{bmatrix} XW_1 & XW_2 & \cdots & XW_N \end{bmatrix} = \begin{bmatrix} Y_1 & Y_2 & \cdots & Y_N \end{bmatrix}$$
+$$
+Y = X \cdot W = X \cdot \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix} = \begin{bmatrix} XW_1 & XW_2 & \cdots & XW_N \end{bmatrix} = \begin{bmatrix} Y_1 & Y_2 & \cdots & Y_N \end{bmatrix}
+$$
 
 - **惊艳特性**：**在前向传播过程中，Column Parallel 完全不需要任何卡间通信！** 每张卡拿着完整的 $X$，各算各的列分片，算出来的结果 $Y_i$ 也是自然按列分片的。
 
@@ -237,7 +245,9 @@ $$Y = X \cdot W = X \cdot \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix}
 #### ① 切分方式
 将权重矩阵 $W \in \mathbb{R}^{h_{\text{in}} \times h}$ 沿**行方向（输入特征维度）**均匀切分成 $N$ 份：
 
-$$W = \begin{bmatrix} W_1 \\ W_2 \\ \vdots \\ W_N \end{bmatrix}, \quad W_i \in \mathbb{R}^{\frac{h_{\text{in}}}{N} \times h}$$
+$$
+W = \begin{bmatrix} W_1 \\ W_2 \\ \vdots \\ W_N \end{bmatrix}, \quad W_i \in \mathbb{R}^{\frac{h_{\text{in}}}{N} \times h}
+$$
 
 #### ② 输入要求
 为了与切断的行矩阵相乘，输入张量 $X$ 必须沿**列方向切分**，每张卡只持有对应的分片 $X_i \in \mathbb{R}^{b \times s \times \frac{h_{\text{in}}}{N}}$。
@@ -245,12 +255,16 @@ $$W = \begin{bmatrix} W_1 \\ W_2 \\ \vdots \\ W_N \end{bmatrix}, \quad W_i \in \
 #### ③ 计算过程
 各卡在本地计算部分矩阵乘积：
 
-$$Y_i = X_i \cdot W_i, \quad Y_i \in \mathbb{R}^{b \times s \times h}$$
+$$
+Y_i = X_i \cdot W_i, \quad Y_i \in \mathbb{R}^{b \times s \times h}
+$$
 
 #### ④ 输出聚合与通信
 根据分块矩阵乘法法则：
 
-$$Y = X \cdot W = \begin{bmatrix} X_1 & X_2 & \cdots & X_N \end{bmatrix} \begin{bmatrix} W_1 \\ W_2 \\ \vdots \\ W_N \end{bmatrix} = \sum_{i=1}^N X_i W_i = \sum_{i=1}^N Y_i$$
+$$
+Y = X \cdot W = \begin{bmatrix} X_1 & X_2 & \cdots & X_N \end{bmatrix} \begin{bmatrix} W_1 \\ W_2 \\ \vdots \\ W_N \end{bmatrix} = \sum_{i=1}^N X_i W_i = \sum_{i=1}^N Y_i
+$$
 
 - **通信插入点**：各卡算出的 $Y_i$ 具有完整的输出维度 $[b, s, h]$，但包含的只是“部分求和结果（Partial Sum）”。**必须在各卡之间执行一次全局求和规约（AllReduce），才能恢复出数学上完全正确的完整输出 $Y$！**
 
@@ -306,7 +320,9 @@ Megatron-LM 最天才的工程发明，就是将 **Column Parallel 与 Row Paral
 在 Row Parallel 结束时，每张 GPU 都算出了一个 Shape 为 $[2, 4]$ 的局部张量，包含 $2 \times 4 = 8$ 个元素，大小为 $8 \times 2 = 16\text{ 字节}$。  
 执行 Ring-AllReduce 时，单卡发送的数据量为：
 
-$$\text{Comm} = 2 \times \left(\frac{N-1}{N}\right) \times \text{Size} = 2 \times \left(\frac{2-1}{2}\right) \times 16\text{ B} = \mathbf{16\text{ 字节}}$$
+$$
+\text{Comm} = 2 \times \left(\frac{N-1}{N}\right) \times \text{Size} = 2 \times \left(\frac{2-1}{2}\right) \times 16\text{ B} = \mathbf{16\text{ 字节}}
+$$
 
 #### ④ Formal Model（标准公式）
 对于一个隐藏层维度为 $h$、序列长度为 $s$、批大小为 $b$ 的大模型：
@@ -314,13 +330,20 @@ $$\text{Comm} = 2 \times \left(\frac{N-1}{N}\right) \times \text{Size} = 2 \time
    - Attention 输出投影后 1 次 AllReduce：数据大小为 $b \times s \times h$；
    - MLP 输出投影后 1 次 AllReduce：数据大小为 $b \times s \times h$；
    - 单卡前向通信总量（基于 Ring-AllReduce 发送量 $2 \frac{N-1}{N} \text{Size}$，当 $N=8$ 时 $\frac{N-1}{N} \approx 1$）：
-     $$\text{Comm}_{\text{fwd}} = 2 \times \left(2 \times \frac{N-1}{N} \times b s h \times 2\text{ Bytes}\right) \approx \mathbf{4 b s h} \quad (\text{Words}) = \mathbf{8 b s h} \quad (\text{Bytes})$$
+
+     $$
+     \text{Comm}_{\text{fwd}} = 2 \times \left(2 \times \frac{N-1}{N} \times b s h \times 2\text{ Bytes}\right) \approx \mathbf{4 b s h} \quad (\text{Words}) = \mathbf{8 b s h} \quad (\text{Bytes})
+     $$
+
 2. **反向传播（Backward）**：
    - 伴随矩阵求导法则，前向的 Row Parallel 在反向求梯度时变为 Column Parallel（需 1 次 AllReduce）；
    - 前向的 Column Parallel 在反向时变为 Row Parallel（需 1 次 AllReduce）；
    - **反向通信量与前向完全对称**：同样为 $4 b s h$（Words）！
 3. **单层单步总通信量**：
-   $$\mathbf{\text{Comm}_{\text{TP, layer}} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 8 b s h \quad (\text{Words}) = \mathbf{16 b s h} \quad (\text{Bytes})}$$
+
+   $$
+   \mathbf{\text{Comm}_{\text{TP, layer}} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 8 b s h \quad (\text{Words}) = \mathbf{16 b s h} \quad (\text{Bytes})}
+   $$
 
 #### ⑤ Sanity Check（数量级校验）
 以 **LLaMA-3-70B**（$h = 8192$, 层数 $L = 80$）在 $b=2, s=4096$ 下单卡每步通信量为例：
@@ -357,7 +380,9 @@ Megatron-LM 团队在 2022 年（Korthikanti et al., 2022）提出了著名的 *
 
 我们知道集合通信原语存在一个恒等分解式：
 
-$$\mathbf{\text{AllReduce} = \text{ReduceScatter} + \text{AllGather}}$$
+$$
+\mathbf{\text{AllReduce} = \text{ReduceScatter} + \text{AllGather}}
+$$
 
 - **ReduceScatter**：将全尺寸张量规约求和，并将结果切成 $N$ 份分散到各卡；
 - **AllGather**：将各卡持有的 $1/N$ 分片收集拼装成全尺寸张量。
@@ -555,11 +580,15 @@ GPU 0: [F0][F1][F2][F3][B0][F4][B1][F5][B2][F6][B3][F7][B4]...
 
 工业级训练系统（以 Megatron-DeepSpeed 为代表）将各个维度正交组合，构成著名的 **3D / 4D 混合并行**：
 
-$$\mathbf{\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}}$$
+$$
+\mathbf{\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}}
+$$
 
 每个物理 GPU 在全局通信世界中，都拥有一个四维离散坐标：
 
-$$\text{Rank} \longleftrightarrow (\text{rank}_{\text{dp}}, \text{rank}_{\text{pp}}, \text{rank}_{\text{tp}}, \text{rank}_{\text{cp}})$$
+$$
+\text{Rank} \longleftrightarrow (\text{rank}_{\text{dp}}, \text{rank}_{\text{pp}}, \text{rank}_{\text{tp}}, \text{rank}_{\text{cp}})
+$$
 
 ---
 
@@ -969,7 +998,11 @@ if __name__ == "__main__":
    - 对列切分层求输入梯度时，反向计算变为按行切分，必须再次插入一次 **AllReduce**；
    - 因此反向传播同样需要精确触发 2 次 AllReduce，单卡发送量严格等于：$\mathbf{4 bsh} \quad (\text{Words})$。
 3. **单层单步总通信量累加**：
-   $$\text{Total Comm Per Layer} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 4bsh + 4bsh = \mathbf{8bsh} \quad (\text{Words}) = \mathbf{16bsh} \quad (\text{Bytes})$$
+
+   $$
+   \text{Total Comm Per Layer} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 4bsh + 4bsh = \mathbf{8bsh} \quad (\text{Words}) = \mathbf{16bsh} \quad (\text{Bytes})
+   $$
+
 4. **为什么严禁出机**：
    - 设单层前向 GEMM 耗时仅 1~2 毫秒；
    - 若在机内 NVLink（900 GB/s，延迟 $< 1\mu s$），传输几十兆数据仅需数十微秒，完全被计算掩盖；
@@ -992,13 +1025,21 @@ if __name__ == "__main__":
      - 每个微批次必须完整跑完前向与反向，总有效微批次步数为 $M \times t_{\text{step}}$；
    - **端到端总执行时间**：$T_{\text{total}} = (M + P - 1) \times t_{\text{step}}$；
    - **稳态气泡率公式**：
-     $$\text{Bubble Ratio} = \frac{t_{\text{bubble}}}{T_{\text{total}}} = \mathbf{\frac{P - 1}{M + P - 1}}$$
+
+     $$
+     \text{Bubble Ratio} = \frac{t_{\text{bubble}}}{T_{\text{total}}} = \mathbf{\frac{P - 1}{M + P - 1}}
+     $$
+
 2. **Interleaved 1F1B 虚拟阶段压缩机理**：
    - 每个物理 GPU 不再只管一个大阶段，而是将其细化为 $v$ 个交错的虚拟阶段（Virtual Stages）；
    - 单个微批次在每个虚拟阶段的计算耗时缩小为 $\frac{t_{\text{step}}}{v}$；
    - 充能与排空等待时间缩短为 $(P - 1) \times \frac{t_{\text{step}}}{v}$；
    - **压缩后气泡率**：
-     $$\text{Bubble Ratio}_{\text{interleaved}} = \mathbf{\frac{P - 1}{v \cdot M + P - 1}}$$
+
+     $$
+     \text{Bubble Ratio}_{\text{interleaved}} = \mathbf{\frac{P - 1}{v \cdot M + P - 1}}
+     $$
+
    - 气泡率被**等效扩大了 $v$ 倍的微批次数所稀释**，气泡面积直接削减近 $1/v$！
 3. **付出的代价（Trade-off）**：
    - 物理 Stage 数量虽然不变，但层间切断的边界增加了 $v$ 倍；

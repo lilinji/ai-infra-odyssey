@@ -129,11 +129,23 @@
 设向量维度为 $D$（如 OpenAI `text-embedding-3-small` 为 1536 维），库中有 $N$ 个向量。
 对于一个查询向量 $q$，要找到余弦相似度最高或欧氏距离最近的 Top-K：
 - 单次查询需要计算 $N$ 次维度为 $D$ 的点积：
-  $$\text{FLOPs} = 2 \times N \times D$$
+
+  $$
+  \text{FLOPs} = 2 \times N \times D
+  $$
+
 - 当 $N = 10,000,000$（一千万条知识），$D = 1536$：
-  $$\text{FLOPs} = 2 \times 10^7 \times 1536 \approx 3.07 \times 10^{10} = 30.7\text{ GFLOPs}$$
+
+  $$
+  \text{FLOPs} = 2 \times 10^7 \times 1536 \approx 3.07 \times 10^{10} = 30.7\text{ GFLOPs}
+  $$
+
 - **内存带宽暴击**：单精度浮点数（FP32）下，一千万向量需要加载：
-  $$10^7 \times 1536 \times 4\text{ bytes} \approx 61.44\text{ GB！}$$
+
+  $$
+  10^7 \times 1536 \times 4\text{ bytes} \approx 61.44\text{ GB！}
+  $$
+
   即使配备内存带宽高达 200 GB/s 的高端服务器，光把 61.44 GB 数据从内存搬进 CPU 就要消耗 **300 毫秒**！单卡 QPS 只有惨淡的 3 次/秒！
 
 ---
@@ -182,7 +194,11 @@
 
 1. **标量量化（Scalar Quantization, SQ8）**：
    - 将每个 32 位浮点数分量（FP32，4 字节）线性映射为 8 位无符号整数（UINT8，1 字节）：
-     $$x_{\text{quantized}} = \text{round}\left( \frac{x - \min}{\max - \min} \times 255 \right)$$
+
+     $$
+     x_{\text{quantized}} = \text{round}\left( \frac{x - \min}{\max - \min} \times 255 \right)
+     $$
+
    - **收益**：内存占用瞬间减少 **75%（4 字节 ➔ 1 字节）**，召回率几乎无损（Recall 仅损失 1%~2%）。
 2. **乘积量化（Product Quantization, PQ）与倒排结合（IVF-PQ）**：
    - 将 1536 维向量切分为 $M$ 个低维子空间（例如 96 个 16 维子向量）；
@@ -252,20 +268,43 @@
 设大模型参数量为 $\Phi$，Prompt 总 Token 数为 $S = S_{\text{ctx}} + S_{\text{query}}$，其中固定知识库上下文长度为 $S_{\text{ctx}}$，用户新提问长度为 $S_{\text{query}}$（通常 $S_{\text{ctx}} \gg S_{\text{query}}$）。
 
 1. **未启用缓存（Cold Prefill）计算量与时延**：
-   $$\text{FLOPs}_{\text{cold}} = 2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})$$
+
+   $$
+   \text{FLOPs}_{\text{cold}} = 2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})
+   $$
+
    首字生成时间（TTFT）：
-   $$\text{TTFT}_{\text{cold}} \approx \frac{2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})}{\text{FLOPS}_{\text{effective}}} + T_{\text{memory\\_fetch}}$$
+
+   $$
+   \text{TTFT}_{\text{cold}} \approx \frac{2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})}{\text{FLOPS}_{\text{effective}}} + T_{\text{memory\\_fetch}}
+   $$
+
    对于 70B 模型，有效算力 $\text{FLOPS}_{\text{effective}} = 500\text{ TFLOPS}$，$S_{\text{ctx}} = 32,768$，$S_{\text{query}} = 128$：
-   $$\text{TTFT}_{\text{cold}} \approx \frac{2 \times 70 \times 10^9 \times 32896}{500 \times 10^{12}} \approx \frac{4.605 \times 10^{15}}{500 \times 10^{12}} \approx 9.21\text{ 秒！}$$
+
+   $$
+   \text{TTFT}_{\text{cold}} \approx \frac{2 \times 70 \times 10^9 \times 32896}{500 \times 10^{12}} \approx \frac{4.605 \times 10^{15}}{500 \times 10^{12}} \approx 9.21\text{ 秒！}
+   $$
+
    **用户必须对着转圈等待近 10 秒才能看到第一个字！**
 
 2. **启用 Radix Tree 前缀缓存（Warm Prefill）**：
    知识库的 KV Cache 已缓存在 GPU 显存或通过 PagedAttention 维护。
    计算量急剧缩减为仅针对新 Query 的 Prefill 及其与已有上下文的交叉注意力（Cross-Attention）：
-   $$\text{FLOPs}_{\text{warm}} = 2 \cdot \Phi \cdot S_{\text{query}} + 4 \cdot L \cdot H \cdot D \cdot S_{\text{ctx}} \cdot S_{\text{query}}$$
+
+   $$
+   \text{FLOPs}_{\text{warm}} = 2 \cdot \Phi \cdot S_{\text{query}} + 4 \cdot L \cdot H \cdot D \cdot S_{\text{ctx}} \cdot S_{\text{query}}
+   $$
+
    对于同样的配置：
-   $$\text{FLOPs}_{\text{warm}} \approx 2 \times 70 \times 10^9 \times 128 \approx 1.79 \times 10^{13} = 17.9\text{ TFLOPs}$$
-   $$\text{TTFT}_{\text{warm}} \approx \frac{1.79 \times 10^{13}}{500 \times 10^{12}} \approx 0.0358\text{ 秒} = 35.8\text{ 毫秒！}$$
+
+   $$
+   \text{FLOPs}_{\text{warm}} \approx 2 \times 70 \times 10^9 \times 128 \approx 1.79 \times 10^{13} = 17.9\text{ TFLOPs}
+   $$
+
+   $$
+   \text{TTFT}_{\text{warm}} \approx \frac{1.79 \times 10^{13}}{500 \times 10^{12}} \approx 0.0358\text{ 秒} = 35.8\text{ 毫秒！}
+   $$
+
    **首字延迟从 9.2 秒直降至 35 毫秒，提速超过 250 倍！**
 
 ---
@@ -1121,4 +1160,3 @@ spec:
 3. **方案 B：硬件辅助微虚拟机（Firecracker / Kata Containers）**：
    - 每个沙箱都是一台拥有独立 Linux 内核、由 KVM 硬件虚拟化完全隔离的轻量虚拟机；
    - 即使内部代码打崩了沙箱内核，也只是虚拟机的局部崩溃，硬件 CPU 的 VMX 模式切换（Root / Non-Root）在物理上杜绝了对宿主机系统的任何威胁。
-

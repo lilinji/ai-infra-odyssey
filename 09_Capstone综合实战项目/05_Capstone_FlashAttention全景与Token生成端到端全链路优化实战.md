@@ -137,7 +137,10 @@ math: true
 ### 1.1 标准 Attention 的访存泥潭与算术强度断崖
 
 在 Transformer 中，自注意力机制的标准数学定义举世皆知：
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V$$
+
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V
+$$
 
 但如果你把这行公式直接用 PyTorch 裸写并在 GPU 上执行，就会在底层硬件上诱发一场灾难性的**显存搬砖泥潭**。
 
@@ -147,7 +150,10 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d}}\right)V$
 - **H100 SXM5**：FP16/BF16 算力高达 **989 TFLOPs**，而 HBM3 显存带宽为 **3.35 TB/s**。
 
 根据 Roofline 模型，GPU 的拐点算术强度（Operational Intensity Threshold）为：
-$$I_{\text{threshold}} = \frac{\text{Peak FLOPs}}{\text{Memory Bandwidth}} = \frac{312 \times 10^{12} \text{ FLOPs/s}}{2 \times 10^{12} \text{ Bytes/s}} \approx 156 \text{ FLOPs/Byte}$$
+
+$$
+I_{\text{threshold}} = \frac{\text{Peak FLOPs}}{\text{Memory Bandwidth}} = \frac{312 \times 10^{12} \text{ FLOPs/s}}{2 \times 10^{12} \text{ Bytes/s}} \approx 156 \text{ FLOPs/Byte}
+$$
 
 只有当一个计算任务每从显存搬运 1 字节数据，能在芯片内反复完成 **156 次以上的乘加运算** 时，才能让芯片计算核心满负荷运转！
 
@@ -172,7 +178,11 @@ HBM 读写总量 = 6Nd (输入输出) + 6N^2 (庞大的中间矩阵 S 和 P 的�
 - 中间矩阵 $S$ 和 $P$ 各占 $8192 \times 8192 \times 2 \text{ Bytes} = \mathbf{128 \text{ MB}}$；
 - 仅仅一个 Attention Head，为了算一次前向就要在 HBM 和芯片之间搬运近 **800 MB** 数据；
 - 其算术强度低至：
-  $$\text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} \approx \frac{4 N^2 d}{6 N^2} = \frac{2d}{3} = \frac{2 \times 128}{3} \approx 85.3 \text{ FLOPs/Byte} \ll 156$$
+
+  $$
+  \text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} \approx \frac{4 N^2 d}{6 N^2} = \frac{2d}{3} = \frac{2 \times 128}{3} \approx 85.3 \text{ FLOPs/Byte} \ll 156
+  $$
+
 计算核心有近一半的时间都在**渴等内存数据**！在序列长度达到 32K 或 128K 时，$O(N^2)$ 的中间显存更是直接引爆 GPU 显存，导致 OOM 崩溃。
 
 ---
@@ -182,7 +192,9 @@ HBM 读写总量 = 6Nd (输入输出) + 6N^2 (庞大的中间矩阵 S 和 P 的�
 能否根本不把巨大的 $S$ 和 $P$ 矩阵写出到 HBM，而是在芯片内部极高速的片上共享内存（SRAM）里一气呵成？
 阻止这一构想的唯一数学死穴，就是 **Softmax 的全局归一化依赖**：
 
-$$\text{softmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}}, \quad \text{其中 } m = \max_{j=1}^N x_j$$
+$$
+\text{softmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}}, \quad \text{其中 } m = \max_{j=1}^N x_j
+$$
 
 标准的 Safe-Softmax 必须经过**三趟全局遍历**：① 遍历一遍找全局最大值 $m$（防止浮点溢出）；② 遍历第二遍求指数和分母 $l = \sum e^{x_j - m}$；③ 遍历第三遍做除法归一化。如果数据被切分成小块，后一块的数据可能出现更大的值，难道前面所有算过的数据都要推翻重算？
 
@@ -214,21 +226,51 @@ $$\text{softmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^N e^{x_j - m}}, \quad \tex
 
 #### 4. 正式数学递推证明（Formal Proof）：
 给定行向量被切分为两部分 $A$ 和 $B$：
-$$m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}$$
-$$m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}$$
+
+$$
+m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
+$$
+
+$$
+m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
+$$
+
 新全局最大值为：
-$$m_{\text{new}} = \max(m_A, m_B)$$
+
+$$
+m_{\text{new}} = \max(m_A, m_B)
+$$
+
 全局归一化分母为：
-$$l_{\text{new}} = \sum_{k \in A \cup B} e^{x_k - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}$$
+
+$$
+l_{\text{new}} = \sum_{k \in A \cup B} e^{x_k - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
+$$
+
 对第一项展开恒等变形：
-$$\sum_{i \in A} e^{x_i - m_{\text{new}}} = \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}$$
+
+$$
+\sum_{i \in A} e^{x_i - m_{\text{new}}} = \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
+$$
+
 同理可得第二项：
-$$\sum_{j \in B} e^{x_j - m_{\text{new}}} = e^{m_B - m_{\text{new}}} \sum_{j \in B} e^{x_j - m_B} = l_B \cdot e^{m_B - m_{\text{new}}}$$
+
+$$
+\sum_{j \in B} e^{x_j - m_{\text{new}}} = e^{m_B - m_{\text{new}}} \sum_{j \in B} e^{x_j - m_B} = l_B \cdot e^{m_B - m_{\text{new}}}
+$$
+
 代入即证：
-$$\mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}$$
+
+$$
+\mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}
+$$
 
 同样，对于输出累加向量 $O$（设 $O_A$ 为对应 $A$ 段未除分母的中间矩阵乘累加结果）：
-$$\mathbf{O_{\text{new}} = O_A \cdot e^{m_A - m_{\text{new}}} + P_B V_B}$$
+
+$$
+\mathbf{O_{\text{new}} = O_A \cdot e^{m_A - m_{\text{new}}} + P_B V_B}
+$$
+
 **证毕**！只要维护两个极小的标量 $m$ 和 $l$，我们就可以在数据流式到达时，以常数级开销瞬间校准历史输出，彻底摆脱全局内存往返读写！
 
 ---
@@ -247,7 +289,11 @@ $$\mathbf{O_{\text{new}} = O_A \cdot e^{m_A - m_{\text{new}}} + P_B V_B}$$
   - $V_{\text{block}}$: $B_c \times d \times 2 \text{ Bytes}$；
   - 中间临时结果与 Double Buffering 缓冲空间。
 - **物理约束方程**：
-  $$(B_r \times d + 2 \times B_c \times d) \times 2 \le \text{SRAM Size}$$
+
+  $$
+  (B_r \times d + 2 \times B_c \times d) \times 2 \le \text{SRAM Size}
+  $$
+
 在典型配置下（$d=128$），通常取 $B_r = 64, B_c = 64$ 或 $B_r = 128, B_c = 64$，即可完美将所有矩阵乘法与 Softmax 封闭在片上极速流水线中！
 
 ---
@@ -387,15 +433,25 @@ FlashAttention 虽然神勇，但如果直接套用在 **单个 Token 生成的 
 - **产生 1 个 Token 必须搬运的内存字节数（Bytes）**：
   权重参数必须从 HBM 全部读入片上计算一遍，即读取 **140 GB** 权重数据（暂且忽略 KV Cache）；
 - **Decode 阶段的算术强度（Operational Intensity）**：
-  $$\text{AI}_{\text{decode}} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{140 \times 10^9 \text{ FLOPs}}{140 \times 10^9 \text{ Bytes}} = \mathbf{1.0 \text{ FLOP/Byte}}$$
+
+  $$
+  \text{AI}_{\text{decode}} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{140 \times 10^9 \text{ FLOPs}}{140 \times 10^9 \text{ Bytes}} = \mathbf{1.0 \text{ FLOP/Byte}}
+  $$
 
 #### 硬件残酷现实对比（Sanity Check）：
 - 回想 A100 的拐点算术强度是 **156 FLOPs/Byte**；
 - 当前算术强度只有 **1.0 FLOPs/Byte**，足足低于硬件拐点 **150 倍以上**！
 - 在 2 TB/s 的 A100 显存带宽下，读取完 140GB 权重理论物理极限耗时为：
-  $$T_{\text{min}} = \frac{140 \text{ GB}}{2000 \text{ GB/s}} = 70 \text{ ms}$$
+
+  $$
+  T_{\text{min}} = \frac{140 \text{ GB}}{2000 \text{ GB/s}} = 70 \text{ ms}
+  $$
+
 - 在这 70 毫秒里，强大的 Tensor Core 仅仅做了 140 GFLOPs 的运算，其实际利用率只有：
-  $$\text{Utilization} = \frac{140 \text{ GFLOPs} / 0.07 \text{ s}}{312 \text{ TFLOPs}} \approx \frac{2 \text{ TFLOPs}}{312 \text{ TFLOPs}} \approx \mathbf{0.64\%}!$$
+
+  $$
+  \text{Utilization} = \frac{140 \text{ GFLOPs} / 0.07 \text{ s}}{312 \text{ TFLOPs}} \approx \frac{2 \text{ TFLOPs}}{312 \text{ TFLOPs}} \approx \mathbf{0.64\%}!
+  $$
 
 **真相大白**：自回归 Decode 阶段是一个**极其残酷的访存地狱**！GPU 顶级的算力核心有 99% 的时间都在闲置干等，仅仅是为了从 HBM 里搬运庞大的参数和 KV Cache！
 
@@ -471,7 +527,11 @@ Attention 架构演进与显存带宽节约全景:
 **Chunked Prefill（分块预填充）治理方案**：
 - 将庞大的 16K Prompt 拆分为固定大小的 **Chunk 片段（如每次只吞 512 Tokens）**；
 - 在每一个调度 Iteration 中，模型同时执行：
-  $$\text{Batch Budget} = [\text{N 个 Decode 单 Token}] + [\text{1 个 Prefill 的 512 Token Chunk}]$$
+
+  $$
+  \text{Batch Budget} = [\text{N 个 Decode 单 Token}] + [\text{1 个 Prefill 的 512 Token Chunk}]
+  $$
+
 - 通过将 Prefill 算子与 Decode 算子融合在一次前向 GEMM 中，既抹平了 P99 延迟尖峰，又顺带拉升了算力利用率！
 
 ---
@@ -900,18 +960,42 @@ if __name__ == "__main__":
 **Ringi 考官拆解与满分回答**：
 1. **定义局部统计量**：
    设行向量被切为两段 $A$ 和 $B$。已知已算出 $A$ 段局部统计量：
-   $$m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}$$
+
+   $$
+   m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
+   $$
+
    新到达的 $B$ 段局部统计量为：
-   $$m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}$$
+
+   $$
+   m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
+   $$
+
 2. **合并全局最大值**：
-   $$m_{\text{new}} = \max(m_A, m_B)$$
+
+   $$
+   m_{\text{new}} = \max(m_A, m_B)
+   $$
+
 3. **分母严密展开与校准**：
-   $$l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}$$
+
+   $$
+   l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
+   $$
+
    利用指数加减法恒等变形：
-   $$\sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}$$
+
+   $$
+   \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
+   $$
+
    同理，第二项为：$l_B \cdot e^{m_B - m_{\text{new}}}$。
 4. **最终递推公式**：
-   $$\mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}$$
+
+   $$
+   \mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}
+   $$
+
    **结论**：只需将旧分母乘上常数折扣标量 $e^{m_A - m_{\text{new}}}$，即可瞬间将其校准至新基准线，完全不需要回读原始历史数据！
 
 ---
@@ -926,7 +1010,11 @@ if __name__ == "__main__":
    - 单 Token 计算量：乘加各一次，总浮点运算次数 $\approx 2P$ FLOPs；
    - 单 Token 权重显存读取量：$2P$ Bytes；
    - 基础算术强度为：
-     $$\text{AI} = \frac{2P \text{ FLOPs}}{2P \text{ Bytes}} = 1.0 \text{ FLOP/Byte}$$
+
+     $$
+     \text{AI} = \frac{2P \text{ FLOPs}}{2P \text{ Bytes}} = 1.0 \text{ FLOP/Byte}
+     $$
+
 3. **硬件对比与瓶颈判定**：
    - A100 的拐点算术强度为 $312 \text{ TFLOPS} / 2039 \text{ GB/s} \approx \mathbf{156 \text{ FLOPs/Byte}}$；
    - Decode 的实际算术强度（$\approx 1.0$）距离硬件饱和点足足差了 **150 倍以上**！
@@ -944,5 +1032,3 @@ if __name__ == "__main__":
    - 如果只有 PagedAttention 而没有 Continuous Batching：显存池虽然灵活，但整批请求依然要陪最慢的一个空转到最后，GPU 计算气泡依然无法消除；
 3. **最终结论**：
    正是因为 PagedAttention 提供了**微观粒度的即时块回收与分配弹性**，Continuous Batching 才能在宏观上做到**毫秒级的随退随补**，二者结合直接将系统并发度与 GPU 利用率拉升数倍！
-
-

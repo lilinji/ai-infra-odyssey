@@ -229,9 +229,16 @@ sequenceDiagram
 ## 1.1 经典微服务容量公式（$N = QPS \times Latency / Worker$）为什么彻底失效？
 
 在传统互联网后台架构中，利特尔法则（Little's Law）是容量规划的定海神针：
-$$ L = \lambda \times W $$
+
+$$
+L = \lambda \times W
+$$
+
 即：系统中平均并发请求数 $L$ 等于到达率 $\lambda$（QPS）乘以平均停留时间 $W$（Latency）。如果单个工作线程或微服务容器可以安全承载 $C$ 个并发请求，那么所需的机器实例数就是：
-$$ N = \frac{QPS \times Latency}{C} $$
+
+$$
+N = \frac{QPS \times Latency}{C}
+$$
 
 **为什么在 LLM 在线推理中，这个公式不仅毫无指导意义，反而会诱导灾难？**
 
@@ -337,7 +344,11 @@ $$ N = \frac{QPS \times Latency}{C} $$
 
 1. **账本一：模型参数权重显存（$M_{\text{weights}}$）**
    - **计算公式**：
-     $$ M_{\text{weights}} = \frac{P \times b_w}{\text{TP}} $$
+
+     $$
+     M_{\text{weights}} = \frac{P \times b_w}{\text{TP}}
+     $$
+
      其中 $P$ 为模型总参数量（Parameters），$b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节），$\text{TP}$ 为张量并行度（Tensor Parallelism）。
    - *注意*：必须计入 Embedding 层及非 Transformer 层的显存占用（在部分框架中可能未切分）。
 2. **账本二：中间激活与运行时框架驻留显存（$M_{\text{runtime}}$）**
@@ -375,26 +386,51 @@ $$ N = \frac{QPS \times Latency}{C} $$
 - 单个请求的总序列长度 $S = 512$ Tokens。
 
 1. 先算单 Token 在一层上的 KV 大小：
-   $$ 2 \text{ (Key和Value)} \times 2 \text{ (头数)} \times 64 \text{ (维度)} \times 2 \text{ (字节)} = 512 \text{ 字节} $$
+
+   $$
+   2 \text{ (Key和Value)} \times 2 \text{ (头数)} \times 64 \text{ (维度)} \times 2 \text{ (字节)} = 512 \text{ 字节}
+   $$
+
 2. 乘以 2 层，得到单个 Token 的 KV Cache 容量：
-   $$ 512 \text{ 字节} \times 2 \text{ 层} = 1024 \text{ 字节} = 1 \text{ KB/Token} $$
+
+   $$
+   512 \text{ 字节} \times 2 \text{ 层} = 1024 \text{ 字节} = 1 \text{ KB/Token}
+   $$
+
 3. 单个请求如果打满 512 Tokens，需要消耗：
-   $$ 512 \times 1 \text{ KB} = 512 \text{ KB} $$
+
+   $$
+   512 \times 1 \text{ KB} = 512 \text{ KB}
+   $$
+
 4. 这个 1MB 的显存池最多能同时容纳多少个并发？
-   $$ B_{\max} = \frac{1024 \text{ KB}}{512 \text{ KB}} = 2 \text{ 个并发！} $$
+
+   $$
+   B_{\max} = \frac{1024 \text{ KB}}{512 \text{ KB}} = 2 \text{ 个并发！}
+   $$
+
    如果硬塞第 3 个并发，显存直接打满雪崩！
 
 ### 第四步：Formal Model（标准通用工业公式）
 对于任何具备 GQA（分组查询注意力）的现代大模型，单个 Token 在单张卡（经过张量并行切分 $\text{TP}$）上的 KV Cache 消耗公式为：
-$$ \text{KV}_{\text{token\\_per\\_gpu}} = \frac{2 \times L \times N_{\text{kv}} \times d_{\text{head}} \times b_{\text{kv}}}{\text{TP}} \quad (\text{Bytes/Token}) $$
+
+$$
+\text{KV}_{\text{token\\_per\\_gpu}} = \frac{2 \times L \times N_{\text{kv}} \times d_{\text{head}} \times b_{\text{kv}}}{\text{TP}} \quad (\text{Bytes/Token})
+$$
 
 设单张 GPU 物理显存总量为 $V_{\text{total}}$，引擎预留比例为 $\alpha$（如 0.90），模型切分后占用的显存为 $M_{\text{weights}}$，系统运行时开销为 $M_{\text{runtime}}$。
 则单卡可用于 KV Cache 的总容量为：
-$$ M_{\text{kv\\_pool}} = \left( V_{\text{total}} \times \alpha \right) - M_{\text{weights}} - M_{\text{runtime}} $$
+
+$$
+M_{\text{kv\\_pool}} = \left( V_{\text{total}} \times \alpha \right) - M_{\text{weights}} - M_{\text{runtime}}
+$$
 
 设业务场景中，并发请求在生命周期内的总上下文长度（Prompt 长度 $S_{\text{prompt}}$ + 生成长度 $S_{\text{gen}}$）的规划评估值为 $S_{\text{total}}$。
 则**单节点支持的最大稳定物理并发数 $B_{\max}$** 为：
-$$ B_{\max} = \left\lfloor \frac{M_{\text{kv\\_pool}}}{\text{KV}_{\text{token\\_per\\_gpu}} \times S_{\text{total}}} \right\rfloor $$
+
+$$
+B_{\max} = \left\lfloor \frac{M_{\text{kv\\_pool}}}{\text{KV}_{\text{token\\_per\\_gpu}} \times S_{\text{total}}} \right\rfloor
+$$
 
 ### 第五步：Sanity Check（真实工业级数量级校验）
 我们以生产环境最标杆的配置做一次实战验算：
@@ -406,15 +442,26 @@ $$ B_{\max} = \left\lfloor \frac{M_{\text{kv\\_pool}}}{\text{KV}_{\text{token\\_
 - 则单卡 KV 池容量：$M_{\text{kv\\_pool}} = 72 - 18 - 4 = 50 \text{ GB} = 50 \times 10^9 \text{ Bytes}$。
 
 1. **手算单 Token KV 显存**：
-   $$ \text{KV}_{\text{token\\_per\\_gpu}} = \frac{2 \times 80 \times 8 \times 128 \times 2}{8} = \frac{327,680}{8} = 40,960 \text{ Bytes} = 40 \text{ KB/Token} $$
+
+   $$
+   \text{KV}_{\text{token\\_per\\_gpu}} = \frac{2 \times 80 \times 8 \times 128 \times 2}{8} = \frac{327,680}{8} = 40,960 \text{ Bytes} = 40 \text{ KB/Token}
+   $$
+
    （注意：8 卡合起来全节点单 Token 消耗为 $40 \text{ KB} \times 8 = 320 \text{ KB}$！）
 2. **假设常规对话场景**：输入 1500 Tokens，输出 500 Tokens，合计 $S_{\text{total}} = 2000$ Tokens。
    单个请求消耗单卡 KV 显存：$2000 \times 40 \text{ KB} = 80 \text{ MB}$。
 3. **计算单机最大物理并发数**：
-   $$ B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{80 \times 10^6 \text{ Bytes}} = 625 \text{ 并发} $$
+
+   $$
+   B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{80 \times 10^6 \text{ Bytes}} = 625 \text{ 并发}
+   $$
+
 4. **假设长文档总结场景**：输入 16K Tokens，输出 1K Tokens，合计 $S_{\text{total}} = 17,000$ Tokens。
    单个请求消耗单卡 KV 显存：$17,000 \times 40 \text{ KB} = 680 \text{ MB}$。
-   $$ B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{680 \times 10^6 \text{ Bytes}} \approx 73 \text{ 并发} $$
+
+   $$
+   B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{680 \times 10^6 \text{ Bytes}} \approx 73 \text{ 并发}
+   $$
 
 看到了吗？**同一个 8 卡节点，仅仅因为业务场景从普通对话变成了长文档分析，最大并发承载能力直接从 625 断崖式下跌到了 73！跌幅高达 88.3%！**
 如果你的网关没有针对长文本单独隔离，只看“并发数连接池”，70 多个长请求一涌进来，原本能服务 600 个人的集群瞬间就会被锁死！
@@ -454,26 +501,48 @@ QPS 水线
 
 #### 约束一：算力与吞吐通量平衡（Throughput-Bound Equation）
 系统在峰值时，每秒钟必须向用户吞吐的生成 Token 总数为：
-$$ \text{TokenThroughput}_{\text{gen\\_peak}} = QPS_{\text{peak\\_P99}} \times \overline{S}_{\text{gen}} \quad (\text{Tokens/sec}) $$
+
+$$
+\text{TokenThroughput}_{\text{gen\\_peak}} = QPS_{\text{peak\\_P99}} \times \overline{S}_{\text{gen}} \quad (\text{Tokens/sec})
+$$
+
 系统每秒钟必须吞吐的输入 Prefill Token 总数为：
-$$ \text{TokenThroughput}_{\text{prefill\\_peak}} = QPS_{\text{peak\\_P99}} \times \overline{S}_{\text{prompt}} \quad (\text{Tokens/sec}) $$
+
+$$
+\text{TokenThroughput}_{\text{prefill\\_peak}} = QPS_{\text{peak\\_P99}} \times \overline{S}_{\text{prompt}} \quad (\text{Tokens/sec})
+$$
 
 设单张 GPU 在保证 $T_{\text{target\\_tpot}}$ 前提下，实测所能提供的**有效持续生成吞吐能力**为 $\text{Cap}_{\text{gpu\\_gen}}$（Tokens/sec/GPU）。
 则基于算力通量维度的卡数需求为：
-$$ N_{\text{cards\\_throughput}} = \frac{\text{TokenThroughput}_{\text{gen\\_peak}}}{\text{Cap}_{\text{gpu\\_gen}}} \times \text{Buffer}_{\text{headroom}} \times \text{Redundancy}_{\text{DR}} $$
+
+$$
+N_{\text{cards\\_throughput}} = \frac{\text{TokenThroughput}_{\text{gen\\_peak}}}{\text{Cap}_{\text{gpu\\_gen}}} \times \text{Buffer}_{\text{headroom}} \times \text{Redundancy}_{\text{DR}}
+$$
 
 #### 约束二：KV Cache 显存并发容量平衡（Memory-Capacity Equation）
 单次请求在系统中的平均生命周期（从到达至完全结束）为：
-$$ T_{\text{life}} = \text{TTFT} + \left( \overline{S}_{\text{gen}} \times \text{TPOT} \right) $$
+
+$$
+T_{\text{life}} = \text{TTFT} + \left( \overline{S}_{\text{gen}} \times \text{TPOT} \right)
+$$
+
 根据利特尔法则，峰值时刻驻留在内存中、持续霸占 KV Cache 的在途活跃请求数（Concurrency）为：
-$$ \text{Concurrency}_{\text{peak}} = QPS_{\text{peak\\_P99}} \times T_{\text{life}} $$
+
+$$
+\text{Concurrency}_{\text{peak}} = QPS_{\text{peak\\_P99}} \times T_{\text{life}}
+$$
 
 已知单节点在最大允许并发下的容量上限为 $B_{\max}$（见 2.2 节推导），单节点卡数为 $\text{TP}$。
 则基于显存容量维度的卡数需求为：
-$$ N_{\text{cards\\_memory}} = \left\lceil \frac{\text{Concurrency}_{\text{peak}}}{B_{\max}} \right\rceil \times \text{TP} \times \text{Buffer}_{\text{headroom}} \times \text{Redundancy}_{\text{DR}} $$
+
+$$
+N_{\text{cards\\_memory}} = \left\lceil \frac{\text{Concurrency}_{\text{peak}}}{B_{\max}} \right\rceil \times \text{TP} \times \text{Buffer}_{\text{headroom}} \times \text{Redundancy}_{\text{DR}}
+$$
 
 #### 最终决策方程：
-$$ N_{\text{GPU\\_Total}} = \max\left( N_{\text{cards\\_throughput}}, \, N_{\text{cards\\_memory}} \right) $$
+$$
+N_{\text{GPU\\_Total}} = \max\left( N_{\text{cards\\_throughput}}, \, N_{\text{cards\\_memory}} \right)
+$$
 
 **工程大白话**：
 - 如果业务是**短输入、超长输出**（如小说写作、代码生成），系统绝大多数时间卡在 Decode 带宽与算力上，此时 $N_{\text{cards\\_throughput}}$ 主导卡数规划；
@@ -502,10 +571,14 @@ $$ N_{\text{GPU\\_Total}} = \max\left( N_{\text{cards\\_throughput}}, \, N_{\tex
 ### 详细手算步骤
 
 #### 步骤 1：核算单请求的平均生命周期 $T_{\text{life}}$
-$$ T_{\text{life}} = \text{TTFT} + \left( \overline{S}_{\text{gen}} \times \text{TPOT} \right) = 0.6\text{ s} + (400 \times 0.03\text{ s}) = 0.6 + 12 = 12.6\text{ 秒} $$
+$$
+T_{\text{life}} = \text{TTFT} + \left( \overline{S}_{\text{gen}} \times \text{TPOT} \right) = 0.6\text{ s} + (400 \times 0.03\text{ s}) = 0.6 + 12 = 12.6\text{ 秒}
+$$
 
 #### 步骤 2：核算系统峰值活跃并发连接数 $\text{Concurrency}_{\text{peak}}$
-$$ \text{Concurrency}_{\text{peak}} = QPS_{\text{peak}} \times T_{\text{life}} = 40 \times 12.6 = 504\text{ 个在途并发请求} $$
+$$
+\text{Concurrency}_{\text{peak}} = QPS_{\text{peak}} \times T_{\text{life}} = 40 \times 12.6 = 504\text{ 个在途并发请求}
+$$
 
 #### 步骤 3：核算单台 8 卡 H800 节点的显存容积与最大安全并发 $B_{\max}$
 由 2.2 节实测已知：
@@ -513,24 +586,43 @@ $$ \text{Concurrency}_{\text{peak}} = QPS_{\text{peak}} \times T_{\text{life}} =
 - 单 Token 在单卡上的 KV 开销：$\text{KV}_{\text{token\\_per\\_gpu}} = 40\text{ KB}$；
 - 单个请求平均总长度：$S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}$；
 - 单个请求在单卡上消耗的 KV Cache：
-  $$ 1600 \times 40\text{ KB} = 64\text{ MB} $$
+
+  $$
+  1600 \times 40\text{ KB} = 64\text{ MB}
+  $$
+
 - **单台 8 卡节点的最大并发承载力**：
-  $$ B_{\max} = \frac{50 \times 10^9\text{ Bytes}}{64 \times 10^6\text{ Bytes}} \approx 781\text{ 个并发} $$
+
+  $$
+  B_{\max} = \frac{50 \times 10^9\text{ Bytes}}{64 \times 10^6\text{ Bytes}} \approx 781\text{ 个并发}
+  $$
 
 从纯显存容量看，单台 8 卡机似乎理论上能塞下 781 个并发。但别高兴太早，我们必须看算力吞吐！
 
 #### 步骤 4：核算算力吞吐维度的单节点能力与集群需求
 在生产实测中，一台 8 卡 H800 跑 Qwen2.5-72B，在保证单请求 TPOT $\le 30\text{ ms}$ 的严苛 SLO 约束下，整台机器能够维持的**最高安全聚合生成吞吐量**约为：
-$$ \text{Cap}_{\text{node\\_gen}} \approx 1600\text{ Tokens/sec/node} \quad (\text{相当于每张卡 } 200\text{ Tokens/s}) $$
+
+$$
+\text{Cap}_{\text{node\\_gen}} \approx 1600\text{ Tokens/sec/node} \quad (\text{相当于每张卡 } 200\text{ Tokens/s})
+$$
 
 业务在峰值时刻每秒钟要求系统吐出的生成 Token 总数为：
-$$ \text{TokenThroughput}_{\text{gen\\_peak}} = 40 \text{ QPS} \times 400\text{ Tokens} = 16,000\text{ Tokens/sec} $$
+
+$$
+\text{TokenThroughput}_{\text{gen\\_peak}} = 40 \text{ QPS} \times 400\text{ Tokens} = 16,000\text{ Tokens/sec}
+$$
 
 由此计算**满足算力吞吐所需的节点数**：
-$$ N_{\text{nodes\\_throughput}} = \frac{16,000}{1600} = 10\text{ 台节点（即 80 张 H800）} $$
+
+$$
+N_{\text{nodes\\_throughput}} = \frac{16,000}{1600} = 10\text{ 台节点（即 80 张 H800）}
+$$
 
 叠加业务安全缓冲与容灾系数：
-$$ N_{\text{nodes\\_final}} = 10 \times 1.25 \times 1.15 = 14.375 \to \text{向上取整为 } \mathbf{15}\text{ 台 8 卡 H800 节点（总计 } \mathbf{120}\text{ 张卡）} $$
+
+$$
+N_{\text{nodes\\_final}} = 10 \times 1.25 \times 1.15 = 14.375 \to \text{向上取整为 } \mathbf{15}\text{ 台 8 卡 H800 节点（总计 } \mathbf{120}\text{ 张卡）}
+$$
 
 #### 步骤 5：容量交叉对账与反思
 现在回过头来看：
@@ -593,10 +685,16 @@ $$ N_{\text{nodes\\_final}} = 10 \times 1.25 \times 1.15 = 14.375 \to \text{向�
 **数学定义**：
 设系统在时间窗口 $T$ 内，共处理了 $M$ 个请求，第 $i$ 个请求产出的生成 Token 数量为 $S_{\text{gen}}^{(i)}$。
 定义指示函数 $\mathbb{I}_{\text{SLO}}(i)$：
-$$ \mathbb{I}_{\text{SLO}}(i) = \begin{cases} 1, & \text{若 } \text{TTFT}_i \le \text{SLO}_{\text{ttft}} \text{ 且 } \text{TPOT}_i \le \text{SLO}_{\text{tpot}} \text{ 且未发生未捕获异常} \\ 0, & \text{其他（违约、超时、中途断连、被强制丢弃）} \end{cases} $$
+
+$$
+\mathbb{I}_{\text{SLO}}(i) = \begin{cases} 1, & \text{若 } \text{TTFT}_i \le \text{SLO}_{\text{ttft}} \text{ 且 } \text{TPOT}_i \le \text{SLO}_{\text{tpot}} \text{ 且未发生未捕获异常} \\ 0, & \text{其他（违约、超时、中途断连、被强制丢弃）} \end{cases}
+$$
 
 则**系统有效吞吐量 Goodput** 为：
-$$ \text{Goodput} = \frac{\sum_{i=1}^{M} S_{\text{gen}}^{(i)} \times \mathbb{I}_{\text{SLO}}(i)}{T} \quad (\text{Tokens/sec}) $$
+
+$$
+\text{Goodput} = \frac{\sum_{i=1}^{M} S_{\text{gen}}^{(i)} \times \mathbb{I}_{\text{SLO}}(i)}{T} \quad (\text{Tokens/sec})
+$$
 
 **系统的健康度黄金法则是**：
 当流量持续上涨时，Raw Throughput 可能会一直升高，但一旦突破承载极限，**Goodput 就会出现断崖式下跌并直接砸穿到底**！盲目追求 Raw Throughput 的调度策略，是在拿假数据麻痹自己。
@@ -647,7 +745,11 @@ $$ \text{Goodput} = \frac{\sum_{i=1}^{M} S_{\text{gen}}^{(i)} \times \mathbb{I}_
 大模型 AI 网关必须实施**前向排队时间预测（Predicted Queue Latency）**：
 1. **获取当前引擎水线**：网关通过 Sidecar 或健康探测，每 100ms 拉取各推理实例当前排队队列中的 Token 积压总量 $\Sigma_{\text{waiting\\_tokens}}$；
 2. **计算预计等待耗时**：
-   $$ T_{\text{predicted\\_wait}} = \frac{\Sigma_{\text{waiting\\_tokens}}}{\text{Node Throughput Capacity}} $$
+
+   $$
+   T_{\text{predicted\\_wait}} = \frac{\Sigma_{\text{waiting\\_tokens}}}{\text{Node Throughput Capacity}}
+   $$
+
 3. **快速拒绝（Fail-Fast）**：当一个新请求到达，网关预估其排队时间已经超过了该业务设定的 TTFT SLO 门限（例如预计要排 3 秒，而业务 SLO 是 1.5 秒），**网关层直接在 5 毫秒内原地返回 HTTP 429 Too Many Requests**！
 4. **收益**：避免毫无希望的请求侵入昂贵的 GPU 显存池，将全部宝贵算力留给当前正在生成的请求，确保正在服务的这批用户体验绝对不崩！
 
@@ -1547,14 +1649,26 @@ if __name__ == "__main__":
    - 单节点最大安全并发：$B_{\max} = \frac{50\text{ GB}}{80\text{ MB}} = 625$ 并发。
 3. **基于并发水线计算显存节点底线**：
    - 支撑 10,000 活跃并发，纯显存维度最少需要：
-     $$ N_{\text{nodes\\_mem}} = \frac{10,000}{625} = 16\text{ 台 8 卡节点（128 张 H800）} $$
+
+     $$
+     N_{\text{nodes\\_mem}} = \frac{10,000}{625} = 16\text{ 台 8 卡节点（128 张 H800）}
+     $$
+
 4. **基于算力吞吐与 TPOT SLO 校验**：
    - 10,000 并发在流式生成中，每个请求要求 TPOT $\le 30\text{ ms}$（即每秒吐 33.3 Tokens）；
    - 全集群在峰值时刻要求达到的聚合生成吞吐量为：
-     $$ \text{Throughput}_{\text{gen}} = 10,000 \times 33.3 \approx 333,333\text{ Tokens/sec} $$
+
+     $$
+     \text{Throughput}_{\text{gen}} = 10,000 \times 33.3 \approx 333,333\text{ Tokens/sec}
+     $$
+
    - 经验证，单台 8 卡 H800 在保 30ms TPOT 下，实际安全极限吞吐约为 1600 Tokens/s；
    - **算力通量维度所需节点数**：
-     $$ N_{\text{nodes\\_compute}} = \frac{333,333}{1600} \approx 208.3\text{ 台 8 卡节点！} $$
+
+     $$
+     N_{\text{nodes\\_compute}} = \frac{333,333}{1600} \approx 208.3\text{ 台 8 卡节点！}
+     $$
+
 5. **架构决策与优化方案**：
    - 盲目采购 208 台节点成本无法接受，此时必须给出架构优化：
      - **优化一（量化）**：启用 FP8 / INT4 权重与 FP8 KV Cache，单卡算力提升近 1 倍，吞吐能力提升至 3000 Tokens/s/节点，节点数骤降至约 110 台；

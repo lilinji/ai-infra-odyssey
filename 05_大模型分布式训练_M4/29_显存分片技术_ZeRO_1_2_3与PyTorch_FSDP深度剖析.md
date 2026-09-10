@@ -180,7 +180,9 @@ Total Step Time: 14.8s | MFU: 12.3%
 
 在第 27 讲中，我们手算了混合精度 AdamW 训练的静态显存公式：
 
-$$M_{\text{static}} = \underbrace{2\Psi}_{\text{BF16 权重}} + \underbrace{2\Psi}_{\text{BF16 梯度}} + \underbrace{4\Psi}_{\text{FP32 Master 权重}} + \underbrace{4\Psi + 4\Psi}_{\text{FP32 动量 } m \text{ 与 } v} = \mathbf{16\Psi} \quad (\text{Bytes})$$
+$$
+M_{\text{static}} = \underbrace{2\Psi}_{\text{BF16 权重}} + \underbrace{2\Psi}_{\text{BF16 梯度}} + \underbrace{4\Psi}_{\text{FP32 Master 权重}} + \underbrace{4\Psi + 4\Psi}_{\text{FP32 动量 } m \text{ 与 } v} = \mathbf{16\Psi} \quad (\text{Bytes})
+$$
 
 仔细审视这 $16\Psi$ 的构成，一个极度不合理的架构缺陷浮出水面：
 - **优化器状态独占 $12\Psi$（占全卡静态显存的整整 75%！）**；
@@ -227,9 +229,17 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
 - 在反向传播求导时，直接使用 **ReduceScatter**（规约分散）替代 AllReduce！
 - 每张卡只接收并保存自己负责更新的那 $\frac{1}{N}$ 梯度分片；
 - **通信量分析**：
-  $$\text{ReduceScatter 通信量} = \left(\frac{N-1}{N}\right) \Psi \approx \mathbf{\Psi}$$
+
+  $$
+  \text{ReduceScatter 通信量} = \left(\frac{N-1}{N}\right) \Psi \approx \mathbf{\Psi}
+  $$
+
   加上更新后的权重 AllGather（$\Psi$），总通信量严格等于：
-  $$\Psi + \Psi = \mathbf{2\Psi}$$
+
+  $$
+  \Psi + \Psi = \mathbf{2\Psi}
+  $$
+
 - **结论**：**单卡静态显存降至 $2\Psi + \frac{14\Psi}{N}$，通信量依然是 $2\Psi$ 零增加！这是工业界性价比极高的模式（PyTorch FSDP 中的 `SHARD_GRAD_OP`）。**
 
 #### 3. ZeRO-3（参数全分片）：
@@ -290,23 +300,36 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
    - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = \mathbf{3\text{ MB}}$。
 
 **单层单步三个通信阶段累加**：
-$$\text{Total Comm Per Layer} = 3\text{ MB} + 3\text{ MB} + 3\text{ MB} = \mathbf{9\text{ MB}}$$
+
+$$
+\text{Total Comm Per Layer} = 3\text{ MB} + 3\text{ MB} + 3\text{ MB} = \mathbf{9\text{ MB}}
+$$
+
 将其除以该层参数量 $4\text{ MB}$：
-$$\frac{9\text{ MB}}{4\text{ MB}} = \frac{3(N-1)}{N} = \frac{3 \times 3}{4} = \mathbf{2.25 \times \Psi_{\text{layer}}}$$
+
+$$
+\frac{9\text{ MB}}{4\text{ MB}} = \frac{3(N-1)}{N} = \frac{3 \times 3}{4} = \mathbf{2.25 \times \Psi_{\text{layer}}}
+$$
 
 #### ④ Formal Model（标准公式与渐进极限）
 累加全模型所有层（全模型参数为 $\Psi$），在包含 $N$ 张 GPU 的 FSDP（`FULL_SHARD`）集群中：
 单张 GPU 在一个完整的训练迭代（Step）中发送的总数据量严格为：
 
-$$\text{Comm}_{\text{FSDP}} = \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{前向 AllGather}} + \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{反向 AllGather}} + \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{反向 ReduceScatter}} = \mathbf{3 \times \left(\frac{N-1}{N}\right)\Psi} \quad (\text{Bytes})$$
+$$
+\text{Comm}_{\text{FSDP}} = \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{前向 AllGather}} + \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{反向 AllGather}} + \underbrace{\left(\frac{N-1}{N}\right)\Psi}_{\text{反向 ReduceScatter}} = \mathbf{3 \times \left(\frac{N-1}{N}\right)\Psi} \quad (\text{Bytes})
+$$
 
 当 $N \to \infty$ 时：
 
-$$\mathbf{\text{Comm}_{\text{FSDP}} \approx 3\Psi \quad (\text{Bytes})}$$
+$$
+\mathbf{\text{Comm}_{\text{FSDP}} \approx 3\Psi \quad (\text{Bytes})}
+$$
 
 对比 DDP 的通信量公式（基于第 28 讲证明的 $\text{Comm}_{\text{DDP}} = 2 \frac{N-1}{N}\Psi \approx 2\Psi$）：
 
-$$\mathbf{\frac{\text{Comm}_{\text{FSDP}}}{\text{Comm}_{\text{DDP}}} = \frac{3\Psi}{2\Psi} = \mathbf{1.5 \quad (+50\%)}}$$
+$$
+\mathbf{\frac{\text{Comm}_{\text{FSDP}}}{\text{Comm}_{\text{DDP}}} = \frac{3\Psi}{2\Psi} = \mathbf{1.5 \quad (+50\%)}}
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 对于 **70B 模型**（$\Psi = 70 \times 10^9$ 参数，BF16 下为 $140\text{ GB}$ 权重）：
@@ -347,7 +370,11 @@ $$\mathbf{\frac{\text{Comm}_{\text{FSDP}}}{\text{Comm}_{\text{DDP}}} = \frac{3\P
 **掏出工程算盘手算收益与代价的收支平衡：**
 1. **显存杠杆极大**：单卡显存从 $112\text{ GB}$ 暴跌到 $14\text{ GB}$（节省了整整 **$98\text{ GB}$** 的单卡物理显存！）。这使得原本根本不能跑的模型可以跑了，原本只能设 Batch Size = 1 的任务可以直接拉到 Batch Size = 8；
 2. **机内高带宽完全能够吸收增量**：在具备 NVLink（450~900 GB/s）的单机 8 卡节点内，搬运这额外的 $140\text{ GB}$ 只需要：
-   $$\Delta T = \frac{140\text{ GB}}{450\text{ GB/s}} \approx \mathbf{0.31\text{ 秒}}$$
+
+   $$
+   \Delta T = \frac{140\text{ GB}}{450\text{ GB/s}} \approx \mathbf{0.31\text{ 秒}}
+   $$
+
    而一个 70B 模型单步前向和反向计算耗时通常在 2~3 秒以上。**只要开启预取（Prefetch），这 0.31 秒完全可以 100% 潜伏在计算时间内部，对外呈现出零延迟惩罚！**
 
 ---
@@ -874,7 +901,11 @@ DDP 虽好显存死，十六匹量单卡逼；
    - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
    - 随后释放完整参数，每张卡仅持有自身负责的 $\frac{1}{N}$ 聚合梯度。
 4. **全流程累加**：
-   $$\text{Total Comm} = \underbrace{\Psi_{\text{layer}}}_{\text{前向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 ReduceScatter}} = \mathbf{3\Psi_{\text{layer}}}$$
+
+   $$
+   \text{Total Comm} = \underbrace{\Psi_{\text{layer}}}_{\text{前向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 ReduceScatter}} = \mathbf{3\Psi_{\text{layer}}}
+   $$
+
    累加全模型所有层后，每步单卡总通信量严格为 **$3\Psi$**。
 
 ---
@@ -911,4 +942,3 @@ DDP 虽好显存死，十六匹量单卡逼；
 3. **选型决策结论**：
    - 在此工况下，硬上 ZeRO-3 会让每张 GPU 花费大量时间在慢速跨机网络上空等 AllGather；
    - 而采用 ZeRO-2，直接**抹掉了 33.3% 的网络传输负载**，使得通信等待时间大幅缩短，因此**端到端训练吞吐（Tokens/s）和 MFU 往往能够高出 ZeRO-3 整整 30% ~ 50% 以上**！
-

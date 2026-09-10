@@ -243,6 +243,7 @@ $$
 底层物理存储是一个一维连续数组：`[1, 2, 3, 4, 5, 6]`。
 - **Strides 步长数组** 为 `(3, 1)`（第 0 维换行需跨越 3 个元素，第 1 维换列跨越 1 个元素）；
 - **物理寻址映射公式**：
+
   $$
   \text{Offset}(i, j) = i \times \text{stride}[0] + j \times \text{stride}[1] = 3i + j
   $$
@@ -431,9 +432,11 @@ $$
 - 输出元素数：$MN$；
 - 每个元素执行 $K$ 次乘法与 $K$ 次加法；
 - **总计算量**：
+
   $$
   \text{FLOPs} = 2MKN
   $$
+
 - 若无 Tiling 分块，每个元素重复从 HBM 读取，访存字节数为 $2(MKN + KNM) \times \text{sizeof(dtype)}$，将直接导致 GPU 算力严重饥饿！
 
 ---
@@ -702,14 +705,19 @@ PyTorch 采用反向模式自动微分（Vector-Jacobian Product），从标量 
 设前向：$Y = XW + b$，上游梯度为 $G = \frac{\partial L}{\partial Y}$：
 
 1. **输入梯度（GEMM 1）**：
+
    $$
    \frac{\partial L}{\partial X} = G \cdot W^\top \in \mathbb{R}^{B \times d_{in}} \quad (\text{FLOPs: } 2B \cdot d_{in} \cdot d_{out})
    $$
+
 2. **权重梯度（GEMM 2）**：
+
    $$
    \frac{\partial L}{\partial W} = X^\top \cdot G \in \mathbb{R}^{d_{in} \times d_{out}} \quad (\text{FLOPs: } 2d_{in} \cdot B \cdot d_{out})
    $$
+
 3. **偏置梯度（Reduction）**：
+
    $$
    \frac{\partial L}{\partial b} = \sum_{i=1}^B G_{i, :} \in \mathbb{R}^{d_{out}}
    $$
@@ -917,9 +925,11 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 - **分数矩阵**：$S = \frac{QK^\top}{\sqrt{D_h}} \in \mathbb{R}^{B \times N_h \times S \times S}$；
 - **显存占用（FP16）**：$2 B N_h S^2\text{ 字节}$；
 - **当 $B=1, N_h=32, S=32768$ 时**：
+
   $$
   2 \times 1 \times 32 \times 32768^2 = 68,719,476,736\text{ 字节} = 64\text{ GiB}！
   $$
+
 - **结论**：这就是为什么长上下文必须用 FlashAttention（不显式物化 $S \times S$ 矩阵）！
 
 ---
@@ -935,9 +945,11 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 将 Logits 拆成多个 Tile 块。已处理部分的状态为 $(m, l)$（最大值与指数和），新 Tile 块状态为 $(m_b, l_b)$：
 1. **全局最大值更新**：$m_{new} = \max(m, m_b)$；
 2. **指数和重标定合并**：
+
    $$
    l_{new} = e^{m - m_{new}} l + e^{m_b - m_{new}} l_b
    $$
+
 这使得 Softmax 可以在片上 SRAM 分块流式完成，无需将 $S \times S$ 写入 HBM！
 
 ---

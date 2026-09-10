@@ -197,14 +197,26 @@ math: true
 1. **机内 NVLink 通信**：单次跨卡 AllReduce 硬件底噪时延在 $5\sim 8\mu s$ 左右；
 2. **单层 Transformer**：包含 1 次 Attention 输出投影 AllReduce + 1 次 MLP 下投影 AllReduce = **2 次 AllReduce**；
 3. **80 层的 LLaMA-3-70B 模型**：单个 Decode Token 步进中，总共需要连续串行执行：
-   $$80 \times 2 = 160 \text{ 次 AllReduce 通信！}$$
+
+   $$
+   80 \times 2 = 160 \text{ 次 AllReduce 通信！}
+   $$
+
 4. **纯通信等待时间**：
-   $$T_{\text{comm}} = 160 \times 6\mu s \approx 0.96 \text{ ms}$$
+
+   $$
+   T_{\text{comm}} = 160 \times 6\mu s \approx 0.96 \text{ ms}
+   $$
+
    此时，计算总耗时才不过 $160 \times 12\mu s \approx 1.92\text{ ms}$。通信等待已经吃掉了整整三分之一的时间！
 
 **如果敢跨机做 TP（跨越网络光纤走 InfiniBand / RoCE）：**
 跨机网络的单次 AllReduce 延迟至少是 **$30\sim 50\mu s$**！
-$$T_{\text{comm\\_inter\\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}$$
+
+$$
+T_{\text{comm\\_inter\\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}
+$$
+
 硬件计算只要 1.9ms，通信却要等 6.4ms，GPU 算力利用率当场跌破 20%！
 
 > 👓 **Ringi 工程师铁律**：  
@@ -219,9 +231,17 @@ $$T_{\text{comm\\_inter\\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}$$
 **但在在线推理（尤其是自回归 Decode 阶段），PP 几乎是一个“吞吐陷阱”**：
 1. **请求异步到达**：在线推理的请求具有随机性与泊松分布特征，无法凑齐数百个均匀的微批次；
 2. **气泡率数学定理**：如果当前批次规模为 $B$，流水线级数为 $P$，则推理前向传播的气泡率公式为：
-   $$\text{Bubble Ratio} = \frac{P - 1}{P + B - 1}$$
+
+   $$
+   \text{Bubble Ratio} = \frac{P - 1}{P + B - 1}
+   $$
+
    - 假设 $P=4$（模型切在 4 台节点上），当线上并发较低、$B=1$ 时：
-     $$\text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！$$
+
+     $$
+     \text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！
+     $$
+
      整整 75% 的时间里，四分之三的服务器处于完全空转状态！每个 Token 必须像击鼓传花一样在 4 台机器间串行走一圈，**单步延迟被硬生生放大了 4 倍**！
 3. **唯一的救赎场景**：只有在超大并发（$B \gg 64$）或者超大模型（如 405B、万亿模型单机 8 卡 HBM 根本放不下权重）时，PP 才是不得已而为之的容量妥协方案。
 
@@ -288,7 +308,11 @@ $$T_{\text{comm\\_inter\\_node}} = 160 \times 40\mu s = 6.4 \text{ ms！}$$
 在 Attention 投影中，GEMM 计算量为 $2 \times S \times d^2 = 2 \times 4096 \times 4096^2 \approx 1.37 \times 10^{11} \text{ FLOPs}$。  
 读取一次模型权重需要的显存访问量仅为 $2 \times d^2 \approx 33.5 \text{ MB}$。  
 其算术强度高达：
-$$AI_{\text{prefill}} = \frac{2 \times S \times d^2}{2 \times d^2} = S = 4096 \text{ FLOPs/Byte} \gg 150 \text{ FLOPs/Byte}$$
+
+$$
+AI_{\text{prefill}} = \frac{2 \times S \times d^2}{2 \times d^2} = S = 4096 \text{ FLOPs/Byte} \gg 150 \text{ FLOPs/Byte}
+$$
+
 **这远远超越了现代任何 GPU 的平衡转折点！** 此时 GPU 的显存总线完全来得及供数，所有计算管线被全部填满，SM 上的 Tensor Cores 在极限轰鸣。
 
 #### 2. Decode 阶段：典型的 Memory-Bound
@@ -296,7 +320,11 @@ $$AI_{\text{prefill}} = \frac{2 \times S \times d^2}{2 \times d^2} = S = 4096 \t
 此时执行同样的权重矩阵相乘：计算量为 $2 \times 1 \times d^2 \approx 3.35 \times 10^7 \text{ FLOPs}$。  
 但为了这区区 3300 万次运算，GPU **必须把整整 33.5 MB 的权重完整地从 HBM 读取一遍！**  
 其算术强度为：
-$$AI_{\text{decode}} = \frac{2 \times 1 \times d^2}{2 \times d^2} = 1 \text{ FLOP/Byte！}$$
+
+$$
+AI_{\text{decode}} = \frac{2 \times 1 \times d^2}{2 \times d^2} = 1 \text{ FLOP/Byte！}
+$$
+
 在 H100 GPU（FP16 峰值 989 TFLOPs，HBM3 带宽 3.35 TB/s）上：
 - 硬件平衡拐点为 $989 \times 10^{12} / (3.35 \times 10^{12}) \approx 295 \text{ FLOPs/Byte}$；
 - 算术强度为 1，意味着 **H100 强大的 Tensor Cores 只能发挥出不足 1% 的理论算力**，剩下的时间全部在痛苦地等待 HBM 慢吞吞地将权重搬运过来！
@@ -377,32 +405,59 @@ $$AI_{\text{decode}} = \frac{2 \times 1 \times d^2}{2 \times d^2} = 1 \text{ FLO
    - Value 张量：同样为 $2 \text{ KB}$；
    - 单层合计：$2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}$。
 2. **单个 Token 在全部 80 层累积的 KV 大小**：
-   $$\text{Size}_{\text{token}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token！}$$
+
+   $$
+   \text{Size}_{\text{token}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token！}
+   $$
+
 3. **当输入 Prompt 长度为 $L = 4,096$（4K）时**：
-   $$\text{Size}_{\text{4K}} = 4,096 \times 320 \text{ KB} = 1,310,720 \text{ KB} \approx \mathbf{1.28 \text{ GB}}$$
+
+   $$
+   \text{Size}_{\text{4K}} = 4,096 \times 320 \text{ KB} = 1,310,720 \text{ KB} \approx \mathbf{1.28 \text{ GB}}
+   $$
+
 4. **当输入 Prompt 长度为 $L = 32,768$（32K）时**：
-   $$\text{Size}_{\text{32K}} = 32,768 \times 320 \text{ KB} \approx \mathbf{10.0 \text{ GB！}}$$
+
+   $$
+   \text{Size}_{\text{32K}} = 32,768 \times 320 \text{ KB} \approx \mathbf{10.0 \text{ GB！}}
+   $$
+
 5. **当输入 Prompt 长度为 $L = 131,072$（128K）时**：
-   $$\text{Size}_{\text{128K}} = 131,072 \times 320 \text{ KB} \approx \mathbf{40.0 \text{ GB！！}}$$
+
+   $$
+   \text{Size}_{\text{128K}} = 131,072 \times 320 \text{ KB} \approx \mathbf{40.0 \text{ GB！！}}
+   $$
 
 #### 步骤 4：Formal Model（标准物理公式与网络映射）
 对于包含 $n_{\text{layers}}$ 层、每层具有 $n_{\text{kv\\_heads}}$ 个 KV 注意力头、头维度为 $d_{\text{head}}$ 的模型，在精度字节数为 $b_{\text{bytes}}$（FP16/BF16 取 2，FP8 取 1）时，输入序列长度为 $L_{\text{prompt}}$ 的 KV Cache 传输字节量为：
 
-$$\text{Bytes}_{\text{KV}} = 2 \times n_{\text{layers}} \times n_{\text{kv\\_heads}} \times d_{\text{head}} \times b_{\text{bytes}} \times L_{\text{prompt}}$$
+$$
+\text{Bytes}_{\text{KV}} = 2 \times n_{\text{layers}} \times n_{\text{kv\\_heads}} \times d_{\text{head}} \times b_{\text{bytes}} \times L_{\text{prompt}}
+$$
 
 在有效传输带宽为 $B_{\text{net}}$（GB/s）的网络中，理想跨机传输延迟为：
 
-$$T_{\text{transfer}} = \frac{\text{Bytes}_{\text{KV}}}{B_{\text{net}}}$$
+$$
+T_{\text{transfer}} = \frac{\text{Bytes}_{\text{KV}}}{B_{\text{net}}}
+$$
 
 #### 步骤 5：Sanity Check（数量级校验与残酷现实）
 我们对比两种常见的数据中心网络环境：
 - **场景 A：通用数据中心 100 Gbps 网络**（有效带宽约 $B_{\text{net}} \approx 11 \text{ GB/s}$）
   - 传输一个 32K Prompt 的 KV Cache（10 GB）：
-    $$T_{\text{transfer}} = \frac{10 \text{ GB}}{11 \text{ GB/s}} \approx \mathbf{909 \text{ ms！}}$$
+
+    $$
+    T_{\text{transfer}} = \frac{10 \text{ GB}}{11 \text{ GB/s}} \approx \mathbf{909 \text{ ms！}}
+    $$
+
   - **结论**：在 100G 网络下，光是跨机传输就耗费了将近 1 秒钟！这比 H100 算这 32K Tokens 的时间还要长，PD 分离完全不可行！
 - **场景 B：高性能智算中心 400 Gbps RoCE / InfiniBand 网络**（有效带宽约 $B_{\text{net}} \approx 45 \text{ GB/s}$）
   - 传输 10 GB KV Cache：
-    $$T_{\text{transfer}} = \frac{10 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{222 \text{ ms}}$$
+
+    $$
+    T_{\text{transfer}} = \frac{10 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{222 \text{ ms}}
+    $$
+
   - **若开启 FP8 格式压缩（$b_{\text{bytes}} = 1$）**：
     数据量直接减半至 5 GB，$T_{\text{transfer}}$ 瞬间压缩至 **约 111 ms**！
 
@@ -450,13 +505,23 @@ KV Cache 传输三大架构决策维度:
 
 假设在 NVIDIA H100 节点上，80 层的 70B 模型处理 32K Prompt，每层 Attention 的计算时间大约是 **$T_{\text{comp}} \approx 3.5 \text{ ms}$**。
 单层 32K Token 的 KV Cache 大小约为：
-$$\text{Size}_{\text{layer}} = \frac{10 \text{ GB}}{80 \text{ layers}} = 128 \text{ MB / layer}$$
+
+$$
+\text{Size}_{\text{layer}} = \frac{10 \text{ GB}}{80 \text{ layers}} = 128 \text{ MB / layer}
+$$
 
 在 400 Gbps RDMA 网络（有效带宽 48 GB/s）下，单层传输耗时为：
-$$T_{\text{comm\\_layer}} = \frac{128 \text{ MB}}{48 \text{ GB/s}} \approx \mathbf{2.66 \text{ ms}}$$
+
+$$
+T_{\text{comm\\_layer}} = \frac{128 \text{ MB}}{48 \text{ GB/s}} \approx \mathbf{2.66 \text{ ms}}
+$$
 
 **看见这个物理奇迹了吗？**
-$$T_{\text{comm\\_layer}} (2.66\text{ ms}) < T_{\text{comp}} (3.5\text{ ms})$$
+
+$$
+T_{\text{comm\\_layer}} (2.66\text{ ms}) < T_{\text{comp}} (3.5\text{ ms})
+$$
+
 **单层的网络搬运时间严格小于单层的 GPU 计算时间！**
 
 ```python
@@ -565,7 +630,9 @@ vLLM V1 KV Connector 核心接口契约:
 
 Mooncake 给出了一个工业级的数学打分模型：
 
-$$\text{Score}(i) = (1 - H_i) \times D_{\text{prefill}} + \alpha \times Q_i$$
+$$
+\text{Score}(i) = (1 - H_i) \times D_{\text{prefill}} + \alpha \times Q_i
+$$
 
 - **$H_i$（前缀缓存命中率，Cache Hit Ratio）**：Conductor 查询全局前缀树（Radix Tree）。如果发现 P 节点 $i$ 已经缓存了该请求 80% 的前缀（$H_i = 0.8$），则意味着只需要计算剩下的 20%，不仅计算极快，而且需要传输的 KV Cache 极少；
 - **$D_{\text{prefill}}$**：该序列长度在硬件上的理论预填充耗时；
@@ -600,11 +667,15 @@ $$\text{Score}(i) = (1 - H_i) \times D_{\text{prefill}} + \alpha \times Q_i$$
 
 要让集群两端处于稳态吞吐平衡（既不积压，也不饥饿），必须满足：
 
-$$N_{\text{P}} \times \Theta_{\text{P}} \times \frac{1}{\overline{L_{\text{in}}}} = N_{\text{D}} \times \Theta_{\text{D}} \times \frac{1}{\overline{L_{\text{out}}}}$$
+$$
+N_{\text{P}} \times \Theta_{\text{P}} \times \frac{1}{\overline{L_{\text{in}}}} = N_{\text{D}} \times \Theta_{\text{D}} \times \frac{1}{\overline{L_{\text{out}}}}
+$$
 
 由此得出 **Prefill 与 Decode 节点数量的黄金配比公式**：
 
-$$\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{\overline{L_{\text{out}}}}{\overline{L_{\text{in}}}} \times \frac{\Theta_{\text{P}}}{\Theta_{\text{D}}}$$
+$$
+\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{\overline{L_{\text{out}}}}{\overline{L_{\text{in}}}} \times \frac{\Theta_{\text{P}}}{\Theta_{\text{D}}}
+$$
 
 #### 真实工程算例：
 - 假设在 70B 模型上：
@@ -613,11 +684,19 @@ $$\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{\overline{L_{\text{out}}}}{\overline
   - 算力比值 $\frac{\Theta_{\text{P}}}{\Theta_{\text{D}}} = \frac{4000}{500} = 8$；
 - **业务场景一（长输入、短输出的摘要/搜索场景）**：
   $\overline{L_{\text{in}}} = 8,000$, $\overline{L_{\text{out}}} = 500$。
-  $$\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{500}{8000} \times 8 = \mathbf{0.5}$$
+
+  $$
+  \frac{N_{\text{D}}}{N_{\text{P}}} = \frac{500}{8000} \times 8 = \mathbf{0.5}
+  $$
+
   即：**每 2 台 Prefill 节点只需要配备 1 台 Decode 节点！**（重 P 轻 D）
 - **业务场景二（短输入、长推理思维链的 R1/o1 深度推理场景）**：
   $\overline{L_{\text{in}}} = 1,000$, $\overline{L_{\text{out}}} = 4,000$。
-  $$\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{4000}{1000} \times 8 = \mathbf{32}$$
+
+  $$
+  \frac{N_{\text{D}}}{N_{\text{P}}} = \frac{4000}{1000} \times 8 = \mathbf{32}
+  $$
+
   即：**每 1 台 Prefill 节点需要配备整整 32 台 Decode 节点！**（极重 D 轻 P）
 
 > 👓 **Ringi 工程师洞察**：  
@@ -1065,15 +1144,31 @@ if __name__ == "__main__":
 #### 标准参考答案：
 1. **KV Cache 体量精准手算**：
    - 单 Token、单层 KV 尺寸：
-     $$\text{Size}_{\text{token, layer}} = 2 (\text{Key \& Value}) \times 8 (\text{heads}) \times 128 (\text{dim}) \times 2 \text{ bytes} = 4,096 \text{ bytes} = 4 \text{ KB}$$
+
+     $$
+     \text{Size}_{\text{token, layer}} = 2 (\text{Key \& Value}) \times 8 (\text{heads}) \times 128 (\text{dim}) \times 2 \text{ bytes} = 4,096 \text{ bytes} = 4 \text{ KB}
+     $$
+
    - 单 Token 全部 80 层总和：
-     $$\text{Size}_{\text{token, total}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token}$$
+
+     $$
+     \text{Size}_{\text{token, total}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token}
+     $$
+
    - 64K（65,536 Tokens）总 KV Cache 体量：
-     $$\text{Total Size} = 65,536 \times 320 \text{ KB} = 20,971,520 \text{ KB} = \mathbf{20.0 \text{ GB}}$$
+
+     $$
+     \text{Total Size} = 65,536 \times 320 \text{ KB} = 20,971,520 \text{ KB} = \mathbf{20.0 \text{ GB}}
+     $$
+
 2. **网络传输物理耗时估算**：
    - 400Gbps RDMA 网络（RoCE v2 / IB）的有效双向单向传输带宽约为 $45 \text{ GB/s}$；
    - 20.0 GB 数据的纯网络线缆传输耗时为：
-     $$T_{\text{transfer}} = \frac{20.0 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{0.444 \text{ s}} = \mathbf{444 \text{ ms}}$$
+
+     $$
+     T_{\text{transfer}} = \frac{20.0 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{0.444 \text{ s}} = \mathbf{444 \text{ ms}}
+     $$
+
 3. **Layerwise Pipelining 重叠隐藏设计**：
    - **单层计算耗时 vs 单层传输耗时**：
      - 单层传输耗时：$444 \text{ ms} / 80 \text{ layers} \approx 5.55 \text{ ms}$；

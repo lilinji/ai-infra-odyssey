@@ -224,7 +224,10 @@ torch.distributed.init_process_group(backend="nccl", rank=my_rank, world_size=8)
 3. **💰 Cost 花在哪里**：当进程阻塞在 `init_process_group` 时，虽然没有执行 GEMM 矩阵乘法算子，但 CUDA 上下文已经建立，显卡已经被占用，其他任务无法获取该设备。
 
 因此，对于分布式训练作业而言：
-$$\text{Utility}(Job) = \begin{cases} 1.0, & \text{当且仅当在线实例数 } M = N (\text{期望总数}) \\ 0.0, & \text{当且仅当在线实例数 } M < N \end{cases}$$
+
+$$
+\text{Utility}(Job) = \begin{cases} 1.0, & \text{当且仅当在线实例数 } M = N (\text{期望总数}) \\ 0.0, & \text{当且仅当在线实例数 } M < N \end{cases}
+$$
 
 它是一个非零即一的 **阶跃函数（Step Function）**。给它分配 $N-1$ 个 Pod，其有效产出不是 $90\%$，而是 **$0\%$**！
 
@@ -718,7 +721,9 @@ CPU 超卖最多导致大家算得慢一点（CFS 限流）；而 **GPU 显存�
 
 大厂的黄金防波堤公式为：
 
-$$M_{\text{allocatable}} = M_{\text{physical}} - M_{\text{driver\\_overhead}} - M_{\text{safety\\_buffer}}$$
+$$
+M_{\text{allocatable}} = M_{\text{physical}} - M_{\text{driver\\_overhead}} - M_{\text{safety\\_buffer}}
+$$
 
 对于一张 80GB（实际约 81,920 MB）的 H100 显卡：
 1. **驱动与 CUDA 上下文保留（$M_{\text{driver\\_overhead}}$）**：固定预留 **1,500 MB**；
@@ -1231,5 +1236,3 @@ HAMi 等方案高度依赖 `LD_PRELOAD` 劫持动态链接库。如果某个算�
 4. **毫秒级抢占与故障自愈**：
    - 在线服务流量突刺触发 HPA 扩容时，调度引擎在 100ms 内选定离线 Pod，下发 `SIGTERM`；
    - 离线框架捕获信号，优雅保存 step checkpoint 后 15 秒内安全退出，腾出算力。
-
-

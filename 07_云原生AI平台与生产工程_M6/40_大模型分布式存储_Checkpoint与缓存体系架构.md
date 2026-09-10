@@ -264,19 +264,34 @@
 设集群原始模型浮点利用率为 $\text{MFU}_{\text{raw}}$，每隔 $N$ 步触发一次保存，单步训练迭代耗时为 $T_{\text{step}}$，同步 Checkpoint 阻塞耗时为 $T_{\text{save}}$。
 
 则集群实际对外交付的有效算力利用率 $\text{MFU}_{\text{effective}}$ 为：
-$$\text{MFU}_{\text{effective}} = \frac{N \cdot T_{\text{step}}}{N \cdot T_{\text{step}} + T_{\text{save}}} \times \text{MFU}_{\text{raw}}$$
+
+$$
+\text{MFU}_{\text{effective}} = \frac{N \cdot T_{\text{step}}}{N \cdot T_{\text{step}} + T_{\text{save}}} \times \text{MFU}_{\text{raw}}
+$$
 
 假设某 70B 模型分布式训练（采用 AdamW 优化器，全量状态约 1.1 TB）：
 - 若采用传统同步写入共享存储，$T_{\text{save}} = 600\text{ s}$（10 分钟），$N = 500$，$T_{\text{step}} = 1.2\text{ s}$：
-  $$\text{MFU}_{\text{effective}} = \frac{500 \times 1.2}{500 \times 1.2 + 600} \times \text{MFU}_{\text{raw}} = \frac{600}{1200} \times \text{MFU}_{\text{raw}} = 0.50 \times \text{MFU}_{\text{raw}}$$
+
+  $$
+  \text{MFU}_{\text{effective}} = \frac{500 \times 1.2}{500 \times 1.2 + 600} \times \text{MFU}_{\text{raw}} = \frac{600}{1200} \times \text{MFU}_{\text{raw}} = 0.50 \times \text{MFU}_{\text{raw}}
+  $$
+
   **一半的算力被存储写入活活吞噬！**
 
 - 若采用 Ringi 推荐的 **异步非阻塞内存快照（Async Host Staging）**：
   GPU 显存到 Host 内存通过 PCIe 5.0 x16 双向传输（实测有效带宽约 50 GB/s）。
   1.1 TB 状态切分到 64 个 Rank，单卡仅需传输约 $17.2\text{ GB}$。
-  $$T_{\text{staging}} = \frac{17.2\text{ GB}}{50\text{ GB/s}} \approx 0.34\text{ s}$$
+
+  $$
+  T_{\text{staging}} = \frac{17.2\text{ GB}}{50\text{ GB/s}} \approx 0.34\text{ s}
+  $$
+
   加上元数据打标与 CUDA Stream 同步，实际阻塞主线程时间 $T_{\text{save}} \le 2\text{ s}$！
-  $$\text{MFU}_{\text{effective}} = \frac{600}{600 + 2} \times \text{MFU}_{\text{raw}} = \frac{600}{602} \times \text{MFU}_{\text{raw}} \approx 99.67\% \times \text{MFU}_{\text{raw}}$$
+
+  $$
+  \text{MFU}_{\text{effective}} = \frac{600}{600 + 2} \times \text{MFU}_{\text{raw}} = \frac{600}{602} \times \text{MFU}_{\text{raw}} \approx 99.67\% \times \text{MFU}_{\text{raw}}
+  $$
+
   **吞吐损耗从 50% 直接降到 0.33%，几乎等同于完全无感！**
 
 ---
@@ -331,7 +346,11 @@ $$\text{MFU}_{\text{effective}} = \frac{N \cdot T_{\text{step}}}{N \cdot T_{\tex
 
 在长文本问答、代码补全、Agent 多轮迭代中，用户 Prompt 往往长达 32K ~ 128K Token。
 每 1000 Token 的 KV Cache 显存消耗手算公式：
-$$\text{Memory}_{\text{KV}} = 2 \times 2 \times L \times H \times D \times \text{BytesPerElem}$$
+
+$$
+\text{Memory}_{\text{KV}} = 2 \times 2 \times L \times H \times D \times \text{BytesPerElem}
+$$
+
 对于 LLaMA-3-70B（80 层，8 个 KV Head，Head 维度 128，采用 FP16/BF16）：
 单 Token 的 KV Cache = $2 \times 2 \times 80 \times 8 \times 128 \times 2\text{ bytes} \approx 655,360\text{ bytes} \approx 0.625\text{ MB}$！
 **128K 上下文仅单个请求的 KV Cache 就占满 80 GB 显存（整张 H100 被一个请求吃光）！**
@@ -1106,5 +1125,3 @@ echo "========================================================================"
    - 当存储发生突发拥塞时，交换机仅对 Priority 4 队列下发 Pause 帧，绝不波及计算专用的 Priority 3 队列，杜绝 NCCL 发生卡死重传。
 3. **客户端应用层限流与背压**：
    - 存储客户端配置固定滑动窗口（Sliding Window）与最大未完成 IO（In-Flight IO Limit），结合 Host Pinned Memory 异步流水线平滑出向流量，消除突发毛刺。
-
-

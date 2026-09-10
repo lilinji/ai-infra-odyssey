@@ -412,7 +412,9 @@ struct C10_API StorageImpl : public c10::intrusive_ptr_target {
 $$
 \text{Linear Index}(i_0, i_1, \dots, i_{n-1}) = \text{offset} + \sum_{k=0}^{n-1} \left( i_k \times s_k \right)
 $$
+
 展开写成显式多项式：
+
 $$
 \text{Linear Index} = \text{offset} + i_0 \cdot s_0 + i_1 \cdot s_1 + i_2 \cdot s_2 + \dots + i_{n-1} \cdot s_{n-1}
 $$
@@ -471,11 +473,22 @@ Strides:  [1, 2]
 给定张量形状 $\text{Shape} = (d_0, d_1, d_2, \dots, d_{n-1})$，其标准连续步长数组 $S = (s_0, s_1, \dots, s_{n-1})$ 的计算法则如下：
 
 1. **边界基准条件（最右侧维度）**：
-   $$s_{n-1} = 1$$
+
+   $$
+   s_{n-1} = 1
+   $$
+
 2. **自右向左逆向递推式**：
-   $$s_k = s_{k+1} \times d_{k+1} \quad (\text{for } k = n-2, n-3, \dots, 0)$$
+
+   $$
+   s_k = s_{k+1} \times d_{k+1} \quad (\text{for } k = n-2, n-3, \dots, 0)
+   $$
+
 3. **通项乘积公式**：
-   $$s_k = \prod_{j=k+1}^{n-1} d_j$$
+
+   $$
+   s_k = \prod_{j=k+1}^{n-1} d_j
+   $$
 
 > 💡 **物理含义**：  
 > 第 $k$ 维的一个大单元，里面包裹了其右侧所有子维度形成的完整子张量。因此在第 $k$ 维跳过 1 个步长，等于跨越了它右侧所有维度元素数量的乘积！
@@ -544,9 +557,11 @@ Strides:  [1, 2]
 ## 3.2 转置（Transpose）与维度置换（Permute）：步长阵列的对调置换
 
 假设我们有一个张量 $x$，Shape 为 `[2, 3]`，数据为：
+
 $$
 x = \begin{bmatrix} 0 & 1 & 2 \\ 3 & 4 & 5 \end{bmatrix}
 $$
+
 其初始元数据为：`Shape = [2, 3]`, `Strides = [3, 1]`, `Offset = 0`。
 底层 Storage: `[0, 1, 2, 3, 4, 5]`。
 
@@ -570,16 +585,29 @@ new_impl->strides_[1] = original_impl->strides_[0]; // 3
 
 我们用映射公式来验证 $y$ 的逻辑访问：
 - 访问 $y[0, 1]$（第 0 行第 1 列）：
-  $$\text{Index} = 0 \times 1 + 1 \times 3 = 3 \implies \text{Storage}[3] = 3$$
+
+  $$
+  \text{Index} = 0 \times 1 + 1 \times 3 = 3 \implies \text{Storage}[3] = 3
+  $$
+
 - 访问 $y[1, 0]$（第 1 行第 0 列）：
-  $$\text{Index} = 1 \times 1 + 0 \times 3 = 1 \implies \text{Storage}[1] = 1$$
+
+  $$
+  \text{Index} = 1 \times 1 + 0 \times 3 = 1 \implies \text{Storage}[1] = 1
+  $$
+
 - 访问 $y[2, 1]$（第 2 行第 1 列）：
-  $$\text{Index} = 2 \times 1 + 1 \times 3 = 5 \implies \text{Storage}[5] = 5$$
+
+  $$
+  \text{Index} = 2 \times 1 + 1 \times 3 = 5 \implies \text{Storage}[5] = 5
+  $$
 
 $y$ 完美呈现了转置矩阵的数学形态：
+
 $$
 y = \begin{bmatrix} 0 & 3 \\ 1 & 4 \\ 2 & 5 \end{bmatrix}
 $$
+
 **整个过程没有发生任何一个浮点数的数据搬移！**
 
 ---
@@ -587,6 +615,7 @@ $$
 ## 3.3 切片（Narrow / Slice）与偏移量（Storage Offset）的精妙配合
 
 假设有一个 2D 张量 `x = torch.arange(12).reshape(3, 4)`：
+
 $$
 x = \begin{bmatrix} 
 0 & 1 & 2 & 3 \\ 
@@ -594,11 +623,13 @@ x = \begin{bmatrix}
 8 & 9 & 10 & 11 
 \end{bmatrix}
 $$
+
 此时底层 Storage 为 `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]`，`Strides = [4, 1]`。
 
 现在我们做一次切片操作：`sub = x[1:, 1:3]`（截取第 1~2 行，第 1~2 列）。
 
 截取出来的子矩阵应该是：
+
 $$
 \text{sub} = \begin{bmatrix} 5 & 6 \\ 9 & 10 \end{bmatrix}
 $$
@@ -685,9 +716,16 @@ PyTorch 是怎么做到的？答案就是：**将广播维度的 Stride 设为 0
 
 1. 张量中元素总数 $\le 1$（退化情况）；
 2. 对于所有大小大于 1 的维度 $k$（即 $d_k > 1$），其步长必须严格等于其右侧所有维度大小的乘积：
-   $$s_k = \prod_{j=k+1}^{n-1} d_j$$
+
+   $$
+   s_k = \prod_{j=k+1}^{n-1} d_j
+   $$
+
    且最右侧大小大于 1 的维度，其步长必须严格为 1：
-   $$s_{\text{last}} = 1$$
+
+   $$
+   s_{\text{last}} = 1
+   $$
 
 我们来看 PyTorch C10 内部的源码实现逻辑（摘自 `c10/core/TensorImpl.h` 中的 `compute_contiguous()`）：
 
@@ -743,9 +781,16 @@ xt.view(6)  # 💥 抛出 RuntimeError: view size is not compatible with input t
 - 当 `x` 是连续的 `[2, 3]` 时，物理内存排布是按行连续的：`[A00, A01, A02, A10, A11, A12]`。  
   如果调用 `x.view(6)`，新的 `Strides = [1]`，第 0 到第 5 个元素正好按顺序对应物理内存的 6 个连续位置，完全合法！
 - 但当 `xt` 转置后，逻辑上的一维展平顺序应该是：
-  $$\text{逻辑顺序}: [A00, A10, A01, A11, A02, A12]$$
+
+  $$
+  \text{逻辑顺序}: [A00, A10, A01, A11, A02, A12]
+  $$
+
   而物理内存中的真实顺序依然是：
-  $$\text{物理顺序}: [A00, A01, A02, A10, A11, A12]$$
+
+  $$
+  \text{物理顺序}: [A00, A01, A02, A10, A11, A12]
+  $$
 
 **这两者的物理顺序已经完全脱节了！**  
 如果不用新的内存做物理重排，根本不可能找到一组固定的线性 Strides，让硬件从 `[A00, A01, A02, ...]` 的一维内存中线性读出 `[A00, A10, A01, ...]`！
@@ -796,10 +841,17 @@ flowchart TD
 
 假设大模型的一个 Hidden States 张量 Shape 为 `[Batch=4, SeqLen=4096, Hidden=8192]`，采用 FP16/BF16 精度（每个元素 2 字节）：
 - 单个张量的显存大小：
-  $$\text{Memory} = 4 \times 4096 \times 8192 \times 2\text{ Bytes} = 268,435,456\text{ Bytes} = 256\text{ MB}$$
+
+  $$
+  \text{Memory} = 4 \times 4096 \times 8192 \times 2\text{ Bytes} = 268,435,456\text{ Bytes} = 256\text{ MB}
+  $$
+
 - 一个 80 层的现代大模型，在前向传播和反向传播中，如果每个 Layer 的 Attention 模块都因为多余的 `.contiguous()` 触发 2 次深拷贝：
   - 每一个 Step 产生的**额外显存拷贝总量**：
-    $$\text{Extra Traffic} = 80 \times 2 \times 256\text{ MB} \times 2 (\text{前向+反向}) = 81.92\text{ GB}！$$
+
+    $$
+    \text{Extra Traffic} = 80 \times 2 \times 256\text{ MB} \times 2 (\text{前向+反向}) = 81.92\text{ GB}！
+    $$
 
 这意味着：
 1. **显存峰值膨胀**：虽然 PyTorch Caching Allocator 会回收临时张量，但在高并发多流执行下，这些 256MB 的临时块会导致严重的**显存碎片化（Memory Fragmentation）**，在显存吃紧时瞬间引爆 OOM；
@@ -961,7 +1013,11 @@ cuBLAS 内部高度优化的 GEMM Kernel 会直接利用 GPU Shared Memory（片
 看步骤 2 到步骤 3：
 - 为什么要把 `[B, S, H, D]` 转置成 `[B, H, S, D]`？
 - 因为在数学上，Attention 矩阵乘法是针对**每一个单独的 Head** 进行的：
-  $$\text{Attention}(Q_h, K_h, V_h) = \text{Softmax}\left(\frac{Q_h K_h^T}{\sqrt{D}}\right) V_h \quad (Q_h, K_h \in \mathbb{R}^{S \times D})$$
+
+  $$
+  \text{Attention}(Q_h, K_h, V_h) = \text{Softmax}\left(\frac{Q_h K_h^T}{\sqrt{D}}\right) V_h \quad (Q_h, K_h \in \mathbb{R}^{S \times D})
+  $$
+
 - 只有将 $H$ 移动到第 1 维，前两维 $[B, H]$ 才能合并成 Batch 维度（即 $\text{Batch Size} = B \times H$），底层的批处理矩阵乘法（Batched GEMM / BMM）才能将每个 Head 视为独立的矩阵进行并发加速！
 
 ---
