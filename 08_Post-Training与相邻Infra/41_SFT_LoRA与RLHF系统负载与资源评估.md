@@ -221,10 +221,22 @@ $$
 $$
 
 假设基座与评判模型同等规模（ $70\text{B}$ ）：
-- **Actor**（需反向更新）： $16 \times 70\text{B} = 1120\text{ GB}$
+- **Actor**（需反向更新）：
+
+$$
+16 \times 70\text{B} = 1120\text{ GB}
+$$
 - **Critic**（需反向更新）： $16 \times 70\text{B} = 1120\text{ GB}$（即使 Critic 采用 7B 小模型，静态也需要 $16 \times 7\text{B} = 112\text{ GB}$ ）
-- **Reference**（只读前向）： $2 \times 70\text{B} = 140\text{ GB}$
-- **Reward**（只读前向）： $2 \times 70\text{B} = 140\text{ GB}$
+- **Reference**（只读前向）：
+
+$$
+2 \times 70\text{B} = 140\text{ GB}
+$$
+- **Reward**（只读前向）：
+
+$$
+2 \times 70\text{B} = 140\text{ GB}
+$$
 - **合计静态显存**（同尺寸全模态）：
 
 $$

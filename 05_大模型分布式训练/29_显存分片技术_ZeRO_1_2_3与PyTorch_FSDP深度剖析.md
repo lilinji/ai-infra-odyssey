@@ -289,7 +289,11 @@ $$
 1. **前向计算该层**：
    - 必须通过 AllGather 拼出完整 $4\text{ MB}$；
    - 每张卡把自己持有的 $1\text{ MB}$ 发送给其他 3 张卡，同时接收其他卡各 $1\text{ MB}$；
-   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}$；
+   - 单卡发送量：
+
+$$
+(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
+$$
    - 算完前向后，释放非本地的 $3\text{ MB}$；
 2. **反向求导该层**：
    - 必须再次执行 AllGather 拼出完整 $4\text{ MB}$（因为前向完已经释放了！）；
@@ -297,7 +301,11 @@ $$
 3. **梯度同步并分片**：
    - 求导计算出的梯度也是 $4\text{ MB}$；
    - 执行 ReduceScatter，把 4 张卡的梯度累加，并切分成 4 份，每卡只收回属于自己的那 $1\text{ MB}$ 聚合梯度；
-   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = \mathbf{3\text{ MB}}$。
+   - 单卡发送量：
+
+$$
+(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = \mathbf{3\text{ MB}}
+$$
 
 **单层单步三个通信阶段累加**：
 
@@ -333,7 +341,11 @@ $$
 
 #### ⑤ Sanity Check（数量级校验）
 对于 **70B 模型**（ $\Psi = 70 \times 10^9$ 参数，BF16 下为 $140\text{ GB}$ 权重）：
-- **DDP 模式单卡每步通信量**： $2 \times 140\text{ GB} = \mathbf{280\text{ GB}}$；
+- **DDP 模式单卡每步通信量**：
+
+$$
+2 \times 140\text{ GB} = \mathbf{280\text{ GB}}
+$$
 - **FSDP 全切分单卡每步通信量**： $3 \times 140\text{ GB} = \mathbf{420\text{ GB}}$！
 - **差额净增**：单卡整整多出了 **$140\text{ GB}$** 的物理传输负荷！
 

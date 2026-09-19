@@ -331,7 +331,11 @@ $$
 
 1. **第一阶段：Dispatch 分发**：
    - GPU 0 需要把 1 个 Token 发给 GPU 1；
-   - 单个 Token 数据大小： $1 \times 4 \times 2\text{ Bytes} = \mathbf{8 \text{ B}}（8 字节）$；
+   - 单个 Token 数据大小：
+
+$$
+1 \times 4 \times 2\text{ Bytes} = \mathbf{8 \text{ B}}（8 字节）
+$$
    - GPU 0 发出 8 字节，同时接收 8 字节；
 2. **第二阶段：Combine 收回**：
    - GPU 1 算完该 Token 的 FFN 输出后，必须把这 8 字节的结果送回 GPU 0；

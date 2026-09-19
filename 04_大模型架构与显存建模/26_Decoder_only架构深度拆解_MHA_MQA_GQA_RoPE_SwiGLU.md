@@ -331,9 +331,21 @@ $$
 - 数据类型：FP16（每个数值 2 字节）
 
 在标准 MHA 下， $H_{kv} = H_q = 2$。对于单个 Token，存下它的 K 和 V 矩阵：
-- 单个 Token 的 Key 元素数： $H_{kv} \times d_h = 2 \times 2 = 4$
-- 单个 Token 的 Value 元素数： $H_{kv} \times d_h = 2 \times 2 = 4$
-- 单个 Token 的 KV 字节数： $(4 + 4) \times 2\text{ Bytes} = 16\text{ 字节}$。
+- 单个 Token 的 Key 元素数：
+
+$$
+H_{kv} \times d_h = 2 \times 2 = 4
+$$
+- 单个 Token 的 Value 元素数：
+
+$$
+H_{kv} \times d_h = 2 \times 2 = 4
+$$
+- 单个 Token 的 KV 字节数：
+
+$$
+(4 + 4) \times 2\text{ Bytes} = 16\text{ 字节}
+$$
 
 当生成到长度 2 时，该 Token 产生新缓存 16 字节，历史缓存累积 $16 \times 2 = 32\text{ 字节}$。
 
@@ -646,7 +658,11 @@ d_ffn = 256 * ((d_ffn + 256 - 1) // 256)  # 强制 256 对齐
 ```
 
 例如在 LLaMA-3-8B 中， $d = 4096$：
-- 理论值： $\frac{8}{3} \times 4096 = 10922.67$
+- 理论值：
+
+$$
+\frac{8}{3} \times 4096 = 10922.67
+$$
 - 256 对齐后： $14336$（由于 LLaMA-3 增加了容量，设定为 $14336 = 3.5d$ ）；
 - 而在 LLaMA-2-7B 中， $d = 4096$，对齐后 $d_{\text{ffn}} = 11008$（正好是 $256 \times 43$ ）。
 
@@ -720,7 +736,11 @@ $$
 P_{\text{attn}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)
 $$
 
-  - 若为传统 MHA（ $H_{kv} = H_q$ ）： $P_{\text{attn}} = 4d^2$；
+  - 若为传统 MHA（ $H_{kv} = H_q$ ）：
+
+$$
+P_{\text{attn}} = 4d^2
+$$
   - 若为 1:8 GQA（ $H_{kv} = \frac{1}{8} H_q$ ）： $P_{\text{attn}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
 
 #### 2. SwiGLU FFN 层参数量手算：
@@ -759,8 +779,16 @@ $$
 $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
 - $P_{\text{attn}} = 2 \times 4096^2 \times (1 + 8/32) = 2 \times 16777216 \times 1.25 = 41,943,040$
 - $P_{\text{ffn}} = 3 \times 4096 \times 14336 = 176,160,768$
-- 单层 Block 参数量： $41.94\text{M} + 176.16\text{M} = 218.10\text{M}$
-- 32 层 Block 总和： $32 \times 218.10\text{M} = \mathbf{6.98\text{ B}}$
+- 单层 Block 参数量：
+
+$$
+41.94\text{M} + 176.16\text{M} = 218.10\text{M}
+$$
+- 32 层 Block 总和：
+
+$$
+32 \times 218.10\text{M} = \mathbf{6.98\text{ B}}
+$$
 - Embedding 与 LM Head： $2 \times 128256 \times 4096 \approx \mathbf{1.05\text{ B}}$
 - **全模型精确总参数量**： $6.98\text{B} + 1.05\text{B} = \mathbf{8.03\text{ B}}$！与官方 8B 标称完全严丝合缝！
 
@@ -1304,28 +1332,64 @@ $$
 $$
 
 3. **计算不同方案**：
-   - **MHA 方案**（ $H_{kv} = 64$，比例为 1）：
+
+#### 方案 A：MHA 全量多头注意力（ $H_{kv} = 64$ ）
+- 单 Token 占用显存：
 
 $$
 \text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}
 $$
 
-     总显存（全集群）： $2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}$！
-     8 卡 TP 并行下，单卡平摊： $640 / 8 = \mathbf{80\text{ GB}}$！
-     **结论**：光是存 KV Cache 就直接把 80GB 单卡吃干抹净，连权重都塞不下，立刻 OOM 熔断！
-   - **GQA 方案**（LLaMA-3 真实方案， $H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$ ）：
+- 全集群总显存占用：
+
+$$
+M_{\text{cluster}} = 2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}
+$$
+
+- 8 卡 TP 并行下单卡平摊：
+
+$$
+M_{\text{per-gpu}} = \frac{640\text{ GB}}{8} = \mathbf{80\text{ GB}}
+$$
+
+> **结论**：光是存 KV Cache 就直接把 80GB 单卡吃干抹净，连权重都塞不下，立刻 OOM 熔断！
+
+#### 方案 B：GQA 分组查询注意力（LLaMA-3 真实方案， $H_{kv} = 8$ ）
+- 单 Token 占用显存：
 
 $$
 \text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}
 $$
 
-     总显存（全集群）： $640\text{ GB} / 8 = \mathbf{80\text{ GB}}$。
-     8 卡 TP 并行下，单卡平摊： $80 / 8 = \mathbf{10\text{ GB}}$！
-     **结论**：单卡仅占 10 GB 显存，留出超过 52 GB 裕量给静态权重与其他请求，稳如泰山！
-   - **MQA 方案**（ $H_{kv} = 1$，比例为 $\frac{1}{64}$ ）：
-     总显存（全集群）： $640\text{ GB} / 64 = \mathbf{10\text{ GB}}$。
-     8 卡 TP 并行下，单卡平摊： $10 / 8 = \mathbf{1.25\text{ GB}}$。
-     **结论**：显存达到极致，但代码与严谨逻辑推理能力会有较明显下滑。
+- 全集群总显存占用：
+
+$$
+M_{\text{cluster}} = \frac{640\text{ GB}}{8} = \mathbf{80\text{ GB}}
+$$
+
+- 8 卡 TP 并行下单卡平摊：
+
+$$
+M_{\text{per-gpu}} = \frac{80\text{ GB}}{8} = \mathbf{10\text{ GB}}
+$$
+
+> **结论**：单卡仅占 10 GB 显存，留出超过 52 GB 裕量给静态权重与其他请求，稳如泰山！
+
+#### 方案 C：MQA 多查询注意力（ $H_{kv} = 1$ ）
+- 全集群总显存占用：
+
+$$
+M_{\text{cluster}} = \frac{640\text{ GB}}{64} = \mathbf{10\text{ GB}}
+$$
+
+- 8 卡 TP 并行下单卡平摊：
+
+$$
+M_{\text{per-gpu}} = \frac{10\text{ GB}}{8} = \mathbf{1.25\text{ GB}}
+$$
+
+> **结论**：显存达到极致，但代码与严谨逻辑推理能力会有较明显下滑。
+
 
 ---
 
@@ -1345,27 +1409,44 @@ $$
 
 3. **反向求导过程（包含两步独立运算）**：
    已知后级传回的输出梯度张量 $\delta = \frac{\partial \mathcal{L}}{\partial Y} \in \mathbb{R}^{1 \times d_{\text{out}}}$：
+
    - **第一步：传回激活梯度（Input Gradient）**：
 
 $$
 \frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])
 $$
 
-     计算量： $2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P$ FLOPs。此项必须传给前驱层；
+   - **对应前驱层激活反向传播计算量**：
+
+$$
+\text{FLOPs}_{\delta X} = 2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P\text{ FLOPs}
+$$
+
    - **第二步：求参数更新梯度（Weight Gradient）**：
 
 $$
 \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])
 $$
 
-     计算量： $2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P$ FLOPs。此项用于 AdamW 参数更新；
+   - **对应 AdamW 参数梯度累加计算量**：
+
+$$
+\text{FLOPs}_{\delta W} = 2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P\text{ FLOPs}
+$$
+
+
 4. **两项相加**：
 
 $$
 \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P
 $$
 
-   全流程训练合计： $2P + 4P = \mathbf{6P}$ FLOPs/token。
+   全流程训练合计：
+
+$$
+\text{FLOPs}_{\text{total}} = 2P + 4P = \mathbf{6P}\text{ FLOPs/token}
+$$
+
 
 ---
 

@@ -144,7 +144,11 @@ math: true
 - **草率估算**：负责人简单拍脑袋：“70B 模型嘛，我们租 128 张 A100-80GB 显卡跑 3 个月肯定够了”；
 - **残酷现实**：任务上线跑了一个月后，发现才刚刚跑完 20% 的进度！
 - **血淋淋的物理账本复盘**：
-  1. 训练 70B 模型需要总算力： $C = 6P \times \text{Tokens} = 6 \times 70 \times 10^9 \times 2 \times 10^{12} = \mathbf{8.4 \times 10^{23}\text{ FLOPs}}$；
+  1. 训练 70B 模型需要总算力：
+
+$$
+C = 6P \times \text{Tokens} = 6 \times 70 \times 10^9 \times 2 \times 10^{12} = \mathbf{8.4 \times 10^{23}\text{ FLOPs}}
+$$
   2. 128 张 A100 即使在极限 50% MFU 效率下，每秒总算力仅为： $128 \times 312\text{ TFLOPS} \times 50\% \approx \mathbf{20,000\text{ TFLOPS}}$；
   3. 跑完 2T Tokens 所需的物理净时间为：
 
@@ -496,9 +500,21 @@ $$
 - 梯度（BF16）： $14\text{ GB}$；
 - AdamW 优化器状态（FP32）： $112\text{ GB}$；
 - 采用 **ZeRO-2 显存切分（8 卡均摊）**：
-  - 每张卡分摊的优化器显存： $112 \div 8 = \mathbf{14\text{ GB}}$；
-  - 每张卡分摊的梯度显存： $14 \div 8 = \mathbf{1.75\text{ GB}}$；
-  - 单卡静态显存底座： $14 + 14 + 1.75 = \mathbf{29.75\text{ GB}}$；
+  - 每张卡分摊的优化器显存：
+
+$$
+112 \div 8 = \mathbf{14\text{ GB}}
+$$
+  - 每张卡分摊的梯度显存：
+
+$$
+14 \div 8 = \mathbf{1.75\text{ GB}}
+$$
+  - 单卡静态显存底座：
+
+$$
+14 + 14 + 1.75 = \mathbf{29.75\text{ GB}}
+$$
 - 剩余可用显存： $80 - 29.75 - 4\text{ (Workspace)} \approx \mathbf{46.25\text{ GB}}$，足以容纳 $b=4, s=4096$ 的动态激活值！
 
 ---
@@ -840,7 +856,11 @@ $$
 
 2. **单卡剩余可用显存手算**：
    - A100 总显存： $80\text{ GB}$；
-   - 扣除权重： $80 - 17.5 = 62.5\text{ GB}$；
+   - 扣除权重：
+
+$$
+80 - 17.5 = 62.5\text{ GB}
+$$
    - 扣除 CUDA 运行时与 Workspace 缓冲区（约 $4.5\text{ GB}$ ）及 10% 碎片留白（ $8\text{ GB}$ ）；
    - **单卡实际可分配给 KV Cache 的显存空间为： $62.5 - 4.5 - 8 = \mathbf{50.0\text{ GB}}$**；
 3. **TP=8 下的单 Token KV Cache 显存手算（LLaMA-70B GQA）**：

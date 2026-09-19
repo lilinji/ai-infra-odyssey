@@ -279,8 +279,16 @@ $$
 
 看一下 NVIDIA A100 SXM4 的硬件指标：
 
-- 半精度 Tensor Core 峰值算力： $C_{\text{peak}} = 312 \text{ TFLOPS} = 3.12 \times 10^{14} \text{ FLOPs/s}$
-- HBM2e 物理峰值带宽： $B_{\text{peak}} = 2.039 \text{ TB/s} = 2.039 \times 10^{12} \text{ Bytes/s}$
+- 半精度 Tensor Core 峰值算力：
+
+$$
+C_{\text{peak}} = 312 \text{ TFLOPS} = 3.12 \times 10^{14} \text{ FLOPs/s}
+$$
+- HBM2e 物理峰值带宽：
+
+$$
+B_{\text{peak}} = 2.039 \text{ TB/s} = 2.039 \times 10^{12} \text{ Bytes/s}
+$$
 - **硬件拐点算术强度（Roofline Knee）**：
 
 $$
@@ -1548,8 +1556,16 @@ $$
 
 1. **Standard Attention 访存量手算**：
    每个数据以 FP16（2 字节）存储。
-   - 读取 $Q, K, V$： $3 \times (N \times d \times 2) = 6 \times 8192 \times 128 = 6.29 \times 10^6 \text{ Bytes} \approx 6.29 \text{ MB}$；
-   - 写入中间矩阵 $S$： $N \times N \times 2 = (8192)^2 \times 2 = 134.22 \times 10^6 \text{ Bytes} \approx 134.22 \text{ MB}$；
+   - 读取 $Q, K, V$：
+
+$$
+3 \times (N \times d \times 2) = 6 \times 8192 \times 128 = 6.29 \times 10^6 \text{ Bytes} \approx 6.29 \text{ MB}
+$$
+   - 写入中间矩阵 $S$：
+
+$$
+N \times N \times 2 = (8192)^2 \times 2 = 134.22 \times 10^6 \text{ Bytes} \approx 134.22 \text{ MB}
+$$
    - 读取 $S$ 并写入 $P$（Softmax）： $2 \times (N \times N \times 2) \approx 268.44 \text{ MB}$；
    - 读取 $P$ 并写入输出 $O$： $N \times N \times 2 + N \times d \times 2 \approx 134.22 \text{ MB} + 2.10 \text{ MB}$；
    - **总访存量**：
@@ -1562,7 +1578,11 @@ $$
    - SRAM 大小 $M = 100 \text{ KB} = 102,400 \text{ Bytes} = 51,200 \text{ FP16 elements}$；
    - 分块大小 $B_c \approx \frac{M}{4 \times d} = \frac{51200}{4 \times 128} = 100$ 个 Token；
    - 外层循环次数 $T_c = \lceil N / B_c \rceil = 8192 / 100 \approx 82$ 次；
-   - 每次外层循环必须读取一次完整的 $Q$ 矩阵： $82 \times (N \times d \times 2) = 82 \times 2.10 \text{ MB} \approx 172.2 \text{ MB}$；
+   - 每次外层循环必须读取一次完整的 $Q$ 矩阵：
+
+$$
+82 \times (N \times d \times 2) = 82 \times 2.10 \text{ MB} \approx 172.2 \text{ MB}
+$$
    - $K, V$ 仅在外层循环加载一次： $2 \times (N \times d \times 2) \approx 4.2 \text{ MB}$；
    - 最终输出 $O$ 仅在最后写回一次： $N \times d \times 2 \approx 2.1 \text{ MB}$；
    - **总访存量**：

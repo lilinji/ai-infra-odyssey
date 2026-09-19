@@ -184,8 +184,16 @@ $$
 
 #### 步骤 4：Formal Model（与硬件天花板对照）
 已知 NVIDIA A100 SXM4 80GB 的物理极限规格：
-- **Tensor Core 密实峰值算力**： $C_{\text{peak}} = 312 \text{ TFLOPS}$；
-- **HBM2e 显存物理带宽**： $B_{\text{mem}} = 2.039 \text{ TB/s} = 2,039 \text{ GB/s}$；
+- **Tensor Core 密实峰值算力**：
+
+$$
+C_{\text{peak}} = 312 \text{ TFLOPS}
+$$
+- **HBM2e 显存物理带宽**：
+
+$$
+B_{\text{mem}} = 2.039 \text{ TB/s} = 2,039 \text{ GB/s}
+$$
 - **硬件拐点算术强度（Hardware Balance Point）**：
 
 $$
@@ -350,9 +358,21 @@ graph TD
 
 #### 步骤 1：业务输入与变量定义
 设：
-- 峰值并发请求到达率： $Q = 100 \text{ QPS}$；
-- 平均输入 Prompt 长度： $S_{\text{in}} = 1,024 \text{ Tokens}$；
-- 平均输出生成长度： $S_{\text{out}} = 256 \text{ Tokens}$；
+- 峰值并发请求到达率：
+
+$$
+Q = 100 \text{ QPS}
+$$
+- 平均输入 Prompt 长度：
+
+$$
+S_{\text{in}} = 1,024 \text{ Tokens}
+$$
+- 平均输出生成长度：
+
+$$
+S_{\text{out}} = 256 \text{ Tokens}
+$$
 - 期望吐字时延目标（SLO）： $\text{TPOT} \le 25 \text{ ms/Token}$（即单请求生成耗时 $T_{\text{gen}} = 256 \times 0.025 = 6.4 \text{ 秒}$ ）；
 - 期望首字时延目标（SLO）： $\text{TTFT} \le 400 \text{ ms}$。
 

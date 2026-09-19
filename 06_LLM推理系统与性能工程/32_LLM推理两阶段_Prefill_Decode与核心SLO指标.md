@@ -344,7 +344,11 @@ $$
 #### ③ Tiny Calculator（极简数字手算）
 以目前大厂推理集群最主流的 **NVIDIA H100 SXM (80GB HBM3)** 为例：
 - **稠密半精度（BF16/FP16）Tensor Core 算力**： $P_{\text{peak}} \approx 989\text{ TFLOPS} = 989 \times 10^{12}\text{ FLOP/s}$（注：官方宣传的 1979 TFLOPS 包含了 2:4 结构化稀疏，工业稠密基准按非稀疏计算）；
-- **HBM3 显存实测理论峰值带宽**： $B_{\text{peak}} \approx 3.35\text{ TB/s} = 3.35 \times 10^{12}\text{ Byte/s}$。
+- **HBM3 显存实测理论峰值带宽**：
+
+$$
+B_{\text{peak}} \approx 3.35\text{ TB/s} = 3.35 \times 10^{12}\text{ Byte/s}
+$$
 
 带入手算：
 
@@ -353,7 +357,11 @@ I_{\text{balance}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}
 $$
 
 再算一个老当益壮的 **NVIDIA A100 SXM (80GB HBM2e)**：
-- BF16 Tensor Core 算力： $P_{\text{peak}} = 312\text{ TFLOPS}$；
+- BF16 Tensor Core 算力：
+
+$$
+P_{\text{peak}} = 312\text{ TFLOPS}
+$$
 - HBM2e 显存带宽： $B_{\text{peak}} \approx 2.039\text{ TB/s}$。
 
 $$
@@ -655,7 +663,11 @@ $$
 - **唯一的线性缩减暴击点，就是 $H_{\text{kv}}$（KV 头的数量）！**
 
 在最经典的 **MHA（Multi-Head Attention，多头注意力）** 架构中（如原始 Transformer、GPT-3）：
-- Query、Key、Value 的头数完全一致： $H_{\text{q}} = H_{\text{kv}} = H$；
+- Query、Key、Value 的头数完全一致：
+
+$$
+H_{\text{q}} = H_{\text{kv}} = H
+$$
 - 每一个 Query 都有自己专属的一对 Key/Value 头。
 
 **MQA（Multi-Query Attention）的激进压缩**（2019 年 Shazeer 提出）：

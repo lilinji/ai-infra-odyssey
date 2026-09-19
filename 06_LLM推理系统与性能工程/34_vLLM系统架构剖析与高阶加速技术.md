@@ -1045,7 +1045,11 @@ $$
    - 32B 模型若采用原生 FP16，静态权重就需要 $32 \times 2 = \mathbf{64\text{ GB}}$，一张 24GB 卡根本连模型都加载不进去！
 2. **第一步：激进权重量化（AWQ INT4 + Marlin）**：
    - 采用 AWQ 将模型权重全面量化为 4-bit 整数；
-   - 静态权重显存锐减至： $32 \times 0.5 = \mathbf{16\text{ GB}}$；
+   - 静态权重显存锐减至：
+
+$$
+32 \times 0.5 = \mathbf{16\text{ GB}}
+$$
    - 底层选用 Marlin Kernel，小 Batch 下充分跑满 4090 的显存带宽；
 3. **第二步：动态 KV Cache 压缩与分页管理**：
    - 24GB 扣除 16GB 权重，剩余约 **$8\text{ GB}$ 空间**；

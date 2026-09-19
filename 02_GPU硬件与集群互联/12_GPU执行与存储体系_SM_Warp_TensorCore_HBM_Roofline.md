@@ -840,7 +840,11 @@ $$
 $$
 
 - **算例 B（极简小矩阵乘法： $2 \times 2$ 乘 $2 \times 2$，FP16 2 字节）**：
-  - 浮点运算量： $2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}$；
+  - 浮点运算量：
+
+$$
+2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}
+$$
   - 访存量（假设无缓存）：读 $A$（8 字节）+ 读 $B$（8 字节）+ 写 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比：
 
@@ -897,8 +901,16 @@ $$
 我们代入当前工业界最主流的两款旗舰大模型加速卡手算校验：
 
 - **NVIDIA A100-SXM4-80GB (Ampere 架构)**：
-  - Dense FP16 峰值算力： $P_{\text{peak}} = 312\text{ TFLOPS}$；
-  - HBM2e 物理实测带宽： $\text{BW} = 2.0\text{ TB/s}$；
+  - Dense FP16 峰值算力：
+
+$$
+P_{\text{peak}} = 312\text{ TFLOPS}
+$$
+  - HBM2e 物理实测带宽：
+
+$$
+\text{BW} = 2.0\text{ TB/s}
+$$
   - **A100 硬件固有转折点**：
 
 $$
@@ -906,8 +918,16 @@ $$
 $$
 
 - **NVIDIA H100-SXM5-80GB (Hopper 架构)**：
-  - Dense FP16 峰值算力： $P_{\text{peak}} = 989\text{ TFLOPS}$；
-  - HBM3 物理实测带宽： $\text{BW} = 3.35\text{ TB/s}$；
+  - Dense FP16 峰值算力：
+
+$$
+P_{\text{peak}} = 989\text{ TFLOPS}
+$$
+  - HBM3 物理实测带宽：
+
+$$
+\text{BW} = 3.35\text{ TB/s}
+$$
   - **H100 硬件固有转折点**：
 
 $$
@@ -977,9 +997,21 @@ $$
 
 ### 2. 物理访存量（Bytes）：
 
-- 读矩阵 $A$： $M \times K \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
-- 读矩阵 $B$： $K \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
-- 写矩阵 $C$： $M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
+- 读矩阵 $A$：
+
+$$
+M \times K \times 2 = 4096^2 \times 2 = 33.55\text{ MB}
+$$
+- 读矩阵 $B$：
+
+$$
+K \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}
+$$
+- 写矩阵 $C$：
+
+$$
+M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}
+$$
 - **总 HBM 搬运量（假定理想片上复用）**：
 
 $$

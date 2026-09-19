@@ -364,10 +364,18 @@ D_{\text{useful}} = 32 \times 4 \text{ Bytes} = 128 \text{ Bytes}
 $$
 
 - **情况 1（连续且对齐）**：线程 0~31 分别读取地址 $0, 4, 8, \dots, 124$。这 128 字节恰好填满 1 个 128B Cache Line 内的 4 个 32B Sectors。
-  - 硬件发射事务数： $N_{\text{trans}} = 4$ 次（每个 32B），搬运总量： $4 \times 32 = 128 \text{ Bytes}$。
+  - 硬件发射事务数： $N_{\text{trans}} = 4$ 次（每个 32B），搬运总量：
+
+$$
+4 \times 32 = 128 \text{ Bytes}
+$$
   - 利用率： $128 / 128 = 100\%$。
 - **情况 2（跳步 stride = 32）**：线程 0 读取地址 0，线程 1 读取地址 $32 \times 4 = 128$，线程 2 读取地址 256……每个线程的地址都跨越了一条全新的 Cache Line！
-  - 硬件发射事务数： $N_{\text{trans}} = 32$ 次（每个 32B），搬运总量： $32 \times 32 = 1024 \text{ Bytes}$。
+  - 硬件发射事务数： $N_{\text{trans}} = 32$ 次（每个 32B），搬运总量：
+
+$$
+32 \times 32 = 1024 \text{ Bytes}
+$$
   - 利用率： $128 / 1024 = 12.5\%$（在某些未启用 Sector 的架构上甚至为 $128 / (32 \times 128) = 3.125\%$ ）。
 
 ##### ④ Formal Model（标准公式）
@@ -676,9 +684,21 @@ $$
 
 现在我们再来看按列读取（`tile_good[threadIdx.x][0]`）：
 
-- 线程 0 读取第 0 行第 0 列： $\text{Bank} = (0 + 0) \pmod{32} = 0$；
-- 线程 1 读取第 1 行第 0 列： $\text{Bank} = (1 + 0) \pmod{32} = 1$；
-- 线程 2 读取第 2 行第 0 列： $\text{Bank} = (2 + 0) \pmod{32} = 2$；
+- 线程 0 读取第 0 行第 0 列：
+
+$$
+\text{Bank} = (0 + 0) \pmod{32} = 0
+$$
+- 线程 1 读取第 1 行第 0 列：
+
+$$
+\text{Bank} = (1 + 0) \pmod{32} = 1
+$$
+- 线程 2 读取第 2 行第 0 列：
+
+$$
+\text{Bank} = (2 + 0) \pmod{32} = 2
+$$
 - ……
 - 线程 31 读取第 31 行第 0 列： $\text{Bank} = (31 + 0) \pmod{32} = 31$！
 
@@ -771,7 +791,11 @@ $$
 
 ##### 极简数字手算（A100 真实数据）：
 
-- A100 HBM 带宽： $B = 2039 \text{ GB/s} \approx 2.0 \text{ TB/s}$；
+- A100 HBM 带宽：
+
+$$
+B = 2039 \text{ GB/s} \approx 2.0 \text{ TB/s}
+$$
 - 全局内存访问平均延迟： $L \approx 400 \text{ ns}$（约合 500 个时钟周期 @ 1.4 GHz）；
 - 硬件需要同时保持在空中飞行的**未决数据总量（In-flight Bytes）**：
 
@@ -1622,8 +1646,16 @@ N_{\text{in-flight}} = B \times L
 $$
 
 2. **代入 A100 SXM4 物理常数**：
-   - 全局 HBM 带宽： $B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
-   - 平均 HBM 访存延迟： $L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
+   - 全局 HBM 带宽：
+
+$$
+B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}
+$$
+   - 平均 HBM 访存延迟：
+
+$$
+L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}
+$$
    - 全芯片必须维持在飞行中的数据总量（In-flight Data）：
 
 $$
@@ -1649,7 +1681,7 @@ $$
 W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil = \left\lceil \frac{7552}{512} \right\rceil = 15 \text{ Warps}
 $$
 
-     （即每个 SM 至少需要常驻 15 个活跃 Warp 才能彻底隐藏访存延迟）
+   即每个 SM 至少需要常驻 15 个活跃 Warp 才能彻底隐藏访存延迟。
 
 4. **系统级工程洞见（大模型 GEMV 分析）**：
    在 LLM 推理的 Decode 阶段，GEMV 算子由于 Batch=1，几乎没有计算复用，属于极端严重的 Memory-Bound 算子。如果每个线程只读 4 字节（标量 float），单个 Warp 只能贡献 128 字节，此时 SM 必须维持 $7552 / 128 \approx 59$ 个活跃 Warps（几乎要求 92% 以上的极端 Occupancy）才能打满带宽！这就是为什么在推理优化中必须推行向量化加载和多 Batch 汇聚，否则硬件带宽将永远处于严重的“饥饿”状态。

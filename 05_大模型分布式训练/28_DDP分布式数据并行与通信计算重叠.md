@@ -272,7 +272,11 @@ $$
 
 #### ⑤ Sanity Check（数量级校验与惊天结论）
 以一个 7B 模型（参数梯度量 $\Psi = 14\text{ GB}$ ）为例：
-- 在 8 卡集群上： $\text{Comm} = 2 \times \frac{7}{8} \times 14\text{ GB} = \mathbf{24.5\text{ GB}}$；
+- 在 8 卡集群上：
+
+$$
+\text{Comm} = 2 \times \frac{7}{8} \times 14\text{ GB} = \mathbf{24.5\text{ GB}}
+$$
 - 在 1024 卡集群上： $\text{Comm} = 2 \times \frac{1023}{1024} \times 14\text{ GB} \approx \mathbf{27.97\text{ GB}}$！
 - **核心物理震撼**：**从 8 卡扩大到 1024 卡（规模暴增 128 倍），单张卡需要搬运的通信数据量仅仅从 24.5 GB 微升到 27.97 GB，几乎保持完全恒定！**  
 这就是为什么 Ring 拓扑是分布式训练领域最伟大的算法突破之一：它彻底摆脱了中心节点的带宽枷锁。
@@ -293,12 +297,20 @@ $$
 
 - **Ring-AllReduce**：
   - 传输步数： $2 \times (N - 1)$ 步；
-  - 通信耗时： $T_{\text{ring}} = \mathbf{2(N - 1)\alpha} + 2\left(\frac{N-1}{N}\right)\beta \Psi$；
+  - 通信耗时：
+
+$$
+T_{\text{ring}} = \mathbf{2(N - 1)\alpha} + 2\left(\frac{N-1}{N}\right)\beta \Psi
+$$
   - **致命弱点**：当卡数 $N$ 达到 1024 时，网络握手步数高达 $2046$ 步！如果传输的数据量很小（比如只有几兆字节），通信时间将被高昂的环路握手延迟 $\alpha$ 彻底吃光！
 - **Double Binary Tree AllReduce**：
   - 构造两棵交替覆盖的二叉树，数据在树上自底向上 Reduce，再自顶向下 Broadcast；
   - 传输步数：仅为 $2 \times \log_2(N)$ 步！在 1024 卡下只有 $2 \times 10 = \mathbf{20 \text{ steps}}（20 步）$！
-  - 通信耗时： $T_{\text{tree}} = \mathbf{2 \log_2(N)\alpha} + 2\beta \Psi$。
+  - 通信耗时：
+
+$$
+T_{\text{tree}} = \mathbf{2 \log_2(N)\alpha} + 2\beta \Psi
+$$
 
 | 通信拓扑变体 | 延迟项复杂度（Step 开销） | 带宽项复杂度（数据量） | 最佳适用工况 | NCCL 自动选择策略 |
 | :--- | :--- | :--- | :--- | :--- |

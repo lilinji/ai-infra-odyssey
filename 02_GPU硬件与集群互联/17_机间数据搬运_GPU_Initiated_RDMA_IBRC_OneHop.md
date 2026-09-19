@@ -503,7 +503,11 @@ GDRCopy 解决的是另一个极其尖锐的工程痛点：**如果 CPU 确实�
 - **专家并行度**： $\text{EP} = 64$（每个 GPU 承载 1 个独立专家）；
 - **单卡处理 Token 数**：每个 GPU 每步分配 512 个 Token；
 - **模型隐藏层维度**： $\text{Hidden Size} = 7168$，采用 BF16 数据类型（每个元素 2 字节）；
-- **单 Token 数据体量**： $7168 \times 2\,\text{Bytes} = 14336\,\text{Bytes} \approx 14.34\,\text{KB}$；
+- **单 Token 数据体量**：
+
+$$
+7168 \times 2\,\text{Bytes} = 14336\,\text{Bytes} \approx 14.34\,\text{KB}
+$$
 - **单 GPU 产生的总通信量**：
 
 $$

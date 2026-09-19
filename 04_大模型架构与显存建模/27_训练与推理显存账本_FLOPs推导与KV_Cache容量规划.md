@@ -430,7 +430,11 @@ $$
 $$
 
 当部署在单机 8 卡 H100（TP=8）上时：
-- 单卡平摊每 Token 仅： $320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}$；
+- 单卡平摊每 Token 仅：
+
+$$
+320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}
+$$
 - 若并发 $B=32$，上下文平均长度 $S=8192$（8K）：
 
 $$
@@ -541,7 +545,11 @@ $$
 #### 临界对比分析：
 以 LLaMA-3-8B（ $L=32, d=4096, P \approx 7 \times 10^9$ ）为例：
 - 当 $S = 2048$ 时：
-  - 参数矩阵乘计算量： $6 \times 7 \times 10^9 \times S = 4.2 \times 10^{10} \times S$
+  - 参数矩阵乘计算量：
+
+$$
+6 \times 7 \times 10^9 \times S = 4.2 \times 10^{10} \times S
+$$
   - Attention 二次项计算量： $12 \times 32 \times S \times 4096 \times S \approx 1.57 \times 10^6 \times S^2$
   - 二次项占比： $\frac{1.57 \times 10^6 \times 2048}{4.2 \times 10^{10}} \approx \mathbf{7.6\%}$（可作为扰动项修正）；
 - 当 $S = 32768$（32K 长文本）时：
@@ -992,7 +1000,11 @@ $$
 2. **数据量对比 hand-calculation**：
    以 70B 模型、并发 Batch=16、上下文平均 $S=32K$（32,768）为例：
    - **权重读取量（每次生成 1 个 Token 固定发生）**：
-  - BF16 权重： $70\text{ GB} \times 2 = 140\text{ GB}$；
+  - BF16 权重：
+
+$$
+70\text{ GB} \times 2 = 140\text{ GB}
+$$
   - INT4 量化权重： $70\text{ GB} \times 0.5 = 35\text{ GB}$（节省了 105 GB 访存）；
    - **KV Cache 读取量（随序列激增）**：
   - 单 Token GQA KV Cache 约 320 KB；
@@ -1008,7 +1020,7 @@ $$
 M_{\text{kv-FP8}} = \frac{167.7\text{ GB}}{2} \approx \mathbf{83.8\text{ GB}}!
 $$
 
-       **单次生成仅 KV 搬运就直接节省了整整 83.9 GB 显存带宽！**
+**单次生成仅 KV 搬运就直接节省了整整 83.9 GB 显存带宽！**
 3. **系统吞吐的核心放大器（显存容量解锁并发）**：
    - INT4 权重虽然压缩了模型，但无法解决 KV Cache 吞噬显存的死局，最大并发数被死死卡在低水位；
    - 而 FP8 KV Cache 不仅将庞大的 KV 访存量砍半，更直接**将单卡可承载的最大并发容量翻了整整 2 倍**！

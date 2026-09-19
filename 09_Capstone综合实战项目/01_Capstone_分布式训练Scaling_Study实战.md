@@ -337,8 +337,16 @@ $$
 DDP 采用的是最质朴的**数据并行范式**：每一张 GPU 都必须常驻一份**完整无缺**的模型权重、梯度以及优化器状态。
 
 我们来拉出 7B 模型的静态显存账本（采用 AdamW 优化器，混合精度训练）：
-1. **模型权重（FP16/BF16）**： $7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
-2. **模型梯度（FP16/BF16）**： $7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
+1. **模型权重（FP16/BF16）**：
+
+$$
+7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}
+$$
+2. **模型梯度（FP16/BF16）**：
+
+$$
+7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}
+$$
 3. **优化器状态（FP32 Master Weight + 动量 + 方差）**：
 
 $$

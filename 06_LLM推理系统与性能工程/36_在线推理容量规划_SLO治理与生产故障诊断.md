@@ -349,7 +349,7 @@ $$
 M_{\text{weights}} = \frac{P \times b_w}{\text{TP}}
 $$
 
-     其中 $P$ 为模型总参数量（Parameters）， $b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节）， $\text{TP}$ 为张量并行度（Tensor Parallelism）。
+   其中 $P$ 为模型总参数量（Parameters）， $b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节）， $\text{TP}$ 为张量并行度（Tensor Parallelism）。
    - *注意*：必须计入 Embedding 层及非 Transformer 层的显存占用（在部分框架中可能未切分）。
 2. **账本二：中间激活与运行时框架驻留显存（ $M_{\text{runtime}}$ ）**
    - 包含 PyTorch 运行时上下文、CUDA Driver Context（约 1~1.5 GB）、中间激活值（Activation Memory）以及 **CUDA Graph 捕获专有内存池**。
@@ -439,7 +439,11 @@ $$
 - **参数显存**：72B 模型切到 8 卡，单卡权重 $M_{\text{weights}} \approx 18 \text{ GB}$；
 - **运行时开销**： $M_{\text{runtime}} \approx 4 \text{ GB}$；
 - **安全阈值**： $\alpha = 0.90$（可用上限 $80 \times 0.90 = 72 \text{ GB}$ ）；
-- 则单卡 KV 池容量： $M_{\text{kv-pool}} = 72 - 18 - 4 = 50 \text{ GB} = 50 \times 10^9 \text{ Bytes}$。
+- 则单卡 KV 池容量：
+
+$$
+M_{\text{kv-pool}} = 72 - 18 - 4 = 50 \text{ GB} = 50 \times 10^9 \text{ Bytes}
+$$
 
 1. **手算单 Token KV 显存**：
 
@@ -585,9 +589,21 @@ $$
 
 #### 步骤 3：核算单台 8 卡 H800 节点的显存容积与最大安全并发 $B_{\max}$
 由 2.2 节实测已知：
-- 单卡可分配 KV Cache 显存： $M_{\text{kv-pool}} = 50\text{ GB}$；
-- 单 Token 在单卡上的 KV 开销： $\text{KV}_{\text{token-per-gpu}} = 40\text{ KB}$；
-- 单个请求平均总长度： $S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}$；
+- 单卡可分配 KV Cache 显存：
+
+$$
+M_{\text{kv-pool}} = 50\text{ GB}
+$$
+- 单 Token 在单卡上的 KV 开销：
+
+$$
+\text{KV}_{\text{token-per-gpu}} = 40\text{ KB}
+$$
+- 单个请求平均总长度：
+
+$$
+S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}
+$$
 - 单个请求在单卡上消耗的 KV Cache：
 
 $$
@@ -1646,9 +1662,21 @@ if __name__ == "__main__":
    - 假定典型企业代码/聊天场景：平均 Prompt = 1500 Tokens，平均生成 = 500 Tokens，总长 = 2000 Tokens；
    - 选定工业标准模型与部署方案：Llama-3.3-70B 或 Qwen2.5-72B（FP16，单机 8 卡 H800 TP=8）。
 2. **单节点容量推导（显存池限制）**：
-   - 单卡 KV 池容量： $80 \times 0.90 - 18\text{ (权重)} - 4\text{ (运行时)} = 50\text{ GB}$；
-   - GQA 单 Token 单卡 KV 开销： $\frac{2 \times 80 \times 8 \times 128 \times 2}{8} = 40\text{ KB/Token}$；
-   - 单请求消耗单卡显存： $2000 \times 40\text{ KB} = 80\text{ MB}$；
+   - 单卡 KV 池容量：
+
+$$
+80 \times 0.90 - 18\text{ (权重)} - 4\text{ (运行时)} = 50\text{ GB}
+$$
+   - GQA 单 Token 单卡 KV 开销：
+
+$$
+\frac{2 \times 80 \times 8 \times 128 \times 2}{8} = 40\text{ KB/Token}
+$$
+   - 单请求消耗单卡显存：
+
+$$
+2000 \times 40\text{ KB} = 80\text{ MB}
+$$
    - 单节点最大安全并发： $B_{\max} = \frac{50\text{ GB}}{80\text{ MB}} = 625$ 并发。
 3. **基于并发水线计算显存节点底线**：
    - 支撑 10,000 活跃并发，纯显存维度最少需要：

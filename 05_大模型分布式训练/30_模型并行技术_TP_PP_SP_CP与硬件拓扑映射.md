@@ -992,7 +992,11 @@ if __name__ == "__main__":
    - **Self-Attention 模块**： $Q, K, V$ 投影按列切分，无通信；输出投影矩阵按行切分，根据分块矩阵乘法 $Y = \sum X_i W_i$，必须在各卡之间对大小为 $[b, s, h]$ 的局部求和张量执行一次 **AllReduce**；
    - **MLP 模块**：FC1 矩阵按列切分，逐元素激活函数无通信；FC2 矩阵按行切分，再次对大小为 $[b, s, h]$ 的局部张量执行一次 **AllReduce**；
    - **单卡发送量**：每次 Ring-AllReduce 单卡发送数据量为 $2 \frac{N-1}{N} \times \text{Size} \approx 2 bsh$（Words）；
-   - **前向总发送量**： $2 \text{ 次 AllReduce} \times 2 bsh = \mathbf{4 bsh} \quad (\text{Words})$。
+   - **前向总发送量**：
+
+$$
+2 \text{ 次 AllReduce} \times 2 bsh = \mathbf{4 bsh} \quad (\text{Words})
+$$
 2. **反向传播（Backward Pass）对称性分析**：
    - 对行切分层求输入梯度时，依据伴随转置，反向计算变为按列切分；
    - 对列切分层求输入梯度时，反向计算变为按行切分，必须再次插入一次 **AllReduce**；
@@ -1020,10 +1024,18 @@ $$
    - **充能与排空空转时间（Bubble Time）**：
   - 在第 0 个微批次从 Stage 0 到达 Stage $P-1$ 的过程中，后序节点处于空等，共有 $P - 1$ 个时间步的空转；
   - 在反向传播全部结束排空时，前序节点在等待后序节点反向，又有 $P - 1$ 个时间步的空转；
-  - 全流水线单个物理周期的总空转时间为： $t_{\text{bubble}} = (P - 1) \times t_{\text{step}}$；
+  - 全流水线单个物理周期的总空转时间为：
+
+$$
+t_{\text{bubble}} = (P - 1) \times t_{\text{step}}
+$$
    - **全流程有效计算时间**：
   - 每个微批次必须完整跑完前向与反向，总有效微批次步数为 $M \times t_{\text{step}}$；
-   - **端到端总执行时间**： $T_{\text{total}} = (M + P - 1) \times t_{\text{step}}$；
+   - **端到端总执行时间**：
+
+$$
+T_{\text{total}} = (M + P - 1) \times t_{\text{step}}
+$$
    - **稳态气泡率公式**：
 
 $$

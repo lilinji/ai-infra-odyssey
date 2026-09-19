@@ -242,7 +242,7 @@ $$
 \text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！
 $$
 
-     整整 75% 的时间里，四分之三的服务器处于完全空转状态！每个 Token 必须像击鼓传花一样在 4 台机器间串行走一圈，**单步延迟被硬生生放大了 4 倍**！
+   整整 75% 的时间里，四分之三的服务器处于完全空转状态！每个 Token 必须像击鼓传花一样在 4 台机器间串行走一圈，**单步延迟被硬生生放大了 4 倍**！
 3. **唯一的救赎场景**：只有在超大并发（ $B \gg 64$ ）或者超大模型（如 405B、万亿模型单机 8 卡 HBM 根本放不下权重）时，PP 才是不得已而为之的容量妥协方案。
 
 ---
@@ -401,9 +401,17 @@ $$
 #### 步骤 3：Tiny Calculator（极简数字小算盘）
 我们以业界标杆 **LLaMA-3-70B（80 层，GQA 机制下 Key/Value 各有 8 个 Head，每个 Head 维度 $d_{\text{head}}=128$ ）** 为例：
 1. **单个 Token、单个 Layer 的 KV 大小**：
-   - Key 张量： $8 \text{ heads} \times 128 \times 2 \text{ bytes (FP16/BF16)} = 2,048 \text{ bytes} = 2 \text{ KB}$；
+   - Key 张量：
+
+$$
+8 \text{ heads} \times 128 \times 2 \text{ bytes (FP16/BF16)} = 2,048 \text{ bytes} = 2 \text{ KB}
+$$
    - Value 张量：同样为 $2 \text{ KB}$；
-   - 单层合计： $2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}$。
+   - 单层合计：
+
+$$
+2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}
+$$
 2. **单个 Token 在全部 80 层累积的 KV 大小**：
 
 $$

@@ -308,10 +308,26 @@ $$
 ## 2.6 范数（Norm）与浮点容差（atol / rtol）
 
 常见向量范数与矩阵 Frobenius 范数：
-- $L_1$ 范数： $\|\mathbf{x}\|_1 = \sum |x_i|$；
-- $L_2$ 范数： $\|\mathbf{x}\|_2 = \sqrt{\sum x_i^2}$；
-- $L_\infty$ 范数： $\|\mathbf{x}\|_\infty = \max |x_i|$；
-- Frobenius 范数： $\|\mathbf{A}\|_F = \sqrt{\sum_i \sum_j A_{ij}^2}$。
+- $L_1$ 范数：
+
+$$
+\|\mathbf{x}\|_1 = \sum |x_i|
+$$
+- $L_2$ 范数：
+
+$$
+\|\mathbf{x}\|_2 = \sqrt{\sum x_i^2}
+$$
+- $L_\infty$ 范数：
+
+$$
+\|\mathbf{x}\|_\infty = \max |x_i|
+$$
+- Frobenius 范数：
+
+$$
+\|\mathbf{A}\|_F = \sqrt{\sum_i \sum_j A_{ij}^2}
+$$
 
 在算子测试中检验两个浮点结果是否一致，必须采用复合容差公式：
 
@@ -499,8 +515,16 @@ $$
 ## 4.2 联合概率、边缘概率与条件概率
 
 - **联合概率**： $P(X=x, Y=y)$；
-- **边缘概率**： $P(X=x) = \sum_y P(X=x, Y=y)$；
-- **条件概率**： $P(X=x \mid Y=y) = \frac{P(X=x, Y=y)}{P(Y=y)}$。
+- **边缘概率**：
+
+$$
+P(X=x) = \sum_y P(X=x, Y=y)
+$$
+- **条件概率**：
+
+$$
+P(X=x \mid Y=y) = \frac{P(X=x, Y=y)}{P(Y=y)}
+$$
 
 ---
 
@@ -914,15 +938,31 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 
 ### 9.1 算例一：Transformer 线性层的 Shape、FLOPs 与显存代价
 设 $B=8, S=2048, H=4096$，线性层权重 $W \in \mathbb{R}^{H \times 4H}$（ $4096 \times 16384$ ）：
-- **输入张量展平**： $X' \in \mathbb{R}^{(BS) \times H} = \mathbb{R}^{16384 \times 4096}$；
-- **前向计算量**： $2 \cdot (BS) \cdot H \cdot 4H = 8BSH^2 = 8 \times 8 \times 2048 \times 4096^2 \approx 2.20 \times 10^{12}\text{ FLOPs} \approx 2.20\text{ TFLOPs}$；
-- **反向计算量**： $2 \times 2.20 = 4.40\text{ TFLOPs}$。
+- **输入张量展平**：
+
+$$
+X' \in \mathbb{R}^{(BS) \times H} = \mathbb{R}^{16384 \times 4096}
+$$
+- **前向计算量**：
+
+$$
+2 \cdot (BS) \cdot H \cdot 4H = 8BSH^2 = 8 \times 8 \times 2048 \times 4096^2 \approx 2.20 \times 10^{12}\text{ FLOPs} \approx 2.20\text{ TFLOPs}
+$$
+- **反向计算量**：
+
+$$
+2 \times 2.20 = 4.40\text{ TFLOPs}
+$$
 
 ---
 
 ### 9.2 算例二：多头 Attention 完整维度与 $O(S^2)$ 显存爆炸推导
 从输入 $X \in \mathbb{R}^{B \times S \times H}$ 生成 $Q, K, V \in \mathbb{R}^{B \times N_h \times S \times D_h}$：
-- **分数矩阵**： $S = \frac{QK^\top}{\sqrt{D_h}} \in \mathbb{R}^{B \times N_h \times S \times S}$；
+- **分数矩阵**：
+
+$$
+S = \frac{QK^\top}{\sqrt{D_h}} \in \mathbb{R}^{B \times N_h \times S \times S}
+$$
 - **显存占用（FP16）**： $2 B N_h S^2\text{ 字节}$；
 - **当 $B=1, N_h=32, S=32768$ 时**：
 

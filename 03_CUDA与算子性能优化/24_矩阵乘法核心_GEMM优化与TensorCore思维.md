@@ -144,7 +144,12 @@ C[row * N + col] = sum;
 
 你开了几十万个线程，把它扔上单卡售价数十万元的 NVIDIA A100-SXM4-80GB（理论单精度峰值算力高达 **19.5 TFLOPS**）。你满心期待它能在几十微秒内跑完，结果实测报告打印出来：
 
-- 计算规模： $M = N = K = 4096$；
+- 计算规模：
+
+$$
+M = N = K = 4096
+$$
+
 - 算子耗时：**约 548 毫秒**；
 - 实测有效算力：**仅有 0.25 TFLOPS**！
 
@@ -1494,12 +1499,22 @@ $$
 [\text{Load Tile 0}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 0}] \rightarrow [\text{Load Tile 1}] \rightarrow [\text{Sync}] \rightarrow [\text{Compute Tile 1}]
 $$
 
-     总耗时为 $\sum (\text{Time}_{\text{load}} + \text{Time}_{\text{compute}})$，硬件长期处于“走廊跑步”与“厨房炒菜”交替停滞状态；
+   - **串行总耗时**：各阶段串行累加，硬件长期处于“走廊跑步”与“厨房炒菜”交替停滞状态：
+
+$$
+T_{\text{serial}} = \sum \left(\text{Time}_{\text{load}} + \text{Time}_{\text{compute}}\right)
+$$
+
    - **双缓冲流水重叠**：
-     在 Shared Memory 中开辟两套缓冲 `Buffer[2]`。
-  - 序幕：在进入主循环前，预取 Tile 0 到 `Buffer[0]`；
-  - 循环体：当 ALU 全力使用 `Buffer[read]` 计算 Tile $k$ 时，后台通过异步指令将 Tile $k+1$ 预取写入 `Buffer[write]`；
-  - 循环步长仅受限于 $\max(\text{Time}_{\text{load}}, \text{Time}_{\text{compute}})$！
+     在 Shared Memory 中开辟两套缓冲 `Buffer[2]`：
+  - **序幕**：在进入主循环前，预取 Tile 0 到 `Buffer[0]`；
+  - **循环体**：当 ALU 全力使用 `Buffer[read]` 计算 Tile $k$ 时，后台通过异步指令将 Tile $k+1$ 预取写入 `Buffer[write]`；
+  - **循环步长**：仅受限于计算与加载的最大者：
+
+$$
+T_{\text{step}} = \max\left(\text{Time}_{\text{load}}, \text{Time}_{\text{compute}}\right)
+$$
+
 2. **延迟隐藏的充要条件**：
    当计算时间 $\text{Time}_{\text{compute}} \ge \text{Time}_{\text{load}}$ 时，全局显存的访问延迟被计算完全掩盖，外界感知到的等效访存延迟为 0！
 

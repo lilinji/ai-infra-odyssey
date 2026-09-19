@@ -342,7 +342,11 @@ A = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_k}} + \text{Mask} \right) \in \mat
 $$
 
 - 因为 $e^{-\infty} = 0$，未来位置在 Softmax 后的注意力权重严格为 **0**；
-- 矩阵 $A$ 的每一行所有元素非负且和严格等于 1： $\sum_{j=1}^S A[i][j] = 1.0$。
+- 矩阵 $A$ 的每一行所有元素非负且和严格等于 1：
+
+$$
+\sum_{j=1}^S A[i][j] = 1.0
+$$
 
 ---
 

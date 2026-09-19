@@ -258,11 +258,23 @@ torch.cuda.nvtx.range_pop()
 
 ### 3. Tiny Calculator（极简数字小算盘）：
 - **情况 A**：计算耗时 $T_{\text{compute}} = 50\,\text{ms}$，通信耗时 $T_{\text{comm}} = 30\,\text{ms}$。
-  - 暴露通信时间： $T_{\text{exposed}} = \max(0, 30 - 50) = 0\,\text{ms}$；
+  - 暴露通信时间：
+
+$$
+T_{\text{exposed}} = \max(0, 30 - 50) = 0\,\text{ms}
+$$
   - 总耗时： $T_{\text{step}} = 50 + 0 = 50\,\text{ms}$（通信完全隐形！）。
 - **情况 B**：计算耗时 $T_{\text{compute}} = 40\,\text{ms}$，通信耗时 $T_{\text{comm}} = 70\,\text{ms}$。
-  - 暴露通信时间： $T_{\text{exposed}} = \max(0, 70 - 40) = 30\,\text{ms}$；
-  - 总耗时： $T_{\text{step}} = 40 + 30 = 70\,\text{ms}$。
+  - 暴露通信时间：
+
+$$
+T_{\text{exposed}} = \max(0, 70 - 40) = 30\,\text{ms}
+$$
+  - 总耗时：
+
+$$
+T_{\text{step}} = 40 + 30 = 70\,\text{ms}
+$$
 
 ### 4. Formal Model（标准形式化公式）：
 单步执行总时间（Step Time）的通用数学模型为：
@@ -1010,7 +1022,11 @@ $$
 3. **第三步（核心测谎：检查计算 Kernel 的执行时间膨胀率）**：
    - 单独测量没有通信并发时，该 GEMM Kernel 的基准执行时间 $T_{\text{base}}$；
    - 测量并发重叠状态下，该 GEMM Kernel 的实测时间 $T_{\text{concurrent}}$；
-   - 计算膨胀比： $r = \frac{T_{\text{concurrent}}}{T_{\text{base}}}$；
+   - 计算膨胀比：
+
+$$
+r = \frac{T_{\text{concurrent}}}{T_{\text{base}}}
+$$
    - **若 $r \le 1.10$**：说明争抢极小，为**高效黄金重叠**；
    - **若 $r \ge 1.30$**：说明发生了严重的 L2 缓存冲刷或 HBM 控制器争抢，属于**表面重叠、实则降速的负向优化**；
 4. **第四步（检查 SM 利用率与吞吐指标）**：

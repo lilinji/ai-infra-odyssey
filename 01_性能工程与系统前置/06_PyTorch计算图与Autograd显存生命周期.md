@@ -1704,15 +1704,17 @@ if __name__ == "__main__":
 #### 💡 答题思考路径与白板标准答案：
 
 1. **FLOPs 精确推导**：
-   设模型参数量为 $P$。处理一个 Token 时：
 
-   - **前向 GEMM**： $Y = XW$，计算量为 $2 \times M \times K \times N$。对于全网参数，前向浮点计算量为：
+   设模型参数量为 $P$。处理一个 Token 时的计算量推导如下：
+
+   - **前向 GEMM 计算量**：
+     矩阵乘法 $Y = XW$，计算量为 $2 \times M \times K \times N$。对于全网参数，前向浮点计算量为：
 
 $$
 \text{FLOPs}_{\text{fwd}} = 2P\text{ FLOPs/token}
 $$
 
-   - **反向 GEMM**：根据矩阵微分：
+   - **反向 GEMM 矩阵微分求导**：
 
 $$
 \nabla_X = \nabla_Y W^T \implies 2P\text{ FLOPs}
@@ -1722,17 +1724,25 @@ $$
 \nabla_W = X^T \nabla_Y \implies 2P\text{ FLOPs}
 $$
 
-     因此标准反向计算量严格为：
+   - **反向标准总计算量**：
+     输入梯度与权重梯度两项求和：
 
 $$
 \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P\text{ FLOPs/token}
 $$
 
-   - **标准总计算量**： $\text{FLOPs}_{\text{std}} = 2P + 4P = 6P$；
-   - **重计算总计算量**：反向传播时将前向再次计算一次，多耗费 $2P$：
+   - **标准总计算量**：
+     前向计算与反向计算之和：
 
 $$
-\text{FLOPs}_{\text{ckpt}} = 2P (\text{fwd}) + 2P (\text{recompute}) + 4P (\text{bwd}) = 8P
+\text{FLOPs}_{\text{std}} = 2P + 4P = 6P\text{ FLOPs/token}
+$$
+
+   - **重计算总计算量**：
+     反向传播时将前向再次计算一次，多耗费 $2P$：
+
+$$
+\text{FLOPs}_{\text{ckpt}} = 2P (\text{fwd}) + 2P (\text{recompute}) + 4P (\text{bwd}) = 8P\text{ FLOPs/token}
 $$
 
    - **理论开销比**：
@@ -1741,11 +1751,33 @@ $$
 \frac{\text{FLOPs}_{\text{ckpt}} - \text{FLOPs}_{\text{std}}}{\text{FLOPs}_{\text{std}}} = \frac{8P - 6P}{6P} = \frac{2P}{6P} = \frac{1}{3} \approx 33.33\%
 $$
 
+
 2. **显存临界判定条件**：
-   - 显存四账本： $M_{\text{total}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{optimizer}} + M_{\text{activation}}$；
-   - 当不开启重计算时， $M_{\text{activation}} \propto O(L \cdot B \cdot S \cdot h)$；
-   - 一旦 $M_{\text{total}} > \text{GPU 物理显存容量} - \text{显存池预留碎片 Headroom (通常 2~3GB)}$，系统必然 OOM；
-   - 开启 Full Checkpointing 后，激活显存降为 $O(B \cdot S \cdot h)$（仅维持单个 Block 峰值），节约了约 $\frac{L - 1}{L} \approx 97\%$ 的激活显存，使得超大 Batch 或长上下文得以运行。
+
+   - **显存四账本**：
+
+$$
+M_{\text{total}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{optimizer}} + M_{\text{activation}}
+$$
+
+   - 当不开启重计算时，激活显存随层数线性扩展：
+
+$$
+M_{\text{activation}} \propto O(L \cdot B \cdot S \cdot h)
+$$
+
+   - 一旦总显存超过硬件物理阈值，系统必然 OOM：
+
+$$
+M_{\text{total}} > \text{GPU 物理显存容量} - \text{显存池预留碎片 Headroom (通常 2~3GB)} \implies \mathbf{OOM}
+$$
+
+   - 开启 Full Checkpointing 后，激活显存降为单个 Block 峰值，节约了约 $97\%$ 的激活显存：
+
+$$
+M_{\text{activation-ckpt}} \propto O(B \cdot S \cdot h) \quad \left(\text{节约比例} \approx \frac{L - 1}{L} \approx 97\%\right)
+$$
+
 
 ---
 
