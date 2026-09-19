@@ -331,9 +331,9 @@ $$
    - MLP 输出投影后 1 次 AllReduce：数据大小为 $b \times s \times h$；
    - 单卡前向通信总量（基于 Ring-AllReduce 发送量 $2 \frac{N-1}{N} \text{Size}$，当 $N=8$ 时 $\frac{N-1}{N} \approx 1$ ）：
 
-     $$
-     \text{Comm}_{\text{fwd}} = 2 \times \left(2 \times \frac{N-1}{N} \times b s h \times 2\text{ Bytes}\right) \approx \mathbf{4 b s h} \quad (\text{Words}) = \mathbf{8 b s h} \quad (\text{Bytes})
-     $$
+$$
+\text{Comm}_{\text{fwd}} = 2 \times \left(2 \times \frac{N-1}{N} \times b s h \times 2\text{ Bytes}\right) \approx \mathbf{4 b s h} \quad (\text{Words}) = \mathbf{8 b s h} \quad (\text{Bytes})
+$$
 
 2. **反向传播（Backward）**：
    - 伴随矩阵求导法则，前向的 Row Parallel 在反向求梯度时变为 Column Parallel（需 1 次 AllReduce）；
@@ -341,9 +341,9 @@ $$
    - **反向通信量与前向完全对称**：同样为 $4 b s h$（Words）！
 3. **单层单步总通信量**：
 
-   $$
-   \mathbf{\text{Comm}_{\text{TP, layer}} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 8 b s h \quad (\text{Words}) = \mathbf{16 b s h} \quad (\text{Bytes})}
-   $$
+$$
+\mathbf{\text{Comm}_{\text{TP, layer}} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 8 b s h \quad (\text{Words}) = \mathbf{16 b s h} \quad (\text{Bytes})}
+$$
 
 #### ⑤ Sanity Check（数量级校验）
 以 **LLaMA-3-70B**（ $h = 8192$, 层数 $L = 80$ ）在 $b=2, s=4096$ 下单卡每步通信量为例：
@@ -999,9 +999,9 @@ if __name__ == "__main__":
    - 因此反向传播同样需要精确触发 2 次 AllReduce，单卡发送量严格等于： $\mathbf{4 bsh} \quad (\text{Words})$。
 3. **单层单步总通信量累加**：
 
-   $$
-   \text{Total Comm Per Layer} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 4bsh + 4bsh = \mathbf{8bsh} \quad (\text{Words}) = \mathbf{16bsh} \quad (\text{Bytes})
-   $$
+$$
+\text{Total Comm Per Layer} = \text{Comm}_{\text{fwd}} + \text{Comm}_{\text{bwd}} = 4bsh + 4bsh = \mathbf{8bsh} \quad (\text{Words}) = \mathbf{16bsh} \quad (\text{Bytes})
+$$
 
 4. **为什么严禁出机**：
    - 设单层前向 GEMM 耗时仅 1~2 毫秒；
@@ -1018,17 +1018,17 @@ if __name__ == "__main__":
    - 设流水线包含 $P$ 个 Stage，全局批次被切分成 $M$ 个微批次（Micro-batches）；
    - 设单个 Micro-batch 在单个 Stage 上的前向耗时为 $t_f$，反向耗时为 $t_b$（通常 $t_b \approx 2 t_f$ ），此处为简化推导设理想均匀时间片为 $t_{\text{step}}$；
    - **充能与排空空转时间（Bubble Time）**：
-     - 在第 0 个微批次从 Stage 0 到达 Stage $P-1$ 的过程中，后序节点处于空等，共有 $P - 1$ 个时间步的空转；
-     - 在反向传播全部结束排空时，前序节点在等待后序节点反向，又有 $P - 1$ 个时间步的空转；
-     - 全流水线单个物理周期的总空转时间为： $t_{\text{bubble}} = (P - 1) \times t_{\text{step}}$；
+  - 在第 0 个微批次从 Stage 0 到达 Stage $P-1$ 的过程中，后序节点处于空等，共有 $P - 1$ 个时间步的空转；
+  - 在反向传播全部结束排空时，前序节点在等待后序节点反向，又有 $P - 1$ 个时间步的空转；
+  - 全流水线单个物理周期的总空转时间为： $t_{\text{bubble}} = (P - 1) \times t_{\text{step}}$；
    - **全流程有效计算时间**：
-     - 每个微批次必须完整跑完前向与反向，总有效微批次步数为 $M \times t_{\text{step}}$；
+  - 每个微批次必须完整跑完前向与反向，总有效微批次步数为 $M \times t_{\text{step}}$；
    - **端到端总执行时间**： $T_{\text{total}} = (M + P - 1) \times t_{\text{step}}$；
    - **稳态气泡率公式**：
 
-     $$
-     \text{Bubble Ratio} = \frac{t_{\text{bubble}}}{T_{\text{total}}} = \mathbf{\frac{P - 1}{M + P - 1}}
-     $$
+$$
+\text{Bubble Ratio} = \frac{t_{\text{bubble}}}{T_{\text{total}}} = \mathbf{\frac{P - 1}{M + P - 1}}
+$$
 
 2. **Interleaved 1F1B 虚拟阶段压缩机理**：
    - 每个物理 GPU 不再只管一个大阶段，而是将其细化为 $v$ 个交错的虚拟阶段（Virtual Stages）；
@@ -1036,9 +1036,9 @@ if __name__ == "__main__":
    - 充能与排空等待时间缩短为 $(P - 1) \times \frac{t_{\text{step}}}{v}$；
    - **压缩后气泡率**：
 
-     $$
-     \text{Bubble Ratio}_{\text{interleaved}} = \mathbf{\frac{P - 1}{v \cdot M + P - 1}}
-     $$
+$$
+\text{Bubble Ratio}_{\text{interleaved}} = \mathbf{\frac{P - 1}{v \cdot M + P - 1}}
+$$
 
    - 气泡率被**等效扩大了 $v$ 倍的微批次数所稀释**，气泡面积直接削减近 $1/v$！
 3. **付出的代价（Trade-off）**：
@@ -1054,11 +1054,11 @@ if __name__ == "__main__":
 #### 标准参考答案：
 1. **核心切分维度与通信原语本质差异**：
    - **Ring Attention**：
-     - **切分维度**：将整条长序列沿 Sequence 维度切成 $N$ 段，每张 GPU 拥有局部 $Q_i, K_i, V_i$；
-     - **通信原语**：使用环形点对点通信（**P2P Send/Recv**）。$Q_i$ 留在原地，各卡将 $K_i, V_i$ 块沿环逐跳传递，配合 FlashAttention Online Softmax 动态累积归一化因子；
+  - **切分维度**：将整条长序列沿 Sequence 维度切成 $N$ 段，每张 GPU 拥有局部 $Q_i, K_i, V_i$；
+  - **通信原语**：使用环形点对点通信（**P2P Send/Recv**）。$Q_i$ 留在原地，各卡将 $K_i, V_i$ 块沿环逐跳传递，配合 FlashAttention Online Softmax 动态累积归一化因子；
    - **DeepSpeed-Ulysses**：
-     - **切分维度**：输入时沿 Sequence 维度切分，但在执行 Attention 计算前，通过 **All-to-All** 通信原语将序列切分转置为注意力头（Head）维度切分；
-     - **通信原语**：注意力计算前后各执行一次全局 **All-to-All**。在注意力内核内部，每张卡直接跑全长度、少头数的标准 FlashAttention。
+  - **切分维度**：输入时沿 Sequence 维度切分，但在执行 Attention 计算前，通过 **All-to-All** 通信原语将序列切分转置为注意力头（Head）维度切分；
+  - **通信原语**：注意力计算前后各执行一次全局 **All-to-All**。在注意力内核内部，每张卡直接跑全长度、少头数的标准 FlashAttention。
 2. **现代 GQA 架构下的选型决策**：
    - **问题瓶颈**：在现代主流模型（如 LLaMA-3、Mistral）中，普遍采用分组查询注意力（GQA），KV 头数极其稀疏（通常仅 8 个）；
    - **Ulysses 的致命短板**：Ulysses 强制要求注意力头数必须能被 CP 并行度整除。若 KV Head=8，则 Ulysses 的上下文并行度**绝对无法超过 8**！若想扩展到 16 卡或 32 卡，必须引入极其复杂的跨卡 KV 复制；

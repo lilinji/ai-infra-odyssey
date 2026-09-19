@@ -86,10 +86,10 @@ math: true
 - [2. 性能诊断 X 光片：看懂 Chrome Trace 与 Perfetto 绝技](#2-性能诊断-x-光片看懂-chrome-trace-与-perfetto-绝技)
   - [2.1 导出 `trace.json` 并在 [ui.perfetto.dev](https://ui.perfetto.dev) 中专业分析](#21-导出-tracejson-并在-uiperfettodev-中专业分析)
   - [2.2 时间线四大典型“病灶”特征与物理成因：](#22-时间线四大典型病灶特征与物理成因)
-    - [病灶 1：CPU 饥饿气泡（GPU Starvation / Idle Bubble）](#病灶-1cpu-饥饿气泡gpu-starvation--idle-bubble)
-    - [病灶 2：隐式同步断流（Implicit Host-Device Barrier）](#病灶-2隐式同步断流implicit-host-device-barrier)
-    - [病灶 3：显存频繁申请释放（Memory Churn & Fragmentation）](#病灶-3显存频繁申请释放memory-churn--fragmentation)
-    - [病灶 4：小算子发射延迟堆叠（Launch-Bound Operator Sprawl）](#病灶-4小算子发射延迟堆叠launch-bound-operator-sprawl)
+  - [病灶 1：CPU 饥饿气泡（GPU Starvation / Idle Bubble）](#病灶-1cpu-饥饿气泡gpu-starvation--idle-bubble)
+  - [病灶 2：隐式同步断流（Implicit Host-Device Barrier）](#病灶-2隐式同步断流implicit-host-device-barrier)
+  - [病灶 3：显存频繁申请释放（Memory Churn & Fragmentation）](#病灶-3显存频繁申请释放memory-churn--fragmentation)
+  - [病灶 4：小算子发射延迟堆叠（Launch-Bound Operator Sprawl）](#病灶-4小算子发射延迟堆叠launch-bound-operator-sprawl)
 - [3. PyTorch TensorBoard Profiler 插件实战与大厂指标看板](#3-pytorch-tensorboard-profiler-插件实战与大厂指标看板)
   - [3.1 Overview 概览页：Step Time Breakdown 耗时结构黄金切分](#31-overview-概览页step-time-breakdown-耗时结构黄金切分)
   - [3.2 Operator View 算子耗时看板：按 Device Self Time 定位 Top 10 性能杀手](#32-operator-view-算子耗时看板按-device-self-time-定位-top-10-性能杀手)
@@ -620,8 +620,8 @@ if __name__ == "__main__":
 3. **GPU-Bound（纯算力或显存带宽瓶颈）**：
    - **Trace 特征**：GPU 硬件流被打得满满当当，前后 Kernel 之间严丝合缝（Zero Bubble），但整个 Step 的总时间依然很长；
    - **进一步定位**：
-     - 若算子为大 GEMM，查看 Tensor Core Utilization 是否达到极限（Compute-Bound）；
-     - 若耗时全被 Softmax、LayerNorm 占满，查看算术强度是否处于斜坡区（Memory-Bound），使用 FlashAttention 算子融合消灭 HBM 读写。
+  - 若算子为大 GEMM，查看 Tensor Core Utilization 是否达到极限（Compute-Bound）；
+  - 若耗时全被 Softmax、LayerNorm 占满，查看算术强度是否处于斜坡区（Memory-Bound），使用 FlashAttention 算子融合消灭 HBM 读写。
 
 ---
 
@@ -684,9 +684,9 @@ if __name__ == "__main__":
 2. **定位掉速慢节点（Straggler Detection）的分析绝技**：
    - **现象**：因为 `AllReduce` 是全网同步原语，任何一张卡慢，其余 127 张卡必须在通信算子处原地挂起等待；所以在正常卡上，`ncclKernel_AllReduce` 会显得异常漫长（比如耗时 50ms）；
    - **破案手法**：
-     1. 对比不同 Rank 的 Trace 时间线；
-     2. **慢节点特征**：在慢节点（掉速卡）上，进入 `AllReduce` 之前的前向/反向计算时间明显比其他卡长，但其在 `ncclKernel` 上的耗时极短（因为它一到，全员立刻同步完成）；
-     3. **正常节点特征**：前向/反向计算极快完成，但在 `ncclKernel` 上呈现漫长的等待条；
+  1. 对比不同 Rank 的 Trace 时间线；
+  2. **慢节点特征**：在慢节点（掉速卡）上，进入 `AllReduce` 之前的前向/反向计算时间明显比其他卡长，但其在 `ncclKernel` 上的耗时极短（因为它一到，全员立刻同步完成）；
+  3. **正常节点特征**：前向/反向计算极快完成，但在 `ncclKernel` 上呈现漫长的等待条；
    - **归因**：由此即可 100% 确定掉速的物理机器与网卡编号，排查硬件降频（Thermal Throttling）或 PCIe 传输降级。
 
 

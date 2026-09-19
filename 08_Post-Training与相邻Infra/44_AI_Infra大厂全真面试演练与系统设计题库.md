@@ -150,84 +150,84 @@
 1. **模型权重（Weights）**：
    通过 TP=8 与 PP=8 切分后，单卡持有的物理权重参数量为 $\frac{\Phi}{TP \times PP} = \frac{405\text{B}}{64} \approx 6.33\text{B}$。
 
-   $$
-   M_{\text{weight}} = 6.33\text{B} \times 2\text{ bytes} \approx 12.66\text{ GB}
-   $$
+$$
+M_{\text{weight}} = 6.33\text{B} \times 2\text{ bytes} \approx 12.66\text{ GB}
+$$
 
 2. **梯度（Gradients）**：
 
-   $$
-   M_{\text{grad}} = 6.33\text{B} \times 2\text{ bytes} \approx 12.66\text{ GB}
-   $$
+$$
+M_{\text{grad}} = 6.33\text{B} \times 2\text{ bytes} \approx 12.66\text{ GB}
+$$
 
 3. **优化器状态（AdamW Optimizer States）**：
    单参数对应 12 字节（FP32 权重副本 4 字节 + 一阶动量 4 字节 + 二阶动量 4 字节）。
    在 DP=16 组内采用 ZeRO-1 切分：
 
-   $$
-   M_{\text{opt}} = \frac{6.33\text{B} \times 12\text{ bytes}}{DP} = \frac{75.96\text{ GB}}{16} \approx 4.75\text{ GB}
-   $$
+$$
+M_{\text{opt}} = \frac{6.33\text{B} \times 12\text{ bytes}}{DP} = \frac{75.96\text{ GB}}{16} \approx 4.75\text{ GB}
+$$
 
 4. **静态显存总计**：
 
-   $$
-   \text{Static}_{\text{total}} = 12.66 + 12.66 + 4.75 = 30.07\text{ GB}
-   $$
+$$
+\text{Static}_{\text{total}} = 12.66 + 12.66 + 4.75 = 30.07\text{ GB}
+$$
 
 5. **动态激活值显存（Activations）**：
    开启 **FlashAttention-2** 与 **Selective Activation Recomputation（选择性重计算）**。
    设单卡 Micro-batch $b=1$，序列长度 $S=8192$，Hidden Size $H=16384$：
    每个 PP Stage（16 层）重计算后的激活值峰值约为：
 
-   $$
-   \text{Memory}_{\text{act}} \approx 18 \sim 22\text{ GB}
-   $$
+$$
+\text{Memory}_{\text{act}} \approx 18 \sim 22\text{ GB}
+$$
 
 6. **单卡显存峰值总计**：
 
-   $$
-   M_{\text{peak}} = 30.07\text{ GB (静态)} + 22\text{ GB (动态)} \approx 52.07\text{ GB} < 80\text{ GB} \text{（安全余量 35%！）}
-   $$
+$$
+M_{\text{peak}} = 30.07\text{ GB (静态)} + 22\text{ GB (动态)} \approx 52.07\text{ GB} < 80\text{ GB} \text{（安全余量 35%！）}
+$$
 
 ##### 步骤 3：训练耗时、MFU 与机时费估算
 - **单步训练 Token 量（Global Batch Size in Tokens）**：
   设 Micro-batch $b=1$，流水线 Micro-batch 数为 64，则全局 Batch 大小 $B_{\text{global}} = DP \times 64 \times 1 = 1024$ 个序列。
   单步处理 Token 数：
 
-  $$
-  \text{Tokens}_{\text{step}} = 1024 \times 8192 \approx 8.39 \times 10^6\text{ Tokens (约 8.39M Tokens)}
-  $$
+$$
+\text{Tokens}_{\text{step}} = 1024 \times 8192 \approx 8.39 \times 10^6\text{ Tokens (约 8.39M Tokens)}
+$$
 
 - **单步理论计算量（FLOPs）**：
   采用经典大模型计算量法则（单 Token 对应 $6\Phi$ 次浮点运算）：
 
-  $$
-  \text{FLOPs}_{\text{step}} = 6 \times 405 \times 10^9 \times 8.39 \times 10^6 \approx 2.038 \times 10^{19}\text{ FLOPs} = 20.38\text{ EFLOPs}
-  $$
+$$
+\text{FLOPs}_{\text{step}} = 6 \times 405 \times 10^9 \times 8.39 \times 10^6 \approx 2.038 \times 10^{19}\text{ FLOPs} = 20.38\text{ EFLOPs}
+$$
 
 - **千卡硬件理论峰值算力**：
   单张 H100 SXM5 密集 BF16 峰值为 $989\text{ TFLOPS}$。
   1024 卡总算力：
 
-  $$
-  P_{\text{cluster}} = 1024 \times 989 \times 10^{12} \approx 1.012 \times 10^{18}\text{ FLOPS} \approx 1.012\text{ EFLOPS/s}
-  $$
+$$
+P_{\text{cluster}} = 1024 \times 989 \times 10^{12} \approx 1.012 \times 10^{18}\text{ FLOPS} \approx 1.012\text{ EFLOPS/s}
+$$
 
 - **单步实际耗时（在 MFU = 42% 下）**：
 
-  $$
-  T_{\text{step}} = \frac{\text{FLOPs}_{\text{step}}}{P_{\text{cluster}} \times \text{MFU}} = \frac{20.38}{1.012 \times 0.42} \approx \frac{20.38}{0.425} \approx 47.95\text{ 秒}
-  $$
+$$
+T_{\text{step}} = \frac{\text{FLOPs}_{\text{step}}}{P_{\text{cluster}} \times \text{MFU}} = \frac{20.38}{1.012 \times 0.42} \approx \frac{20.38}{0.425} \approx 47.95\text{ 秒}
+$$
 
 - **训练 2T（2 万亿）Tokens 所需总步数与总天数**：
 
-  $$
-  N_{\text{steps}} = \frac{2 \times 10^{12}}{8.39 \times 10^6} \approx 238,380\text{ 步}
-  $$
+$$
+N_{\text{steps}} = \frac{2 \times 10^{12}}{8.39 \times 10^6} \approx 238,380\text{ 步}
+$$
 
-  $$
-  T_{\text{total}} = 238,380 \times 47.95\text{ 秒} \approx 1.143 \times 10^7\text{ 秒} \approx 132.3\text{ 天}
-  $$
+$$
+T_{\text{total}} = 238,380 \times 47.95\text{ 秒} \approx 1.143 \times 10^7\text{ 秒} \approx 132.3\text{ 天}
+$$
 
 - **机时费账单评估**：
   按当前公有云 8 卡 H100 服务器约 180 元/小时计算，128 台单日租金约 $128 \times 180 \times 24 \approx 552,960\text{ 元}$。
@@ -778,35 +778,35 @@ if __name__ == "__main__":
    - 设待同步的数据量为 $S$（Bytes），总共有 $N$ 张 GPU，将数据均分为 $N$ 块；
    - **Phase 1: Scatter-Reduce**：每个 GPU 向相邻节点发送一块数据并接收一块做本地累加。需要环形传递 $N-1$ 轮，每轮发送大小为 $\frac{S}{N}$：
 
-     $$
-     \text{Data}_{\text{scatter}} = (N - 1) \times \frac{S}{N}
-     $$
+$$
+\text{Data}_{\text{scatter}} = (N - 1) \times \frac{S}{N}
+$$
 
    - **Phase 2: AllGather**：将累加完成的结果环形广播给所有卡。同样需要传递 $N-1$ 轮，每轮发送大小为 $\frac{S}{N}$：
 
-     $$
-     \text{Data}_{\text{gather}} = (N - 1) \times \frac{S}{N}
-     $$
+$$
+\text{Data}_{\text{gather}} = (N - 1) \times \frac{S}{N}
+$$
 
 2. **总通信量推导**：
    单卡总共发送的数据量为两阶段之和：
 
-   $$
-   \text{Data}_{\text{total}} = \text{Data}_{\text{scatter}} + \text{Data}_{\text{gather}} = 2 \times \frac{N - 1}{N} \times S
-   $$
+$$
+\text{Data}_{\text{total}} = \text{Data}_{\text{scatter}} + \text{Data}_{\text{gather}} = 2 \times \frac{N - 1}{N} \times S
+$$
 
 3. **极限定量分析**：
    设网络单向物理带宽为 $B$（Bytes/s），总通信时间（忽略极微小的每轮握手延迟 $\alpha$ ）：
 
-   $$
-   T_{\text{AllReduce}} = \frac{2(N - 1)}{N} \times \frac{S}{B}
-   $$
+$$
+T_{\text{AllReduce}} = \frac{2(N - 1)}{N} \times \frac{S}{B}
+$$
 
    当卡数 $N$ 很大时（例如千卡规模 $N=1024$ ）：
 
-   $$
-   \lim_{N \to \infty} \frac{N - 1}{N} = 1 \implies T_{\text{AllReduce}} \approx \frac{2S}{B}
-   $$
+$$
+\lim_{N \to \infty} \frac{N - 1}{N} = 1 \implies T_{\text{AllReduce}} \approx \frac{2S}{B}
+$$
 
    **数学证毕**：通信时间严格逼近常数 $\frac{2S}{B}$，在物理上与卡数 $N$ 彻底解耦，证明了其支撑大规模线性扩展的核心魅力！
 
@@ -850,6 +850,6 @@ if __name__ == "__main__":
 2. **Rail-Optimized（轨优化架构 - 现代 AI 超算事实标准）**：
    - **结构**：打破全互联假设。将每台 8 卡服务器的相同卡号（如所有主机的 GPU 0）集中连入同一组专属的 Leaf 交换机，形成独立的“计算导轨（Rail）”；
    - **优势**：
-     - 在大模型 Tensor Parallel（TP=8）在机内解决的前提下，机间集合通信主要是 Data Parallel（DP）或 Pipeline Parallel（PP）；
-     - 每一条通信流水线被严格限制在对应的 Rail 导轨内部流转，绝大部分通信不需要经过昂贵的顶层 Core 交换机；
-     - **收益**：全网交换机数量与光模块减少 **40% 以上**，网络布线极度清爽整洁，千卡集合通信吞吐反而更稳定可靠！
+  - 在大模型 Tensor Parallel（TP=8）在机内解决的前提下，机间集合通信主要是 Data Parallel（DP）或 Pipeline Parallel（PP）；
+  - 每一条通信流水线被严格限制在对应的 Rail 导轨内部流转，绝大部分通信不需要经过昂贵的顶层 Core 交换机；
+  - **收益**：全网交换机数量与光模块减少 **40% 以上**，网络布线极度清爽整洁，千卡集合通信吞吐反而更稳定可靠！

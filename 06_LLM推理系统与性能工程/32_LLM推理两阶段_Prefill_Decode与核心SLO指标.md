@@ -412,21 +412,21 @@ $$
 #### 案例 A：单请求 Decode 阶段（ $B=1, S=1$ ）
 - **计算量（FLOPs）**：根据 Transformer 的前向计算公式，每个参数对 1 个输入 Token 贡献一次乘法和一次加法（1 MAC = 2 FLOPs），因此总计算量为：
 
-  $$
-  \text{FLOPs} = 2 \times W \times 1 = 2W\text{ FLOPs}
-  $$
+$$
+\text{FLOPs} = 2 \times W \times 1 = 2W\text{ FLOPs}
+$$
 
 - **访存量（Bytes）**：必须把模型的所有权重从 HBM 加载到 SRAM 一次（忽略极小的单 Token KV Cache），数据量为：
 
-  $$
-  \text{Bytes} = 2W\text{ Bytes}
-  $$
+$$
+\text{Bytes} = 2W\text{ Bytes}
+$$
 
 - **单请求 Decode 算术强度**：
 
-  $$
-  I_{\text{decode}}(B=1) = \frac{2W\text{ FLOPs}}{2W\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}} \quad \text{！！！}
-  $$
+$$
+I_{\text{decode}}(B=1) = \frac{2W\text{ FLOPs}}{2W\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}} \quad \text{！！！}
+$$
 
 **惊天结论**：
 在 $B=1$ 时，大模型 Decode 的算术强度**仅仅是 1 FLOP/Byte**！
@@ -449,16 +449,16 @@ $$
 #### 案例 B：Prefill 阶段（ $B=1, S=1024$ ）
 - **计算量**： $S=1024$ 个 Token 同时进网络，每个参数被 1024 个 Token 共同复用：
 
-  $$
-  \text{FLOPs} = 2 \times W \times 1024 = 2048W\text{ FLOPs}
-  $$
+$$
+\text{FLOPs} = 2 \times W \times 1024 = 2048W\text{ FLOPs}
+$$
 
 - **访存量**：静态权重依然只从 HBM 读取一次，数据量为 $2W\text{ Bytes}$（暂时忽略 Attention 激活值）：
 - **Prefill 算术强度**：
 
-  $$
-  I_{\text{prefill}} = \frac{2048W}{2W} = \mathbf{1024\text{ FLOP/Byte}}
-  $$
+$$
+I_{\text{prefill}} = \frac{2048W}{2W} = \mathbf{1024\text{ FLOP/Byte}}
+$$
 
 因为 $1024 \gg 295$，Prefill 远远落在了水平的 Compute-Bound 区域！H100 的 Tensor Core 能够全速满血轰鸣。
 
@@ -473,16 +473,16 @@ $$
 审视 Decode 的算术强度公式：如果我们把并发请求打包成一个大小为 $B$ 的 Batch，输入维度变为 $[B, 1, d_{\text{model}}]$：
 - **计算量**： $B$ 个 Token 同时计算，总运算量线性增加为：
 
-  $$
-  \text{FLOPs} = 2 \times W \times B
-  $$
+$$
+\text{FLOPs} = 2 \times W \times B
+$$
 
 - **权重访存量**：妙处正在于此——**这 $B$ 个 Token 共享相同的模型权重！** 模型权重依然只需要从 HBM 读取一次，权重搬运量仍为 $2W\text{ Bytes}$（假设忽略随 $B$ 增长的 KV Cache 访存）：
 - **组批后的算术强度**：
 
-  $$
-  I_{\text{decode}}(B) \approx \frac{2 \times W \times B}{2W} = \mathbf{B\text{ FLOP/Byte}}
-  $$
+$$
+I_{\text{decode}}(B) \approx \frac{2 \times W \times B}{2W} = \mathbf{B\text{ FLOP/Byte}}
+$$
 
 **这一推导揭示了为什么整个大模型推理工程都在拼了命做 Batching：**
 - 当 $B=1$ 时， $I = 1\text{ FLOP/Byte}$，利用率 0.3%；
@@ -517,9 +517,9 @@ $$
 - 生成第 $S$ 个 Token 时，必须把前 $S-1$ 个历史 Token 全量重算一遍；
 - 总浮点运算量关于序列长度呈现悲惨的二次方爆炸：
 
-  $$
-  \sum_{t=1}^S \mathcal{O}(t) = \mathcal{O}(S^2)
-  $$
+$$
+\sum_{t=1}^S \mathcal{O}(t) = \mathcal{O}(S^2)
+$$
 
 **做 KV Cache（空间换时间）**：
 - 在第 1 步（Prefill）算完后，把所有 Prompt Token 的 $K$ 和 $V$ 矩阵保存在显存中；
@@ -528,9 +528,9 @@ $$
 - $q_t$ 直接与显存里的全量历史 $K_{1:t}, V_{1:t}$ 做点乘（此时只需一次矩阵-向量乘法）；
 - 每步计算量从 $O(t)$ 降为 $O(1)$，全流程计算量降至线性：
 
-  $$
-  \sum_{t=1}^S \mathcal{O}(1) = \mathcal{O}(S)
-  $$
+$$
+\sum_{t=1}^S \mathcal{O}(1) = \mathcal{O}(S)
+$$
 
 代价是什么？**代价是显存必须像蓄水池一样，永远为所有并发请求保留不断变长的历史 $K$ 和 $V$ 张量！**
 
@@ -597,16 +597,16 @@ $$
 - 单个 Token 占用 $320\text{ KB}$；
 - **长文本场景（32K 上下文）**：
 
-  $$
-  \text{单请求 KV Cache} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}} \quad \text{！！！}
-  $$
+$$
+\text{单请求 KV Cache} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}} \quad \text{！！！}
+$$
 
   仅仅这一个长文本会话，光是它的 KV 历史就要吃掉一张 A100 80GB 卡上超过八分之一的显存！
 - **并发场景（并发数 $B=64$，平均长度 4K）**：
 
-  $$
-  \text{总 KV Cache} = 64 \times 4096 \times 320\text{ KB} \approx \mathbf{83.88\text{ GB}}
-  $$
+$$
+\text{总 KV Cache} = 64 \times 4096 \times 320\text{ KB} \approx \mathbf{83.88\text{ GB}}
+$$
 
   整整需要一张额外的 80GB GPU 才能装得下这些缓存！
 
@@ -716,9 +716,9 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 - **定义**：从客户端发送 HTTP/gRPC 请求开始，到客户端接收并渲染出**第一个生成的 Token** 的完整耗时；
 - **物理构成**：
 
-  $$
-  \text{TTFT} = T_{\text{network-in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network-out}}
-  $$
+$$
+\text{TTFT} = T_{\text{network-in}} + T_{\text{queue}} + T_{\text{tokenize}} + T_{\text{prefill}} + T_{\text{network-out}}
+$$
 
 - **核心主导项**：在服务端高负载排队时受 $T_{\text{queue}}$ 主导；在平稳运行时受 $T_{\text{prefill}}$ 主导；
 - **用户心智阈值**：人机交互黄金定律规定，TTFT 超过 **1.0 秒** 用户便开始感知迟钝，超过 **2.0 秒** 会引发用户二次刷新或放弃任务。
@@ -727,9 +727,9 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 - **定义**：在进入自回归流式输出后，相邻两个 Token 之间的平均吐字时间间隔；
 - **业界标准计量（NVIDIA GenAI-Perf 口径）**：
 
-  $$
-  \text{TPOT} = \text{ITL} = \frac{\text{E2E Latency} - \text{TTFT}}{S_{\text{out}} - 1}
-  $$
+$$
+\text{TPOT} = \text{ITL} = \frac{\text{E2E Latency} - \text{TTFT}}{S_{\text{out}} - 1}
+$$
 
 - **用户心智阈值**：
   - 人类的正常默读速度约为每秒 5~10 个汉字/单词（对应 TPOT 为 $100 \sim 200\text{ ms}$ ）；
@@ -739,9 +739,9 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 #### 3. E2E Latency（端到端总延迟）
 - **数学建模**：
 
-  $$
-  \text{Latency}_{\text{E2E}} = \text{TTFT} + \text{TPOT} \times (S_{\text{out}} - 1)
-  $$
+$$
+\text{Latency}_{\text{E2E}} = \text{TTFT} + \text{TPOT} \times (S_{\text{out}} - 1)
+$$
 
 > ⚠️ **生产架构决策暗礁：你的场景被谁主导？**
 > - **短输出场景（如搜索引擎摘要、分类标注、 $S_{\text{out}} = 20$ ）**：
@@ -1028,16 +1028,16 @@ graph TD
 以 LLaMA-3 70B（80 层，8 个 KV 头，FP16，单 Token 约 320 KB）为例：
 - 一个 **32,768 Token（32K）的长上下文请求**，其生成的 KV Cache 总量高达：
 
-  $$
-  \text{KV Size} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}}
-  $$
+$$
+\text{KV Size} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}}
+$$
 
 - 假设集群配备了工业顶级的 **400 Gbps InfiniBand / RoCE 网卡**（单向理论有效带宽约为 $45\sim 48\text{ GB/s}$ ）；
 - 纯网络硬件传输这一份 KV Cache 的理论物理耗时下限为：
 
-  $$
-  T_{\text{network}} = \frac{10.48\text{ GB}}{48\text{ GB/s}} \approx \mathbf{218\text{ ms}} \quad \text{！！！}
-  $$
+$$
+T_{\text{network}} = \frac{10.48\text{ GB}}{48\text{ GB/s}} \approx \mathbf{218\text{ ms}} \quad \text{！！！}
+$$
 
 如果加上网卡驱动协议栈开销、两端 GPU Direct RDMA（GDR）内存注册与同步耗时，**网络传输本身就要额外给用户的首字延迟（TTFT）硬生生加上 250~300ms！**
 
@@ -1468,58 +1468,58 @@ if __name__ == "__main__":
 **步骤一：手算静态模型权重显存**
 - 70B 模型（700 亿参数），半精度 FP16（每参数 2 字节）：
 
-  $$
-  \text{Memory}_{\text{Weights}} = 70 \times 10^9 \times 2\text{ Bytes} = 140\text{ GB}
-  $$
+$$
+\text{Memory}_{\text{Weights}} = 70 \times 10^9 \times 2\text{ Bytes} = 140\text{ GB}
+$$
 
 - 在 8 卡 H100（TP=8）集群上，单卡均摊静态权重为：
 
-  $$
-  \text{Weight}_{\text{per-GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}
-  $$
+$$
+\text{Weight}_{\text{per-GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}
+$$
 
 **步骤二：手算动态 KV Cache 总显存**
 - LLaMA-3 70B 架构参数：层数 $L = 80$， $H_{\text{kv}} = 8$， $d_{\text{head}} = 128$， $\text{Precision} = 2$ 字节；
 - 单 Token 全局 KV 增量：
 
-  $$
-  \text{KV}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = 327,680\text{ Bytes} \approx \mathbf{320\text{ KB/Token}}
-  $$
+$$
+\text{KV}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = 327,680\text{ Bytes} \approx \mathbf{320\text{ KB/Token}}
+$$
 
 - 并发 $B = 128$，平均长度 $S = 4096$：
 
-  $$
-  \text{KV}_{\text{Total}} = 128 \times 4096 \times 320\text{ KB} = 128 \times 4096 \times 0.3125\text{ MB} = 163,840\text{ MB} = \mathbf{160\text{ GB}}
-  $$
+$$
+\text{KV}_{\text{Total}} = 128 \times 4096 \times 320\text{ KB} = 128 \times 4096 \times 0.3125\text{ MB} = 163,840\text{ MB} = \mathbf{160\text{ GB}}
+$$
 
 - 在 TP=8 下，KV 头数按卡均分（每张卡分到 $8 / 8 = 1$ 个 KV 头），单卡均摊 KV Cache 为：
 
-  $$
-  \text{KV}_{\text{per-GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}
-  $$
+$$
+\text{KV}_{\text{per-GPU}} = \frac{160\text{ GB}}{8} = \mathbf{20.0\text{ GB}}
+$$
 
 - **单卡显存总占用**：
 
-  $$
-  \text{Total}_{\text{per-GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}
-  $$
+$$
+\text{Total}_{\text{per-GPU}} = 17.5\text{ GB (权重)} + 20.0\text{ GB (KV)} = \mathbf{37.5\text{ GB}}
+$$
 
   （完全安全地落在 H100 80GB 的显存预算内，剩余约 42.5GB 充当额外安全裕量）。
 
 **步骤三：推导 H100 上的单步理论 TPOT 物理下限**
 - 单卡单步需要从 HBM 搬运的数据量：
 
-  $$
-  \text{Data}_{\text{per-step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}
-  $$
+$$
+\text{Data}_{\text{per-step}} = \text{静态权重} + \text{全量历史 KV} = 17.5\text{ GB} + 20.0\text{ GB} = \mathbf{37.5\text{ GB}}
+$$
 
 - 单张 H100 SXM5 的物理理论显存带宽为 $B_{\text{peak}} = 3.35\text{ TB/s} = 3350\text{ GB/s}$；
 - 假定显存总线带宽利用率为极高水平的 80%（有效带宽 $3350 \times 0.8 = 2680\text{ GB/s}$ ）；
 - 单步仅搬运数据所需的物理耗时下限为：
 
-  $$
-  T_{\text{step-min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}
-  $$
+$$
+T_{\text{step-min}} = \frac{37.5\text{ GB}}{2680\text{ GB/s}} \approx 0.014\text{ 秒} = \mathbf{14.0\text{ ms}}
+$$
 
 - **标准答案结论**：在并发 128、4K 上下文下，单卡仅需 37.5GB 显存；H100 上的单步纯搬运理论 TPOT 下限约为 **14ms 左右**（对应单用户感知流速最高约 71 Token/s）。
 

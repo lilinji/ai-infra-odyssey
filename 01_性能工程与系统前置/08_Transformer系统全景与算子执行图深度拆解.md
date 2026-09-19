@@ -106,9 +106,9 @@ math: true
   - [4.1 为什么 Transformer 天生是个“词序脸盲”？排列等变性与绝对位置缺失](#41-为什么-transformer-天生是个词序脸盲排列等变性与绝对位置缺失)
   - [4.2 经典绝对位置编码：Sinusoidal 正余弦函数的时钟刻度模型与局限](#42-经典绝对位置编码sinusoidal-正余弦函数的时钟刻度模型与局限)
   - [4.3 现代大模型霸主：RoPE（旋转位置编码）的 2D 复数几何魔术](#43-现代大模型霸主rope旋转位置编码的-2d-复数几何魔术)
-    - [4.3.1 2D 平面旋转矩阵推导](#431-2d-平面旋转矩阵推导)
-    - [4.3.2 复数内积：为什么绝对位置旋转能自然涌现相对距离 $(m - n)$？](#432-复数内积为什么绝对位置旋转能自然涌现相对距离-m---n)
-    - [4.3.3 RoPE 的 CUDA Kernel 实现：纯逐元素旋转与零额外显存分配](#433-rope-的-cuda-kernel-实现纯逐元素旋转与零额外显存分配)
+  - [4.3.1 2D 平面旋转矩阵推导](#431-2d-平面旋转矩阵推导)
+  - [4.3.2 复数内积：为什么绝对位置旋转能自然涌现相对距离 $(m - n)$？](#432-复数内积为什么绝对位置旋转能自然涌现相对距离-m---n)
+  - [4.3.3 RoPE 的 CUDA Kernel 实现：纯逐元素旋转与零额外显存分配](#433-rope-的-cuda-kernel-实现纯逐元素旋转与零额外显存分配)
 - [5. 归一化与残差连接——深层网络的定海神针](#5-归一化与残差连接深层网络的定海神针)
   - [5.1 残差连接（Residual Connection）：梯度无损直通的高速公路](#51-残差连接residual-connection梯度无损直通的高速公路)
   - [5.2 LayerNorm vs RMSNorm：均方根归一化如何省去内存扫描提速 7%？](#52-layernorm-vs-rmsnorm均方根归一化如何省去内存扫描提速-7)
@@ -215,21 +215,21 @@ AI Infra 领域每一项声名赫赫的硬核优化技术，都能在 Transforme
 
 1. **输入阶段（Input Stage）**：
 
-   $$
-   \text{Prompt Tokens} \longrightarrow \text{Embedding Lookup (词表查找)} \longrightarrow \text{注入位置编码 (如 RoPE)}
-   $$
+$$
+\text{Prompt Tokens} \longrightarrow \text{Embedding Lookup (词表查找)} \longrightarrow \text{注入位置编码 (如 RoPE)}
+$$
 
 2. **核心堆叠阶段（Repeated $N$ Blocks）**：
 
-   $$
-   X_{l+1} = X_l + \text{Self-Attention}(\text{Norm}(X_l)) + \text{FFN}(\text{Norm}(\dots))
-   $$
+$$
+X_{l+1} = X_l + \text{Self-Attention}(\text{Norm}(X_l)) + \text{FFN}(\text{Norm}(\dots))
+$$
 
 3. **输出阶段（Output Stage）**：
 
-   $$
-   \text{Final Norm} \longrightarrow \text{LM Head 线性映射} \longrightarrow \text{Logits} \longrightarrow \text{Softmax 采样预测}
-   $$
+$$
+\text{Final Norm} \longrightarrow \text{LM Head 线性映射} \longrightarrow \text{Logits} \longrightarrow \text{Softmax 采样预测}
+$$
 
 ---
 
@@ -384,31 +384,31 @@ $$
 1. **方差推导（Variance Derivation）**：  
    假设向量 $q$ 和 $k$ 的每个分量 $q_i, k_i$ 都是均值为 0、方差为 1 的独立同分布随机变量：
 
-   $$
-   \mathbb{E}[q_i] = 0, \quad \text{Var}(q_i) = 1; \quad \mathbb{E}[k_i] = 0, \quad \text{Var}(k_i) = 1
-   $$
+$$
+\mathbb{E}[q_i] = 0, \quad \text{Var}(q_i) = 1; \quad \mathbb{E}[k_i] = 0, \quad \text{Var}(k_i) = 1
+$$
 
    则两向量点积为：
 
-   $$
-   Z = q \cdot k = \sum_{i=1}^{d_k} q_i k_i
-   $$
+$$
+Z = q \cdot k = \sum_{i=1}^{d_k} q_i k_i
+$$
 
    根据独立随机变量的期望与方差性质：
 
-   $$
-   \mathbb{E}[q_i k_i] = \mathbb{E}[q_i] \mathbb{E}[k_i] = 0
-   $$
+$$
+\mathbb{E}[q_i k_i] = \mathbb{E}[q_i] \mathbb{E}[k_i] = 0
+$$
 
-   $$
-   \text{Var}(q_i k_i) = \mathbb{E}[(q_i k_i)^2] - (\mathbb{E}[q_i k_i])^2 = \text{Var}(q_i) \text{Var}(k_i) = 1 \times 1 = 1
-   $$
+$$
+\text{Var}(q_i k_i) = \mathbb{E}[(q_i k_i)^2] - (\mathbb{E}[q_i k_i])^2 = \text{Var}(q_i) \text{Var}(k_i) = 1 \times 1 = 1
+$$
 
    对 $d_k$ 个独立分量求和，点积 $Z$ 的方差为：
 
-   $$
-   \text{Var}(Z) = \text{Var}\left(\sum_{i=1}^{d_k} q_i k_i\right) = \sum_{i=1}^{d_k} \text{Var}(q_i k_i) = d_k
-   $$
+$$
+\text{Var}(Z) = \text{Var}\left(\sum_{i=1}^{d_k} q_i k_i\right) = \sum_{i=1}^{d_k} \text{Var}(q_i k_i) = d_k
+$$
 
    **标准差（Standard Deviation）为 $\sqrt{d_k}$！**
 2. **后果：Softmax 饱和与梯度消失**：  
@@ -531,9 +531,9 @@ $$
 2. **SwiGLU FFN 模块参数量**：
    - 采用现代 SwiGLU 结构，中间隐藏维度通常设置为 $d_{\text{ff}} = \frac{8}{3} d \approx 11008$；
    - 包含 $W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$ 三个矩阵：
-     - $W_{\text{gate}} \in \mathbb{R}^{4096 \times 11008} \implies 45.09\text{ M}$
-     - $W_{\text{up}} \in \mathbb{R}^{4096 \times 11008} \implies 45.09\text{ M}$
-     - $W_{\text{down}} \in \mathbb{R}^{11008 \times 4096} \implies 45.09\text{ M}$
+  - $W_{\text{gate}} \in \mathbb{R}^{4096 \times 11008} \implies 45.09\text{ M}$
+  - $W_{\text{up}} \in \mathbb{R}^{4096 \times 11008} \implies 45.09\text{ M}$
+  - $W_{\text{down}} \in \mathbb{R}^{11008 \times 4096} \implies 45.09\text{ M}$
    - FFN 参数量总计 $= 3 \times 45.09\text{ M} \approx \mathbf{135.27\text{ M}}$（占单层整整 **67%**！）；
 3. **结论**：**在大语言模型中，整整三分之二（67%）的知识与参数量都储存在 FFN 模块中！** 这也是为什么 MoE（混合专家模型）优化专门针对 FFN 进行专家切分。
 
@@ -549,23 +549,23 @@ f(x) = max(0, x)                 f(x) = x * P(X <= x)             f(x) = Swish(x
 
 1. **第一代：ReLU**
 
-   $$
-   \text{ReLU}(x) = \max(0, x)
-   $$
+$$
+\text{ReLU}(x) = \max(0, x)
+$$
 
    简单极速，但在 $x < 0$ 时导数严格为 0，深层网络中容易发生大面积神经元永久坏死（Dying ReLU）；
 2. **第二代：GELU（高斯误差线性单元，GPT-2/3、BERT 标配）**
 
-   $$
-   \text{GELU}(x) = x \cdot \Phi(x) = x \cdot P(X \le x), \quad X \sim \mathcal{N}(0, 1)
-   $$
+$$
+\text{GELU}(x) = x \cdot \Phi(x) = x \cdot P(X \le x), \quad X \sim \mathcal{N}(0, 1)
+$$
 
    引入了概率平滑思想，输入越小被抑制的概率越大，但保留微弱梯度，训练平稳；
 3. **第三代：SwiGLU（门控线性单元，LLaMA、Qwen、DeepSeek 标配）**
 
-   $$
-   \text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
-   $$
+$$
+\text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
+$$
 
    其中 $\text{Swish}(z) = z \cdot \sigma(\beta z)$， $\odot$ 为逐元素哈达玛积（Hadamard Product）。
    - **第一性原理优势**：引入了 **双通道门控（Gating）** 机制。$W_{\text{up}}$ 负责生成纯粹的特征内容，而 $W_{\text{gate}}$ 负责动态学习一个 $0 \sim 1$ 的门控系数，精准控制每个通道信息的通过率，非线性表达能力出现质的飞跃！
@@ -682,18 +682,18 @@ $$
 
 1. **传统 LayerNorm（带均值与方差）**：
 
-   $$
-   \text{LN}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta, \quad \mu = \frac{1}{d}\sum_{i=1}^d x_i, \quad \sigma^2 = \frac{1}{d}\sum_{i=1}^d (x_i - \mu)^2
-   $$
+$$
+\text{LN}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta, \quad \mu = \frac{1}{d}\sum_{i=1}^d x_i, \quad \sigma^2 = \frac{1}{d}\sum_{i=1}^d (x_i - \mu)^2
+$$
 
    缺点：计算 $\mu$ 需要遍历一遍张量，计算 $\sigma^2$ 又需要再遍历一遍，访存开销大；
 2. **现代标配 RMSNorm（Root Mean Square Normalization）**：  
    Zhang & Sennrich (2019) 证明，LayerNorm 的成功核心在于**尺度缩放不变性**，均值平移（ $\mu$ ）几乎没有贡献。  
    RMSNorm 直接舍弃均值计算：
 
-   $$
-   \text{RMSNorm}(x) = \frac{x}{\text{RMS}(x)} \odot \gamma, \quad \text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2 + \epsilon}
-   $$
+$$
+\text{RMSNorm}(x) = \frac{x}{\text{RMS}(x)} \odot \gamma, \quad \text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2 + \epsilon}
+$$
 
    - **硬件性能收益**：少了一遍全局 Reduce 规约求和与均值相减，减少了片上寄存器开销与 HBM 访存，单算子执行速度在 GPU 上提升 **约 7%~15%**！
 
@@ -753,59 +753,59 @@ $$
 
 - **Attention 投影矩阵**：
 
-  $$
-  W_Q, W_K, W_V, W_O \implies 4 \times (4096 \times 4096) = 4 \times 16,777,216 = \mathbf{67,108,864} \approx \mathbf{67.11\text{ M}}
-  $$
+$$
+W_Q, W_K, W_V, W_O \implies 4 \times (4096 \times 4096) = 4 \times 16,777,216 = \mathbf{67,108,864} \approx \mathbf{67.11\text{ M}}
+$$
 
 - **FFN SwiGLU 矩阵**：
 
-  $$
-  W_{\text{gate}}, W_{\text{up}}, W_{\text{down}} \implies 3 \times (4096 \times 11008) = 3 \times 45,088,768 = \mathbf{135,266,304} \approx \mathbf{135.27\text{ M}}
-  $$
+$$
+W_{\text{gate}}, W_{\text{up}}, W_{\text{down}} \implies 3 \times (4096 \times 11008) = 3 \times 45,088,768 = \mathbf{135,266,304} \approx \mathbf{135.27\text{ M}}
+$$
 
 - **2 个 RMSNorm 缩放系数**：
 
-  $$
-  2 \times 4096 = \mathbf{8,192} \approx \mathbf{8.19\text{ K}}
-  $$
+$$
+2 \times 4096 = \mathbf{8,192} \approx \mathbf{8.19\text{ K}}
+$$
 
 - **单层 Block 参数总计**：
 
-  $$
-  67,108,864 + 135,266,304 + 8,192 = \mathbf{202,383,360} \approx \mathbf{202.38\text{ M}}
-  $$
+$$
+67,108,864 + 135,266,304 + 8,192 = \mathbf{202,383,360} \approx \mathbf{202.38\text{ M}}
+$$
 
 ### 2. 全模型总参数量精确手算：
 
 - **32 层 Decoder Blocks**：
 
-  $$
-  32 \times 202,383,360 = \mathbf{6,476,267,520} \approx \mathbf{6.476\text{ B}}
-  $$
+$$
+32 \times 202,383,360 = \mathbf{6,476,267,520} \approx \mathbf{6.476\text{ B}}
+$$
 
 - **Token Embedding 查找表**：
 
-  $$
-  32000 \times 4096 = \mathbf{131,072,000} \approx \mathbf{131.07\text{ M}}
-  $$
+$$
+32000 \times 4096 = \mathbf{131,072,000} \approx \mathbf{131.07\text{ M}}
+$$
 
 - **Final RMSNorm**：
 
-  $$
-  4096 \approx \mathbf{4.1\text{ K}}
-  $$
+$$
+4096 \approx \mathbf{4.1\text{ K}}
+$$
 
 - **LM Head 输出头（不共享权重时）**：
 
-  $$
-  4096 \times 32000 = \mathbf{131,072,000} \approx \mathbf{131.07\text{ M}}
-  $$
+$$
+4096 \times 32000 = \mathbf{131,072,000} \approx \mathbf{131.07\text{ M}}
+$$
 
 - **全模型理论参数精确总和**：
 
-  $$
-  6,476,267,520 + 131,072,000 + 4096 + 131,072,000 = \mathbf{6,738,415,616} \approx \mathbf{6.738\text{ B}} \quad (\text{即工业界通称的 7B 模型})
-  $$
+$$
+6,476,267,520 + 131,072,000 + 4096 + 131,072,000 = \mathbf{6,738,415,616} \approx \mathbf{6.738\text{ B}} \quad (\text{即工业界通称的 7B 模型})
+$$
 
 ---
 
@@ -815,15 +815,15 @@ $$
 
 1. **静态模型权重（Weights, FP16/BF16）**：每个参数占 2 字节
 
-   $$
-   M_{\text{weights}} = 6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
-   $$
+$$
+M_{\text{weights}} = 6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
+$$
 
 2. **反向传播梯度（Gradients, FP16/BF16）**：每个参数占 2 字节
 
-   $$
-   M_{\text{grads}} = 6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
-   $$
+$$
+M_{\text{grads}} = 6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
+$$
 
 3. **AdamW 优化器状态（Optimizer States）**：每个参数需要 16 字节
    - FP32 Master Weights 副本（4 字节）
@@ -831,15 +831,15 @@ $$
    - FP32 二阶动量 Variance（4 字节）
    - 额外的临时梯度转换缓冲（4 字节）
 
-     $$
-     M_{\text{opt}} = 6.74\text{B} \times 16\text{ Bytes} \approx \mathbf{107.84\text{ GB}}
-     $$
+$$
+M_{\text{opt}} = 6.74\text{B} \times 16\text{ Bytes} \approx \mathbf{107.84\text{ GB}}
+$$
 
 4. **训练静态显存基线**：
 
-   $$
-   M_{\text{static}} = 13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}}
-   $$
+$$
+M_{\text{static}} = 13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}}
+$$
 
    > 💡 7B 模型的静态训练显存基线高达 134.8GB，远超单张 A100（80GB）容量！必须通过 **ZeRO-1/2/3 显存切分** 将 107.8GB 优化器状态均匀打散到 8 张 GPU 上（单卡优化器显存降为 $107.84 / 8 = 13.48\text{ GB}$ ），才能在单机 8 卡上稳健训练。
 
@@ -906,15 +906,15 @@ $$
 
 - 单个长对话请求（序列长 **4096 Token**）：
 
-  $$
-  4096 \times 512\text{ KB} = \mathbf{2.0\text{ GB}}
-  $$
+$$
+4096 \times 512\text{ KB} = \mathbf{2.0\text{ GB}}
+$$
 
 - 当线上并发请求达到 **Batch Size = 32** 时：
 
-  $$
-  32 \times 2.0\text{ GB} = \mathbf{64.0\text{ GB}}!
-  $$
+$$
+32 \times 2.0\text{ GB} = \mathbf{64.0\text{ GB}}!
+$$
 
   仅仅 KV Cache 就吃光了一张 80GB A100 的大部分空间！
 
@@ -1268,35 +1268,35 @@ if __name__ == "__main__":
    设二维实数向量 $q = [q_0, q_1]^T \in \mathbb{R}^2$。将其视作复数： $q = q_0 + i q_1 = r_q e^{i \phi_q}$；  
    在位置 $m$ 处，旋转矩阵 $\mathcal{R}_m$ 对应复数乘法算子 $e^{i m \theta}$。旋转后的向量为：
 
-   $$
-   \tilde{q}_m = q \cdot e^{i m \theta} = r_q e^{i (\phi_q + m \theta)}
-   $$
+$$
+\tilde{q}_m = q \cdot e^{i m \theta} = r_q e^{i (\phi_q + m \theta)}
+$$
 
 2. **同理构造 Key 向量**：  
    设 $k = k_0 + i k_1 = r_k e^{i \phi_k}$，在位置 $n$ 处旋转后为：
 
-   $$
-   \tilde{k}_n = k \cdot e^{i n \theta} = r_k e^{i (\phi_k + n \theta)}
-   $$
+$$
+\tilde{k}_n = k \cdot e^{i n \theta} = r_k e^{i (\phi_k + n \theta)}
+$$
 
 3. **计算实数点积与复数内积的恒等关系**：  
    两个 2D 实向量的点积，严格等于其对应复数与其共轭复数相乘的实部：
 
-   $$
-   \langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( \tilde{q}_m \cdot \tilde{k}_n^* \right)
-   $$
+$$
+\langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( \tilde{q}_m \cdot \tilde{k}_n^* \right)
+$$
 
    代入复数指数式：
 
-   $$
-   \tilde{q}_m \cdot \tilde{k}_n^* = \left( q e^{i m \theta} \right) \left( k e^{i n \theta} \right)^* = (q k^*) \cdot e^{i m \theta} \cdot e^{-i n \theta} = (q k^*) \cdot e^{i (m - n) \theta}
-   $$
+$$
+\tilde{q}_m \cdot \tilde{k}_n^* = \left( q e^{i m \theta} \right) \left( k e^{i n \theta} \right)^* = (q k^*) \cdot e^{i m \theta} \cdot e^{-i n \theta} = (q k^*) \cdot e^{i (m - n) \theta}
+$$
 
    展开其实部：
 
-   $$
-   \langle \tilde{q}_m, \tilde{k}_n \rangle = r_q r_k \cos\left( (\phi_q - \phi_k) + (m - n) \theta \right) = g(q, k, m - n)
-   $$
+$$
+\langle \tilde{q}_m, \tilde{k}_n \rangle = r_q r_k \cos\left( (\phi_q - \phi_k) + (m - n) \theta \right) = g(q, k, m - n)
+$$
 
 4. **结论**：点积结果中绝对位置 $m$ 和 $n$ 全部抵消，仅剩下相对位置差 $(m - n)$，完美证明了相对位置编码的自然涌现！
 
@@ -1313,28 +1313,28 @@ if __name__ == "__main__":
 
 1. **单 Token 显存手算**：
 
-   $$
-   \text{Mem}_{\text{token}} = 2 \ (\text{K与V}) \times L \ (\text{层数}) \times h_{\text{kv}} \ (\text{KV头数}) \times d_k \ (\text{头维度}) \times 2\text{ Bytes}
-   $$
+$$
+\text{Mem}_{\text{token}} = 2 \ (\text{K与V}) \times L \ (\text{层数}) \times h_{\text{kv}} \ (\text{KV头数}) \times d_k \ (\text{头维度}) \times 2\text{ Bytes}
+$$
 
    代入数值：
 
-   $$
-   \text{Mem}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = \mathbf{327,680\text{ Bytes}} = \mathbf{320\text{ KB/token}}
-   $$
+$$
+\text{Mem}_{\text{token}} = 2 \times 80 \times 8 \times 128 \times 2 = \mathbf{327,680\text{ Bytes}} = \mathbf{320\text{ KB/token}}
+$$
 
 2. **总并发显存手算**：
    - 单个请求（4096 Token）的 KV Cache 大小：
 
-     $$
-     4096 \times 320\text{ KB} = 1,310,720\text{ KB} = \mathbf{1.25\text{ GB}}
-     $$
+$$
+4096 \times 320\text{ KB} = 1,310,720\text{ KB} = \mathbf{1.25\text{ GB}}
+$$
 
    - 64 并发请求的总 KV Cache 显存：
 
-     $$
-     64 \times 1.25\text{ GB} = \mathbf{80.0\text{ GB}}
-     $$
+$$
+64 \times 1.25\text{ GB} = \mathbf{80.0\text{ GB}}
+$$
 
 3. **架构对比与分析**：  
    如果该模型采用原始 MHA（64 对 KV 头），单 Token 显存将高达 $320\text{ KB} \times 8 = 2.56\text{ MB}$，64 并发总显存将达到惊人的 **$640\text{ GB}$（整整 8 张 A100 全被撑爆）**！GQA 将 KV Cache 显存直接压缩了 **87.5%**，使得单机 8 卡能够轻松承载高并发长文本服务。
@@ -1368,28 +1368,28 @@ if __name__ == "__main__":
    设模型参数量为 $P$（以 70B 模型为例，采用 FP16/BF16，每个参数 2 字节）：
    - **FLOPs 计算量**：每个 Token 经过模型前向的所有矩阵乘法，每个参数需要 1 次乘法和 1 次加法，计算量严格为：
 
-     $$
-     \text{FLOPs} = 2P = 2 \times 70 \times 10^9 = \mathbf{1.4 \times 10^{11}\text{ FLOPs}}
-     $$
+$$
+\text{FLOPs} = 2P = 2 \times 70 \times 10^9 = \mathbf{1.4 \times 10^{11}\text{ FLOPs}}
+$$
 
    - **HBM 访存读取量**：因为每生成 1 个 Token 都必须将全部 70B 权重从 HBM 读取到片上寄存器一次，读取权重字节数为：
 
-     $$
-     \text{Memory Transferred} = P \times 2\text{ Bytes} = 70 \times 10^9 \times 2 = \mathbf{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{140\text{ GB}}
-     $$
+$$
+\text{Memory Transferred} = P \times 2\text{ Bytes} = 70 \times 10^9 \times 2 = \mathbf{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{140\text{ GB}}
+$$
 
 2. **算术强度（Arithmetic Intensity）计算**：
 
-   $$
-   AI = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}}
-   $$
+$$
+AI = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}}
+$$
 
 3. **Roofline 模型硬件拐点对比**：
    - NVIDIA A100-SXM4-80GB 的硬件拐点为：
 
-     $$
-     \text{Turning Point} = \frac{\text{Peak Compute}}{\text{Peak Bandwidth}} = \frac{312 \times 10^{12}\text{ FLOP/s}}{2.0 \times 10^{12}\text{ Byte/s}} = \mathbf{156\text{ FLOP/Byte}}
-     $$
+$$
+\text{Turning Point} = \frac{\text{Peak Compute}}{\text{Peak Bandwidth}} = \frac{312 \times 10^{12}\text{ FLOP/s}}{2.0 \times 10^{12}\text{ Byte/s}} = \mathbf{156\text{ FLOP/Byte}}
+$$
 
 4. **归因结论**：  
    Decode 阶段的实际算术强度（ $1.0\text{ FLOP/Byte}$ ）**远小于硬件拐点（ $156\text{ FLOP/Byte}$ ）整整两个数量级**！  

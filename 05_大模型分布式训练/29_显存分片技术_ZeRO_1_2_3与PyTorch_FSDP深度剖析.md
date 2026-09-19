@@ -230,15 +230,15 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
 - 每张卡只接收并保存自己负责更新的那 $\frac{1}{N}$ 梯度分片；
 - **通信量分析**：
 
-  $$
-  \text{ReduceScatter 通信量} = \left(\frac{N-1}{N}\right) \Psi \approx \mathbf{\Psi}
-  $$
+$$
+\text{ReduceScatter 通信量} = \left(\frac{N-1}{N}\right) \Psi \approx \mathbf{\Psi}
+$$
 
   加上更新后的权重 AllGather（ $\Psi$ ），总通信量严格等于：
 
-  $$
-  \Psi + \Psi = \mathbf{2\Psi}
-  $$
+$$
+\Psi + \Psi = \mathbf{2\Psi}
+$$
 
 - **结论**：**单卡静态显存降至 $2\Psi + \frac{14\Psi}{N}$，通信量依然是 $2\Psi$ 零增加！这是工业界性价比极高的模式（PyTorch FSDP 中的 `SHARD_GRAD_OP`）。**
 
@@ -371,9 +371,9 @@ $$
 1. **显存杠杆极大**：单卡显存从 $112\text{ GB}$ 暴跌到 $14\text{ GB}$（节省了整整 **$98\text{ GB}$** 的单卡物理显存！）。这使得原本根本不能跑的模型可以跑了，原本只能设 Batch Size = 1 的任务可以直接拉到 Batch Size = 8；
 2. **机内高带宽完全能够吸收增量**：在具备 NVLink（450~900 GB/s）的单机 8 卡节点内，搬运这额外的 $140\text{ GB}$ 只需要：
 
-   $$
-   \Delta T = \frac{140\text{ GB}}{450\text{ GB/s}} \approx \mathbf{0.31 \text{ s}}（约 0.31 秒）
-   $$
+$$
+\Delta T = \frac{140\text{ GB}}{450\text{ GB/s}} \approx \mathbf{0.31 \text{ s}}（约 0.31 秒）
+$$
 
    而一个 70B 模型单步前向和反向计算耗时通常在 2~3 秒以上。**只要开启预取（Prefetch），这 0.31 秒完全可以 100% 潜伏在计算时间内部，对外呈现出零延迟惩罚！**
 
@@ -902,9 +902,9 @@ DDP 虽好显存死，十六匹量单卡逼；
    - 随后释放完整参数，每张卡仅持有自身负责的 $\frac{1}{N}$ 聚合梯度。
 4. **全流程累加**：
 
-   $$
-   \text{Total Comm} = \underbrace{\Psi_{\text{layer}}}_{\text{前向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 ReduceScatter}} = \mathbf{3\Psi_{\text{layer}}}
-   $$
+$$
+\text{Total Comm} = \underbrace{\Psi_{\text{layer}}}_{\text{前向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 AllGather}} + \underbrace{\Psi_{\text{layer}}}_{\text{反向 ReduceScatter}} = \mathbf{3\Psi_{\text{layer}}}
+$$
 
    累加全模型所有层后，每步单卡总通信量严格为 **$3\Psi$**。
 

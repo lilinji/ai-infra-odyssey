@@ -21,24 +21,24 @@
 - **系统/框架配置参数**：
   - 严禁包裹在 `$...$` 中伪装为数学变量。
   - 必须使用 Markdown 行内代码语法（Inline Code）：
-    - ❌ `$\text{max\\_num\\_batched\\_tokens}$` $\to$ ✅ `` `max_num_batched_tokens` ``
-    - ❌ `$\text{gpus\\_per\\_node}$` $\to$ ✅ `` `gpus_per_node` ``
-    - ❌ `$\text{block\\_table}[b]$` $\to$ ✅ `` `block_table[b]` ``
+  - ❌ `$\text{max\\_num\\_batched\\_tokens}$` $\to$ ✅ `` `max_num_batched_tokens` ``
+  - ❌ `$\text{gpus\\_per\\_node}$` $\to$ ✅ `` `gpus_per_node` ``
+  - ❌ `$\text{block\\_table}[b]$` $\to$ ✅ `` `block_table[b]` ``
 - **片上寄存器与数组访问**：
   - 在公式中表达数组或切片时，采用标准数学下标，严禁加反斜杠转义：
-    - ❌ `r\\_a[i] \times r\\_b[j]` $\to$ ✅ `r_a[i] \times r_b[j]`
+  - ❌ `r\\_a[i] \times r\\_b[j]` $\to$ ✅ `r_a[i] \times r_b[j]`
 - **函数与变换算子**：
   - 使用 `\operatorname{...}` 结合连字符定义：
-    - ❌ `\text{rotate\\_half}(x)` $\to$ ✅ `\operatorname{rotate-half}(x)`
+  - ❌ `\text{rotate\\_half}(x)` $\to$ ✅ `\operatorname{rotate-half}(x)`
 
 ### 准则 3：禁止在 `\mathbf{}` 内裸嵌中文（No Chinese in MathBF）
 - **反模式**：`\mathbf{16\text{ 字节}}`、`\mathbf{20\text{ 步}}`、`\mathbf{0.31\text{ 秒}}`
 - **治理标准**：
   - 公式内部统一使用标准英文计量单位（Bytes, steps, s, GB, TFLOPS）；
   - 中文修饰与量词置于公式外部的正文说明中：
-    - ❌ `= \mathbf{16\text{ 字节}}` $\to$ ✅ `= \mathbf{16 \text{ B}}`（即 16 字节）
-    - ❌ `= \mathbf{20\text{ 步}}` $\to$ ✅ `= \mathbf{20 \text{ steps}}`（20 步）
-    - ❌ `\approx \mathbf{0.31\text{ 秒}}` $\to$ ✅ `\approx \mathbf{0.31 \text{ s}}`（约 0.31 秒）
+  - ❌ `= \mathbf{16\text{ 字节}}` $\to$ ✅ `= \mathbf{16 \text{ B}}`（即 16 字节）
+  - ❌ `= \mathbf{20\text{ 步}}` $\to$ ✅ `= \mathbf{20 \text{ steps}}`（20 步）
+  - ❌ `\approx \mathbf{0.31\text{ 秒}}` $\to$ ✅ `\approx \mathbf{0.31 \text{ s}}`（约 0.31 秒）
 
 ### 准则 4：GitHub GFM 全角标点空格避让（Leading Space Rule）
 GitHub 网页端采用 **GFM (GitHub Flavored Markdown) + MathJax** 管道：
@@ -47,11 +47,11 @@ GitHub 网页端采用 **GFM (GitHub Flavored Markdown) + MathJax** 管道：
   GFM 词法分析器为了防止将货币符号（如 `$100`）或变量名误识别为公式，要求开头的 `$` 必须紧随空白字符、ASCII 标点或处于行首。中文全角字符（`：`、`（`、`，`、`、`、`；`、`！`、`？`）属于 Unicode 非 ASCII 字符，会导致 GFM 词法分析器直接忽略公式定界符，整行退化为死文本！
 - **治理标准**：
   - 中文全角标点后与 `$` 之间**必须保留一个半角空格**：
-    - ❌ `算力上限：$2 \times P$` $\to$ ✅ `算力上限： $2 \times P$`
-    - ❌ `矩阵低秩（$r \ll M$）` $\to$ ✅ `矩阵低秩（ $r \ll M$ ）`
-    - ❌ `包含特征值，$A$` $\to$ ✅ `包含特征值， $A$`
+  - ❌ `算力上限：$2 \times P$` $\to$ ✅ `算力上限： $2 \times P$`
+  - ❌ `矩阵低秩（$r \ll M$）` $\to$ ✅ `矩阵低秩（ $r \ll M$ ）`
+  - ❌ `包含特征值，$A$` $\to$ ✅ `包含特征值， $A$`
   - 或使用 GitHub 官方带反引号转义定界符：
-    - ✅ `算力上限： $`2 \times P`$`
+  - ✅ `算力上限： $`2 \times P`$`
 
 ### 准则 5：块级公式独立成段（Block Math Isolation）
 - **致命反模式**：
@@ -105,10 +105,13 @@ GitHub 网页端采用 **GFM (GitHub Flavored Markdown) + MathJax** 管道：
 本项目提供了全自动化的 GitHub 原生 LaTeX 扫描与格式化工具链：
 
 ```bash
-# 1. 运行自动化合规性校验（支持 CI/CD 流水线）
+# 1. 运行自动化合规性校验（支持 CI/CD 流水线，全面检测标点、下划线与缩进）
 python3 scripts/verify_latex_formulas.py
 
-# 2. 一键自动化格式化全库标点空格（适配 GitHub 原生渲染）
+# 2. 一键自动化规范全库行内公式标点空格（解决中文字符粘连问题）
 python3 scripts/fix_github_latex_spacing.py
+
+# 3. 一键自动化规范全库块级公式顶格与空行隔离（解决列表嵌套与斜体撕裂问题）
+python3 scripts/normalize_latex_blocks.py
 ```
 若存在任何语法错误或 GFM 兼容性反模式，脚本将精准输出文件、行号及违规上下文并给出退出码 `1`。

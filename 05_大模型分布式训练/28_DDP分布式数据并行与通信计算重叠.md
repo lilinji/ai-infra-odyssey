@@ -222,9 +222,9 @@ $$
 - 模型全量梯度数据量为 $\Psi = 4\text{ MB}$；
 - 将数据均匀切分为 $N=4$ 个分块（Chunk），每个 Chunk 大小为：
 
-  $$
-  \text{Chunk Size} = \frac{\Psi}{N} = \frac{4\text{ MB}}{4} = 1\text{ MB}
-  $$
+$$
+\text{Chunk Size} = \frac{\Psi}{N} = \frac{4\text{ MB}}{4} = 1\text{ MB}
+$$
 
 **第一阶段：ReduceScatter 环（累加聚合）**
 - 循环执行 $(N - 1) = 3$ 次数据传输；
@@ -233,9 +233,9 @@ $$
   - Rank 0 持有最终完成的 Chunk 0；Rank 1 持有 Chunk 1；Rank 2 持有 Chunk 2；Rank 3 持有 Chunk 3；
 - **ReduceScatter 阶段每卡发送数据量**：
 
-  $$
-  \text{Data}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
-  $$
+$$
+\text{Data}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
+$$
 
 **第二阶段：AllGather 环（广播分发）**
 - 同样循环执行 $(N - 1) = 3$ 次数据传输；
@@ -243,9 +243,9 @@ $$
 - 3 次传输结束后，所有 4 张卡都同步拥有了完整的 Chunk 0~3！
 - **AllGather 阶段每卡发送数据量**：
 
-  $$
-  \text{Data}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
-  $$
+$$
+\text{Data}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}
+$$
 
 **每卡全流程总通信量手算结果**：
 
@@ -802,9 +802,9 @@ if __name__ == "__main__":
    - 每步传输的数据量为 $\frac{\Psi}{N}$；
    - $(N - 1)$ 步结束后，每张 GPU 恰好持有一份全局累加完成的切片：
 
-     $$
-     \text{Comm}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
-     $$
+$$
+\text{Comm}_{\text{RS}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
+$$
 
 3. **第二阶段：AllGather（全局收集）**：
    - 算法同样执行 $(N - 1)$ 轮迭代步；
@@ -812,15 +812,15 @@ if __name__ == "__main__":
    - 每步传输的数据量同样为 $\frac{\Psi}{N}$；
    - $(N - 1)$ 步结束后，所有 GPU 均拥有完整的 $N$ 个全局聚合切片：
 
-     $$
-     \text{Comm}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
-     $$
+$$
+\text{Comm}_{\text{AG}} = (N - 1) \times \frac{\Psi}{N} = \frac{N-1}{N} \Psi \quad (\text{Bytes})
+$$
 
 4. **两阶段总和**：
 
-   $$
-   \text{Comm}_{\text{Total}} = \text{Comm}_{\text{RS}} + \text{Comm}_{\text{AG}} = 2 \times \left( \frac{N - 1}{N} \right) \Psi \quad (\text{Bytes})
-   $$
+$$
+\text{Comm}_{\text{Total}} = \text{Comm}_{\text{RS}} + \text{Comm}_{\text{AG}} = 2 \times \left( \frac{N - 1}{N} \right) \Psi \quad (\text{Bytes})
+$$
 
    当 $N$ 较大时， $\frac{N-1}{N} \to 1$，单卡通信总量严格收敛为 **$2\Psi$**。
 
@@ -857,5 +857,5 @@ if __name__ == "__main__":
    - 在训练循环中插入 `torch.profiler.profile` 并开启 `record_shapes=True, with_stack=True`；
    - 导出并在 Chrome 浏览器中打开 `chrome://tracing` 查看时间线（Timeline）；
    - **判定准则**：
-     - 若在 CPU-GPU 时间线上观察到大段空白，且 `ncclKernel_AllReduce` 占据了大量时间，点击该算子查看其内部的等待耗时；
-     - 对比所有 Rank 的 Profiler 时间线：如果所有正常 Rank 的计算早已结束，全部堆积在 `cudaStreamSynchronize` 或 NCCL 等待上，而某一个特定 Rank 的前向/反向 GEMM 耗时明显拉长，即可一枪毙命精准锁定该故障慢节点！
+  - 若在 CPU-GPU 时间线上观察到大段空白，且 `ncclKernel_AllReduce` 占据了大量时间，点击该算子查看其内部的等待耗时；
+  - 对比所有 Rank 的 Profiler 时间线：如果所有正常 Rank 的计算早已结束，全部堆积在 `cudaStreamSynchronize` 或 NCCL 等待上，而某一个特定 Rank 的前向/反向 GEMM 耗时明显拉长，即可一枪毙命精准锁定该故障慢节点！

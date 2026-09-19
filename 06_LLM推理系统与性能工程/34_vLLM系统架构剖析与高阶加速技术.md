@@ -336,9 +336,9 @@ Radix Tree 前缀复用微观匹配流:
 - **无缓存时**：单请求 Prefill 需计算 2000 Token；
 - **有缓存时**：
 
-  $$
-  \text{期望计算 Token 数} = 0.9 \times 200 + 0.1 \times 2000 = 180 + 200 = \mathbf{380\text{ Tokens}}
-  $$
+$$
+\text{期望计算 Token 数} = 0.9 \times 200 + 0.1 \times 2000 = 180 + 200 = \mathbf{380\text{ Tokens}}
+$$
 
 - **算力开销直接暴降**： $\frac{380}{2000} = \mathbf{19\%}$（计算量仅剩不到两成，理论提速超过 5 倍！）。
 
@@ -389,9 +389,9 @@ $$
 - 每次发射需要经历驱动参数打包、Stream 队列同步检查，开销约为 **$3 \sim 5\text{ 微秒}$**；
 - 350 个算子仅在 CPU 发射上就要烧掉：
 
-  $$
-  T_{\text{cpu-launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}
-  $$
+$$
+T_{\text{cpu-launch}} = 350 \times 4\text{ }\mu s \approx \mathbf{1.4\text{ ms}}
+$$
 
 - 如果此时 GPU 执行一个 Batch=1 的 Decode 算子只需要 **1.0 ms**，那么整个系统的耗时为 $1.4 + 1.0 = \mathbf{2.4\text{ ms}}$——**超过 58% 的时间死在 CPU 派发指令的路上！**
 
@@ -572,18 +572,18 @@ Step 4 (70B): 25ms ──► 产出 1 Token
    从均匀分布 $U \sim [0, 1]$ 中抽取一个随机数。
    如果满足：
 
-   $$
-   U \le \min\left(1, \; \frac{p(x)}{q(x)}\right)
-   $$
+$$
+U \le \min\left(1, \; \frac{p(x)}{q(x)}\right)
+$$
 
    **该候选词被正式接受（Accept）！** 意味着小模型的预测得到了大模型的背书；
 2. **拒绝与即时重采样（Rejection & Resampling Rule）**：
    一旦在第 $i$ 个词触发了不满足上述不等式，**系统立刻坚决拒绝（Reject）该词及后续所有猜测！**
    并且，系统**绝不重算**，而是直接从修正后的差值残差分布中抽取一个新词作为替代：
 
-   $$
-   P_{\text{recover}}(x) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}
-   $$
+$$
+P_{\text{recover}}(x) = \frac{\max(0, \; p(x) - q(x))}{\sum_y \max(0, \; p(y) - q(y))}
+$$
 
    随后该轮投机立即宣告结束。
 
@@ -1024,9 +1024,9 @@ $$
 1. **CUDA Graph 的致命前提与动态冲突**：
    - CUDA Graph 要求图内所有算子的输入/输出物理内存地址与 Tensor Shape 在录制后必须完全静态固化；
    - 然而大模型在 Decode 过程中：
-     - 物理 Block Table 的映射随着显存分配动态增加；
-     - 参与 Attention 计算的 KV Cache 序列长度 $S$ 每步都在递增；
-     - 批次内各请求的上下文长度参差不齐。若直接整体捕获，只要长度一变，显存指针即刻越界非法访问。
+  - 物理 Block Table 的映射随着显存分配动态增加；
+  - 参与 Attention 计算的 KV Cache 序列长度 $S$ 每步都在递增；
+  - 批次内各请求的上下文长度参差不齐。若直接整体捕获，只要长度一变，显存指针即刻越界非法访问。
 2. **vLLM Piecewise CUDA Graph 的破局架构**：
    - **分而治之**：将 Transformer Layer 沿 Attention 边界切开；
    - **静态部分归图**：针对 LayerNorm、MLP、QKV Projection 等 Token-wise 规整算子（输入永远只跟 Batch Size 相关，维度恒为 $[B, d_{\text{model}}]$ ），为常见的 Batch 尺寸（如 1, 2, 4, 8, 16）分别预录制 CUDA Graph，在运行时以单指令 `cudaGraphLaunch` 消除数百次 CPU Launch 延迟；

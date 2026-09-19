@@ -148,62 +148,62 @@
 
 1. **Full-Parameter SFT 静态显存公式**：
 
-   $$
-   M_{\text{static-SFT}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{opt}}
-   $$
+$$
+M_{\text{static-SFT}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{opt}}
+$$
 
    - 权重（FP16）： $2\Phi$ 字节
    - 梯度（FP16）： $2\Phi$ 字节
    - AdamW 优化器状态（FP32 Master Weights + FP32 Momentum + FP32 Variance）： $4\Phi + 4\Phi + 4\Phi = 12\Phi$ 字节
 
-   $$
-   M_{\text{static-SFT}} = 16\Phi\text{ bytes}
-   $$
+$$
+M_{\text{static-SFT}} = 16\Phi\text{ bytes}
+$$
 
    对于 $\Phi = 70\times 10^9$（70B）：
 
-   $$
-   M_{\text{static-SFT}} = 16 \times 70\text{ GB} = 1120\text{ GB} \approx 1.12\text{ TB}
-   $$
+$$
+M_{\text{static-SFT}} = 16 \times 70\text{ GB} = 1120\text{ GB} \approx 1.12\text{ TB}
+$$
 
    若采用 ZeRO-3 将参数、梯度、优化器切分到 $N$ 张 GPU，每张卡静态保底：
 
-   $$
-   M_{\text{per-gpu}} = \frac{1120}{N}\text{ GB}
-   $$
+$$
+M_{\text{per-gpu}} = \frac{1120}{N}\text{ GB}
+$$
 
    当 $N = 16$ 时，每张卡静态占用 **70 GB**，逼近 80GB 极限。
 
 2. **LoRA 显存公式**：
    基座模型权重冻结（仅需推导或前向传递，无需梯度与优化器状态）：
 
-   $$
-   M_{\text{base}} = 2\Phi\text{ bytes}
-   $$
+$$
+M_{\text{base}} = 2\Phi\text{ bytes}
+$$
 
    若采用 QLoRA（4-bit NormalFloat 量化），基座权重仅需：
 
-   $$
-   M_{\text{base-qlora}} = 0.5\Phi\text{ bytes}
-   $$
+$$
+M_{\text{base-qlora}} = 0.5\Phi\text{ bytes}
+$$
 
    设微调层为 Attention 的 $W_q, W_v$，每层维度为 $d$，LoRA 秩为 $r$，层数为 $L$：
 
-   $$
-   \Phi_{\text{LoRA}} = 2 \times 2 \times L \times d \times r
-   $$
+$$
+\Phi_{\text{LoRA}} = 2 \times 2 \times L \times d \times r
+$$
 
    对于 70B 模型（ $L=80, d=8192, r=16$ ）：
 
-   $$
-   \Phi_{\text{LoRA}} = 4 \times 80 \times 8192 \times 16 \approx 4.19 \times 10^7 \approx 0.042\text{ B (仅为基座的 0.06\%)!}
-   $$
+$$
+\Phi_{\text{LoRA}} = 4 \times 80 \times 8192 \times 16 \approx 4.19 \times 10^7 \approx 0.042\text{ B (仅为基座的 0.06\%)!}
+$$
 
    LoRA 参数对应的梯度与 AdamW 状态：
 
-   $$
-   M_{\text{LoRA-trainable}} = 16 \times \Phi_{\text{LoRA}} = 16 \times 42\text{ MB} \approx 672\text{ MB}
-   $$
+$$
+M_{\text{LoRA-trainable}} = 16 \times \Phi_{\text{LoRA}} = 16 \times 42\text{ MB} \approx 672\text{ MB}
+$$
 
    **结论**：LoRA 的优化器状态显存消耗从 **840 GB 坍缩为不足 1 GB**！
    总静态显存：
@@ -227,9 +227,9 @@ $$
 - **Reward**（只读前向）： $2 \times 70\text{B} = 140\text{ GB}$
 - **合计静态显存**（同尺寸全模态）：
 
-  $$
-  \text{Static}_{\text{Total}} = 1120 + 1120 + 140 + 140 = 2520\text{ GB} \approx 2.52\text{ TB}！
-  $$
+$$
+\text{Static}_{\text{Total}} = 1120 + 1120 + 140 + 140 = 2520\text{ GB} \approx 2.52\text{ TB}！
+$$
 
 #### 动态 Rollout 浪涌模型：
 在自回归生成时，Actor 必须维护 KV Cache。

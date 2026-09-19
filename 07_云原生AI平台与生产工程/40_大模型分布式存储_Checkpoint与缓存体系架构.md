@@ -272,9 +272,9 @@ $$
 假设某 70B 模型分布式训练（采用 AdamW 优化器，全量状态约 1.1 TB）：
 - 若采用传统同步写入共享存储， $T_{\text{save}} = 600\text{ s}$（10 分钟）， $N = 500$， $T_{\text{step}} = 1.2\text{ s}$：
 
-  $$
-  \text{MFU}_{\text{effective}} = \frac{500 \times 1.2}{500 \times 1.2 + 600} \times \text{MFU}_{\text{raw}} = \frac{600}{1200} \times \text{MFU}_{\text{raw}} = 0.50 \times \text{MFU}_{\text{raw}}
-  $$
+$$
+\text{MFU}_{\text{effective}} = \frac{500 \times 1.2}{500 \times 1.2 + 600} \times \text{MFU}_{\text{raw}} = \frac{600}{1200} \times \text{MFU}_{\text{raw}} = 0.50 \times \text{MFU}_{\text{raw}}
+$$
 
   **一半的算力被存储写入活活吞噬！**
 
@@ -282,15 +282,15 @@ $$
   GPU 显存到 Host 内存通过 PCIe 5.0 x16 双向传输（实测有效带宽约 50 GB/s）。
   1.1 TB 状态切分到 64 个 Rank，单卡仅需传输约 $17.2\text{ GB}$。
 
-  $$
-  T_{\text{staging}} = \frac{17.2\text{ GB}}{50\text{ GB/s}} \approx 0.34\text{ s}
-  $$
+$$
+T_{\text{staging}} = \frac{17.2\text{ GB}}{50\text{ GB/s}} \approx 0.34\text{ s}
+$$
 
   加上元数据打标与 CUDA Stream 同步，实际阻塞主线程时间 $T_{\text{save}} \le 2\text{ s}$！
 
-  $$
-  \text{MFU}_{\text{effective}} = \frac{600}{600 + 2} \times \text{MFU}_{\text{raw}} = \frac{600}{602} \times \text{MFU}_{\text{raw}} \approx 99.67\% \times \text{MFU}_{\text{raw}}
-  $$
+$$
+\text{MFU}_{\text{effective}} = \frac{600}{600 + 2} \times \text{MFU}_{\text{raw}} = \frac{600}{602} \times \text{MFU}_{\text{raw}} \approx 99.67\% \times \text{MFU}_{\text{raw}}
+$$
 
   **吞吐损耗从 50% 直接降到 0.33%，几乎等同于完全无感！**
 

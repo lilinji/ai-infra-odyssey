@@ -169,18 +169,18 @@ graph LR
   - 必须读取的模型权重数据量： $14 \times 10^9$ Bytes；
   - 算术强度为：
 
-    $$
-    \text{AI}_{\text{Decode}} = \frac{14 \times 10^9 \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 1.0 \text{ FLOPs/Byte}
-    $$
+$$
+\text{AI}_{\text{Decode}} = \frac{14 \times 10^9 \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 1.0 \text{ FLOPs/Byte}
+$$
 
 - **Prefill 阶段（Prompt 长度 $S = 2,048$ ）**：
   - 计算量： $2P \times S = 14 \times 10^9 \times 2,048 = 28.67 \times 10^{12}$ FLOPs；
   - 读取权重数据量： $14 \times 10^9$ Bytes；
   - 算术强度为：
 
-    $$
-    \text{AI}_{\text{Prefill}} = \frac{28.67 \times 10^{12} \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 2,048 \text{ FLOPs/Byte}
-    $$
+$$
+\text{AI}_{\text{Prefill}} = \frac{28.67 \times 10^{12} \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 2,048 \text{ FLOPs/Byte}
+$$
 
 #### 步骤 4：Formal Model（与硬件天花板对照）
 已知 NVIDIA A100 SXM4 80GB 的物理极限规格：
@@ -188,9 +188,9 @@ graph LR
 - **HBM2e 显存物理带宽**： $B_{\text{mem}} = 2.039 \text{ TB/s} = 2,039 \text{ GB/s}$；
 - **硬件拐点算术强度（Hardware Balance Point）**：
 
-  $$
-  \text{AI}_{\text{knee}} = \frac{C_{\text{peak}}}{B_{\text{mem}}} = \frac{312 \times 10^{12} \text{ FLOPs/s}}{2.039 \times 10^{12} \text{ Bytes/s}} \approx 153.0 \text{ FLOPs/Byte}
-  $$
+$$
+\text{AI}_{\text{knee}} = \frac{C_{\text{peak}}}{B_{\text{mem}}} = \frac{312 \times 10^{12} \text{ FLOPs/s}}{2.039 \times 10^{12} \text{ Bytes/s}} \approx 153.0 \text{ FLOPs/Byte}
+$$
 
 根据 Roofline 理论：
 - **若 $\text{AI} < \text{AI}_{\text{knee}}$**：处于 **Memory-Bound**，性能受限于显存带宽；
@@ -367,21 +367,21 @@ $$
 对于一个 7B 模型（以 LLaMA-7B 为例：32 层，32 个注意力头，头维度 $d=128$，采用 GQA 后 Key/Value 各 4 头）：
 - 单个 Token 占用的 KV Cache 显存（FP16，2 字节）：
 
-  $$
-  \text{Mem}_{\text{token}} = 2 \times 2 \times (n_{\text{layers}} \times n_{\text{kv-heads}} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}
-  $$
+$$
+\text{Mem}_{\text{token}} = 2 \times 2 \times (n_{\text{layers}} \times n_{\text{kv-heads}} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}
+$$
 
 - 单个请求全生命周期峰值占用（ $1024 + 256 = 1280 \text{ Tokens}$ ）：
 
-  $$
-  \text{Mem}_{\text{req}} = 1,280 \times 64 \text{ KB} \approx 80 \text{ MB}
-  $$
+$$
+\text{Mem}_{\text{req}} = 1,280 \times 64 \text{ KB} \approx 80 \text{ MB}
+$$
 
 - 680 个并发请求所需的纯 KV Cache 显存总容量：
 
-  $$
-  \text{Mem}_{\text{KV-total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}
-  $$
+$$
+\text{Mem}_{\text{KV-total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}
+$$
 
 #### 步骤 4：所需 GPU 数量反推
 设单张 GPU 为 NVIDIA A100 80GB：
@@ -389,29 +389,29 @@ $$
 - 系统运行时与激活值预留：16 GB；
 - 单卡可分配给 KV Cache 的安全显存空间：
 
-  $$
-  \text{Mem}_{\text{KV-per-gpu}} = 80 - 14 - 16 = 50 \text{ GB}
-  $$
+$$
+\text{Mem}_{\text{KV-per-gpu}} = 80 - 14 - 16 = 50 \text{ GB}
+$$
 
 - 所需 GPU 数量（显存视角）：
 
-  $$
-  N_{\text{gpus}} \ge \lceil \frac{54.4 \text{ GB}}{50 \text{ GB}} \rceil = 2 \text{ GPUs}
-  $$
+$$
+N_{\text{gpus}} \ge \lceil \frac{54.4 \text{ GB}}{50 \text{ GB}} \rceil = 2 \text{ GPUs}
+$$
 
 - **算力视角校验**：
   总产出吞吐需求：
 
-  $$
-  \text{Throughput} = Q \times S_{\text{out}} = 100 \times 256 = 25,600 \text{ Tokens/s}
-  $$
+$$
+\text{Throughput} = Q \times S_{\text{out}} = 100 \times 256 = 25,600 \text{ Tokens/s}
+$$
 
   单张 A100 在满足 TPOT $\le 25\text{ms}$ 下的最大吞吐通常在 2,500 Tokens/s 左右。
   因此算力视角所需卡数为：
 
-  $$
-  N_{\text{gpus}} \ge \lceil \frac{25,600}{2,500} \rceil = 11 \text{ GPUs}
-  $$
+$$
+N_{\text{gpus}} \ge \lceil \frac{25,600}{2,500} \rceil = 11 \text{ GPUs}
+$$
 
 - **最终结论**：**系统瓶颈由算力与时延主导，应至少配置 2 台 8 卡 A100（共 16 张 GPU）以确保高可用与流量尖峰**。
 
@@ -850,32 +850,32 @@ if __name__ == "__main__":
    - HBM2e 显存物理带宽为 $B = 2,039 \text{ GB/s} = 2.039 \times 10^{12} \text{ Bytes/s}$；
    - 硬件平衡拐点算术强度：
 
-     $$
-     \text{AI}_{\text{knee}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153.0 \text{ FLOPs/Byte}
-     $$
+$$
+\text{AI}_{\text{knee}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153.0 \text{ FLOPs/Byte}
+$$
 
 2. **单步 Decode 实际工作量手算**：
    - 模型参数量 $P = 7 \times 10^9$；采用 FP16 权重，权重总大小为 $14 \times 10^9$ 字节；
    - 当 Batch Size = 1 时，生成 1 个 Token 的前向矩阵浮点运算量为：
 
-     $$
-     \text{FLOPs} = 2 \times P = 14 \times 10^9 \text{ FLOPs}
-     $$
+$$
+\text{FLOPs} = 2 \times P = 14 \times 10^9 \text{ FLOPs}
+$$
 
    - 但为了完成这 $14\text{G}$ 次运算，必须把这 $14\text{G}$ 字节的权重从 HBM 读取到 SM 寄存器中；
    - 实际算术强度：
 
-     $$
-     \text{AI}_{\text{Decode}} = \frac{14 \times 10^9 \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 1.0 \text{ FLOPs/Byte}
-     $$
+$$
+\text{AI}_{\text{Decode}} = \frac{14 \times 10^9 \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 1.0 \text{ FLOPs/Byte}
+$$
 
 3. **性能瓶颈归因结论**：
    - 实测算术强度 $\text{AI}_{\text{Decode}} = 1.0$ 远小于硬件拐点 $153.0$（差了 **153 倍**）；
    - 理论单步最小读取耗时：
 
-     $$
-     T_{\text{min}} = \frac{14 \text{ GB}}{2,039 \text{ GB/s}} \approx 6.86 \text{ ms}
-     $$
+$$
+T_{\text{min}} = \frac{14 \text{ GB}}{2,039 \text{ GB/s}} \approx 6.86 \text{ ms}
+$$
 
    - 在此期间，Tensor Core 核心仅仅运转了其理论算力的 $\frac{1.0}{153.0} \approx 0.65\%$！
    - **证毕**：性能完全受制于显存读取速度，必须通过增大并发 Batch 提高有效算术强度！

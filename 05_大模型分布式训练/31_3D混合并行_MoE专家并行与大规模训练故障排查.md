@@ -338,9 +338,9 @@ $$
    - GPU 0 再次发出 8 字节，接收 8 字节；
 3. **单个 Token 全流程通信总量**：
 
-   $$
-   \text{Total Comm per Token} = 8\text{ B (去程)} + 8\text{ B (回程)} = \mathbf{16 \text{ B}} = 2 \times h \times 2 \text{ Bytes}（16 字节）
-   $$
+$$
+\text{Total Comm per Token} = 8\text{ B (去程)} + 8\text{ B (回程)} = \mathbf{16 \text{ B}} = 2 \times h \times 2 \text{ Bytes}（16 字节）
+$$
 
 #### ④ Formal Model（标准公式）
 对于一个隐藏层维度为 $h$、序列长度为 $s$、批大小为 $b$ 的大模型，采用 $\text{Top-K}$ 路由：
@@ -833,24 +833,24 @@ if __name__ == "__main__":
    - 传输内容为原始激活向量 $x$（大小为 $h$ 浮点数，BF16 下为 $2h$ 字节）；
    - 单卡发送量：
 
-     $$
-     \text{Comm}_{\text{dispatch}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
-     $$
+$$
+\text{Comm}_{\text{dispatch}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
+$$
 
 3. **第二阶段：Token Combine（收集规约）**：
    - 远程 GPU 接收到 Token 并在本地完成专家 FFN 运算，得到输出张量（大小同样为 $h$ 浮点数，即 $2h$ 字节）；
    - 必须原路回传给最初发起该 Token 的原始 GPU 进行残差连接与最终加权求和；
    - 单卡发送量：
 
-     $$
-     \text{Comm}_{\text{combine}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
-     $$
+$$
+\text{Comm}_{\text{combine}} = \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \quad (\text{Bytes})
+$$
 
 4. **单步前向两阶段总和**：
 
-   $$
-   \text{Comm}_{\text{fwd}} = \text{Comm}_{\text{dispatch}} + \text{Comm}_{\text{combine}} = 2 \times \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \approx \mathbf{4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
-   $$
+$$
+\text{Comm}_{\text{fwd}} = \text{Comm}_{\text{dispatch}} + \text{Comm}_{\text{combine}} = 2 \times \left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2 \approx \mathbf{4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
+$$
 
 5. **结论阐明**：
    - 每个 Token 必须在网络上传输 2 次：**第 1 次是将输入送到专家所在的机器去算（去程），第 2 次是将算好的特征接回原始机器以供后续层继续使用（回程）**。加上反向求导的对称通信，单层单步通信量严格达到 **$8 \times K \cdot b \cdot s \cdot h$ 字节**。
@@ -889,6 +889,6 @@ if __name__ == "__main__":
    - **梯度刚性裁剪（Gradient Clipping）**：配置 `clip_grad_norm_ <= 1.0`，在反向更新前对全网全局梯度做等比例缩放，切断梯度爆炸的传递链；
    - **激活范数实时监控（Activation Norm Monitor）**：在训练循环中实时计算各层输出激活的 $L_2$ 范数，建立滑动平均基线；一旦探测到当前 Step 的激活范数偏离超过阈值（如 $5\sigma$ ），自动判定为 Spike 异常；
    - **全自动秒级容灾回滚（Auto-Rollback）**：
-     - 系统自动丢弃本步更新，阻断被污染的梯度注入优化器；
-     - 触发训练调度器，从最近保存的健康 Checkpoint（依托异步 Checkpoint 缓存）快速热回滚；
-     - 自动跳过引发突刺的该批次数据索引，并报警通知数据团队复检该样本。
+  - 系统自动丢弃本步更新，阻断被污染的梯度注入优化器；
+  - 触发训练调度器，从最近保存的健康 Checkpoint（依托异步 Checkpoint 缓存）快速热回滚；
+  - 自动跳过引发突刺的该批次数据索引，并报警通知数据团队复检该样本。

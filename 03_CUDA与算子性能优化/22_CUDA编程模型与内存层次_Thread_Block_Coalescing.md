@@ -775,21 +775,21 @@ $$
 - 全局内存访问平均延迟： $L \approx 400 \text{ ns}$（约合 500 个时钟周期 @ 1.4 GHz）；
 - 硬件需要同时保持在空中飞行的**未决数据总量（In-flight Bytes）**：
 
-  $$
-  \text{In-flight Data} = 2.0 \times 10^{12} \text{ B/s} \times 400 \times 10^{-9} \text{ s} = \mathbf{800 \text{ KB}}
-  $$
+$$
+\text{In-flight Data} = 2.0 \times 10^{12} \text{ B/s} \times 400 \times 10^{-9} \text{ s} = \mathbf{800 \text{ KB}}
+$$
 
 - 假设每个线程通过指令级并行（ILP）发起 16 字节（如 `float4`）的并发读取，那么芯片上至少需要维持并发的线程总数为：
 
-  $$
-  N_{\text{threads}} = \frac{800 \text{ KB}}{16 \text{ Bytes}} = 50,000 \text{ 线程}
-  $$
+$$
+N_{\text{threads}} = \frac{800 \text{ KB}}{16 \text{ Bytes}} = 50,000 \text{ 线程}
+$$
 
 - A100 共有 108 个 SM，平均到每个 SM 必须常驻：
 
-  $$
-  N_{\text{threads per SM}} = \frac{50000}{108} \approx 463 \text{ 线程} \approx \mathbf{15 \text{ Warps}}
-  $$
+$$
+N_{\text{threads per SM}} = \frac{50000}{108} \approx 463 \text{ 线程} \approx \mathbf{15 \text{ Warps}}
+$$
 
 这意味着：**在 A100 上，每个 SM 至少要维持 15 个以上的就绪 Warp 并发，才能完全吃满那 2 TB/s 的 HBM 显存带宽！** 这就是延迟隐藏的数学本质。
 
@@ -868,9 +868,9 @@ graph TD
 2. **Ampere：硬件异步拷贝指令 `cp.async`**：
    在 Ampere 以前，要把数据从全局内存拷入共享内存，数据必须走这条冗长路径：
 
-   $$
-   \text{Global Memory} \xrightarrow{\text{LDG 指令}} \text{通用寄存器 (Register)} \xrightarrow{\text{STS 指令}} \text{Shared Memory}
-   $$
+$$
+\text{Global Memory} \xrightarrow{\text{LDG 指令}} \text{通用寄存器 (Register)} \xrightarrow{\text{STS 指令}} \text{Shared Memory}
+$$
 
    这一过程不仅霸占了宝贵的寄存器空间，而且消耗了大量的 SM 发射槽位和 ALU 周期。
    Ampere 首次引入了硬件级异步拷贝引擎 `cp.async`：**数据直接绕过通用寄存器，由专门的 DMA 硬件电路直接从 L2/Global 搬运到 Shared Memory！** 这使得在数据搬运的同时，ALU 可以完全不受干扰地计算上一轮数据，实现了真正的软流水线（Software Pipelining）。
@@ -1563,11 +1563,11 @@ Warp 调度三十二，连续对齐是一伙。
 2. **推导偏移 4 字节（`offset = 4`）后的物理分布**：
    - 数据覆盖的地址区间为： $[4, 131]$；
    - 扇区划分：
-     - Sector 0 ($0 \sim 31$ 字节)：包含线程 $0 \sim 6$（地址 $4 \sim 31$，共 28 字节）；
-     - Sector 1 ($32 \sim 63$ 字节)：包含线程 $7 \sim 14$（地址 $32 \sim 63$，共 32 字节）；
-     - Sector 2 ($64 \sim 95$ 字节)：包含线程 $15 \sim 22$（地址 $64 \sim 95$，共 32 字节）；
-     - Sector 3 ($96 \sim 127$ 字节)：包含线程 $23 \sim 30$（地址 $96 \sim 127$，共 32 字节）；
-     - **Sector 4 ($128 \sim 159$ 字节)**：包含线程 31（地址 $128 \sim 131$，仅 4 字节！）。
+  - Sector 0 ($0 \sim 31$ 字节)：包含线程 $0 \sim 6$（地址 $4 \sim 31$，共 28 字节）；
+  - Sector 1 ($32 \sim 63$ 字节)：包含线程 $7 \sim 14$（地址 $32 \sim 63$，共 32 字节）；
+  - Sector 2 ($64 \sim 95$ 字节)：包含线程 $15 \sim 22$（地址 $64 \sim 95$，共 32 字节）；
+  - Sector 3 ($96 \sim 127$ 字节)：包含线程 $23 \sim 30$（地址 $96 \sim 127$，共 32 字节）；
+  - **Sector 4 ($128 \sim 159$ 字节)**：包含线程 31（地址 $128 \sim 131$，仅 4 字节！）。
 3. **计算最终事务与损失**：
    - 硬件必须发射 **5 次 32B 事务**（总共物理传输 $5 \times 32 = 160$ 字节）；
    - 有效负载仅为 128 字节；
@@ -1591,17 +1591,17 @@ Warp 调度三十二，连续对齐是一伙。
    - 最大共享内存：164 KB。
 2. **分析不同 Block Size 的物理约束**：
    - **若选择 1024 线程/Block**：
-     - 每个 Block 拥有 32 个 Warps。
-     - 一个 SM 最多只能容纳 $\lfloor 2048 / 1024 \rfloor = 2$ 个 Blocks。
-     - **极度僵化**：一旦某个 Block 的共享内存或寄存器用量稍大，SM 只能容纳 1 个 Block，Occupancy 直接暴跌到 50%；且 Block 粒度太大，调度灵活性极差。
+  - 每个 Block 拥有 32 个 Warps。
+  - 一个 SM 最多只能容纳 $\lfloor 2048 / 1024 \rfloor = 2$ 个 Blocks。
+  - **极度僵化**：一旦某个 Block 的共享内存或寄存器用量稍大，SM 只能容纳 1 个 Block，Occupancy 直接暴跌到 50%；且 Block 粒度太大，调度灵活性极差。
    - **若选择 512 线程/Block**：
-     - 每个 Block 拥有 16 个 Warps。
-     - 一个 SM 最多容纳 4 个 Blocks。虽然优于 1024，但对不规则网格尾部的填补依然不够平滑。
+  - 每个 Block 拥有 16 个 Warps。
+  - 一个 SM 最多容纳 4 个 Blocks。虽然优于 1024，但对不规则网格尾部的填补依然不够平滑。
    - **若选择 256 线程/Block（黄金选择）**：
-     - 每个 Block 拥有 8 个 Warps。
-     - 一个 SM 可容纳最多 8 个 Blocks（远未触碰 32 Blocks 限制）。
-     - 资源切分精细：当寄存器用量上升时，SM 可以灵活容纳 7、6、5 个 Blocks，Occupancy 呈现平滑微调阶梯，不会发生断崖跌落。
-     - 编译器能更容易展开循环并排布寄存器指令。
+  - 每个 Block 拥有 8 个 Warps。
+  - 一个 SM 可容纳最多 8 个 Blocks（远未触碰 32 Blocks 限制）。
+  - 资源切分精细：当寄存器用量上升时，SM 可以灵活容纳 7、6、5 个 Blocks，Occupancy 呈现平滑微调阶梯，不会发生断崖跌落。
+  - 编译器能更容易展开循环并排布寄存器指令。
 3. **结论**：工业生产中通常以 **256 线程/Block** 作为首选黄金基线，其次为 128 线程。
 
 ---
@@ -1617,37 +1617,38 @@ Warp 调度三十二，连续对齐是一伙。
 1. **定义法则**：
    利特尔法则（Little's Law）表明：在稳态系统中，平均并发未决指令/数据量 $N$ 等于系统到达率（吞吐量）$\lambda$ 乘以平均等待延迟 $W$：
 
-   $$
-   N_{\text{in-flight}} = B \times L
-   $$
+$$
+N_{\text{in-flight}} = B \times L
+$$
 
 2. **代入 A100 SXM4 物理常数**：
    - 全局 HBM 带宽： $B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
    - 平均 HBM 访存延迟： $L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
    - 全芯片必须维持在飞行中的数据总量（In-flight Data）：
 
-     $$
-     N_{\text{total}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}
-     $$
+$$
+N_{\text{total}} = 2.039 \times 10^{12} \times 400 \times 10^{-9} \approx 815,600 \text{ Bytes} \approx 816 \text{ KB}
+$$
 
 3. **分摊到单 SM 与 Warp 级计算**：
    - A100 共有 $S_{\text{count}} = 108$ 个 SM，每个 SM 必须分摊维持的在途数据量：
 
-     $$
-     N_{\text{SM}} = \frac{N_{\text{total}}}{S_{\text{count}}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}
-     $$
+$$
+N_{\text{SM}} = \frac{N_{\text{total}}}{S_{\text{count}}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}
+$$
 
    - 假设每个线程采用标准的单精度向量加载（`float4`，每个线程未决数据为 $b_{\text{thread}} = 16 \text{ Bytes}$ ），则一个 Warp（32 线程）所能贡献的最大未决数据量为：
 
-     $$
-     b_{\text{warp}} = 32 \times b_{\text{thread}} = 32 \times 16 = 512 \text{ Bytes}
-     $$
+$$
+b_{\text{warp}} = 32 \times b_{\text{thread}} = 32 \times 16 = 512 \text{ Bytes}
+$$
 
    - 每个 SM 维持满带宽所需的最少并发活跃 Warp 数量为：
 
-     $$
-     W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil = \left\lceil \frac{7552}{512} \right\rceil = 15 \text{ Warps}
-     $$
+$$
+W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil = \left\lceil \frac{7552}{512} \right\rceil = 15 \text{ Warps}
+$$
+
      （即每个 SM 至少需要常驻 15 个活跃 Warp 才能彻底隐藏访存延迟）
 
 4. **系统级工程洞见（大模型 GEMV 分析）**：

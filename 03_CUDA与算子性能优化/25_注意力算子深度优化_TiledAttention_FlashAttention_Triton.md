@@ -242,28 +242,28 @@ $$
 
 - 浮点计算量：
 
-  $$
-  \text{FLOPs} = 4 \times (4096)^2 \times 128 = 4 \times 16,777,216 \times 128 \approx 8.59 \times 10^9 \text{ FLOPs} = 8.59 \text{ GFLOPs}
-  $$
+$$
+\text{FLOPs} = 4 \times (4096)^2 \times 128 = 4 \times 16,777,216 \times 128 \approx 8.59 \times 10^9 \text{ FLOPs} = 8.59 \text{ GFLOPs}
+$$
 
 - HBM 物理访存量：
 
-  $$
-  \text{Bytes} = 6 \times (4096)^2 + 8 \times 4096 \times 128 = 6 \times 16.78\text{M} + 4.19\text{M} \approx 104.86 \text{ MB}
-  $$
+$$
+\text{Bytes} = 6 \times (4096)^2 + 8 \times 4096 \times 128 = 6 \times 16.78\text{M} + 4.19\text{M} \approx 104.86 \text{ MB}
+$$
 
 - 算术强度（Arithmetic Intensity）：
 
-  $$
-  I = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{8.59 \times 10^9}{104.86 \times 10^6} \approx 81.9 \text{ FLOPs/Byte}
-  $$
+$$
+I = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{8.59 \times 10^9}{104.86 \times 10^6} \approx 81.9 \text{ FLOPs/Byte}
+$$
 
   如果序列进一步拉长，例如 $N = 16,384$：
 - $N^2$ 项彻底主导分母：
 
-  $$
-  I = \frac{4 N^2 d}{6 N^2 + 8 N d} \approx \frac{4 d}{6} = \frac{2}{3} d = \frac{2}{3} \times 128 \approx 85.3 \text{ FLOPs/Byte}
-  $$
+$$
+I = \frac{4 N^2 d}{6 N^2 + 8 N d} \approx \frac{4 d}{6} = \frac{2}{3} d = \frac{2}{3} \times 128 \approx 85.3 \text{ FLOPs/Byte}
+$$
 
 #### ④ Formal Model（数学模型证明）
 
@@ -283,9 +283,9 @@ $$
 - HBM2e 物理峰值带宽： $B_{\text{peak}} = 2.039 \text{ TB/s} = 2.039 \times 10^{12} \text{ Bytes/s}$
 - **硬件拐点算术强度（Roofline Knee）**：
 
-  $$
-  I_{\text{knee}} = \frac{C_{\text{peak}}}{B_{\text{peak}}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153 \text{ FLOPs/Byte}
-  $$
+$$
+I_{\text{knee}} = \frac{C_{\text{peak}}}{B_{\text{peak}}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153 \text{ FLOPs/Byte}
+$$
 
   **物理结论一目了然**：
   硬件要求每个字节的访存必须支撑至少 **153 次浮点计算**，才能让 Tensor Core 完全满载！
@@ -306,21 +306,21 @@ $$
 
 1. **求全局最大值**：
 
-   $$
-   m = \max_{1 \le k \le N} x_k
-   $$
+$$
+m = \max_{1 \le k \le N} x_k
+$$
 
 2. **计算平移指数并累加全局配分函数（分母）**：
 
-   $$
-   \ell = \sum_{k=1}^N e^{x_k - m}
-   $$
+$$
+\ell = \sum_{k=1}^N e^{x_k - m}
+$$
 
 3. **计算每个元素的归一化概率**：
 
-   $$
-   p_i = \frac{e^{x_i - m}}{\ell}
-   $$
+$$
+p_i = \frac{e^{x_i - m}}{\ell}
+$$
 
 在传统的体系结构中，这需要**两次全局数据遍历**：
 
@@ -529,15 +529,15 @@ FlashAttention-1 论文中最核心的理论贡献，是证明了其 HBM 访问�
 
 - **标准 Attention** 的 HBM 访问总量为：
 
-  $$
-  \text{IO}_{\text{standard}} = \Theta(N d + N^2)
-  $$
+$$
+\text{IO}_{\text{standard}} = \Theta(N d + N^2)
+$$
 
 - **FlashAttention** 的 HBM 访问总量为：
 
-  $$
-  \text{IO}_{\text{flash}} = \Theta\left(\frac{N^2 d^2}{M}\right)
-  $$
+$$
+\text{IO}_{\text{flash}} = \Theta\left(\frac{N^2 d^2}{M}\right)
+$$
 
 **证明简述**：
 在 FlashAttention 中， $K, V$ 的 Block 大小为 $B_c \approx \frac{M}{4d}$。
@@ -545,17 +545,17 @@ FlashAttention-1 论文中最核心的理论贡献，是证明了其 HBM 访问�
 - 外层循环遍历 $K, V$ 分块，共需要迭代 $T_c = \frac{N}{B_c} = \frac{4 N d}{M}$ 次；
 - 在每一次外层循环中，内层循环必须遍历一遍完整的 $Q$ 矩阵（大小为 $N \times d$ ），因此读取 $Q$ 的总量为：
 
-  $$
-  \text{Read}(Q) = T_c \times (N d) = \frac{4 N d}{M} \times N d = \frac{4 N^2 d^2}{M}
-  $$
+$$
+\text{Read}(Q) = T_c \times (N d) = \frac{4 N d}{M} \times N d = \frac{4 N^2 d^2}{M}
+$$
 
 - $K, V$ 在外层循环中只被加载一次，总量为 $2 N d$；
 - 最终输出 $O$ 的读写总量为 $O(N d)$。
 - 综合各项，总 HBM 访问字节数为：
 
-  $$
-  \text{IO}_{\text{flash}} = \Theta\left(\frac{N^2 d^2}{M} + N d\right) = \Theta\left(\frac{N^2 d^2}{M}\right)
-  $$
+$$
+\text{IO}_{\text{flash}} = \Theta\left(\frac{N^2 d^2}{M} + N d\right) = \Theta\left(\frac{N^2 d^2}{M}\right)
+$$
 
 **物理比率分析**：
 两者的 IO 访问量之比为：
@@ -1517,24 +1517,24 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 1. **两遍扫描的根本原因**：
    标准 Softmax 的归一化公式为：
 
-   $$
-   p_i = \frac{e^{x_i - m}}{\ell}, \quad m = \max_{1 \le k \le N} x_k, \quad \ell = \sum_{k=1}^N e^{x_k - m}
-   $$
+$$
+p_i = \frac{e^{x_i - m}}{\ell}, \quad m = \max_{1 \le k \le N} x_k, \quad \ell = \sum_{k=1}^N e^{x_k - m}
+$$
 
    由于 $m$ 必须通过遍历全局所有 $N$ 个元素才能确定，因此第一遍扫描必须先求出 $m$；在 $m$ 确定后，才能进行第二遍扫描求出每个元素的指数 $e^{x_i - m}$ 并累加得到分母 $\ell$。
 2. **Online Softmax 的流式化解耦**：
    假设当前处理到了第 $k$ 个元素，已知前 $k-1$ 个元素的最大值为 $m_{k-1}$，局部配分和为 $\ell_{k-1} = \sum_{j=1}^{k-1} e^{x_j - m_{k-1}}$。
    新读入第 $k$ 个元素 $x_k$，新的局部最大值为：
 
-   $$
-   m_k = \max(m_{k-1}, x_k)
-   $$
+$$
+m_k = \max(m_{k-1}, x_k)
+$$
 
    将前 $k-1$ 项的指数基准从 $m_{k-1}$ 平移至 $m_k$：
 
-   $$
-   \ell_k = \sum_{j=1}^k e^{x_j - m_k} = \sum_{j=1}^{k-1} e^{(x_j - m_{k-1}) + (m_{k-1} - m_k)} + e^{x_k - m_k} = \ell_{k-1} \cdot e^{m_{k-1} - m_k} + e^{x_k - m_k}
-   $$
+$$
+\ell_k = \sum_{j=1}^k e^{x_j - m_k} = \sum_{j=1}^{k-1} e^{(x_j - m_{k-1}) + (m_{k-1} - m_k)} + e^{x_k - m_k} = \ell_{k-1} \cdot e^{m_{k-1} - m_k} + e^{x_k - m_k}
+$$
 
 3. **架构意义**：
    通过维护衰减倍率 $\alpha = e^{m_{k-1} - m_k}$，算法在单遍扫描过程中，无需预先知晓全局最大值，即可实时维护正确的归一化分母与累加器状态。将时间复杂度保持在 $O(N)$ 的同时，将数据扫描次数从 2 次降为 1 次，并完全消除了对全局显存缓存中间状态的依赖。
@@ -1554,9 +1554,9 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
    - 读取 $P$ 并写入输出 $O$： $N \times N \times 2 + N \times d \times 2 \approx 134.22 \text{ MB} + 2.10 \text{ MB}$；
    - **总访存量**：
 
-     $$
-     \text{Total}_{\text{std}} \approx 4 \times (2 N^2) + 8 N d = 4 \times 134.22 \text{ MB} + 8.39 \text{ MB} \approx 545.27 \text{ MB}
-     $$
+$$
+\text{Total}_{\text{std}} \approx 4 \times (2 N^2) + 8 N d = 4 \times 134.22 \text{ MB} + 8.39 \text{ MB} \approx 545.27 \text{ MB}
+$$
 
 2. **FlashAttention 访存量手算**：
    - SRAM 大小 $M = 100 \text{ KB} = 102,400 \text{ Bytes} = 51,200 \text{ FP16 elements}$；
@@ -1567,15 +1567,15 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
    - 最终输出 $O$ 仅在最后写回一次： $N \times d \times 2 \approx 2.1 \text{ MB}$；
    - **总访存量**：
 
-     $$
-     \text{Total}_{\text{fa}} \approx 172.2 + 4.2 + 2.1 = 178.5 \text{ MB}
-     $$
+$$
+\text{Total}_{\text{fa}} \approx 172.2 + 4.2 + 2.1 = 178.5 \text{ MB}
+$$
 
 3. **访存削减倍数**：
 
-   $$
-   \text{Reduction Ratio} = \frac{545.27 \text{ MB}}{178.5 \text{ MB}} \approx 3.05 \times
-   $$
+$$
+\text{Reduction Ratio} = \frac{545.27 \text{ MB}}{178.5 \text{ MB}} \approx 3.05 \times
+$$
 
    若序列长度增加至 $N=32,768$（32K）：
    - Standard 访存量随 $N^2$ 放大 16 倍，膨胀至 **8.72 GB**；
@@ -1614,8 +1614,8 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 2. **算力与显存的收支平衡账本**：
    - **计算成本**：重新计算一次 $S_{ij} = Q_i K_j^T$ 和 Softmax，为整个 Attention 反向传播增加了约 **$2 N^2 d$ 的 FLOPs**（占 Attention 全流程总浮点运算量的约 25%~30%）；
    - **显存与访存收益**：
-     - **显存占用**：从 $O(B \cdot H \cdot N^2)$ 骤降至 $O(B \cdot H \cdot N)$。对于 32K 序列长度，单卡节省了超 30 GB 显存，使原本根本无法训练的模型得以在有限单卡中跑起来；
-     - **访存时间收益**：在 HBM 上写入并再次读取一个 $N \times N$ 的 FP16 矩阵，需要 $4 N^2$ 字节的访存。当算术强度低于硬件平衡点（A100 上为 153 FLOPs/Byte）时，**执行这 $2 N^2 d$ 次 Tensor Core 计算所消耗的时间，远远小于在慢速 HBM 总线上搬运 $4 N^2$ 字节所消耗的时间！**
+  - **显存占用**：从 $O(B \cdot H \cdot N^2)$ 骤降至 $O(B \cdot H \cdot N)$。对于 32K 序列长度，单卡节省了超 30 GB 显存，使原本根本无法训练的模型得以在有限单卡中跑起来；
+  - **访存时间收益**：在 HBM 上写入并再次读取一个 $N \times N$ 的 FP16 矩阵，需要 $4 N^2$ 字节的访存。当算术强度低于硬件平衡点（A100 上为 153 FLOPs/Byte）时，**执行这 $2 N^2 d$ 次 Tensor Core 计算所消耗的时间，远远小于在慢速 HBM 总线上搬运 $4 N^2$ 字节所消耗的时间！**
 3. **收支平衡点（Break-even Point）**：
    只要序列长度 $N$ 满足 $N \ge 512$，Attention 的计算就彻底进入 Memory-bound 状态。在此区间内，重计算所增加的纯计算时间完全被消除 HBM 搬运所节省的时间所淹没。因此，**重计算不仅没有变慢，反而由于消除了内存总线拥塞，端到端反向传播速度提升了 2~3 倍！**
 

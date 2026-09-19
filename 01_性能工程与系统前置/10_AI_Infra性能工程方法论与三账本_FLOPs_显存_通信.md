@@ -148,9 +148,9 @@ math: true
   2. 128 张 A100 即使在极限 50% MFU 效率下，每秒总算力仅为： $128 \times 312\text{ TFLOPS} \times 50\% \approx \mathbf{20,000\text{ TFLOPS}}$；
   3. 跑完 2T Tokens 所需的物理净时间为：
 
-     $$
-     \text{Time} = \frac{8.4 \times 10^{23}}{20,000 \times 10^{12}} = 4.2 \times 10^7\text{ 秒} \approx \mathbf{486 \text{ days}}（整整 16 个月！）
-     $$
+$$
+\text{Time} = \frac{8.4 \times 10^{23}}{20,000 \times 10^{12}} = 4.2 \times 10^7\text{ 秒} \approx \mathbf{486 \text{ days}}（整整 16 个月！）
+$$
 
 - **后果**：原本规划 3 个月的项目延期了整整一年多，不得不紧急追加采购 512 张 GPU，浪费了数千万元的算力闲置与违约成本！
 
@@ -207,11 +207,13 @@ math: true
 - **BF16 / FP16 Tensor Core 密集算力： $312\text{ TFLOPS}$**（不考虑稀疏化）。
 
 ### 2. 硬件浮点利用率（HFU, Hardware FLOPs Utilization）
+
 $$
 \text{HFU} = \frac{\text{硬件实际执行的所有浮点运算次数（包含重计算开销）}}{\text{GPU 理论峰值算力} \times \text{Step 耗时}}
 $$
 
 ### 3. 模型浮点利用率（MFU, Model FLOPs Utilization，最高准则）
+
 $$
 \boxed{\Large \text{MFU} = \frac{\text{完成一次前向+反向所需的理论最小计算量（严格按 } 6P \text{ 算）}}{\text{集群总 GPU 理论峰值算力} \times \text{Step 耗时}}}
 $$
@@ -255,9 +257,9 @@ $ nvidia-smi
 1. 输出矩阵 $C$ 总共有 $M \times N$ 个元素；
 2. 为了计算 $C$ 中的每一个元素 $C[i][j]$，需要将 $A$ 的第 $i$ 行（长为 $K$ ）与 $B$ 的第 $j$ 列（长为 $K$ ）做向量内积：
 
-   $$
-   C[i][j] = \sum_{k=1}^K A[i][k] \times B[k][j]
-   $$
+$$
+C[i][j] = \sum_{k=1}^K A[i][k] \times B[k][j]
+$$
 
 3. 计算这一个元素需要：
    - $K$ 次乘法（Multiply）；
@@ -265,9 +267,9 @@ $ nvidia-smi
    - 总计需要 **$2K$ 次浮点运算（FLOPs）**！
 4. **总计算量推导**：
 
-   $$
-   \boxed{\text{FLOPs}_{\text{GEMM}} = 2 \times M \times K \times N}
-   $$
+$$
+\boxed{\text{FLOPs}_{\text{GEMM}} = 2 \times M \times K \times N}
+$$
 
 ---
 
@@ -279,15 +281,15 @@ $ nvidia-smi
 2. 输入向量需要与模型中所有的全连接权重矩阵（ $W_Q, W_K, W_V, W_O, W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$ ）依次进行矩阵相乘（GEMV）；
 3. 对于每一个参数矩阵 $W \in \mathbb{R}^{K \times N}$，输入为 $(1, K)$，其计算量为：
 
-   $$
-   2 \times 1 \times K \times N = 2 \times (\text{该矩阵的参数量})
-   $$
+$$
+2 \times 1 \times K \times N = 2 \times (\text{该矩阵的参数量})
+$$
 
 4. 将全模型所有层的参数矩阵累加求和，忽略占比不足 1% 的 LayerNorm 和 Softmax：
 
-   $$
-   \boxed{\Large \text{FLOPs}_{\text{Inference per Token}} \approx 2P}
-   $$
+$$
+\boxed{\Large \text{FLOPs}_{\text{Inference per Token}} \approx 2P}
+$$
 
 > 💡 **极简直觉记忆**：**大模型推理生成 1 个 Token，相当于让模型的每一个参数都参与了 1 次乘法和 1 次加法（共 2 次浮点运算）！**
 
@@ -321,9 +323,9 @@ $ nvidia-smi
 - **反向计算**：在反向求导到达某一层之前，**重新跑一遍该层的前向计算（多花 $2P$ FLOPs）**，再立即执行反向梯度求解（ $4P$ FLOPs）；
 - **总计算量膨胀**：
 
-  $$
-  \text{Total FLOPs}_{\text{Recompute}} = 2P \ (\text{首次前向}) + 2P \ (\text{重算前向}) + 4P \ (\text{反向求导}) = \mathbf{8P\text{ FLOPs/token}}
-  $$
+$$
+\text{Total FLOPs}_{\text{Recompute}} = 2P \ (\text{首次前向}) + 2P \ (\text{重算前向}) + 4P \ (\text{反向求导}) = \mathbf{8P\text{ FLOPs/token}}
+$$
 
 - **性能代价（Trade-off）**：计算量增加了 $\frac{8P - 6P}{6P} = \mathbf{33.3\%}$，但换来了显存占用从 $O(L)$ 到 $O(1)$ 的惊人飞跃！
 
@@ -359,15 +361,15 @@ $ nvidia-smi
 设单层 Transformer Block 的配置为：批大小 $b$，序列长度 $s$，隐藏维度 $h$，头数 $a$：
 - 未开启 FlashAttention 时的单层激活值显存：
 
-  $$
-  \text{Act}_{\text{layer}} = s \cdot b \cdot h \cdot \left( 34 + 5 \frac{a \cdot s}{h} \right) \text{ Bytes (包含 $O(s^2)$ 注意力矩阵)}
-  $$
+$$
+\text{Act}_{\text{layer}} = s \cdot b \cdot h \cdot \left( 34 + 5 \frac{a \cdot s}{h} \right) \text{ Bytes (包含 $O(s^2)$ 注意力矩阵)}
+$$
 
 - **开启 FlashAttention-2 后**（消灭了 $s \times s$ 中间矩阵存储）：
 
-  $$
-  \text{Act}_{\text{layer}} \approx 19 \times b \cdot s \cdot h \text{ Bytes}
-  $$
+$$
+\text{Act}_{\text{layer}} \approx 19 \times b \cdot s \cdot h \text{ Bytes}
+$$
 
 ---
 
@@ -383,15 +385,15 @@ $$
 - 配置： $L=80$ 层，KV 头数 $h_{\text{kv}}=8$，单头维度 $d_k=128$，FP16 占 2 字节；
 - 单 Token 的 KV Cache 显存为：
 
-  $$
-  2 \times 80 \times 8 \times 128 \times 2 = \mathbf{327,680\text{ Bytes}} = \mathbf{320\text{ KB/token}}
-  $$
+$$
+2 \times 80 \times 8 \times 128 \times 2 = \mathbf{327,680\text{ Bytes}} = \mathbf{320\text{ KB/token}}
+$$
 
 - 当并发批大小 $b = 32$，上下文长度 $s = 4096$ 时：
 
-  $$
-  32 \times 4096 \times 320\text{ KB} \approx \mathbf{41.94\text{ GB}}!
-  $$
+$$
+32 \times 4096 \times 320\text{ KB} \approx \mathbf{41.94\text{ GB}}!
+$$
 
 ---
 
@@ -425,9 +427,9 @@ Roofline（屋顶线模型，Williams et al., 2009）是计算机体系结构中
 
 - **横坐标：算术强度（Operational / Arithmetic Intensity, AI）**：
 
-  $$
-  \text{AI} = \frac{\text{完成计算所需的浮点运算次数（FLOPs）}}{\text{从 HBM 显存中读取和写入的物理字节数（Bytes）}} \quad (\text{单位: FLOP/Byte})
-  $$
+$$
+\text{AI} = \frac{\text{完成计算所需的浮点运算次数（FLOPs）}}{\text{从 HBM 显存中读取和写入的物理字节数（Bytes）}} \quad (\text{单位: FLOP/Byte})
+$$
 
   - **人话解释**：**“每从慢速显存里搬运 1 个字节的数据，GPU 核心能对它做多少次计算？”**
 - **纵坐标：实际性能（Attainable Performance）**：以 `TFLOPS` 为单位的实际计算吞吐。
@@ -447,17 +449,17 @@ $$
    - 峰值算力： $312\text{ TFLOPS}$ (BF16 Tensor Core)
    - 显存带宽： $2.0\text{ TB/s}$ (HBM2e)
 
-   $$
-   I_{\text{knee}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOP/Byte}}
-   $$
+$$
+I_{\text{knee}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOP/Byte}}
+$$
 
 2. **NVIDIA H100-SXM5-80GB**：
    - 峰值算力： $989\text{ TFLOPS}$ (FP16/BF16 Dense)
    - 显存带宽： $3.35\text{ TB/s}$ (HBM3)
 
-   $$
-   I_{\text{knee}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOP/Byte}}
-   $$
+$$
+I_{\text{knee}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOP/Byte}}
+$$
 
 ---
 
@@ -516,9 +518,9 @@ $$
   - 单卡有效算力： $989\text{ TFLOPS} \times 52\% \approx 514\text{ TFLOPS}$；
   - 64 卡集群每秒训练 Token 数：
 
-    $$
-    \text{Throughput} = \frac{64 \times 514 \times 10^{12}\text{ FLOP/s}}{6 \times 70 \times 10^9\text{ FLOP/token}} \approx \mathbf{78,323\text{ Tokens/s}}
-    $$
+$$
+\text{Throughput} = \frac{64 \times 514 \times 10^{12}\text{ FLOP/s}}{6 \times 70 \times 10^9\text{ FLOP/token}} \approx \mathbf{78,323\text{ Tokens/s}}
+$$
 
 ---
 
@@ -753,27 +755,27 @@ if __name__ == "__main__":
 #### 🎯 答题思考路径与推导步骤：
 1. **单步处理的总 Token 数手算**：
 
-   $$
-   \text{Tokens per Step} = \text{Batch Size} \times \text{Seq Len} = 256 \times 4096 = \mathbf{1,048,576\text{ Tokens}} \approx \mathbf{1.048\text{ M Tokens}}
-   $$
+$$
+\text{Tokens per Step} = \text{Batch Size} \times \text{Seq Len} = 256 \times 4096 = \mathbf{1,048,576\text{ Tokens}} \approx \mathbf{1.048\text{ M Tokens}}
+$$
 
 2. **单步理论最小有效计算量手算（按 $6P$ 标准公式）**：
 
-   $$
-   \text{Valid FLOPs} = 6 \times P \times \text{Tokens} = 6 \times (70 \times 10^9) \times 1,048,576 = \mathbf{4.404 \times 10^{17}\text{ FLOPs}}
-   $$
+$$
+\text{Valid FLOPs} = 6 \times P \times \text{Tokens} = 6 \times (70 \times 10^9) \times 1,048,576 = \mathbf{4.404 \times 10^{17}\text{ FLOPs}}
+$$
 
 3. **集群在 4.2 秒内的理论最大峰值算力**：
 
-   $$
-   \text{Peak Cluster FLOPS} = 64 \times (312 \times 10^{12}\text{ FLOP/s}) \times 4.2\text{ 秒} = \mathbf{8.386 \times 10^{17}\text{ FLOPs}}
-   $$
+$$
+\text{Peak Cluster FLOPS} = 64 \times (312 \times 10^{12}\text{ FLOP/s}) \times 4.2\text{ 秒} = \mathbf{8.386 \times 10^{17}\text{ FLOPs}}
+$$
 
 4. **MFU 计算与代入**：
 
-   $$
-   \text{MFU} = \frac{\text{Valid FLOPs}}{\text{Peak Cluster FLOPS}} = \frac{4.404 \times 10^{17}}{8.386 \times 10^{17}} = \mathbf{52.52\%}
-   $$
+$$
+\text{MFU} = \frac{\text{Valid FLOPs}}{\text{Peak Cluster FLOPS}} = \frac{4.404 \times 10^{17}}{8.386 \times 10^{17}} = \mathbf{52.52\%}
+$$
 
 5. **结论与评级**：  
    实际 MFU 为 **$52.5\%$**，在 64 卡跨机训练 70B 模型场景下，超过了 50% 的工业级分水岭，属于**世界顶级（World-Class）分布式训练优化水平**！
@@ -791,9 +793,9 @@ if __name__ == "__main__":
    - **HBM 访存量（Bytes）**：生成这 1 个 Token，必须把全网 70B 权重从显存完整读取到片上寄存器一次，读取字节数为 $P \times 2\text{ Bytes} = \mathbf{1.4 \times 10^{11}\text{ Bytes}}$（140 GB）；
 2. **算术强度（AI）计算**：
 
-   $$
-   \text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}}
-   $$
+$$
+\text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{1.4 \times 10^{11}\text{ FLOPs}}{1.4 \times 10^{11}\text{ Bytes}} = \mathbf{1.0\text{ FLOP/Byte}}
+$$
 
 3. **对比 A100 硬件拐点**：
    - A100 的硬件物理拐点为 $I_{\text{knee}} = \frac{312\text{ TFLOPS}}{2.0\text{ TB/s}} = \mathbf{156\text{ FLOP/Byte}}$；
@@ -814,10 +816,10 @@ if __name__ == "__main__":
 2. **通信账本代价手算**：
    - **标准 DDP**：只在反向求导后执行 1 次 `AllReduce` 梯度同步，单步单卡通信量为 **$2M$ 字节**；
    - **ZeRO-3**：
-     - 前向计算：执行 1 次 `AllGather` 临时拉取权重，通信量为 $1M$；
-     - 反向求导：再次执行 1 次 `AllGather` 重新拉取权重，通信量为 $1M$；
-     - 梯度同步：执行 1 次 `ReduceScatter` 规约分片存储梯度，通信量为 $1M$；
-     - 单步单卡总通信量为 $1M + 1M + 1M = \mathbf{3 \text{ MB}}（3 兆字节）$；
+  - 前向计算：执行 1 次 `AllGather` 临时拉取权重，通信量为 $1M$；
+  - 反向求导：再次执行 1 次 `AllGather` 重新拉取权重，通信量为 $1M$；
+  - 梯度同步：执行 1 次 `ReduceScatter` 规约分片存储梯度，通信量为 $1M$；
+  - 单步单卡总通信量为 $1M + 1M + 1M = \mathbf{3 \text{ MB}}（3 兆字节）$；
 3. **Trade-off 结论**：  
    ZeRO-3 的通信量相比 DDP **增加了整整 50%（ $2M \to 3M$ ）**！  
    **决策准则**：只有在单卡显存实在装不下模型（如 70B 模型在小集群训练）时才开启 ZeRO-3；如果通过张量并行或卡数扩展已经能装下模型，优先选择通信量更小的 **ZeRO-2**（仅需 $2M$ 通信量）！
@@ -832,9 +834,9 @@ if __name__ == "__main__":
 1. **张量并行切分（TP=8）**：  
    将 70B 模型权重均分到 8 张 A100 上，每张卡承担：
 
-   $$
-   M_{\text{weight per GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}
-   $$
+$$
+M_{\text{weight per GPU}} = \frac{140\text{ GB}}{8} = \mathbf{17.5\text{ GB}}
+$$
 
 2. **单卡剩余可用显存手算**：
    - A100 总显存： $80\text{ GB}$；
@@ -847,15 +849,15 @@ if __name__ == "__main__":
 4. **最大并发 Batch Size 规划**：
    - 设单请求长度为 $s = 4096$ Tokens，单个请求在单卡上占用的 KV Cache 为：
 
-     $$
-     4096 \times 40\text{ KB} = 163,840\text{ KB} = \mathbf{0.15625\text{ GB}}
-     $$
+$$
+4096 \times 40\text{ KB} = 163,840\text{ KB} = \mathbf{0.15625\text{ GB}}
+$$
 
    - 单台 8 卡服务器支持的最大并发请求数（Batch Size）为：
 
-     $$
-     \text{Max Batch Size} = \frac{50.0\text{ GB}}{0.15625\text{ GB}} = \mathbf{320 \text{ concurrent}}（320 并发！）
-     $$
+$$
+\text{Max Batch Size} = \frac{50.0\text{ GB}}{0.15625\text{ GB}} = \mathbf{320 \text{ concurrent}}（320 并发！）
+$$
 
 5. **生产建议**：  
    在生产环境中配合 **vLLM (PagedAttention)**，可以将并发稳定维持在 **$b = 128 \sim 256$** 的极高吞吐区间，单台机器每秒可吐出上万个 Token！

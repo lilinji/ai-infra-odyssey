@@ -170,9 +170,9 @@ math: true
 - **大写 $B$（Byte，字节）**：**计算机显存与存储领域的最爱**。显存大小（80 GB）、模型权重（14 GB）、张量大小都是以 Byte 为单位；
 - **物理换算铁律**：
 
-  $$
-  1\text{ Byte (B)} = 8\text{ bits (b)}
-  $$
+$$
+1\text{ Byte (B)} = 8\text{ bits (b)}
+$$
 
 ![Ringi 核心冲突剧场：Gbps 与 GB/s 流量闸门与单位换算](assets/ringi_09_bandwidth_units_barrier.png)
 
@@ -275,9 +275,9 @@ else:
    Rank 0 必须接收 $(P-1)M$ 字节，再发送 $(P-1)M$ 字节，总共搬运 **$2(P-1)M$ 字节**！
 2. **时间复杂度随卡数线性爆炸**：
 
-   $$
-   T_{\text{naive}} \propto 2(P-1) \times \frac{M}{\text{Bandwidth}} = O(P \cdot M)
-   $$
+$$
+T_{\text{naive}} \propto 2(P-1) \times \frac{M}{\text{Bandwidth}} = O(P \cdot M)
+$$
 
    当集群规模从 8 卡扩展到 1024 卡时，通信时间会直接**暴涨 1000 多倍**！其他 1023 张卡绝大部分时间全在排队等待 Rank 0 单线联系，整个集群的算力被彻底锁死。
 
@@ -386,10 +386,10 @@ $$
   - Rank 3: `[4, 4, 4, 4]`
   - 全网求和后本应是 `[10, 10, 10, 10]`；
   - **ReduceScatter 后**：
-    - Rank 0 只拿第 0 块：`[10]`
-    - Rank 1 只拿第 1 块：`[10]`
-    - Rank 2 只拿第 2 块：`[10]`
-    - Rank 3 只拿第 3 块：`[10]`
+  - Rank 0 只拿第 0 块：`[10]`
+  - Rank 1 只拿第 1 块：`[10]`
+  - Rank 2 只拿第 2 块：`[10]`
+  - Rank 3 只拿第 3 块：`[10]`
 - **AI Infra 价值**：在 **ZeRO-2 与 FSDP** 中，反向求导后并不需要让每张卡都持有全量梯度，只需通过 `ReduceScatter` 让每张卡拿到属于自己分摊的那 $1/P$ 梯度并更新对应的优化器分片，**显存占用直接砍掉 $1 - 1/P$！**
 
 ---
@@ -497,21 +497,21 @@ Ring 算法的核心思想极其巧妙：
 
 - 在 **Scatter-Reduce 阶段**，共执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$ ）：
 
-  $$
-  \text{Transferred}_{\text{SR}} = (P - 1) \times \frac{M}{P} \text{ 字节}
-  $$
+$$
+\text{Transferred}_{\text{SR}} = (P - 1) \times \frac{M}{P} \text{ 字节}
+$$
 
 - 在 **AllGather 阶段**，同样执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$ ）：
 
-  $$
-  \text{Transferred}_{\text{AG}} = (P - 1) \times \frac{M}{P} \text{ 字节}
-  $$
+$$
+\text{Transferred}_{\text{AG}} = (P - 1) \times \frac{M}{P} \text{ 字节}
+$$
 
 - **两阶段单卡发送的物理数据总量为**：
 
-  $$
-  \text{Total Bytes Sent per GPU} = 2 \times \frac{P - 1}{P} M \text{ 字节}
-  $$
+$$
+\text{Total Bytes Sent per GPU} = 2 \times \frac{P - 1}{P} M \text{ 字节}
+$$
 
 ### 2. 通信耗时与极限复杂度推导：
 
@@ -946,24 +946,24 @@ if __name__ == "__main__":
    - 在每一步中，每张卡向其右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$ ）；
    - 因此，该阶段单卡累计发送的数据量为：
 
-     $$
-     \text{Bytes}_{\text{SR}} = (P - 1) \times \frac{M}{P} = \frac{P - 1}{P} M
-     $$
+$$
+\text{Bytes}_{\text{SR}} = (P - 1) \times \frac{M}{P} = \frac{P - 1}{P} M
+$$
 
 3. **AllGather 阶段传输量**：
    - 经过第一阶段后，每张卡只持有一块完整求和结果，需要再花费 $P-1$ 步将该完整分块广播覆盖到其余 $P-1$ 张卡上；
    - 在每一步中，每张卡同样向右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$ ）；
    - 因此，该阶段单卡累计发送的数据量同样为：
 
-     $$
-     \text{Bytes}_{\text{AG}} = (P - 1) \times \frac{M}{P} = \frac{P - 1}{P} M
-     $$
+$$
+\text{Bytes}_{\text{AG}} = (P - 1) \times \frac{M}{P} = \frac{P - 1}{P} M
+$$
 
 4. **单卡总传输量求和**：
 
-   $$
-   \text{Total Bytes Transferred per GPU} = \text{Bytes}_{\text{SR}} + \text{Bytes}_{\text{AG}} = 2 \times \frac{P - 1}{P} M
-   $$
+$$
+\text{Total Bytes Transferred per GPU} = \text{Bytes}_{\text{SR}} + \text{Bytes}_{\text{AG}} = 2 \times \frac{P - 1}{P} M
+$$
 
 5. **渐近复杂度结论**：  
    当卡数 $P \to \infty$ 时， $\lim_{P \to \infty} \frac{P-1}{P} = 1$。因此单卡总传输量严格渐近于 **$2M$**，与节点数 $P$ 完全解耦，复杂度为 $O(1)$！
@@ -997,15 +997,15 @@ if __name__ == "__main__":
 1. **两种算法的耗时公式对比**：
    - **Ring-AllReduce 耗时**：
 
-     $$
-     T_{\text{Ring}} = 2(P - 1)\alpha + 2 \left(\frac{P - 1}{P}\right) \frac{M}{B}
-     $$
+$$
+T_{\text{Ring}} = 2(P - 1)\alpha + 2 \left(\frac{P - 1}{P}\right) \frac{M}{B}
+$$
 
    - **Tree-AllReduce 耗时**（以平衡二叉树为例）：
 
-     $$
-     T_{\text{Tree}} = 2 \lceil \log_2 P \rceil \alpha + 2 \frac{M}{B_{\text{tree}}}
-     $$
+$$
+T_{\text{Tree}} = 2 \lceil \log_2 P \rceil \alpha + 2 \frac{M}{B_{\text{tree}}}
+$$
 
 2. **小包通信（ $M \to 0$ ）分析**：  
    当传输的数据量 $M$ 极小时（如几百字节到几 KB），带宽传输项 $\frac{M}{B} \approx 0$，总耗时完全由网络启动与跳步延迟 $\alpha$ 主导：

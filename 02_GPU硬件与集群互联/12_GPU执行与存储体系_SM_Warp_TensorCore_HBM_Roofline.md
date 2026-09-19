@@ -835,18 +835,18 @@ Bank 31:  0x7C~0x7F, 0xFC~0xFF, 0x17C~0x17F ...
   - 访存量（Bytes）：读取 $A$（8 字节）+ 读取 $B$（8 字节）+ 写回 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比（Arithmetic Intensity）：
 
-    $$
-    \text{AI} = \frac{4\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.167\text{ FLOPs/Byte}}
-    $$
+$$
+\text{AI} = \frac{4\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.167\text{ FLOPs/Byte}}
+$$
 
 - **算例 B（极简小矩阵乘法： $2 \times 2$ 乘 $2 \times 2$，FP16 2 字节）**：
   - 浮点运算量： $2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}$；
   - 访存量（假设无缓存）：读 $A$（8 字节）+ 读 $B$（8 字节）+ 写 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比：
 
-    $$
-    \text{AI} = \frac{16\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.667\text{ FLOPs/Byte}}
-    $$
+$$
+\text{AI} = \frac{16\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.667\text{ FLOPs/Byte}}
+$$
 
 ### Step 4: Formal Model（正式数学模型与硬件映射）
 
@@ -862,9 +862,9 @@ $$
 - **$\text{BW}_{\text{HBM}}$（硬件显存物理带宽）**：显卡主存储总线的理论或实测最大吞吐速率（单位： $\text{TB/s} = 10^{12}\text{ Bytes/s}$ ）；
 - **$\text{AI}$（Arithmetic Intensity，算术强度 / 计算访存比）**：算法自身固有的数学物理特征：
 
-  $$
-  \text{AI} = \frac{\text{算法总浮点运算量 (Total FLOPs)}}{\text{从 HBM 读写搬运的总物理字节数 (Total Bytes Trafficked)}}\quad (\text{单位: FLOPs/Byte})
-  $$
+$$
+\text{AI} = \frac{\text{算法总浮点运算量 (Total FLOPs)}}{\text{从 HBM 读写搬运的总物理字节数 (Total Bytes Trafficked)}}\quad (\text{单位: FLOPs/Byte})
+$$
 
 ```text
 计算性能 P (TFLOPS)
@@ -901,18 +901,18 @@ $$
   - HBM2e 物理实测带宽： $\text{BW} = 2.0\text{ TB/s}$；
   - **A100 硬件固有转折点**：
 
-    $$
-    \text{AI}^*_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}
-    $$
+$$
+\text{AI}^*_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}
+$$
 
 - **NVIDIA H100-SXM5-80GB (Hopper 架构)**：
   - Dense FP16 峰值算力： $P_{\text{peak}} = 989\text{ TFLOPS}$；
   - HBM3 物理实测带宽： $\text{BW} = 3.35\text{ TB/s}$；
   - **H100 硬件固有转折点**：
 
-    $$
-    \text{AI}^*_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}
-    $$
+$$
+\text{AI}^*_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}
+$$
 
 > 💡 **惊心动魄的工程事实**：
 > 在 H100 上，**只有当一个算子每从显存中搬运 1 个字节的数据，就能在其上完成 295 次以上的乘加计算，才配把 H100 的 Tensor Core 彻底喂饱！**  
@@ -982,9 +982,9 @@ $$
 - 写矩阵 $C$： $M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
 - **总 HBM 搬运量（假定理想片上复用）**：
 
-  $$
-  \text{Bytes} = 2 \times (MK + KN + MN) = 3 \times 33.55\text{ MB} \approx \mathbf{100.66\text{ MB}} \quad (1.0066 \times 10^8\text{ Bytes})
-  $$
+$$
+\text{Bytes} = 2 \times (MK + KN + MN) = 3 \times 33.55\text{ MB} \approx \mathbf{100.66\text{ MB}} \quad (1.0066 \times 10^8\text{ Bytes})
+$$
 
 ### 3. 算术强度计算：
 
@@ -1026,9 +1026,9 @@ $$
 - $O(N^2)$ 的中间读写量高达数个 GB！
 - 算术强度被稀释至：
 
-  $$
-  \text{AI}_{\text{Standard Attention}} \approx \mathbf{15 \sim 30\text{ FLOPs/Byte}} \ll 295.2
-  $$
+$$
+\text{AI}_{\text{Standard Attention}} \approx \mathbf{15 \sim 30\text{ FLOPs/Byte}} \ll 295.2
+$$
 
 - **标准 Attention 被死死锁在 Memory-Bound 的低效斜坡上！算力硬件 90% 的时间在等 HBM 搬运中间矩阵 $S$ 和 $P$！**
 
@@ -1069,9 +1069,9 @@ $$
    - 总访存量约 **$6d\text{ Bytes}$**；
 3. **算术强度**：
 
-   $$
-   \text{AI}_{\text{RMSNorm}} = \frac{3d}{6d} = \mathbf{0.5\text{ FLOPs/Byte}}！
-   $$
+$$
+\text{AI}_{\text{RMSNorm}} = \frac{3d}{6d} = \mathbf{0.5\text{ FLOPs/Byte}}！
+$$
 
 在 H100 上，这个算子的理论上限算力是：
 
@@ -1105,9 +1105,9 @@ $$
 - 每次与 $1 \times D$ 的向量相乘，进行的浮点运算量是 $2P$；
 - 算术强度：
 
-  $$
-  \text{AI}_{\text{Decode (BS=1)}} = \frac{2P\text{ FLOPs}}{2P\text{ Bytes}} = \mathbf{1.0\text{ FLOPs/Byte}}！
-  $$
+$$
+\text{AI}_{\text{Decode (BS=1)}} = \frac{2P\text{ FLOPs}}{2P\text{ Bytes}} = \mathbf{1.0\text{ FLOPs/Byte}}！
+$$
 
 在 H100 上，面对 $\text{AI} = 1.0$ 的算子，硬件能发挥的算力上限永远被锁死在 **$3.35\text{ TFLOPS}$**！你的万亿参数芯片，在这一瞬间变成了纯粹的显存搬运工！
 

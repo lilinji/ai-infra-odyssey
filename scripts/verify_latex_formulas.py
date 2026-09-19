@@ -67,6 +67,10 @@ def scan_markdown_file(file_path):
         if re.match(r"^\s*[-*+]\s+.*?\$\$.*?\$\$", line):
             violations.append((lno, "Rule 5: Block math ($$) inline on list item line (breaks GFM parser)", line.strip()))
             
+        # 6. Rule 6: Indented $$ block detected (must be flush-left column 0 to prevent GFM parser mangling)
+        if re.match(r"^\s+\$\$", line):
+            violations.append((lno, "Rule 6: Indented $$ block detected (must be flush-left column 0)", line.strip()))
+            
     return rel_path, violations
 
 def main():

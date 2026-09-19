@@ -311,7 +311,8 @@ ai-infra-odyssey/
 │   └── book_cover.png                # 专栏官方封面
 ├── scripts/                          # 🛠️ 工业级自动化质检工具链
 │   ├── verify_latex_formulas.py      # 一键 LaTeX 公式与 GitHub 原生渲染合规性校验脚本
-│   └── fix_github_latex_spacing.py   # 全库标点空格自动化规范化脚本
+│   ├── fix_github_latex_spacing.py   # 全库标点空格自动化规范化脚本
+│   └── normalize_latex_blocks.py     # 全库块级公式顶格与空行隔离规范化脚本
 ├── LATEX_FORMULA_SPECIFICATION.md    # 📐 全局生产级 LaTeX 数学公式排版规范指南
 ├── .agents/rules/formula-standard.md # 🤖 IDE Agent 自动化生成强制规则
 └── [01~09 各篇分卷目录]/             # 📁 各分篇生产级讲义与架构资产

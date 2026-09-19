@@ -198,15 +198,15 @@ math: true
 2. **单层 Transformer**：包含 1 次 Attention 输出投影 AllReduce + 1 次 MLP 下投影 AllReduce = **2 次 AllReduce**；
 3. **80 层的 LLaMA-3-70B 模型**：单个 Decode Token 步进中，总共需要连续串行执行：
 
-   $$
-   80 \times 2 = 160 \text{ 次 AllReduce 通信！}
-   $$
+$$
+80 \times 2 = 160 \text{ 次 AllReduce 通信！}
+$$
 
 4. **纯通信等待时间**：
 
-   $$
-   T_{\text{comm}} = 160 \times 6\mu s \approx 0.96 \text{ ms}
-   $$
+$$
+T_{\text{comm}} = 160 \times 6\mu s \approx 0.96 \text{ ms}
+$$
 
    此时，计算总耗时才不过 $160 \times 12\mu s \approx 1.92\text{ ms}$。通信等待已经吃掉了整整三分之一的时间！
 
@@ -232,15 +232,15 @@ $$
 1. **请求异步到达**：在线推理的请求具有随机性与泊松分布特征，无法凑齐数百个均匀的微批次；
 2. **气泡率数学定理**：如果当前批次规模为 $B$，流水线级数为 $P$，则推理前向传播的气泡率公式为：
 
-   $$
-   \text{Bubble Ratio} = \frac{P - 1}{P + B - 1}
-   $$
+$$
+\text{Bubble Ratio} = \frac{P - 1}{P + B - 1}
+$$
 
    - 假设 $P=4$（模型切在 4 台节点上），当线上并发较低、 $B=1$ 时：
 
-     $$
-     \text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！
-     $$
+$$
+\text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！
+$$
 
      整整 75% 的时间里，四分之三的服务器处于完全空转状态！每个 Token 必须像击鼓传花一样在 4 台机器间串行走一圈，**单步延迟被硬生生放大了 4 倍**！
 3. **唯一的救赎场景**：只有在超大并发（ $B \gg 64$ ）或者超大模型（如 405B、万亿模型单机 8 卡 HBM 根本放不下权重）时，PP 才是不得已而为之的容量妥协方案。
@@ -406,27 +406,27 @@ $$
    - 单层合计： $2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}$。
 2. **单个 Token 在全部 80 层累积的 KV 大小**：
 
-   $$
-   \text{Size}_{\text{token}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token！}
-   $$
+$$
+\text{Size}_{\text{token}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token！}
+$$
 
 3. **当输入 Prompt 长度为 $L = 4,096$（4K）时**：
 
-   $$
-   \text{Size}_{\text{4K}} = 4,096 \times 320 \text{ KB} = 1,310,720 \text{ KB} \approx \mathbf{1.28 \text{ GB}}
-   $$
+$$
+\text{Size}_{\text{4K}} = 4,096 \times 320 \text{ KB} = 1,310,720 \text{ KB} \approx \mathbf{1.28 \text{ GB}}
+$$
 
 4. **当输入 Prompt 长度为 $L = 32,768$（32K）时**：
 
-   $$
-   \text{Size}_{\text{32K}} = 32,768 \times 320 \text{ KB} \approx \mathbf{10.0 \text{ GB！}}
-   $$
+$$
+\text{Size}_{\text{32K}} = 32,768 \times 320 \text{ KB} \approx \mathbf{10.0 \text{ GB！}}
+$$
 
 5. **当输入 Prompt 长度为 $L = 131,072$（128K）时**：
 
-   $$
-   \text{Size}_{\text{128K}} = 131,072 \times 320 \text{ KB} \approx \mathbf{40.0 \text{ GB！！}}
-   $$
+$$
+\text{Size}_{\text{128K}} = 131,072 \times 320 \text{ KB} \approx \mathbf{40.0 \text{ GB！！}}
+$$
 
 #### 步骤 4：Formal Model（标准物理公式与网络映射）
 对于包含 $n_{\text{layers}}$ 层、每层具有 $n_{\text{kv-heads}}$ 个 KV 注意力头、头维度为 $d_{\text{head}}$ 的模型，在精度字节数为 $b_{\text{bytes}}$（FP16/BF16 取 2，FP8 取 1）时，输入序列长度为 $L_{\text{prompt}}$ 的 KV Cache 传输字节量为：
@@ -446,17 +446,17 @@ $$
 - **场景 A：通用数据中心 100 Gbps 网络**（有效带宽约 $B_{\text{net}} \approx 11 \text{ GB/s}$ ）
   - 传输一个 32K Prompt 的 KV Cache（10 GB）：
 
-    $$
-    T_{\text{transfer}} = \frac{10 \text{ GB}}{11 \text{ GB/s}} \approx \mathbf{909 \text{ ms！}}
-    $$
+$$
+T_{\text{transfer}} = \frac{10 \text{ GB}}{11 \text{ GB/s}} \approx \mathbf{909 \text{ ms！}}
+$$
 
   - **结论**：在 100G 网络下，光是跨机传输就耗费了将近 1 秒钟！这比 H100 算这 32K Tokens 的时间还要长，PD 分离完全不可行！
 - **场景 B：高性能智算中心 400 Gbps RoCE / InfiniBand 网络**（有效带宽约 $B_{\text{net}} \approx 45 \text{ GB/s}$ ）
   - 传输 10 GB KV Cache：
 
-    $$
-    T_{\text{transfer}} = \frac{10 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{222 \text{ ms}}
-    $$
+$$
+T_{\text{transfer}} = \frac{10 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{222 \text{ ms}}
+$$
 
   - **若开启 FP8 格式压缩（ $b_{\text{bytes}} = 1$ ）**：
     数据量直接减半至 5 GB， $T_{\text{transfer}}$ 瞬间压缩至 **约 111 ms**！
@@ -685,17 +685,17 @@ $$
 - **业务场景一（长输入、短输出的摘要/搜索场景）**：
   $\overline{L_{\text{in}}} = 8,000$, $\overline{L_{\text{out}}} = 500$。
 
-  $$
-  \frac{N_{\text{D}}}{N_{\text{P}}} = \frac{500}{8000} \times 8 = \mathbf{0.5}
-  $$
+$$
+\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{500}{8000} \times 8 = \mathbf{0.5}
+$$
 
   即：**每 2 台 Prefill 节点只需要配备 1 台 Decode 节点！**（重 P 轻 D）
 - **业务场景二（短输入、长推理思维链的 R1/o1 深度推理场景）**：
   $\overline{L_{\text{in}}} = 1,000$, $\overline{L_{\text{out}}} = 4,000$。
 
-  $$
-  \frac{N_{\text{D}}}{N_{\text{P}}} = \frac{4000}{1000} \times 8 = \mathbf{32}
-  $$
+$$
+\frac{N_{\text{D}}}{N_{\text{P}}} = \frac{4000}{1000} \times 8 = \mathbf{32}
+$$
 
   即：**每 1 台 Prefill 节点需要配备整整 32 台 Decode 节点！**（极重 D 轻 P）
 
@@ -1145,39 +1145,39 @@ if __name__ == "__main__":
 1. **KV Cache 体量精准手算**：
    - 单 Token、单层 KV 尺寸：
 
-     $$
-     \text{Size}_{\text{token, layer}} = 2 (\text{Key \& Value}) \times 8 (\text{heads}) \times 128 (\text{dim}) \times 2 \text{ bytes} = 4,096 \text{ bytes} = 4 \text{ KB}
-     $$
+$$
+\text{Size}_{\text{token, layer}} = 2 (\text{Key \& Value}) \times 8 (\text{heads}) \times 128 (\text{dim}) \times 2 \text{ bytes} = 4,096 \text{ bytes} = 4 \text{ KB}
+$$
 
    - 单 Token 全部 80 层总和：
 
-     $$
-     \text{Size}_{\text{token, total}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token}
-     $$
+$$
+\text{Size}_{\text{token, total}} = 80 \times 4 \text{ KB} = 320 \text{ KB / Token}
+$$
 
    - 64K（65,536 Tokens）总 KV Cache 体量：
 
-     $$
-     \text{Total Size} = 65,536 \times 320 \text{ KB} = 20,971,520 \text{ KB} = \mathbf{20.0 \text{ GB}}
-     $$
+$$
+\text{Total Size} = 65,536 \times 320 \text{ KB} = 20,971,520 \text{ KB} = \mathbf{20.0 \text{ GB}}
+$$
 
 2. **网络传输物理耗时估算**：
    - 400Gbps RDMA 网络（RoCE v2 / IB）的有效双向单向传输带宽约为 $45 \text{ GB/s}$；
    - 20.0 GB 数据的纯网络线缆传输耗时为：
 
-     $$
-     T_{\text{transfer}} = \frac{20.0 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{0.444 \text{ s}} = \mathbf{444 \text{ ms}}
-     $$
+$$
+T_{\text{transfer}} = \frac{20.0 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{0.444 \text{ s}} = \mathbf{444 \text{ ms}}
+$$
 
 3. **Layerwise Pipelining 重叠隐藏设计**：
    - **单层计算耗时 vs 单层传输耗时**：
-     - 单层传输耗时： $444 \text{ ms} / 80 \text{ layers} \approx 5.55 \text{ ms}$；
-     - 70B 模型在 H100 8 卡上计算 64K Tokens 的单层 Attention+FFN 耗时大约为 $7.0 \text{ ms}$；
+  - 单层传输耗时： $444 \text{ ms} / 80 \text{ layers} \approx 5.55 \text{ ms}$；
+  - 70B 模型在 H100 8 卡上计算 64K Tokens 的单层 Attention+FFN 耗时大约为 $7.0 \text{ ms}$；
    - **流水线掩盖机制**：
-     - 当 GPU 计算完 Layer $i$ 的瞬间，立即将其 KV Cache 挂入独立的后台 CUDA Stream，触发 GPUDirect RDMA 异步发送给 Decode 节点；
-     - GPU 立即开启 Layer $i+1$ 的前向计算，此时底层网卡正在并发传输 Layer $i$；
-     - 因为 $T_{\text{comp}} (7.0\text{ms}) > T_{\text{trans}} (5.55\text{ms})$，网络传输完全落入计算的阴影区被彻底掩盖；
-     - 最终暴露给端到端首字延迟（TTFT）的只有最后一层（Layer 79）的微小网络时延（约 5.5ms），成功将 444ms 的网络传输开销降低了 98% 以上！
+  - 当 GPU 计算完 Layer $i$ 的瞬间，立即将其 KV Cache 挂入独立的后台 CUDA Stream，触发 GPUDirect RDMA 异步发送给 Decode 节点；
+  - GPU 立即开启 Layer $i+1$ 的前向计算，此时底层网卡正在并发传输 Layer $i$；
+  - 因为 $T_{\text{comp}} (7.0\text{ms}) > T_{\text{trans}} (5.55\text{ms})$，网络传输完全落入计算的阴影区被彻底掩盖；
+  - 最终暴露给端到端首字延迟（TTFT）的只有最后一层（Layer 79）的微小网络时延（约 5.5ms），成功将 444ms 的网络传输开销降低了 98% 以上！
 
 ---
 

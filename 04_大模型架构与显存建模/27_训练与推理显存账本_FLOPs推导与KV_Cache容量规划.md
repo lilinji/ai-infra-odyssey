@@ -285,9 +285,9 @@ $$
 - 每次参数更新，GPU 必须把梯度通过 PCIe 搬运给 CPU，CPU 计算完 AdamW 后，再把更新后的参数通过 PCIe 搬运回 GPU；
 - 单次跨 PCIe 搬运耗时：
 
-  $$
-  \text{Latency} = \frac{840\text{ GB}}{24\text{ GB/s}} \approx \mathbf{35 \text{ s}}（约 35 秒）!
-  $$
+$$
+\text{Latency} = \frac{840\text{ GB}}{24\text{ GB/s}} \approx \mathbf{35 \text{ s}}（约 35 秒）!
+$$
 
 而 8 卡 H800 执行一步前向和反向计算只需要 **1.2 秒**！  
 这意味着：**开启 ZeRO-Offload 之后，训练 Step Time 从 1.2 秒被硬生生拉长到 36.2 秒，整机算力利用率（MFU）暴跌至不足 3%！**  
@@ -320,6 +320,7 @@ $$
 - **FFN 激活值小计**： $\approx 22BSd \sim 24BSd$ 字节。
 
 #### 单层激活值总量大一统公式（无重算）：
+
 $$
 M_{\text{act-layer}} = 34BSd + 5B H_q S^2 \quad (\text{Bytes})
 $$
@@ -432,9 +433,9 @@ $$
 - 单卡平摊每 Token 仅： $320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}$；
 - 若并发 $B=32$，上下文平均长度 $S=8192$（8K）：
 
-  $$
-  M_{\text{kv-card}} = 40\text{ KB} \times 32 \times 8192 \approx \mathbf{10.48\text{ GB}}
-  $$
+$$
+M_{\text{kv-card}} = 40\text{ KB} \times 32 \times 8192 \approx \mathbf{10.48\text{ GB}}
+$$
 
 - 80GB 显存扣除约 17.5 GB 静态权重后，剩余超过 50 GB 显存，服务运行非常宽裕！
 
@@ -497,28 +498,28 @@ $$
 设非 Embedding 模型参数量为 $P$，全批次 Token 总数（ $B \times S$ ）：
 - **前向传播（Forward Pass）**：
 
-  $$
-  \text{FLOPs}_{\text{fwd}} = 2 \times P \times B \times S
-  $$
+$$
+\text{FLOPs}_{\text{fwd}} = 2 \times P \times B \times S
+$$
 
 - **反向传播（Backward Pass，激活求导 $2P$ + 权重求导 $2P$ ）**：
 
-  $$
-  \text{FLOPs}_{\text{bwd}} = 4 \times P \times B \times S
-  $$
+$$
+\text{FLOPs}_{\text{bwd}} = 4 \times P \times B \times S
+$$
 
 - **标准训练（Standard Training，无全重算）**：
 
-  $$
-  \text{FLOPs}_{\text{train}} = \text{FLOPs}_{\text{fwd}} + \text{FLOPs}_{\text{bwd}} = \mathbf{6 \times P \times B \times S}
-  $$
+$$
+\text{FLOPs}_{\text{train}} = \text{FLOPs}_{\text{fwd}} + \text{FLOPs}_{\text{bwd}} = \mathbf{6 \times P \times B \times S}
+$$
 
 - **全激活重算训练（Full Activation Checkpointing）**：
   由于前向过程被完整多算了一次：
 
-  $$
-  \text{FLOPs}_{\text{full-recompute}} = 2 \times P \times B \times S (\text{前向}) + 2 \times P \times B \times S (\text{重算}) + 4 \times P \times B \times S (\text{反向}) = \mathbf{8 \times P \times B \times S}
-  $$
+$$
+\text{FLOPs}_{\text{full-recompute}} = 2 \times P \times B \times S (\text{前向}) + 2 \times P \times B \times S (\text{重算}) + 4 \times P \times B \times S (\text{反向}) = \mathbf{8 \times P \times B \times S}
+$$
 
 ---
 
@@ -958,9 +959,9 @@ if __name__ == "__main__":
    - 70B 稠密模型全量静态显存为 $16\Psi = 16 \times 70 \times 10^9\text{ Bytes} \approx 1120\text{ GB}$；
    - 在 1024 张 GPU 下，采用纯 ZeRO-3 全切分：
 
-     $$
-     \text{Mem}_{\text{static-card}} = \frac{1120\text{ GB}}{1024} \approx \mathbf{1.09\text{ GB}}
-     $$
+$$
+\text{Mem}_{\text{static-card}} = \frac{1120\text{ GB}}{1024} \approx \mathbf{1.09\text{ GB}}
+$$
 
    - 动态激活值（若使用选择性重算，设单卡 Batch=2, Seq=4096）：约占 **4.5 GB**；
    - 临时通信缓冲区与框架开销：约 **3.5 GB**；
@@ -969,9 +970,9 @@ if __name__ == "__main__":
 2. **通信量暴涨分析（致命死局）**：
    - 在标准 DDP / ZeRO-1 中，通信仅在反向传播结束时发生 1 次权重梯度的 `All-Reduce`，总通信量为 $2\Psi$；
    - 在 ZeRO-3 中：
-     1. 前向传播：每一层计算前，必须通过 `All-Gather` 动态从其他卡收集该层参数，前向完毕立刻释放，通信量为 $\Psi$；
-     2. 反向传播：每一层反向求导前，必须再次通过 `All-Gather` 重新收集一次该层参数，通信量为 $\Psi$；
-     3. 梯度同步：计算完梯度后，通过 `Reduce-Scatter` 将梯度分片规约并回写到对应的拥有卡，通信量为 $\Psi$；
+  1. 前向传播：每一层计算前，必须通过 `All-Gather` 动态从其他卡收集该层参数，前向完毕立刻释放，通信量为 $\Psi$；
+  2. 反向传播：每一层反向求导前，必须再次通过 `All-Gather` 重新收集一次该层参数，通信量为 $\Psi$；
+  3. 梯度同步：计算完梯度后，通过 `Reduce-Scatter` 将梯度分片规约并回写到对应的拥有卡，通信量为 $\Psi$；
    - **ZeRO-3 总通信量**： $\Psi + \Psi + \Psi = \mathbf{3\Psi}$！
    - **结论 2**：通信量从 $2\Psi$ 飙升到 $3\Psi$（净增加 **50%**）！更致命的是，在千卡规模下，原本可以在机内 NVLink 解决的通信被迫泛滥到跨机低速网络中，千卡同时频繁执行跨节点 AllGather，网络交换机瞬间发生严重拥塞与排队丢包，导致整机 MFU 出现断崖式暴跌（可能不足 15%）。这就是为什么生产环境必须强制机内 TP=8 + 机间 ZeRO 的根本原因！
 
@@ -984,28 +985,28 @@ if __name__ == "__main__":
 1. **瓶颈定位**：
    在 32K 长文本自回归生成（Decode）阶段，系统处于极端恶劣的 **Memory-Bound（访存受限）** 状态，算术强度极低，每个 Token 生成的延迟严格取决于：
 
-   $$
-   \text{Step Latency} \approx \frac{\text{权重总读取量} + \text{全并发历史 KV Cache 读取量}}{\text{硬件 HBM 物理带宽}}
-   $$
+$$
+\text{Step Latency} \approx \frac{\text{权重总读取量} + \text{全并发历史 KV Cache 读取量}}{\text{硬件 HBM 物理带宽}}
+$$
 
 2. **数据量对比 hand-calculation**：
    以 70B 模型、并发 Batch=16、上下文平均 $S=32K$（32,768）为例：
    - **权重读取量（每次生成 1 个 Token 固定发生）**：
-     - BF16 权重： $70\text{ GB} \times 2 = 140\text{ GB}$；
-     - INT4 量化权重： $70\text{ GB} \times 0.5 = 35\text{ GB}$（节省了 105 GB 访存）；
+  - BF16 权重： $70\text{ GB} \times 2 = 140\text{ GB}$；
+  - INT4 量化权重： $70\text{ GB} \times 0.5 = 35\text{ GB}$（节省了 105 GB 访存）；
    - **KV Cache 读取量（随序列激增）**：
-     - 单 Token GQA KV Cache 约 320 KB；
-     - 并发 16 下，32K 长度的瞬时全量 KV Cache 为：
+  - 单 Token GQA KV Cache 约 320 KB；
+  - 并发 16 下，32K 长度的瞬时全量 KV Cache 为：
 
-       $$
-       M_{\text{kv-BF16}} = 320\text{ KB} \times 16 \times 32768 \approx \mathbf{167.7\text{ GB}}!
-       $$
+$$
+M_{\text{kv-BF16}} = 320\text{ KB} \times 16 \times 32768 \approx \mathbf{167.7\text{ GB}}!
+$$
 
-     - 开启 FP8 KV Cache 后，每个元素从 2 字节降至 1 字节：
+  - 开启 FP8 KV Cache 后，每个元素从 2 字节降至 1 字节：
 
-       $$
-       M_{\text{kv-FP8}} = \frac{167.7\text{ GB}}{2} \approx \mathbf{83.8\text{ GB}}!
-       $$
+$$
+M_{\text{kv-FP8}} = \frac{167.7\text{ GB}}{2} \approx \mathbf{83.8\text{ GB}}!
+$$
 
        **单次生成仅 KV 搬运就直接节省了整整 83.9 GB 显存带宽！**
 3. **系统吞吐的核心放大器（显存容量解锁并发）**：
@@ -1028,40 +1029,40 @@ if __name__ == "__main__":
 2. **计算单层线性项与二次项系数**：
    - 单层线性项（Linear Part）：
 
-     $$
-     \text{Act}_{\text{linear}} = 34 \times B \times S \times d = 34 \times 16 \times 2048 \times 5120 \approx 5,704,253,440\text{ 字节} \approx \mathbf{5.31\text{ GB}}
-     $$
+$$
+\text{Act}_{\text{linear}} = 34 \times B \times S \times d = 34 \times 16 \times 2048 \times 5120 \approx 5,704,253,440\text{ 字节} \approx \mathbf{5.31\text{ GB}}
+$$
 
    - 单层 Attention 二次项（Quadratic Part）：
 
-     $$
-     \text{Act}_{\text{quadratic}} = 5 \times B \times S^2 \times H_q = 5 \times 16 \times (2048)^2 \times 40 = 13,421,772,800\text{ 字节} \approx \mathbf{12.50\text{ GB}}
-     $$
+$$
+\text{Act}_{\text{quadratic}} = 5 \times B \times S^2 \times H_q = 5 \times 16 \times (2048)^2 \times 40 = 13,421,772,800\text{ 字节} \approx \mathbf{12.50\text{ GB}}
+$$
 
 3. **计算全模型（40 层）总和**：
    - **无重算模式（保留线性项 + 二次项）**：
 
-     $$
-     M_{\text{total-no-recompute}} = 40 \times (5.31\text{ GB} + 12.50\text{ GB}) = 40 \times 17.81\text{ GB} \approx \mathbf{712.4\text{ GB}}
-     $$
+$$
+M_{\text{total-no-recompute}} = 40 \times (5.31\text{ GB} + 12.50\text{ GB}) = 40 \times 17.81\text{ GB} \approx \mathbf{712.4\text{ GB}}
+$$
 
    - **选择性重算模式（抹除二次项，仅保留线性项）**：
 
-     $$
-     M_{\text{total-selective}} = 40 \times 5.31\text{ GB} \approx \mathbf{212.4\text{ GB}}
-     $$
+$$
+M_{\text{total-selective}} = 40 \times 5.31\text{ GB} \approx \mathbf{212.4\text{ GB}}
+$$
 
 4. **得出差值与结论**：
 
-   $$
-   \Delta \text{Memory} = 712.4\text{ GB} - 212.4\text{ GB} = \mathbf{500.0\text{ GB}}!
-   $$
+$$
+\Delta \text{Memory} = 712.4\text{ GB} - 212.4\text{ GB} = \mathbf{500.0\text{ GB}}!
+$$
 
    在 8 卡数据并行下，每张卡直接净省：
 
-   $$
-   \Delta M_{\text{per-card}} = \frac{500\text{ GB}}{8} = \mathbf{62.5 \text{ GB}}（每卡 62.5 GB）!
-   $$
+$$
+\Delta M_{\text{per-card}} = \frac{500\text{ GB}}{8} = \mathbf{62.5 \text{ GB}}（每卡 62.5 GB）!
+$$
 
    **结论**：如果不开启选择性重算，单卡光激活值就要吃掉近 90 GB 显存，80GB 卡当场 OOM 暴毙；而开启选择性重算后，单卡激活值骤降到仅 **26.5 GB**，训练稳稳当当全速跑飞，且额外算力开销不足 3%！
 

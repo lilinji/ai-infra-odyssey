@@ -311,30 +311,30 @@ math: true
 **算例 1：小包场景（大模型推理 Decode 阶段传输单个 Token 的隐藏状态，大小 $S = 4\text{ KB} = 4 \times 10^3\text{ Bytes}$ ）**
 - 纯带宽传输耗时：
 
-  $$
-  \frac{S}{\beta} = \frac{4 \times 10^3\text{ Bytes}}{45 \times 10^9\text{ Bytes/s}} \approx 0.088\text{ }\mu\text{s}
-  $$
+$$
+\frac{S}{\beta} = \frac{4 \times 10^3\text{ Bytes}}{45 \times 10^9\text{ Bytes/s}} \approx 0.088\text{ }\mu\text{s}
+$$
 
 - 总通信耗时：
 
-  $$
-  T = \alpha + \frac{S}{\beta} = 10\text{ }\mu\text{s} + 0.088\text{ }\mu\text{s} = \mathbf{10.088\text{ }\mu\text{s}}
-  $$
+$$
+T = \alpha + \frac{S}{\beta} = 10\text{ }\mu\text{s} + 0.088\text{ }\mu\text{s} = \mathbf{10.088\text{ }\mu\text{s}}
+$$
 
 - **账本结论**：**固定启动时延 $\alpha$ 占了总耗时的 99.13%！物理带宽传输耗时只占 0.87%！** 此时你就算把网卡带宽从 45 GB/s 拔高 10 倍到 450 GB/s，总耗时也只能从 10.088 $\mu s$ 缩短到 10.008 $\mu s$，性能提升连 1% 都不到！
 
 **算例 2：大包场景（大模型训练反向传播汇总梯度，大小 $S = 1\text{ GB} = 10^9\text{ Bytes}$ ）**
 - 纯带宽传输耗时：
 
-  $$
-  \frac{S}{\beta} = \frac{10^9\text{ Bytes}}{45 \times 10^9\text{ Bytes/s}} \approx 0.0222\text{ 秒} = \mathbf{22200\text{ }\mu\text{s}}
-  $$
+$$
+\frac{S}{\beta} = \frac{10^9\text{ Bytes}}{45 \times 10^9\text{ Bytes/s}} \approx 0.0222\text{ 秒} = \mathbf{22200\text{ }\mu\text{s}}
+$$
 
 - 总通信耗时：
 
-  $$
-  T = 10\text{ }\mu\text{s} + 22200\text{ }\mu\text{s} = \mathbf{22210\text{ }\mu\text{s}}
-  $$
+$$
+T = 10\text{ }\mu\text{s} + 22200\text{ }\mu\text{s} = \mathbf{22210\text{ }\mu\text{s}}
+$$
 
 - **账本结论**：**纯带宽传输耗时占了总耗时的 99.95%！固定时延 $\alpha$ 彻底退化为误差项！** 此时只要你能把物理带宽提升一倍，总耗时就能实打实地缩短一半！
 
@@ -385,9 +385,9 @@ $$
   - 单向带宽： $\beta \approx 450\text{ GB/s}$；
   - **NVLink 临界拐点**：
 
-    $$
-    S^*_{\text{NVLink}} = 0.8 \times 10^{-6}\text{ s} \times 450 \times 10^9\text{ B/s} = \mathbf{360\text{ KB}}
-    $$
+$$
+S^*_{\text{NVLink}} = 0.8 \times 10^{-6}\text{ s} \times 450 \times 10^9\text{ B/s} = \mathbf{360\text{ KB}}
+$$
 
   - **意义**：在 NVLink 域内，只要单次通信的消息体量大于 **360KB**，就能迅速跨过延迟惩罚，打满 450 GB/s 的高速带宽！
 
@@ -396,9 +396,9 @@ $$
   - 单向带宽： $\beta \approx 45\text{ GB/s}$；
   - **跨机 RDMA 临界拐点**：
 
-    $$
-    S^*_{\text{RDMA}} = 12.0 \times 10^{-6}\text{ s} \times 45 \times 10^9\text{ B/s} = \mathbf{540\text{ KB}}
-    $$
+$$
+S^*_{\text{RDMA}} = 12.0 \times 10^{-6}\text{ s} \times 45 \times 10^9\text{ B/s} = \mathbf{540\text{ KB}}
+$$
 
   - **意义**：跨机通信时，消息尺寸必须达到 **540KB 以上**，才配让 400G 网卡开始发挥出它真正的带宽实力！如果你的代码充满了十几 KB 的碎包，网卡物理上就是在打瞌睡！
 
@@ -426,15 +426,15 @@ $$
 - 如果你使用了机间张量并行（跨节点的 TP），每算完一个 Transformer 层的自注意力（Self-Attention）和前馈网络（FFN），都需要跨机同步一次激活值；
 - 此时传输的消息大小：
 
-  $$
-  S = \text{Batch Size} \times 1\text{ Token} \times \text{Hidden Dimension} \times 2\text{ 字节 (FP16)}
-  $$
+$$
+S = \text{Batch Size} \times 1\text{ Token} \times \text{Hidden Dimension} \times 2\text{ 字节 (FP16)}
+$$
 
 - 假设 Batch Size = 4，隐层维度 $D = 4096$，则：
 
-  $$
-  S = 4 \times 1 \times 4096 \times 2 = 32768\text{ 字节} = \mathbf{32\text{ KB}}
-  $$
+$$
+S = 4 \times 1 \times 4096 \times 2 = 32768\text{ 字节} = \mathbf{32\text{ KB}}
+$$
 
 - **对比临界点**： $32\text{ KB} \ll S^*_{\text{RDMA}} (540\text{ KB})$！
 - 此时单次通信处于极深度的 **Latency-Bound** 区域！总耗时里 90% 以上是在等待操作系统协议栈、PCIe 穿越以及光纤握手；
@@ -541,9 +541,9 @@ $$
 - **每一层前向传播需要执行 2 次 AllReduce 通信，反向传播又需要执行 2 次 AllReduce 通信！**
 - 对于一个 80 层的超大模型，跑完单个 Iteration，张量并行组必须连续发起：
 
-  $$
-  \text{AllReduce 调用频次} = 80\text{ 层} \times 4\text{ 次/层} = \mathbf{320 \text{ barriers}}（320 次通信屏障）！
-  $$
+$$
+\text{AllReduce 调用频次} = 80\text{ 层} \times 4\text{ 次/层} = \mathbf{320 \text{ barriers}}（320 次通信屏障）！
+$$
 
 如果把这 320 次 AllReduce 放在机内 NVLink 上跑：
 - NVLink 双向带宽高达 **900 GB/s**，单次通信时延不到 **1 微秒**；
@@ -581,9 +581,9 @@ $$
 - 每张卡持有一个大小为 $S$ 字节的梯度张量；
 - **核心切分**：将每个张量等分为 $N$ 个数据切片（Chunks），标记为 $\text{Chunk}[0], \text{Chunk}[1], \dots, \text{Chunk}[N-1]$，每个切片的大小为：
 
-  $$
-  \text{Chunk Size} = \frac{S}{N}\text{ 字节}
-  $$
+$$
+\text{Chunk Size} = \frac{S}{N}\text{ 字节}
+$$
 
 ```text
 ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -617,26 +617,26 @@ $$
    - AllGather 阶段消耗 $N-1$ 步；
    - 总步数：
 
-     $$
-     \text{Total Steps} = 2(N - 1)\text{ 步}
-     $$
+$$
+\text{Total Steps} = 2(N - 1)\text{ 步}
+$$
 
 2. **每张卡发送的物理数据总量（Total Volume Sent per Rank）**：
    - 在每一步中，每张卡仅发送 1 个切片，其大小为 $\frac{S}{N}$；
    - 总共经历了 $2(N - 1)$ 步；
    - 每张卡在整个过程中发送的总字节数为：
 
-     $$
-     \text{Data Sent per GPU} = 2(N - 1) \times \frac{S}{N} = \mathbf{2 \times \frac{N - 1}{N} \times S}\text{ 字节}
-     $$
+$$
+\text{Data Sent per GPU} = 2(N - 1) \times \frac{S}{N} = \mathbf{2 \times \frac{N - 1}{N} \times S}\text{ 字节}
+$$
 
 3. **基于 Alpha-Beta 模型的总耗时公式**：
    - 每一跳通信都包含固定的启动时延 $\alpha$ 和带宽传输耗时 $\frac{S/N}{\beta}$；
    - 将 $2(N-1)$ 步累加，Ring AllReduce 的理论通信总时间为：
 
-     $$
-     T_{\text{Ring}}(S, N) = 2(N - 1) \times \alpha + 2 \times \frac{N - 1}{N} \times \frac{S}{\beta}
-     $$
+$$
+T_{\text{Ring}}(S, N) = 2(N - 1) \times \alpha + 2 \times \frac{N - 1}{N} \times \frac{S}{\beta}
+$$
 
 > 💡 **惊人的数学美感与工程结论**：
 > 当集群规模很大（例如千卡集群 $N = 1024$ ）且传输的消息属于大张量时（ $S \gg S^*$ ）：
@@ -733,23 +733,23 @@ Level 4: 🎭 藏起来 (Overlap)      ──► CUDA Stream 异步搬运、DDP 
 - **模型规模**： $P = 70\text{B} = 70 \times 10^9$ 参数；
 - **精度格式**：BF16 训练，每个梯度占 2 字节，模型总梯度体量：
 
-  $$
-  M = 70 \times 10^9 \times 2\text{ B} = \mathbf{140\text{ GB}}
-  $$
+$$
+M = 70 \times 10^9 \times 2\text{ B} = \mathbf{140\text{ GB}}
+$$
 
 - **集群环境**：64 台 8 卡机器，共 $N = 512$ 张 H100 GPU；
 - **网络配置**：每台机器配备 8 块 400Gbps 单口网卡，单网卡实测有效带宽 $\beta = 45\text{ GB/s}$；
 - **数据并行（DP=512）采用 Ring AllReduce 的单步通信量**：
 
-  $$
-  \text{Data Sent per GPU} = 2 \times \frac{512 - 1}{512} \times 140\text{ GB} \approx 2 \times 1 \times 140\text{ GB} = \mathbf{280\text{ GB}}
-  $$
+$$
+\text{Data Sent per GPU} = 2 \times \frac{512 - 1}{512} \times 140\text{ GB} \approx 2 \times 1 \times 140\text{ GB} = \mathbf{280\text{ GB}}
+$$
 
 - **纯带宽传输耗时**：
 
-  $$
-  T_{\text{bandwidth}} = \frac{280\text{ GB}}{45\text{ GB/s}} \approx \mathbf{6.22 \text{ s}}（约 6.22 秒）
-  $$
+$$
+T_{\text{bandwidth}} = \frac{280\text{ GB}}{45\text{ GB/s}} \approx \mathbf{6.22 \text{ s}}（约 6.22 秒）
+$$
 
 - **惊人洞察**：
   如果没有任何优化、不进行通信隐藏，**每个 Iteration 单是传梯度就要干等 6.22 秒！** 而一个高效的 70B 模型的纯前向加反向计算耗时通常只有 **1.0 ~ 1.5 秒**！
@@ -764,21 +764,21 @@ Level 4: 🎭 藏起来 (Overlap)      ──► CUDA Stream 异步搬运、DDP 
 - **网络规格**：NVLink 4.0 单向物理带宽 $\beta = 450\text{ GB/s}$， $\alpha \approx 0.8\text{ }\mu\text{s}$；
 - **每一层 Attention 后的 AllReduce 数据量**：
 
-  $$
-  S = B \times S_{\text{seq}} \times D \times 2\text{ Bytes (FP16)} = 2 \times 4096 \times 8192 \times 2 = \mathbf{134.2\text{ MB}}
-  $$
+$$
+S = B \times S_{\text{seq}} \times D \times 2\text{ Bytes (FP16)} = 2 \times 4096 \times 8192 \times 2 = \mathbf{134.2\text{ MB}}
+$$
 
 - **8 卡 Ring AllReduce 单次通信量**：
 
-  $$
-  \text{Volume} = 2 \times \frac{8 - 1}{8} \times 134.2\text{ MB} = \mathbf{234.85\text{ MB}}
-  $$
+$$
+\text{Volume} = 2 \times \frac{8 - 1}{8} \times 134.2\text{ MB} = \mathbf{234.85\text{ MB}}
+$$
 
 - **单次通信耗时**：
 
-  $$
-  T = 2(8 - 1) \times 0.8\text{ }\mu\text{s} + \frac{234.85 \times 10^6\text{ B}}{450 \times 10^9\text{ B/s}} = 11.2\text{ }\mu\text{s} + 0.521\text{ ms} \approx \mathbf{0.532\text{ ms}}
-  $$
+$$
+T = 2(8 - 1) \times 0.8\text{ }\mu\text{s} + \frac{234.85 \times 10^6\text{ B}}{450 \times 10^9\text{ B/s}} = 11.2\text{ }\mu\text{s} + 0.521\text{ ms} \approx \mathbf{0.532\text{ ms}}
+$$
 
 - **架构评估**：
   单层只有区区 0.53 毫秒！全模型 80 层累加耗时约 42ms，完全处于健康可控的范围之内。**这再次证明了 TP 必须留在机内 NVLink 的极高性价比！**

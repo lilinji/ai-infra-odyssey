@@ -369,31 +369,31 @@ $$
 
 - **第一步：求最大值**
 
-  $$
-  m = \max(2.0, 4.0, 1.0) = 4.0
-  $$
+$$
+m = \max(2.0, 4.0, 1.0) = 4.0
+$$
 
 - **第二步：平移输入向量**
 
-  $$
-  \tilde{X} = X - m = [2 - 4, 4 - 4, 1 - 4] = [-2.0, 0.0, -3.0]
-  $$
+$$
+\tilde{X} = X - m = [2 - 4, 4 - 4, 1 - 4] = [-2.0, 0.0, -3.0]
+$$
 
 - **第三步：求指数与和**
 
-  $$
-  e^{\tilde{x}_0} = e^{-2} \approx 0.1353, \quad e^{\tilde{x}_1} = e^0 = 1.0000, \quad e^{\tilde{x}_2} = e^{-3} \approx 0.0498
-  $$
+$$
+e^{\tilde{x}_0} = e^{-2} \approx 0.1353, \quad e^{\tilde{x}_1} = e^0 = 1.0000, \quad e^{\tilde{x}_2} = e^{-3} \approx 0.0498
+$$
 
-  $$
-  d = \sum e^{\tilde{x}_i} = 0.1353 + 1.0000 + 0.0498 = 1.1851
-  $$
+$$
+d = \sum e^{\tilde{x}_i} = 0.1353 + 1.0000 + 0.0498 = 1.1851
+$$
 
 - **第四步：归一化**
 
-  $$
-  y = \left[ \frac{0.1353}{1.1851}, \frac{1.0000}{1.1851}, \frac{0.0498}{1.1851} \right] \approx [0.1142, 0.8438, 0.0420]
-  $$
+$$
+y = \left[ \frac{0.1353}{1.1851}, \frac{1.0000}{1.1851}, \frac{0.0498}{1.1851} \right] \approx [0.1142, 0.8438, 0.0420]
+$$
 
   检查总和： $0.1142 + 0.8438 + 0.0420 = 1.0000$。数值完全正确！
 
@@ -517,37 +517,37 @@ $$
 
 - **处理元素 $x_1 = 2.0$**：
 
-  $$
-  m_1 = \max(-\infty, 2.0) = 2.0
-  $$
+$$
+m_1 = \max(-\infty, 2.0) = 2.0
+$$
 
-  $$
-  d_1 = 0.0 \cdot e^{-\infty - 2.0} + e^{2.0 - 2.0} = 0 + 1.0 = 1.0
-  $$
+$$
+d_1 = 0.0 \cdot e^{-\infty - 2.0} + e^{2.0 - 2.0} = 0 + 1.0 = 1.0
+$$
 
   _状态： $m_1 = 2.0, d_1 = 1.0$_。
 
 - **处理元素 $x_2 = 4.0$（出现更大值！）**：
 
-  $$
-  m_2 = \max(2.0, 4.0) = 4.0
-  $$
+$$
+m_2 = \max(2.0, 4.0) = 4.0
+$$
 
-  $$
-  d_2 = d_1 \cdot e^{m_1 - m_2} + e^{x_2 - m_2} = 1.0 \cdot e^{2.0 - 4.0} + e^{4.0 - 4.0} = e^{-2} + 1.0 \approx 0.1353 + 1.0 = 1.1353
-  $$
+$$
+d_2 = d_1 \cdot e^{m_1 - m_2} + e^{x_2 - m_2} = 1.0 \cdot e^{2.0 - 4.0} + e^{4.0 - 4.0} = e^{-2} + 1.0 \approx 0.1353 + 1.0 = 1.1353
+$$
 
   _状态： $m_2 = 4.0, d_2 = 1.1353$_。
 
 - **处理元素 $x_3 = 1.0$（小于当前最大值）**：
 
-  $$
-  m_3 = \max(4.0, 1.0) = 4.0
-  $$
+$$
+m_3 = \max(4.0, 1.0) = 4.0
+$$
 
-  $$
-  d_3 = d_2 \cdot e^{4.0 - 4.0} + e^{1.0 - 4.0} = 1.1353 \cdot 1.0 + e^{-3} \approx 1.1353 + 0.0498 = \mathbf{1.1851}
-  $$
+$$
+d_3 = d_2 \cdot e^{4.0 - 4.0} + e^{1.0 - 4.0} = 1.1353 \cdot 1.0 + e^{-3} \approx 1.1353 + 0.0498 = \mathbf{1.1851}
+$$
 
   _状态： $m_3 = 4.0, d_3 = 1.1851$_。
 
@@ -596,27 +596,27 @@ $$
 
 1. **合并最大值**：
 
-   $$
-   m_C = \max(m_A, m_B)
-   $$
+$$
+m_C = \max(m_A, m_B)
+$$
 
 2. **合并总分母**：
 
-   $$
-   d_C = \sum_{k \in C} e^{x_k - m_C} = \sum_{i \in A} e^{x_i - m_C} + \sum_{j \in B} e^{x_j - m_C}
-   $$
+$$
+d_C = \sum_{k \in C} e^{x_k - m_C} = \sum_{i \in A} e^{x_i - m_C} + \sum_{j \in B} e^{x_j - m_C}
+$$
 
    将 $m_A$ 和 $m_B$ 拆解代入：
 
-   $$
-   d_C = \sum_{i \in A} \left(e^{x_i - m_A} \cdot e^{m_A - m_C}\right) + \sum_{j \in B} \left(e^{x_j - m_B} \cdot e^{m_B - m_C}\right)
-   $$
+$$
+d_C = \sum_{i \in A} \left(e^{x_i - m_A} \cdot e^{m_A - m_C}\right) + \sum_{j \in B} \left(e^{x_j - m_B} \cdot e^{m_B - m_C}\right)
+$$
 
    提公因式：
 
-   $$
-   d_C = \left(\sum_{i \in A} e^{x_i - m_A}\right) \cdot e^{m_A - m_C} + \left(\sum_{j \in B} e^{x_j - m_B}\right) \cdot e^{m_B - m_C}
-   $$
+$$
+d_C = \left(\sum_{i \in A} e^{x_i - m_A}\right) \cdot e^{m_A - m_C} + \left(\sum_{j \in B} e^{x_j - m_B}\right) \cdot e^{m_B - m_C}
+$$
 
    代入 $d_A, d_B$：
 
@@ -1606,39 +1606,39 @@ Warp 直通五步跃，寄存器里把和接。
   设已见前 $k$ 个元素最大值为 $m_k$，分母为 $d_k = \sum_{i=1}^k e^{x_i - m_k}$。
   新加入元素 $x_{k+1}$ 时：
 
-  $$
-  m_{k+1} = \max(m_k, x_{k+1})
-  $$
+$$
+m_{k+1} = \max(m_k, x_{k+1})
+$$
 
-  $$
-  d_{k+1} = \sum_{i=1}^{k+1} e^{x_i - m_{k+1}} = \left(\sum_{i=1}^k e^{x_i - m_k}\right) e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}} = d_k \cdot e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}}
-  $$
+$$
+d_{k+1} = \sum_{i=1}^{k+1} e^{x_i - m_{k+1}} = \left(\sum_{i=1}^k e^{x_i - m_k}\right) e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}} = d_k \cdot e^{m_k - m_{k+1}} + e^{x_{k+1} - m_{k+1}}
+$$
 
 - **第二步：写出两块独立状态合并公式**
   设两块数据状态分别为 $(m_1, d_1)$ 和 $(m_2, d_2)$：
 
-  $$
-  m_{\text{merged}} = \max(m_1, m_2)
-  $$
+$$
+m_{\text{merged}} = \max(m_1, m_2)
+$$
 
-  $$
-  d_{\text{merged}} = d_1 \cdot e^{m_1 - m_{\text{merged}}} + d_2 \cdot e^{m_2 - m_{\text{merged}}}
-  $$
+$$
+d_{\text{merged}} = d_1 \cdot e^{m_1 - m_{\text{merged}}} + d_2 \cdot e^{m_2 - m_{\text{merged}}}
+$$
 
 - **第三步：证明结合律 $[ (A \oplus B) \oplus C = A \oplus (B \oplus C) ]$**
   定义状态合并算子 $\oplus$： $(m_1, d_1) \oplus (m_2, d_2) = (m_{12}, d_{12})$。
   易知 $m_{(12)3} = \max(\max(m_1, m_2), m_3) = \max(m_1, m_2, m_3) = M$ 显然满足结合律。
   再考察分母：
 
-  $$
-  d_{(12)3} = d_{12} \cdot e^{m_{12} - M} + d_3 \cdot e^{m_3 - M} = \left( d_1 e^{m_1 - m_{12}} + d_2 e^{m_2 - m_{12}} \right) e^{m_{12} - M} + d_3 e^{m_3 - M}
-  $$
+$$
+d_{(12)3} = d_{12} \cdot e^{m_{12} - M} + d_3 \cdot e^{m_3 - M} = \left( d_1 e^{m_1 - m_{12}} + d_2 e^{m_2 - m_{12}} \right) e^{m_{12} - M} + d_3 e^{m_3 - M}
+$$
 
   指数展开相乘：
 
-  $$
-  d_{(12)3} = d_1 e^{m_1 - M} + d_2 e^{m_2 - M} + d_3 e^{m_3 - M}
-  $$
+$$
+d_{(12)3} = d_1 e^{m_1 - M} + d_2 e^{m_2 - M} + d_3 e^{m_3 - M}
+$$
 
   同理计算 $d_{1(23)}$，展开后完全一致。**结合律获证！** 这意味着无论 GPU 的线程树如何分叉折叠，最终结果严格恒等。
 
@@ -1700,20 +1700,20 @@ Warp 直通五步跃，寄存器里把和接。
    设第 $j$ 块计算出的局部得分为 $S_j = Q K_j^T$，局部最大值为 $m_j$，局部指数为 $P_j = \exp(S_j - m_j)$，局部总和为 $l_j = \text{rowsum}(P_j)$；
    维护全局状态：
 
-   $$
-   m_{\text{new}} = \max(m_{\text{old}}, m_j)
-   $$
+$$
+m_{\text{new}} = \max(m_{\text{old}}, m_j)
+$$
 
-   $$
-   d_{\text{new}} = d_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + l_j \cdot e^{m_j - m_{\text{new}}}
-   $$
+$$
+d_{\text{new}} = d_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + l_j \cdot e^{m_j - m_{\text{new}}}
+$$
 
 3. **输出矩阵 $O$ 的流式更新**：
    在尚未做全局除法前，输出累加量 $O$ 维护的是 $\sum P_i V_i$ 的分子部分：
 
-   $$
-   O_{\text{new}} = O_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + P_j V_j \cdot e^{m_j - m_{\text{new}}}
-   $$
+$$
+O_{\text{new}} = O_{\text{old}} \cdot e^{m_{\text{old}} - m_{\text{new}}} + P_j V_j \cdot e^{m_j - m_{\text{new}}}
+$$
 
 4. **彻底省去 $S$ 的物理原因**：
    因为 $P_j$ 在片上 SRAM 算出来后，**立即与 $V_j$ 相乘并累加进了 $O$ 中**！完成累加后，局部矩阵 $S_j$ 和 $P_j$ 的使命彻底终结，可以直接丢弃覆写，完全无需向全局显存写回哪怕一个元素，显存复杂度从 $O(N^2)$ 骤降至 $O(N)$。

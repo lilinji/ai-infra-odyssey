@@ -179,9 +179,9 @@ HBM 读写总量 = 6Nd (输入输出) + 6N^2 (庞大的中间矩阵 S 和 P 的�
 - 仅仅一个 Attention Head，为了算一次前向就要在 HBM 和芯片之间搬运近 **800 MB** 数据；
 - 其算术强度低至：
 
-  $$
-  \text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} \approx \frac{4 N^2 d}{6 N^2} = \frac{2d}{3} = \frac{2 \times 128}{3} \approx 85.3 \text{ FLOPs/Byte} \ll 156
-  $$
+$$
+\text{AI} = \frac{\text{FLOPs}}{\text{Bytes}} \approx \frac{4 N^2 d}{6 N^2} = \frac{2d}{3} = \frac{2 \times 128}{3} \approx 85.3 \text{ FLOPs/Byte} \ll 156
+$$
 
 计算核心有近一半的时间都在**渴等内存数据**！在序列长度达到 32K 或 128K 时， $O(N^2)$ 的中间显存更是直接引爆 GPU 显存，导致 OOM 崩溃。
 
@@ -290,9 +290,9 @@ $$
   - 中间临时结果与 Double Buffering 缓冲空间。
 - **物理约束方程**：
 
-  $$
-  (B_r \times d + 2 \times B_c \times d) \times 2 \le \text{SRAM Size}
-  $$
+$$
+(B_r \times d + 2 \times B_c \times d) \times 2 \le \text{SRAM Size}
+$$
 
 在典型配置下（ $d=128$ ），通常取 $B_r = 64, B_c = 64$ 或 $B_r = 128, B_c = 64$，即可完美将所有矩阵乘法与 Softmax 封闭在片上极速流水线中！
 
@@ -434,24 +434,24 @@ FlashAttention 虽然神勇，但如果直接套用在 **单个 Token 生成的 
   权重参数必须从 HBM 全部读入片上计算一遍，即读取 **140 GB** 权重数据（暂且忽略 KV Cache）；
 - **Decode 阶段的算术强度（Operational Intensity）**：
 
-  $$
-  \text{AI}_{\text{decode}} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{140 \times 10^9 \text{ FLOPs}}{140 \times 10^9 \text{ Bytes}} = \mathbf{1.0 \text{ FLOP/Byte}}
-  $$
+$$
+\text{AI}_{\text{decode}} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{140 \times 10^9 \text{ FLOPs}}{140 \times 10^9 \text{ Bytes}} = \mathbf{1.0 \text{ FLOP/Byte}}
+$$
 
 #### 硬件残酷现实对比（Sanity Check）：
 - 回想 A100 的拐点算术强度是 **156 FLOPs/Byte**；
 - 当前算术强度只有 **1.0 FLOPs/Byte**，足足低于硬件拐点 **150 倍以上**！
 - 在 2 TB/s 的 A100 显存带宽下，读取完 140GB 权重理论物理极限耗时为：
 
-  $$
-  T_{\text{min}} = \frac{140 \text{ GB}}{2000 \text{ GB/s}} = 70 \text{ ms}
-  $$
+$$
+T_{\text{min}} = \frac{140 \text{ GB}}{2000 \text{ GB/s}} = 70 \text{ ms}
+$$
 
 - 在这 70 毫秒里，强大的 Tensor Core 仅仅做了 140 GFLOPs 的运算，其实际利用率只有：
 
-  $$
-  \text{Utilization} = \frac{140 \text{ GFLOPs} / 0.07 \text{ s}}{312 \text{ TFLOPs}} \approx \frac{2 \text{ TFLOPs}}{312 \text{ TFLOPs}} \approx \mathbf{0.64\%}!
-  $$
+$$
+\text{Utilization} = \frac{140 \text{ GFLOPs} / 0.07 \text{ s}}{312 \text{ TFLOPs}} \approx \frac{2 \text{ TFLOPs}}{312 \text{ TFLOPs}} \approx \mathbf{0.64\%}!
+$$
 
 **真相大白**：自回归 Decode 阶段是一个**极其残酷的访存地狱**！GPU 顶级的算力核心有 99% 的时间都在闲置干等，仅仅是为了从 HBM 里搬运庞大的参数和 KV Cache！
 
@@ -528,9 +528,9 @@ Attention 架构演进与显存带宽节约全景:
 - 将庞大的 16K Prompt 拆分为固定大小的 **Chunk 片段（如每次只吞 512 Tokens）**；
 - 在每一个调度 Iteration 中，模型同时执行：
 
-  $$
-  \text{Batch Budget} = [\text{N 个 Decode 单 Token}] + [\text{1 个 Prefill 的 512 Token Chunk}]
-  $$
+$$
+\text{Batch Budget} = [\text{N 个 Decode 单 Token}] + [\text{1 个 Prefill 的 512 Token Chunk}]
+$$
 
 - 通过将 Prefill 算子与 Decode 算子融合在一次前向 GEMM 中，既抹平了 P99 延迟尖峰，又顺带拉升了算力利用率！
 
@@ -961,40 +961,40 @@ if __name__ == "__main__":
 1. **定义局部统计量**：
    设行向量被切为两段 $A$ 和 $B$。已知已算出 $A$ 段局部统计量：
 
-   $$
-   m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
-   $$
+$$
+m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
+$$
 
    新到达的 $B$ 段局部统计量为：
 
-   $$
-   m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
-   $$
+$$
+m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
+$$
 
 2. **合并全局最大值**：
 
-   $$
-   m_{\text{new}} = \max(m_A, m_B)
-   $$
+$$
+m_{\text{new}} = \max(m_A, m_B)
+$$
 
 3. **分母严密展开与校准**：
 
-   $$
-   l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
-   $$
+$$
+l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
+$$
 
    利用指数加减法恒等变形：
 
-   $$
-   \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
-   $$
+$$
+\sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
+$$
 
    同理，第二项为： $l_B \cdot e^{m_B - m_{\text{new}}}$。
 4. **最终递推公式**：
 
-   $$
-   \mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}
-   $$
+$$
+\mathbf{l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}}
+$$
 
    **结论**：只需将旧分母乘上常数折扣标量 $e^{m_A - m_{\text{new}}}$，即可瞬间将其校准至新基准线，完全不需要回读原始历史数据！
 
@@ -1011,9 +1011,9 @@ if __name__ == "__main__":
    - 单 Token 权重显存读取量： $2P$ Bytes；
    - 基础算术强度为：
 
-     $$
-     \text{AI} = \frac{2P \text{ FLOPs}}{2P \text{ Bytes}} = 1.0 \text{ FLOP/Byte}
-     $$
+$$
+\text{AI} = \frac{2P \text{ FLOPs}}{2P \text{ Bytes}} = 1.0 \text{ FLOP/Byte}
+$$
 
 3. **硬件对比与瓶颈判定**：
    - A100 的拐点算术强度为 $312 \text{ TFLOPS} / 2039 \text{ GB/s} \approx \mathbf{156 \text{ FLOPs/Byte}}$；

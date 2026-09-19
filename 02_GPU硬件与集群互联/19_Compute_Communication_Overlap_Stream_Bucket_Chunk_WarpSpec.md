@@ -483,9 +483,9 @@ FSDP 的破局之道是构建精密的 **前向预取流水线（Prefetch Pipeli
 - **第一性原理切入点**：矩阵乘法 $Y = X \cdot W$ 在行维度上是完全解耦的！
 - 将输入的激活值张量按照 Sequence（或 Batch）维度均匀切分为 $K$ 个分块（通常 $K=2$ 或 $K=4$ ）：
 
-  $$
-  X = [X_0, \, X_1, \, \dots, \, X_{K-1}]
-  $$
+$$
+X = [X_0, \, X_1, \, \dots, \, X_{K-1}]
+$$
 
 ---
 
@@ -954,9 +954,9 @@ FSDP 预取下一层，显存通信双平衡。
    - 则第 $0$ 至第 $N-2$ 个桶的通信时间均被完全重叠在下一桶的计算窗口内部；
    - **最终暴露在关键路径上的通信时间，仅为最后一个桶（Bucket $N-1$ ）的收尾通信时间**：
 
-     $$
-     T_{\text{exposed-ideal}} = t_{\text{comm-last-bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}
-     $$
+$$
+T_{\text{exposed-ideal}} = t_{\text{comm-last-bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}
+$$
 
    - 相对整步数百毫秒的计算而言，暴露时间无限趋近于 0！
 
@@ -974,17 +974,17 @@ FSDP 预取下一层，显存通信双平衡。
    - 若预取深度设为 $D$（即当前计算第 $N$ 层时，显存中同时保存从 $N$ 到 $N+D$ 层的全量解包权重）；
    - 预取引入的额外驻留显存为：
 
-     $$
-     \Delta M_{\text{prefetch}} = D \times \left(1 - \frac{1}{P}\right) S_{\text{layer}} \approx D \cdot S_{\text{layer}}
-     $$
+$$
+\Delta M_{\text{prefetch}} = D \times \left(1 - \frac{1}{P}\right) S_{\text{layer}} \approx D \cdot S_{\text{layer}}
+$$
 
 2. **流水线气泡与临界深度推导**：
    - 设单层的纯计算耗时为 $T_{\text{comp}}$，单层参数的 AllGather 通信耗时为 $T_{\text{comm}}$；
    - 要实现无气泡的完全重叠，所需的预取准备时间必须满足：
 
-     $$
-     D \cdot T_{\text{comp}} \ge T_{\text{comm}} \implies D \ge \left\lceil \frac{T_{\text{comm}}}{T_{\text{comp}}} \right\rceil
-     $$
+$$
+D \cdot T_{\text{comp}} \ge T_{\text{comm}} \implies D \ge \left\lceil \frac{T_{\text{comm}}}{T_{\text{comp}}} \right\rceil
+$$
 
 3. **工业生产权衡（Trade-off）结论**：
    - 在现代高速网络（NVLink 或 400G IB）环境下，单层通信通常快于或接近单层计算（即 $\frac{T_{\text{comm}}}{T_{\text{comp}}} \le 1.0$ ）；

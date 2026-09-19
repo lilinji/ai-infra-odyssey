@@ -285,9 +285,9 @@ $$
 - PCIe Switch 作为一个独立的硬件数据包路由交换机，向下同时连接 1 块 GPU 和 1 块 400G 网卡（ConnectX-7）；
 - 当 GPU 想要向网卡发送数据时，触发 **GPUDirect RDMA (P2P)**：
 
-  $$
-  \text{GPU 显存} \xrightarrow{\text{PCIe}} \text{PCIe Switch} \xrightarrow{\text{PCIe}} \text{NIC 网卡 DMA}
-  $$
+$$
+\text{GPU 显存} \xrightarrow{\text{PCIe}} \text{PCIe Switch} \xrightarrow{\text{PCIe}} \text{NIC 网卡 DMA}
+$$
 
 - **数据完全不需要向上流经 CPU Root Complex，更不需要进入 Host 内存！** 物理数据包直接在 PCIe Switch 内部掉头完成转发，实现了极致的亚微秒级延迟与全带宽直通。
 
@@ -527,17 +527,17 @@ NVLS 使得单机 8 卡内部的 AllReduce 性能再次翻倍，NCCL 可以通�
 我们以两台 8 卡服务器之间的全互联通信（`All-to-All`，例如 MoE 路由分发）为例手算这笔账：
 - 两台机器之间总共有：
 
-  $$
-  \text{总通信连接对数} = 8\text{ (Node 0)} \times 8\text{ (Node 1)} = \mathbf{64 \text{ pairs}}（64 对连接）
-  $$
+$$
+\text{总通信连接对数} = 8\text{ (Node 0)} \times 8\text{ (Node 1)} = \mathbf{64 \text{ pairs}}（64 对连接）
+$$
 
 - 仔细盘点这 64 对连接的物理走线：
   - **同 Rail 对号连接**： $\text{GPU}_i \to \text{GPU}_i$（如 GPU 0 发给 GPU 0，GPU 1 发给 GPU 1），刚好有 **8 对**。这 8 对流量只走各自的 Leaf 交换机，畅通无阻；
   - **跨 Rail 错号连接**： $\text{GPU}_i \to \text{GPU}_j (i \neq j)$（例如 GPU 0 要把数据发给远端的 GPU 1 到 GPU 7），整整有：
 
-    $$
-    64 - 8 = \mathbf{56 \text{ cross-rail flows}}（56 对跨轨流量！）
-    $$
+$$
+64 - 8 = \mathbf{56 \text{ cross-rail flows}}（56 对跨轨流量！）
+$$
 
 - **灾难降临**：
   这 56 对流量分属不同的 Leaf 交换机，**它们唯一能碰面的地方就是顶层的 Spine 交换机！**

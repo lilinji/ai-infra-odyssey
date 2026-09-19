@@ -312,29 +312,29 @@ $$
    硬件设计尺寸固定为 $M=16, N=16, K=16$。
    单时钟周期（Clock Cycle）内，Cube 硬件流水线执行：
 
-   $$
-   \text{Ops}_{\text{cube-cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}
-   $$
+$$
+\text{Ops}_{\text{cube-cycle}} = 2 \times 16 \times 16 \times 16 = 8192\text{ FLOPs/cycle}
+$$
 
    设芯片主频为 $f_{\text{clk}}$，单芯片集成 $N_{\text{core}}$ 个 AI Core：
 
-   $$
-   \text{Peak}_{\text{Cube}} = N_{\text{core}} \times 8192 \times f_{\text{clk}}
-   $$
+$$
+\text{Peak}_{\text{Cube}} = N_{\text{core}} \times 8192 \times f_{\text{clk}}
+$$
 
    当 $N_{\text{core}} = 32, f_{\text{clk}} = 1.8\text{ GHz}$ 时：
 
-   $$
-   \text{Peak}_{\text{Cube}} = 32 \times 8192 \times 1.8 \times 10^9 \approx 4.718 \times 10^{14}\text{ FLOPS} \approx 471.8\text{ TFLOPS (FP16)}
-   $$
+$$
+\text{Peak}_{\text{Cube}} = 32 \times 8192 \times 1.8 \times 10^9 \approx 4.718 \times 10^{14}\text{ FLOPS} \approx 471.8\text{ TFLOPS (FP16)}
+$$
 
 2. **NVIDIA Hopper H100 SXM5 Tensor Core**：
    每个 SM 包含 4 个 4th-Gen Tensor Core。每个 Tensor Core 单周期支持执行 256 次 FP16 FMA（512 FLOPs）。
    每个 SM 单周期吞吐：
 
-   $$
-   \text{Ops}_{\text{sm-cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}
-   $$
+$$
+\text{Ops}_{\text{sm-cycle}} = 4 \times 512 = 2048\text{ FLOPs/cycle}
+$$
 
    H100 拥有 132 个活跃 SM，主频 $f_{\text{clk}} \approx 1.83\text{ GHz}$，加上 FP8/FP16 密集计算指令优化，单卡密集 FP16 峰值达 **989 TFLOPS**。
    **结论**：NVIDIA 凭借更多的 SM 阵列与更高的时钟频率在算力密度上占优，但昇腾单个 Cube 单元的单周期并发粒度更大（8192 vs 2048），更强依赖数据排布的分块饱满度！
@@ -353,22 +353,22 @@ $$
 - 转置操作必须将 268.4 MB 数据从 HBM 读入片上 SRAM，完成排布重组后再写回 HBM；
 - 总访存流量为读写两次：
 
-  $$
-  \text{Traffic} = 2 \times 268.4\text{ MB} \approx 536.8\text{ MB}
-  $$
+$$
+\text{Traffic} = 2 \times 268.4\text{ MB} \approx 536.8\text{ MB}
+$$
 
 - 假设芯片 HBM 带宽为 $1.5\text{ TB/s}$（实际有效带宽按 80% 算为 $1.2\text{ TB/s}$ ）：
 
-  $$
-  T_{\text{convert}} = \frac{536.8\text{ MB}}{1200\text{ GB/s}} \approx 0.447\text{ 毫秒}
-  $$
+$$
+T_{\text{convert}} = \frac{536.8\text{ MB}}{1200\text{ GB/s}} \approx 0.447\text{ 毫秒}
+$$
 
 - **灾难分析**：
   在一个典型的 80 层 Transformer 中，如果每层的前向与反向各有 2 次不当的隐式排布转换，单步训练将被硬生生插入 $80 \times 4 = 320$ 次额外转置！
 
-  $$
-  T_{\text{waste}} = 320 \times 0.447\text{ ms} \approx 143\text{ 毫秒！}
-  $$
+$$
+T_{\text{waste}} = 320 \times 0.447\text{ ms} \approx 143\text{ 毫秒！}
+$$
 
   若模型单步迭代本身的有效计算时间仅为 300 毫秒，**近 33% 的宝贵算力时间直接被无用的内存搬砖操作彻底吃光！这就是很多团队发现 NPU 利用率只有个位数的深层死因！**
 

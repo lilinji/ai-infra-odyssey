@@ -361,19 +361,20 @@ $$
 - **单步耗时**： $\alpha + \frac{M / P}{\beta}$；
 - **该阶段总耗时**：
 
-  $$
-  T_{\text{scatter-reduce}} = (P - 1)\alpha + (P - 1)\frac{M / P}{\beta} = (P - 1)\alpha + \left(\frac{P - 1}{P}\right)\frac{M}{\beta}
-  $$
+$$
+T_{\text{scatter-reduce}} = (P - 1)\alpha + (P - 1)\frac{M / P}{\beta} = (P - 1)\alpha + \left(\frac{P - 1}{P}\right)\frac{M}{\beta}
+$$
 
 ### 3. AllGather 阶段成本：
 - **总步数**： $P - 1$ 步；
 - **该阶段总耗时**：
 
-  $$
-  T_{\text{allgather}} = (P - 1)\alpha + \left(\frac{P - 1}{P}\right)\frac{M}{\beta}
-  $$
+$$
+T_{\text{allgather}} = (P - 1)\alpha + \left(\frac{P - 1}{P}\right)\frac{M}{\beta}
+$$
 
 ### 4. Ring AllReduce 综合耗时模型：
+
 $$
 T_{\text{ring}} = T_{\text{scatter-reduce}} + T_{\text{allgather}} = \mathbf{2(P - 1)\alpha + 2\left(\frac{P - 1}{P}\right)\frac{M}{\beta}}
 $$
@@ -587,9 +588,9 @@ export NCCL_DEBUG_SUBSYS=INIT,ENV,TUNING
 **这是由于没有理解算法带宽与物理总线带宽的换算关系！**
 - **算法带宽（Algorithm Bandwidth）** 的定义纯粹以用户视角看：
 
-  $$
-  \text{algbw} = \frac{\text{用户张量总大小 } M}{\text{实测端到端耗时 } T}
-  $$
+$$
+\text{algbw} = \frac{\text{用户张量总大小 } M}{\text{实测端到端耗时 } T}
+$$
 
   这个指标抹杀了“数据在底层其实被切片传递了多次”的硬件事实；
 - **总线带宽（Bus Bandwidth）** 才是真正的硬件测谎仪：它精确计算了**为了完成该算子，单根硬件总线上实际搬运的数据流密度**！
@@ -1017,9 +1018,9 @@ Simple 协议大包霸，LL 向量原子挂。
 1. **定义基准变量**：设节点总数为 $P$，待通信张量总数据量为 $M$ 字节。
 2. **逻辑分片划分**：将整个张量在逻辑上均匀划分为 $P$ 个连续的数据切片，记为 $C_0, C_1, \dots, C_{P-1}$。单切片尺寸为：
 
-   $$
-   S_{\text{chunk}} = \frac{M}{P}
-   $$
+$$
+S_{\text{chunk}} = \frac{M}{P}
+$$
 
 3. **阶段一：Scatter-Reduce 规约**：
    - 环路上每个节点需要将本地对应的切片发送给下游邻居，同时接收上游邻居的切片并做本地累加；
@@ -1027,9 +1028,9 @@ Simple 协议大包霸，LL 向量原子挂。
    - 每步每个节点发送且仅发送一个切片（大小 $\frac{M}{P}$ ）；
    - 该阶段单卡外发数据量为：
 
-     $$
-     S_{\text{phase1}} = (P - 1) \times \frac{M}{P} = \left(\frac{P - 1}{P}\right)M
-     $$
+$$
+S_{\text{phase1}} = (P - 1) \times \frac{M}{P} = \left(\frac{P - 1}{P}\right)M
+$$
 
 4. **阶段二：AllGather 广播**：
    - 阶段一结束后，每个节点各自持有一块完全归约好的最终分片（全网恰好 $P$ 块完整分片分布在 $P$ 张卡上）；
@@ -1037,15 +1038,15 @@ Simple 协议大包霸，LL 向量原子挂。
    - 每步每个节点发送大小为 $\frac{M}{P}$ 的分片；
    - 该阶段单卡外发数据量为：
 
-     $$
-     S_{\text{phase2}} = (P - 1) \times \frac{M}{P} = \left(\frac{P - 1}{P}\right)M
-     $$
+$$
+S_{\text{phase2}} = (P - 1) \times \frac{M}{P} = \left(\frac{P - 1}{P}\right)M
+$$
 
 5. **单卡总传输量合并**：
 
-   $$
-   S_{\text{total}} = S_{\text{phase1}} + S_{\text{phase2}} = \mathbf{2 \left(\frac{P - 1}{P}\right) M}
-   $$
+$$
+S_{\text{total}} = S_{\text{phase1}} + S_{\text{phase2}} = \mathbf{2 \left(\frac{P - 1}{P}\right) M}
+$$
 
 6. **极限分析**：当 $P \to \infty$ 时， $\frac{P-1}{P} \to 1$，单卡总传输量趋近于 $2M$，与总节点数 $P$ 彻底解耦！
 
@@ -1060,32 +1061,32 @@ Simple 协议大包霸，LL 向量原子挂。
 1. **指标定义差异**：
    - `algbw`（算法带宽）等于用户视角的数据体量 $M$ 除以通信耗时 $T$：
 
-     $$
-     \text{algbw} = \frac{M}{T}
-     $$
+$$
+\text{algbw} = \frac{M}{T}
+$$
 
    - 但实际上，物理链路上单卡搬运的数据并不等于 $M$！
 2. **AllReduce 的换算推导**：
    - 在 AllReduce 中，单卡实际向物理链路外发的字节量为 $S_{\text{bus}} = 2\frac{P-1}{P}M$；
    - 真实的物理总线吞吐能力应当为：
 
-     $$
-     \text{busbw} = \frac{S_{\text{bus}}}{T} = \frac{2\frac{P-1}{P}M}{T} = \text{algbw} \times \mathbf{\left(2\frac{P-1}{P}\right)}
-     $$
+$$
+\text{busbw} = \frac{S_{\text{bus}}}{T} = \frac{2\frac{P-1}{P}M}{T} = \text{algbw} \times \mathbf{\left(2\frac{P-1}{P}\right)}
+$$
 
 3. **AllGather 的换算推导**：
    - 在 AllGather 中，每个节点原本持有一份大小为 $\frac{M}{P}$ 的分片，通信的目的是收集全网其余 $P-1$ 个节点的分片；
    - 单卡在物理总线上接收（或外发）的数据总量恰好为：
 
-     $$
-     S_{\text{bus, AllGather}} = (P - 1) \times \frac{M}{P} = \left(\frac{P-1}{P}\right)M
-     $$
+$$
+S_{\text{bus, AllGather}} = (P - 1) \times \frac{M}{P} = \left(\frac{P-1}{P}\right)M
+$$
 
    - 故其总线带宽换算公式为：
 
-     $$
-     \text{busbw}_{\text{AllGather}} = \text{algbw} \times \mathbf{\left(\frac{P-1}{P}\right)}
-     $$
+$$
+\text{busbw}_{\text{AllGather}} = \text{algbw} \times \mathbf{\left(\frac{P-1}{P}\right)}
+$$
 
 ---
 

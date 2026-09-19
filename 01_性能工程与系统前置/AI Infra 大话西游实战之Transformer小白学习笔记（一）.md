@@ -122,21 +122,21 @@ GPT 系列（以及后来的 LLaMA、Mistral、Qwen、DeepSeek 等）证明了�
 ### 经典三段式数据流动流程：
 1. **输入阶段（Input Stage）**：
 
-   $$
-   \text{Prompt Tokens} \longrightarrow \text{Token Embedding (词表查找)} \longrightarrow \text{注入位置编码 (如 RoPE)}
-   $$
+$$
+\text{Prompt Tokens} \longrightarrow \text{Token Embedding (词表查找)} \longrightarrow \text{注入位置编码 (如 RoPE)}
+$$
 
 2. **核心堆叠阶段（Repeated N Blocks）**：
 
-   $$
-   X_{l+1} = X_l + \text{Self-Attention}(\text{Norm}(X_l)) + \text{FFN}(\text{Norm}(\dots))
-   $$
+$$
+X_{l+1} = X_l + \text{Self-Attention}(\text{Norm}(X_l)) + \text{FFN}(\text{Norm}(\dots))
+$$
 
 3. **输出阶段（Output Stage）**：
 
-   $$
-   \text{Final Norm} \longrightarrow \text{LM Head 线性映射} \longrightarrow \text{Softmax 采样} \longrightarrow \text{预测下一个 Token}
-   $$
+$$
+\text{Final Norm} \longrightarrow \text{LM Head 线性映射} \longrightarrow \text{Softmax 采样} \longrightarrow \text{预测下一个 Token}
+$$
 
 ---
 
@@ -174,9 +174,9 @@ $$
 - “吃什么”（苹果，占 70% 注意力）；
 - 最终 `吃` 这个词更新后的特征向量为：
 
-  $$
-  \text{New-Feature}_{\text{吃}} = 0.1 \times \text{小明} + 0.1 \times \text{喜欢} + 0.1 \times \text{吃} + 0.7 \times \text{苹果}
-  $$
+$$
+\text{New-Feature}_{\text{吃}} = 0.1 \times \text{小明} + 0.1 \times \text{喜欢} + 0.1 \times \text{吃} + 0.7 \times \text{苹果}
+$$
 
 ---
 
@@ -203,6 +203,7 @@ $$
 假设输入序列有 $N$ 个 token，隐藏层维度为 $d$（即输入矩阵 $X \in \mathbb{R}^{N \times d}$ ）。
 
 ### 步骤 1：线性投影生成 $Q, K, V$
+
 $$
 Q = X W_Q, \quad K = X W_K, \quad V = X W_V
 $$
@@ -233,6 +234,7 @@ $$
 ---
 
 ### 步骤 3：缩放（Scale）——为什么要除以 $\sqrt{d_k}$？
+
 $$
 S_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}}
 $$
@@ -245,6 +247,7 @@ $$
 ---
 
 ### 步骤 4：Softmax 归一化（原始分数变注意力比例）
+
 $$
 A = \text{softmax}(S_{\text{scaled}}) \in \mathbb{R}^{N \times N}
 $$
@@ -258,6 +261,7 @@ $$
 ---
 
 ### 步骤 5：加权求和（用注意力比例捞取 Value）
+
 $$
 \text{Output} = A \cdot V \in \mathbb{R}^{N \times d}
 $$
@@ -267,6 +271,7 @@ $$
 ---
 
 ### 步骤 6：输出线性投影
+
 $$
 \text{Final} = \text{Output} \cdot W_O \in \mathbb{R}^{N \times d}
 $$
@@ -276,6 +281,7 @@ $$
 ---
 
 ### 🏆 完整标准公式总结
+
 $$
 \boxed{\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}} + \text{Mask}\right) V}
 $$
@@ -386,6 +392,7 @@ $$
 ## 4.4 激活函数演进：ReLU $\to$ GELU $\to$ SwiGLU
 
 ### 1. ReLU
+
 $$
 \text{ReLU}(x) = \max(0, x)
 $$
@@ -393,6 +400,7 @@ $$
 缺点：当输入为负时导数为 0，神经元容易“永久死亡”。
 
 ### 2. GELU（高斯误差线性单元）
+
 $$
 \text{GELU}(x) = x \cdot \Phi(x) = x \cdot P(X \le x), \quad X \sim \mathcal{N}(0, 1)
 $$
@@ -400,6 +408,7 @@ $$
 不是生硬地开/关，而是根据输入大小赋予平滑的通过概率，GPT-2/3、BERT 广泛采用。
 
 ### 3. SwiGLU（现代大模型标配）
+
 $$
 \text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
 $$
@@ -483,9 +492,9 @@ $$
 ### 为什么要加这条捷径？
 1. **彻底解决梯度消失**：反向传播求导时：
 
-   $$
-   \frac{\partial y}{\partial x} = 1 + \frac{\partial \text{SubLayer}(x)}{\partial x}
-   $$
+$$
+\frac{\partial y}{\partial x} = 1 + \frac{\partial \text{SubLayer}(x)}{\partial x}
+$$
 
    因为始终存在一个恒等项 $+1$，梯度可以沿着主干道无损直达最浅层，使得堆叠 100 层以上的超深网络成为可能。
 2. **增量学习**：模型只需要学习每一层对输入的“微调增量”（Delta），学习难度大幅降低。
@@ -569,27 +578,27 @@ $$
 ### 1. 单个 Decoder Block 的参数量手算
 - **Attention 部分**：
 
-  $$
-  W_Q, W_K, W_V, W_O \implies 4 \times (4096 \times 4096) = 4 \times 16,777,216 \approx \mathbf{67.11\text{ M}}
-  $$
+$$
+W_Q, W_K, W_V, W_O \implies 4 \times (4096 \times 4096) = 4 \times 16,777,216 \approx \mathbf{67.11\text{ M}}
+$$
 
 - **FFN (SwiGLU) 部分**：
 
-  $$
-  W_{\text{gate}}, W_{\text{up}}, W_{\text{down}} \implies 3 \times (4096 \times 11008) = 3 \times 45,088,768 \approx \mathbf{135.27\text{ M}}
-  $$
+$$
+W_{\text{gate}}, W_{\text{up}}, W_{\text{down}} \implies 3 \times (4096 \times 11008) = 3 \times 45,088,768 \approx \mathbf{135.27\text{ M}}
+$$
 
 - **RMSNorm 缩放参数**：
 
-  $$
-  2 \times 4096 \approx \mathbf{8.19\text{ K}}
-  $$
+$$
+2 \times 4096 \approx \mathbf{8.19\text{ K}}
+$$
 
 - **单层合计**：
 
-  $$
-  67.11\text{M} + 135.27\text{M} \approx \mathbf{202.38\text{ M}}
-  $$
+$$
+67.11\text{M} + 135.27\text{M} \approx \mathbf{202.38\text{ M}}
+$$
 
 ### 2. 全模型总参数量手算（32 层）
 - **32 层 Block**： $32 \times 202.38\text{ M} \approx \mathbf{6,476\text{ M}}$
@@ -597,9 +606,9 @@ $$
 - **LM Head 输出头**： $4096 \times 32000 \approx \mathbf{131.07\text{ M}}$
 - **全模型精确总计**：
 
-  $$
-  6,476\text{M} + 131\text{M} + 131\text{M} \approx \mathbf{6.738\text{ B}} \approx \mathbf{7\text{B}}
-  $$
+$$
+6,476\text{M} + 131\text{M} + 131\text{M} \approx \mathbf{6.738\text{ B}} \approx \mathbf{7\text{B}}
+$$
 
 ---
 
@@ -615,27 +624,27 @@ $$
 
 1. **纯模型权重（FP16 / BF16，每个参数 2 字节）**：
 
-   $$
-   6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
-   $$
+$$
+6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
+$$
 
 2. **反向传播梯度（FP16，每个参数 2 字节）**：
 
-   $$
-   6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
-   $$
+$$
+6.74\text{B} \times 2\text{ Bytes} \approx \mathbf{13.48\text{ GB}}
+$$
 
 3. **AdamW 优化器状态（FP32 Master 权重 + 一阶动量 + 二阶动量 = 每个参数 16 字节）**：
 
-   $$
-   6.74\text{B} \times 16\text{ Bytes} \approx \mathbf{107.84\text{ GB}}
-   $$
+$$
+6.74\text{B} \times 16\text{ Bytes} \approx \mathbf{107.84\text{ GB}}
+$$
 
 4. **训练静态显存总计**：
 
-   $$
-   13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}} \quad (\gg 80\text{ GB}!)
-   $$
+$$
+13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}} \quad (\gg 80\text{ GB}!)
+$$
 
    > 💡 这就是为什么必须使用 **ZeRO / FSDP** 显存切分技术，将优化器状态分摊到多张显卡上！
 
@@ -685,6 +694,7 @@ LLM 在线推理分为性质完全不同的两个阶段：
 ## 8.4 KV Cache 显存开销与现代推理系统（PagedAttention）
 
 ### 1. KV Cache 显存占用手算公式（LLaMA-2-7B）
+
 $$
 \text{单 Token 显存} = 2 \times (\text{层数 } L) \times (\text{头数 } h) \times (\text{头维度 } d_k) \times (\text{精度字节数})
 $$
@@ -697,15 +707,15 @@ $$
 
 - 若一个请求长 **4096 Token**：
 
-  $$
-  4096 \times 512\text{ KB} = \mathbf{2\text{ GB}}
-  $$
+$$
+4096 \times 512\text{ KB} = \mathbf{2\text{ GB}}
+$$
 
 - 若并发 Batch Size 为 **16**：
 
-  $$
-  16 \times 2\text{ GB} = \mathbf{32\text{ GB}} \quad (\text{已占据 80GB 显卡的近一半显存！})
-  $$
+$$
+16 \times 2\text{ GB} = \mathbf{32\text{ GB}} \quad (\text{已占据 80GB 显卡的近一半显存！})
+$$
 
 > 💡 **Ringi 划重点**：
 > 传统的连续显存预分配会导致严重的内存碎片化（利用率通常 $< 40\%$ ）。

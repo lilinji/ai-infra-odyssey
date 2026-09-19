@@ -182,6 +182,7 @@ graph TD
    - 写回最终输出 $O$ 到 HBM： $2Nd$ 字节。
 
 #### 汇总总访存流量：
+
 $$
 \text{Traffic}_{\text{Naive}} = 2Nd + 2Nd + 2N^2 + 2N^2 + 2N^2 + 2N^2 + 2Nd + 2Nd = 8Nd + 8N^2 \text{ Bytes}
 $$
@@ -204,9 +205,9 @@ $$
   - 总算力需求： $\text{FLOPs}_{\text{total}} \approx 4N^2d$。
 - **算术强度（AI）**：
 
-  $$
-  \text{AI}_{\text{Naive}} = \frac{4N^2d \text{ FLOPs}}{8N^2 \text{ Bytes}} = \frac{d}{2} \text{ FLOPs/Byte}
-  $$
+$$
+\text{AI}_{\text{Naive}} = \frac{4N^2d \text{ FLOPs}}{8N^2 \text{ Bytes}} = \frac{d}{2} \text{ FLOPs/Byte}
+$$
 
 对于常见的 Head 维度 $d=128$：
 
@@ -219,9 +220,9 @@ $$
 - A100 HBM 带宽： $2,039 \text{ GB/s}$；
 - A100 硬件拐点算术强度：
 
-  $$
-  \text{AI}_{\text{knee}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153.0 \text{ FLOPs/Byte}
-  $$
+$$
+\text{AI}_{\text{knee}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx 153.0 \text{ FLOPs/Byte}
+$$
 
 **残酷的结论出现了**：
 
@@ -247,21 +248,21 @@ $$
 
 1. **第 1 趟（求全局最大值）**：
 
-   $$
-   m = \max_{j=1}^N x_j
-   $$
+$$
+m = \max_{j=1}^N x_j
+$$
 
 2. **第 2 趟（求指数和归一化分母）**：
 
-   $$
-   l = \sum_{j=1}^N e^{x_j - m}
-   $$
+$$
+l = \sum_{j=1}^N e^{x_j - m}
+$$
 
 3. **第 3 趟（计算最终概率）**：
 
-   $$
-   P_i = \frac{e^{x_i - m}}{l}
-   $$
+$$
+P_i = \frac{e^{x_i - m}}{l}
+$$
 
 **致命矛盾**：在必须看完所有 $N$ 个元素算完 $m$ 和 $l$ 之前，你根本算不出任何一个 $P_i$！而片上 SRAM（通常每个 SM 仅 100KB～200KB）根本放不下长达数万的整个序列。这就是为什么传统实现被迫把数据刷回 HBM 的根因。
 
@@ -288,17 +289,17 @@ FlashAttention 之所以成为神作，核心就在于将 2018 年 Milakov 与 G
   - 本地最大值： $m_B = \max(2, 4) = 4.0$
   - **动态全局新最大值**：
 
-    $$
-    m^{(2)} = \max(m^{(1)}, m_B) = \max(3.0, 4.0) = 4.0
-    $$
+$$
+m^{(2)} = \max(m^{(1)}, m_B) = \max(3.0, 4.0) = 4.0
+$$
 
   - **关键：如何把旧的分母 $l^{(1)}$ 更新到以 $4.0$ 为底？**
     注意：旧分母是以 $3.0$ 为底的，现在基准变高了 $1.0$（即 $4.0 - 3.0$ ），所有旧的指数必须整体乘以 $e^{3.0 - 4.0} = e^{-1}$ 进行补偿！
   - **流式更新分母**：
 
-    $$
-    l^{(2)} = l^{(1)} \times e^{m^{(1)} - m^{(2)}} + \sum e^{x_B - m^{(2)}} = 1.135 \times e^{-1} + (e^{2-4} + e^{4-4}) = 1.135 \times 0.368 + (0.135 + 1.0) = 0.418 + 1.135 = 1.553
-    $$
+$$
+l^{(2)} = l^{(1)} \times e^{m^{(1)} - m^{(2)}} + \sum e^{x_B - m^{(2)}} = 1.135 \times e^{-1} + (e^{2-4} + e^{4-4}) = 1.135 \times 0.368 + (0.135 + 1.0) = 0.418 + 1.135 = 1.553
+$$
 
 完全不需要回头重新读 Block 1，分母被**严密且无损地动态合并**了！
 
@@ -308,22 +309,22 @@ FlashAttention 之所以成为神作，核心就在于将 2018 年 Milakov 与 G
 - 块局部指数和： $l_A, l_B$；
 - 合并后的新全局最大值：
 
-  $$
-  m_{\text{new}} = \max(m_A, m_B)
-  $$
+$$
+m_{\text{new}} = \max(m_A, m_B)
+$$
 
 - 合并后的新全局指数和：
 
-  $$
-  l_{\text{new}} = l_A \times e^{m_A - m_{\text{new}}} + l_B \times e^{m_B - m_{\text{new}}}
-  $$
+$$
+l_{\text{new}} = l_A \times e^{m_A - m_{\text{new}}} + l_B \times e^{m_B - m_{\text{new}}}
+$$
 
 - **累加输出向量 $O$ 的流式递推公式**：
   设 $O_A = P_A V_A$ 是前一块算出的中间输出，则新的输出向量 $O_{\text{new}}$ 为：
 
-  $$
-  O_{\text{new}} = \text{diag}\left(\frac{l_A e^{m_A - m_{\text{new}}}}{l_{\text{new}}}\right) O_A + \text{diag}\left(\frac{e^{m_B - m_{\text{new}}}}{l_{\text{new}}}\right) (P_B V_B)
-  $$
+$$
+O_{\text{new}} = \text{diag}\left(\frac{l_A e^{m_A - m_{\text{new}}}}{l_{\text{new}}}\right) O_A + \text{diag}\left(\frac{e^{m_B - m_{\text{new}}}}{l_{\text{new}}}\right) (P_B V_B)
+$$
 
 #### 步骤 5：Sanity Check（数学等价性校验）
 展开 $O_{\text{new}}$ 的分子：
@@ -923,47 +924,47 @@ if __name__ == "__main__":
    设向量 $X$ 被切分为两个分块：前半部分 $A = [x_1, \dots, x_k]$ 和后半部分 $B = [x_{k+1}, \dots, x_N]$。
    已知已经算出了前段的局部统计量：
 
-   $$
-   m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
-   $$
+$$
+m_A = \max_{i \in A} x_i, \quad l_A = \sum_{i \in A} e^{x_i - m_A}
+$$
 
    现新到达了后段数据，其内部局部统计量为：
 
-   $$
-   m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
-   $$
+$$
+m_B = \max_{j \in B} x_j, \quad l_B = \sum_{j \in B} e^{x_j - m_B}
+$$
 
 2. **全局最大值合并**：
    新全局最大值显然是两者较大者：
 
-   $$
-   m_{\text{new}} = \max(m_A, m_B)
-   $$
+$$
+m_{\text{new}} = \max(m_A, m_B)
+$$
 
 3. **全局归一化分母 $l_{\text{new}}$ 的严密推导**：
    根据全局定义：
 
-   $$
-   l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
-   $$
+$$
+l_{\text{new}} = \sum_{t \in A \cup B} e^{x_t - m_{\text{new}}} = \sum_{i \in A} e^{x_i - m_{\text{new}}} + \sum_{j \in B} e^{x_j - m_{\text{new}}}
+$$
 
    将第一项提取恒等变形：
 
-   $$
-   \sum_{i \in A} e^{x_i - m_{\text{new}}} = \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
-   $$
+$$
+\sum_{i \in A} e^{x_i - m_{\text{new}}} = \sum_{i \in A} e^{(x_i - m_A) + (m_A - m_{\text{new}})} = e^{m_A - m_{\text{new}}} \sum_{i \in A} e^{x_i - m_A} = l_A \cdot e^{m_A - m_{\text{new}}}
+$$
 
    同理，第二项展开为：
 
-   $$
-   \sum_{j \in B} e^{x_j - m_{\text{new}}} = e^{m_B - m_{\text{new}}} \sum_{j \in B} e^{x_j - m_B} = l_B \cdot e^{m_B - m_{\text{new}}}
-   $$
+$$
+\sum_{j \in B} e^{x_j - m_{\text{new}}} = e^{m_B - m_{\text{new}}} \sum_{j \in B} e^{x_j - m_B} = l_B \cdot e^{m_B - m_{\text{new}}}
+$$
 
    代入得到最终递推公式：
 
-   $$
-   l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}
-   $$
+$$
+l_{\text{new}} = l_A \cdot e^{m_A - m_{\text{new}}} + l_B \cdot e^{m_B - m_{\text{new}}}
+$$
 
 4. **结论与工程意义**：
    **证毕**！只要乘上衰减项 $e^{m_A - m_{\text{new}}}$，旧的分母就能瞬时适应新的基准。整个过程仅需常数级别的标量运算，完全不需要回头重新读取前序海量数据！

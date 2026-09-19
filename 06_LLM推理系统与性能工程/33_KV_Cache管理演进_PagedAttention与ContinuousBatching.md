@@ -264,15 +264,15 @@ torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.25 GiB (GPU
 - 单个请求强制预分配槽位： $2048$；
 - **单请求内部利用率**：
 
-  $$
-  \eta_{\text{internal}} = \frac{250}{2048} \approx \mathbf{12.2\%}
-  $$
+$$
+\eta_{\text{internal}} = \frac{250}{2048} \approx \mathbf{12.2\%}
+$$
 
 - 即使考虑会话过程中逐步追加写入的动态积分，有效时间-空间乘积（Area-Time Utilization）在数学期望上：
 
-  $$
-  \eta_{\text{temporal}} = \frac{1}{S_{\text{actual}}} \int_0^{S_{\text{actual}}} \frac{t}{S_{\text{max}}} dt = \frac{1}{2} \times \frac{S_{\text{actual}}}{S_{\text{max}}} = \frac{1}{2} \times 12.2\% \approx \mathbf{6.1\%} \quad \text{！！！}
-  $$
+$$
+\eta_{\text{temporal}} = \frac{1}{S_{\text{actual}}} \int_0^{S_{\text{actual}}} \frac{t}{S_{\text{max}}} dt = \frac{1}{2} \times \frac{S_{\text{actual}}}{S_{\text{max}}} = \frac{1}{2} \times 12.2\% \approx \mathbf{6.1\%} \quad \text{！！！}
+$$
 
 #### ④ Formal Model（标准公式与数学证明）
 假设请求的实际生成长度 $s$ 服从概率密度函数 $p(s)$，定义域为 $[1, S_{\text{max}}]$。系统采用最大长度连续预分配策略。
@@ -720,19 +720,19 @@ $$
 设某请求已经累积生成的上下文长度为 $S$ Token，模型参数量为 $W$：
 - **方案 1：Swapping 跨 PCIe 搬运的总耗时（以 PCIe 4.0 32 GB/s 计）**：
 
-  $$
-  \text{KV 字节数} = S \times \text{KV}_{\text{token}}
-  $$
+$$
+\text{KV 字节数} = S \times \text{KV}_{\text{token}}
+$$
 
-  $$
-  T_{\text{swap}}(S) = 2 \times \frac{S \times \text{KV}_{\text{token}}}{B_{\text{pcie}}} \quad (\text{乘 2 为一出一进})
-  $$
+$$
+T_{\text{swap}}(S) = 2 \times \frac{S \times \text{KV}_{\text{token}}}{B_{\text{pcie}}} \quad (\text{乘 2 为一出一进})
+$$
 
 - **方案 2：Recomputation 重新 Prefill 跑一次的计算耗时（以 H100 实际 MFU 下算力 $P_{\text{eff}} \approx 500\text{ TFLOPS}$ 计）**：
 
-  $$
-  T_{\text{recompute}}(S) = \frac{2 \times W \times S}{P_{\text{eff}}}
-  $$
+$$
+T_{\text{recompute}}(S) = \frac{2 \times W \times S}{P_{\text{eff}}}
+$$
 
 **寻找经济性交叉平衡点（Crossover Point）**：
 令 $T_{\text{swap}}(S) = T_{\text{recompute}}(S)$，两边的 $S$ 竟然直接对消！
@@ -744,15 +744,15 @@ $$
 以 LLaMA-3 70B（ $W = 70 \times 10^9$，单 Token KV $\approx 320\text{ KB}$ ）为例：
 - 重新计算该模型 1000 Token Prefill 的耗时：
 
-  $$
-  T_{\text{recompute}} = \frac{2 \times 70 \times 10^9 \times 1000}{500 \times 10^{12}} = \mathbf{0.28 \text{ s}} \ (280 \text{ ms})
-  $$
+$$
+T_{\text{recompute}} = \frac{2 \times 70 \times 10^9 \times 1000}{500 \times 10^{12}} = \mathbf{0.28 \text{ s}} \ (280 \text{ ms})
+$$
 
 - 而跨 PCIe 4.0 换出再换入这 1000 个 Token 的 KV（约 $320\text{ MB}$ ）的耗时：
 
-  $$
-  T_{\text{swap}} = 2 \times \frac{0.32\text{ GB}}{32\text{ GB/s}} = \mathbf{0.02 \text{ s}} \ (20 \text{ ms})
-  $$
+$$
+T_{\text{swap}} = 2 \times \frac{0.32\text{ GB}}{32\text{ GB/s}} = \mathbf{0.02 \text{ s}} \ (20 \text{ ms})
+$$
 
 **关键决策结论**：
 - **在中小模型或短上下文场景**：GPU 重算极快，Recomputation 简单高效，不吃 Host 内存；
@@ -1098,21 +1098,21 @@ $$
 在 PagedAttention 中，物理内存被切分为块大小为 $B_{\text{size}}$ 的 Block：
 1. **计算逻辑块号与块内偏移**：
 
-   $$
-   \text{logical-block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}
-   $$
+$$
+\text{logical-block} = \lfloor t / B_{\text{size}} \rfloor, \quad \text{offset} = t \pmod{B_{\text{size}}}
+$$
 
 2. **查块表拿到物理块编号（引入一次访存开销）**：
 
-   $$
-   \text{physical-block} = \text{block-table}[b][\text{logical-block}]
-   $$
+$$
+\text{physical-block} = \text{block-table}[b][\text{logical-block}]
+$$
 
 3. **计算最终物理地址**：
 
-   $$
-   \text{Addr}_{\text{paged}} = \text{K-Pool-Base} + \text{physical-block} \times \text{Block-Stride} + h \times \text{Head-Stride} + \text{offset} \times \text{Token-Stride} + d
-   $$
+$$
+\text{Addr}_{\text{paged}} = \text{K-Pool-Base} + \text{physical-block} \times \text{Block-Stride} + h \times \text{Head-Stride} + \text{offset} \times \text{Token-Stride} + d
+$$
 
 **步骤三：性能开销本质剖析**
 1. **额外的查表显存访问（Table Indirection Overhead）**：Kernel 在读取数据前必须先读取 `block_table`，虽然其较小通常能命中 L1/L2 Cache，但依然占用了片上寄存器资源；

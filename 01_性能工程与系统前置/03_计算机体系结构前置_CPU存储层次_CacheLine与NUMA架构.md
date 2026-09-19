@@ -1165,9 +1165,9 @@ if __name__ == "__main__":
 11. **PyTorch Documentation**: `torch.utils.data.DataLoader` _pin_memory & worker_init_fn_  
     <https://pytorch.org/docs/stable/data.html#memory-pinning>
 12. **GitHub 开源项目**:
-    - **AI-fundamentals** (Microsoft): <https://github.com/microsoft/AI-fundamentals>
-    - **AIInfraGuide** (caomaolufei): <https://github.com/caomaolufei/AIInfraGuide>
-    - **nccl-tests** (NVIDIA): <https://github.com/NVIDIA/nccl-tests>
+  - **AI-fundamentals** (Microsoft): <https://github.com/microsoft/AI-fundamentals>
+  - **AIInfraGuide** (caomaolufei): <https://github.com/caomaolufei/AIInfraGuide>
+  - **nccl-tests** (NVIDIA): <https://github.com/NVIDIA/nccl-tests>
 
 ---
 

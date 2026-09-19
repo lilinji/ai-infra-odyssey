@@ -273,37 +273,37 @@ $$
   - 张量并行或数据并行通常会进行梯度分桶（Bucket），每次触发通信的数据量高达 **$S = 32\,\text{MB} \sim 256\,\text{MB}$**；
   - 在 400 Gbps（ $\beta \approx 45\,\text{GB/s}$ ）的网卡上，传输 256 MB 数据所需的物理网卡串行耗时为：
 
-    $$
-    T_{\text{data}} = \frac{256 \times 10^6}{45 \times 10^9} \approx 5.68\,\text{ms} = 5680\,\mu\text{s}
-    $$
+$$
+T_{\text{data}} = \frac{256 \times 10^6}{45 \times 10^9} \approx 5.68\,\text{ms} = 5680\,\mu\text{s}
+$$
 
   - 此时控制面耗时占总通信时间的比例为：
 
-    $$
-    \text{Ratio} = \frac{6\,\mu\text{s}}{5680\,\mu\text{s} + 6\,\mu\text{s}} \approx 0.1\%
-    $$
+$$
+\text{Ratio} = \frac{6\,\mu\text{s}}{5680\,\mu\text{s} + 6\,\mu\text{s}} \approx 0.1\%
+$$
 
   - **结论**：在千万级的大包面前，6 微秒的控制开销就像汪洋大海里的一滴水，完全被带宽瓶颈所淹没！
 
 - **场景 B：MoE Token Dispatch 与在线推理 Decode**：
   - 在 MoE 专家并行中，每个 Token 经过 Gating 门控路由后，被分发给特定的专家 GPU。以批大小 Batch=8、Hidden=7168、BF16 为例，一个分发消息的大小仅为：
 
-    $$
-    S = 8 \times 7168 \times 2\,\text{Bytes} \approx 114\,\text{KB}
-    $$
+$$
+S = 8 \times 7168 \times 2\,\text{Bytes} \approx 114\,\text{KB}
+$$
 
   - 在线推理 Decode 阶段更加极端，每个生成步可能仅仅传递一个 Token（**$S \approx 14\,\text{KB}$ 甚至几 KB**）；
   - 在 400G 网卡上，传输 14 KB 数据的物理纯传输时间仅需：
 
-    $$
-    T_{\text{data}} = \frac{14 \times 10^3}{45 \times 10^9} \approx 0.31\,\mu\text{s}
-    $$
+$$
+T_{\text{data}} = \frac{14 \times 10^3}{45 \times 10^9} \approx 0.31\,\mu\text{s}
+$$
 
   - 此时控制面耗时占总通信时间的比例飙升至：
 
-    $$
-    \text{Ratio} = \frac{6\,\mu\text{s}}{0.31\,\mu\text{s} + 6\,\mu\text{s}} = \mathbf{95.1\%！}
-    $$
+$$
+\text{Ratio} = \frac{6\,\mu\text{s}}{0.31\,\mu\text{s} + 6\,\mu\text{s}} = \mathbf{95.1\%！}
+$$
 
 ```text
 残酷的工程分水岭：
@@ -506,9 +506,9 @@ GDRCopy 解决的是另一个极其尖锐的工程痛点：**如果 CPU 确实�
 - **单 Token 数据体量**： $7168 \times 2\,\text{Bytes} = 14336\,\text{Bytes} \approx 14.34\,\text{KB}$；
 - **单 GPU 产生的总通信量**：
 
-  $$
-  \text{Total Volume} = 512 \times 14336\,\text{Bytes} = 7,340,032\,\text{Bytes} \approx \mathbf{7.34\text{ MB}}
-  $$
+$$
+\text{Total Volume} = 512 \times 14336\,\text{Bytes} = 7,340,032\,\text{Bytes} \approx \mathbf{7.34\text{ MB}}
+$$
 
 ### 2. 真实流量分布推导：
 假设门控路由将 Token 均匀分配给全网 64 个专家：
@@ -517,9 +517,9 @@ GDRCopy 解决的是另一个极其尖锐的工程痛点：**如果 CPU 确实�
 - **必须跨物理机（走跨机 RDMA 网卡）的比例**： $\mathbf{56/64 = 87.5\%}$；
 - **单 GPU 必须跨机外发的净数据量**：
 
-  $$
-  \text{Remote Send Bytes} = 7.34\,\text{MB} \times \frac{56}{64} \approx \mathbf{6.42\text{ MB}}
-  $$
+$$
+\text{Remote Send Bytes} = 7.34\,\text{MB} \times \frac{56}{64} \approx \mathbf{6.42\text{ MB}}
+$$
 
 ---
 
@@ -693,9 +693,9 @@ $$
 - 在标准 RC（Reliable Connection）模式下，两个 GPU 进程通信必须独占一对专属的 QP 队列；
 - 一个拥有 1024 张 GPU 的集群，若跑全互联 All-to-All，每张卡需要维持的 RC QP 数量为：
 
-  $$
-  N_{\text{QP}} = 1023 \approx 1000\text{ 对 QP}
-  $$
+$$
+N_{\text{QP}} = 1023 \approx 1000\text{ 对 QP}
+$$
 
 - 如果考虑每个 GPU 分配 8 个通信通道（Channels），单张卡上的活动 QP 数量高达 **8,000 个**！
 
@@ -1149,22 +1149,22 @@ IBGDA 把发令转，SM 显存直通全。
 在 MoE Dispatch 阶段，设每张 GPU 产生的跨机外发数据量为 $D$。
 - **阶段 1：机内聚合**： $K$ 张卡的数据通过 NVLink 汇总到网关 GPU。总汇聚量为 $(K-1) \cdot D$。NVLink 聚合耗时为：
 
-  $$
-  T_{\text{intranode}} = \frac{(K-1) \cdot D}{B_{\text{nvl}}}
-  $$
+$$
+T_{\text{intranode}} = \frac{(K-1) \cdot D}{B_{\text{nvl}}}
+$$
 
 - **阶段 2：跨机外发**：网关 GPU 将本机的全部外发数据 $K \cdot D$ 通过网卡打出。跨机耗时为：
 
-  $$
-  T_{\text{internode}} = \frac{K \cdot D}{M \cdot B_{\text{nic}}}
-  $$
+$$
+T_{\text{internode}} = \frac{K \cdot D}{M \cdot B_{\text{nic}}}
+$$
 
 - **平衡点推导**：
   两跳聚合的最佳吞吐重叠状态，要求机内聚合速率与跨机外发速率完美匹配，即：
 
-  $$
-  \frac{(K-1) \cdot D}{B_{\text{nvl}}} \le \frac{K \cdot D}{M \cdot B_{\text{nic}}} \implies \frac{B_{\text{nvl}}}{M \cdot B_{\text{nic}}} \ge \frac{K-1}{K}
-  $$
+$$
+\frac{(K-1) \cdot D}{B_{\text{nvl}}} \le \frac{K \cdot D}{M \cdot B_{\text{nic}}} \implies \frac{B_{\text{nvl}}}{M \cdot B_{\text{nic}}} \ge \frac{K-1}{K}
+$$
 
 在现代 HGX H100 架构中（ $K=8$ 卡， $B_{\text{nvl}}=450\,\text{GB/s}$ 单向； $M=8$ 网卡， $B_{\text{nic}}=45\,\text{GB/s}$ 单向）：
 

@@ -345,9 +345,9 @@ $$
 1. **账本一：模型参数权重显存（ $M_{\text{weights}}$ ）**
    - **计算公式**：
 
-     $$
-     M_{\text{weights}} = \frac{P \times b_w}{\text{TP}}
-     $$
+$$
+M_{\text{weights}} = \frac{P \times b_w}{\text{TP}}
+$$
 
      其中 $P$ 为模型总参数量（Parameters）， $b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节）， $\text{TP}$ 为张量并行度（Tensor Parallelism）。
    - *注意*：必须计入 Embedding 层及非 Transformer 层的显存占用（在部分框架中可能未切分）。
@@ -387,27 +387,27 @@ $$
 
 1. 先算单 Token 在一层上的 KV 大小：
 
-   $$
-   2 \text{ (Key和Value)} \times 2 \text{ (头数)} \times 64 \text{ (维度)} \times 2 \text{ (字节)} = 512 \text{ 字节}
-   $$
+$$
+2 \text{ (Key和Value)} \times 2 \text{ (头数)} \times 64 \text{ (维度)} \times 2 \text{ (字节)} = 512 \text{ 字节}
+$$
 
 2. 乘以 2 层，得到单个 Token 的 KV Cache 容量：
 
-   $$
-   512 \text{ 字节} \times 2 \text{ 层} = 1024 \text{ 字节} = 1 \text{ KB/Token}
-   $$
+$$
+512 \text{ 字节} \times 2 \text{ 层} = 1024 \text{ 字节} = 1 \text{ KB/Token}
+$$
 
 3. 单个请求如果打满 512 Tokens，需要消耗：
 
-   $$
-   512 \times 1 \text{ KB} = 512 \text{ KB}
-   $$
+$$
+512 \times 1 \text{ KB} = 512 \text{ KB}
+$$
 
 4. 这个 1MB 的显存池最多能同时容纳多少个并发？
 
-   $$
-   B_{\max} = \frac{1024 \text{ KB}}{512 \text{ KB}} = 2 \text{ 个并发！}
-   $$
+$$
+B_{\max} = \frac{1024 \text{ KB}}{512 \text{ KB}} = 2 \text{ 个并发！}
+$$
 
    如果硬塞第 3 个并发，显存直接打满雪崩！
 
@@ -443,25 +443,25 @@ $$
 
 1. **手算单 Token KV 显存**：
 
-   $$
-   \text{KV}_{\text{token-per-gpu}} = \frac{2 \times 80 \times 8 \times 128 \times 2}{8} = \frac{327,680}{8} = 40,960 \text{ Bytes} = 40 \text{ KB/Token}
-   $$
+$$
+\text{KV}_{\text{token-per-gpu}} = \frac{2 \times 80 \times 8 \times 128 \times 2}{8} = \frac{327,680}{8} = 40,960 \text{ Bytes} = 40 \text{ KB/Token}
+$$
 
    （注意：8 卡合起来全节点单 Token 消耗为 $40 \text{ KB} \times 8 = 320 \text{ KB}$！）
 2. **假设常规对话场景**：输入 1500 Tokens，输出 500 Tokens，合计 $S_{\text{total}} = 2000$ Tokens。
    单个请求消耗单卡 KV 显存： $2000 \times 40 \text{ KB} = 80 \text{ MB}$。
 3. **计算单机最大物理并发数**：
 
-   $$
-   B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{80 \times 10^6 \text{ Bytes}} = 625 \text{ 并发}
-   $$
+$$
+B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{80 \times 10^6 \text{ Bytes}} = 625 \text{ 并发}
+$$
 
 4. **假设长文档总结场景**：输入 16K Tokens，输出 1K Tokens，合计 $S_{\text{total}} = 17,000$ Tokens。
    单个请求消耗单卡 KV 显存： $17,000 \times 40 \text{ KB} = 680 \text{ MB}$。
 
-   $$
-   B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{680 \times 10^6 \text{ Bytes}} \approx 73 \text{ 并发}
-   $$
+$$
+B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{680 \times 10^6 \text{ Bytes}} \approx 73 \text{ 并发}
+$$
 
 看到了吗？**同一个 8 卡节点，仅仅因为业务场景从普通对话变成了长文档分析，最大并发承载能力直接从 625 断崖式下跌到了 73！跌幅高达 88.3%！**
 如果你的网关没有针对长文本单独隔离，只看“并发数连接池”，70 多个长请求一涌进来，原本能服务 600 个人的集群瞬间就会被锁死！
@@ -540,6 +540,7 @@ N_{\text{cards-memory}} = \left\lceil \frac{\text{Concurrency}_{\text{peak}}}{B_
 $$
 
 #### 最终决策方程：
+
 $$
 N_{\text{GPU-total}} = \max\left( N_{\text{cards-throughput}}, \, N_{\text{cards-memory}} \right)
 $$
@@ -571,11 +572,13 @@ $$
 ### 详细手算步骤
 
 #### 步骤 1：核算单请求的平均生命周期 $T_{\text{life}}$
+
 $$
 T_{\text{life}} = \text{TTFT} + \left( \overline{S}_{\text{gen}} \times \text{TPOT} \right) = 0.6\text{ s} + (400 \times 0.03\text{ s}) = 0.6 + 12 = 12.6\text{ 秒}
 $$
 
 #### 步骤 2：核算系统峰值活跃并发连接数 $\text{Concurrency}_{\text{peak}}$
+
 $$
 \text{Concurrency}_{\text{peak}} = QPS_{\text{peak}} \times T_{\text{life}} = 40 \times 12.6 = 504\text{ 个在途并发请求}
 $$
@@ -587,15 +590,15 @@ $$
 - 单个请求平均总长度： $S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}$；
 - 单个请求在单卡上消耗的 KV Cache：
 
-  $$
-  1600 \times 40\text{ KB} = 64\text{ MB}
-  $$
+$$
+1600 \times 40\text{ KB} = 64\text{ MB}
+$$
 
 - **单台 8 卡节点的最大并发承载力**：
 
-  $$
-  B_{\max} = \frac{50 \times 10^9\text{ Bytes}}{64 \times 10^6\text{ Bytes}} \approx 781\text{ 个并发}
-  $$
+$$
+B_{\max} = \frac{50 \times 10^9\text{ Bytes}}{64 \times 10^6\text{ Bytes}} \approx 781\text{ 个并发}
+$$
 
 从纯显存容量看，单台 8 卡机似乎理论上能塞下 781 个并发。但别高兴太早，我们必须看算力吞吐！
 
@@ -746,9 +749,9 @@ $$
 1. **获取当前引擎水线**：网关通过 Sidecar 或健康探测，每 100ms 拉取各推理实例当前排队队列中的 Token 积压总量 $\Sigma_{\text{waiting-tokens}}$；
 2. **计算预计等待耗时**：
 
-   $$
-   T_{\text{predicted-wait}} = \frac{\Sigma_{\text{waiting-tokens}}}{\text{Node Throughput Capacity}}
-   $$
+$$
+T_{\text{predicted-wait}} = \frac{\Sigma_{\text{waiting-tokens}}}{\text{Node Throughput Capacity}}
+$$
 
 3. **快速拒绝（Fail-Fast）**：当一个新请求到达，网关预估其排队时间已经超过了该业务设定的 TTFT SLO 门限（例如预计要排 3 秒，而业务 SLO 是 1.5 秒），**网关层直接在 5 毫秒内原地返回 HTTP 429 Too Many Requests**！
 4. **收益**：避免毫无希望的请求侵入昂贵的 GPU 显存池，将全部宝贵算力留给当前正在生成的请求，确保正在服务的这批用户体验绝对不崩！
@@ -1650,30 +1653,30 @@ if __name__ == "__main__":
 3. **基于并发水线计算显存节点底线**：
    - 支撑 10,000 活跃并发，纯显存维度最少需要：
 
-     $$
-     N_{\text{nodes-mem}} = \frac{10,000}{625} = 16\text{ 台 8 卡节点（128 张 H800）}
-     $$
+$$
+N_{\text{nodes-mem}} = \frac{10,000}{625} = 16\text{ 台 8 卡节点（128 张 H800）}
+$$
 
 4. **基于算力吞吐与 TPOT SLO 校验**：
    - 10,000 并发在流式生成中，每个请求要求 TPOT $\le 30\text{ ms}$（即每秒吐 33.3 Tokens）；
    - 全集群在峰值时刻要求达到的聚合生成吞吐量为：
 
-     $$
-     \text{Throughput}_{\text{gen}} = 10,000 \times 33.3 \approx 333,333\text{ Tokens/sec}
-     $$
+$$
+\text{Throughput}_{\text{gen}} = 10,000 \times 33.3 \approx 333,333\text{ Tokens/sec}
+$$
 
    - 经验证，单台 8 卡 H800 在保 30ms TPOT 下，实际安全极限吞吐约为 1600 Tokens/s；
    - **算力通量维度所需节点数**：
 
-     $$
-     N_{\text{nodes-compute}} = \frac{333,333}{1600} \approx 208.3\text{ 台 8 卡节点！}
-     $$
+$$
+N_{\text{nodes-compute}} = \frac{333,333}{1600} \approx 208.3\text{ 台 8 卡节点！}
+$$
 
 5. **架构决策与优化方案**：
    - 盲目采购 208 台节点成本无法接受，此时必须给出架构优化：
-     - **优化一（量化）**：启用 FP8 / INT4 权重与 FP8 KV Cache，单卡算力提升近 1 倍，吞吐能力提升至 3000 Tokens/s/节点，节点数骤降至约 110 台；
-     - **优化二（PD 分离）**：采用 Prefill-Decode 解耦架构，Prefill 节点打满算力，Decode 节点极致打满 HBM 显存带宽，综合集群成本再压降 30%~40%；
-     - 叠加 20% 安全缓冲与容灾，给出最终落地配置。
+  - **优化一（量化）**：启用 FP8 / INT4 权重与 FP8 KV Cache，单卡算力提升近 1 倍，吞吐能力提升至 3000 Tokens/s/节点，节点数骤降至约 110 台；
+  - **优化二（PD 分离）**：采用 Prefill-Decode 解耦架构，Prefill 节点打满算力，Decode 节点极致打满 HBM 显存带宽，综合集群成本再压降 30%~40%；
+  - 叠加 20% 安全缓冲与容灾，给出最终落地配置。
 
 ---
 

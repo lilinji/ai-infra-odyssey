@@ -455,9 +455,9 @@ $$
 
 - **绝对位置编码（Absolute Position Embedding, 如 GPT-2）**：将位置向量 $p_m, p_n$ 直接加到词嵌入上： $\tilde{q}_m = q_m + p_m$。展开内积后：
 
-  $$
-  \tilde{q}_m^T \tilde{k}_n = q_m^T k_n + q_m^T p_n + p_m^T k_n + p_m^T p_n
-  $$
+$$
+\tilde{q}_m^T \tilde{k}_n = q_m^T k_n + q_m^T p_n + p_m^T k_n + p_m^T p_n
+$$
 
   其中包含了大量绝对位置与内容的杂质交叉项，且一旦推理长度超过训练时的最大预设长度 $S_{\text{train}}$，未见过的位置 Embedding 根本不存在，外推性彻底归零；
 - **ALiBi（Attention with Linear Biases, Press et al. 2021）**：直接在注意力矩阵上施加绝对距离惩罚项： $-m \cdot |i - j|$。虽然具备一定的外推能力，但它强行施加单调线性衰减，破坏了神经网络自主学习复杂周期性与长程引用的能力，在现代超大规模稠密模型中已被淘汰。
@@ -551,9 +551,9 @@ $$
 - $\cos(m\Theta)$ 与 $\sin(m\Theta)$ 预先计算并在序列维度广播；
 - 对于输入分块 $x = [x_1, x_2]$（前后对半拆分），定义：
 
-  $$
-  \operatorname{rotate-half}(x) = [-x_2, x_1]
-  $$
+$$
+\operatorname{rotate-half}(x) = [-x_2, x_1]
+$$
 
 只需一次内存连续加载，在寄存器中对半交换符号，即可在 1 个时钟周期内完成正交旋转变换！
 
@@ -572,9 +572,9 @@ $$
 1. **线性内插（Linear Position Interpolation, PI）**：将位置直接压缩 $\alpha$ 倍： $m' = m / \alpha$。虽然保证了所有角度不超标，但将高频局部特征强行挤压，严重损害了短文本检索的微观精度；
 2. **NTK-Aware 缩放**：根据神经常微分方程与神经正切核（NTK）理论，高频应该少缩放（保持局部空间分辨率），低频应该大幅缩放（拓展长程容量）。其核心是将 Base 底数进行非线性放大：
 
-   $$
-   b' = b \times \alpha^{\frac{d_h}{d_h - 2}}
-   $$
+$$
+b' = b \times \alpha^{\frac{d_h}{d_h - 2}}
+$$
 
 3. **YaRN（Yet another RoPE extensioN method）**：引入注意力分布的温度调节系数 $\sqrt{t}$，并将不同维度的分量严格切分为“不插值区（完全保持高频）”、“线性过渡区”与“完全内插区（低频）”，成为当前开源界 128K~1M 超长文本外推的首选方案。
 
@@ -716,9 +716,9 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 - $W_o$ 权重： $d \times d$
 - **单层 Attention 总参数量**：
 
-  $$
-  P_{\text{attn}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)
-  $$
+$$
+P_{\text{attn}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)
+$$
 
   - 若为传统 MHA（ $H_{kv} = H_q$ ）： $P_{\text{attn}} = 4d^2$；
   - 若为 1:8 GQA（ $H_{kv} = \frac{1}{8} H_q$ ）： $P_{\text{attn}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
@@ -729,20 +729,21 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 - $W_{\text{down}}$ 权重： $d_{\text{ffn}} \times d$
 - **单层 FFN 总参数量**：
 
-  $$
-  P_{\text{ffn}} = 3 \times d \times d_{\text{ffn}}
-  $$
+$$
+P_{\text{ffn}} = 3 \times d \times d_{\text{ffn}}
+$$
 
   若按 $d_{\text{ffn}} = \frac{8}{3}d$：
 
-  $$
-  P_{\text{ffn}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}
-  $$
+$$
+P_{\text{ffn}} = 3d \times \frac{8}{3}d = \mathbf{8d^2}
+$$
 
 #### 3. 其他非重要参数（Norm 等）：
 - 两个 RMSNorm 的可学习缩放向量 $\gamma$： $2 \times d$（与矩阵参数相比完全可忽略不计）。
 
 #### 4. 单层 Block 总参数量：
+
 $$
 P_{\text{layer}} = P_{\text{attn}} + P_{\text{ffn}} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right) + 3d \cdot d_{\text{ffn}}
 $$
@@ -797,17 +798,17 @@ $$
 在反向传播时，上一层传回的损失梯度为 $\frac{\partial \mathcal{L}}{\partial Y}$：
 1. **第一步：计算对输入激活值的梯度（激活反传，用于传给前一层）**：
 
-   $$
-   \frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} \cdot W^T
-   $$
+$$
+\frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} \cdot W^T
+$$
 
    维度： $[B \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [B \times d_{\text{in}}]$。
    计算量等价于一次完整的前向矩阵乘：**$2P$ FLOPs**！
 2. **第二步：计算对权重的梯度（权重求导，用于更新参数）**：
 
-   $$
-   \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \frac{\partial \mathcal{L}}{\partial Y}
-   $$
+$$
+\frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \frac{\partial \mathcal{L}}{\partial Y}
+$$
 
    维度： $[d_{\text{in}} \times B] \times [B \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}]$。
    计算量同样是一次完整的同尺寸矩阵乘：**$2P$ FLOPs**！
@@ -819,6 +820,7 @@ $$
 $$
 
 #### 核心黄金定理：
+
 $$
 \text{全模型训练总计算量} = \text{Forward} + \text{Backward} = 2P + 4P = \mathbf{6P} \quad (\text{FLOPs/token})
 $$
@@ -846,25 +848,26 @@ $$
 1. **模型权重（Model Weights）**：
    - 采用 FP16/BF16 存储，每个参数占用 2 字节：
 
-   $$
-   M_{\text{weights}} = 2\Psi \quad (\text{Bytes})
-   $$
+$$
+M_{\text{weights}} = 2\Psi \quad (\text{Bytes})
+$$
 
 2. **梯度（Gradients）**：
    - 同样以 FP16/BF16 反向累加，每个参数占用 2 字节：
 
-   $$
-   M_{\text{gradients}} = 2\Psi \quad (\text{Bytes})
-   $$
+$$
+M_{\text{gradients}} = 2\Psi \quad (\text{Bytes})
+$$
 
 3. **优化器状态（Optimizer States - AdamW）**：
    - 工业界训练大模型标配 AdamW 优化器，为了保证数值更新稳定性，状态必须全部保留为 **FP32（4 字节/元素）**：
-     - **FP32 权重主副本（Master Weights）**： $4\Psi$ 字节；
-     - **FP32 一阶动量（First Moment, $\beta_1$ ）**： $4\Psi$ 字节；
-     - **FP32 二阶动量（Second Moment, $\beta_2$ ）**： $4\Psi$ 字节；
+  - **FP32 权重主副本（Master Weights）**： $4\Psi$ 字节；
+  - **FP32 一阶动量（First Moment, $\beta_1$ ）**： $4\Psi$ 字节；
+  - **FP32 二阶动量（Second Moment, $\beta_2$ ）**： $4\Psi$ 字节；
    - 优化器状态总计： $4 + 4 + 4 = \mathbf{12\Psi}$ 字节！
 
 #### 静态显存大一统公式：
+
 $$
 M_{\text{static}} = M_{\text{weights}} + M_{\text{gradients}} + M_{\text{optimizer}} = 2\Psi + 2\Psi + 12\Psi = \mathbf{16\Psi} \quad (\text{Bytes})
 $$
@@ -1296,25 +1299,25 @@ if __name__ == "__main__":
    - 精度为 FP16/BF16（每元素 2 字节）
 2. **单 Token 全模型 KV Cache 尺寸公式**：
 
-   $$
-   \text{Size}_{\text{token}} = 4 \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
-   $$
+$$
+\text{Size}_{\text{token}} = 4 \times L \times d \times \left( \frac{H_{kv}}{H_q} \right) \quad (\text{Bytes})
+$$
 
 3. **计算不同方案**：
    - **MHA 方案**（ $H_{kv} = 64$，比例为 1）：
 
-     $$
-     \text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}
-     $$
+$$
+\text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}
+$$
 
      总显存（全集群）： $2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}$！
      8 卡 TP 并行下，单卡平摊： $640 / 8 = \mathbf{80\text{ GB}}$！
      **结论**：光是存 KV Cache 就直接把 80GB 单卡吃干抹净，连权重都塞不下，立刻 OOM 熔断！
    - **GQA 方案**（LLaMA-3 真实方案， $H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$ ）：
 
-     $$
-     \text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}
-     $$
+$$
+\text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}
+$$
 
      总显存（全集群）： $640\text{ GB} / 8 = \mathbf{80\text{ GB}}$。
      8 卡 TP 并行下，单卡平摊： $80 / 8 = \mathbf{10\text{ GB}}$！
@@ -1336,31 +1339,31 @@ if __name__ == "__main__":
    计算量为 $2 \times 1 \times d_{\text{in}} \times d_{\text{out}} = 2 \times \text{Params}$。
    累加所有参数后，每个 Token 前向计算量为：
 
-   $$
-   \text{FLOPs}_{\text{fwd}} = 2P
-   $$
+$$
+\text{FLOPs}_{\text{fwd}} = 2P
+$$
 
 3. **反向求导过程（包含两步独立运算）**：
    已知后级传回的输出梯度张量 $\delta = \frac{\partial \mathcal{L}}{\partial Y} \in \mathbb{R}^{1 \times d_{\text{out}}}$：
    - **第一步：传回激活梯度（Input Gradient）**：
 
-     $$
-     \frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])
-     $$
+$$
+\frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])
+$$
 
      计算量： $2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P$ FLOPs。此项必须传给前驱层；
    - **第二步：求参数更新梯度（Weight Gradient）**：
 
-     $$
-     \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])
-     $$
+$$
+\frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])
+$$
 
      计算量： $2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P$ FLOPs。此项用于 AdamW 参数更新；
 4. **两项相加**：
 
-   $$
-   \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P
-   $$
+$$
+\text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P
+$$
 
    全流程训练合计： $2P + 4P = \mathbf{6P}$ FLOPs/token。
 

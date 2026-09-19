@@ -242,9 +242,9 @@ $$
   $\text{TTFT} = 50 + 51.2 = 101.2\text{ms}$。
 - **④ 理论公式**：
 
-  $$
-  \text{TTFT} = T_{\text{queue}} + T_{\text{prefill}} = T_{\text{queue}} + \frac{\text{Prompt-Tokens}}{\text{Prefill-Throughput}}
-  $$
+$$
+\text{TTFT} = T_{\text{queue}} + T_{\text{prefill}} = T_{\text{queue}} + \frac{\text{Prompt-Tokens}}{\text{Prefill-Throughput}}
+$$
 
 - **⑤ 数量级校验**：大厂在线 Chat 业务的 TTFT P95 必须控制在 **$500\text{ms} \sim 800\text{ms}$** 以内，超过 $2\text{s}$ 用户流失率将呈指数上升。
 
@@ -255,9 +255,9 @@ $$
   $\text{TPOT} = \frac{1000\text{ms}}{40} = 25\text{ms/token}$。
 - **④ 理论公式**：
 
-  $$
-  \text{TPOT} = \frac{\sum_{i=2}^{N} \text{Latency}(\text{Token}_i)}{N - 1} \approx \frac{1}{\text{Decode-Throughput-per-request}}
-  $$
+$$
+\text{TPOT} = \frac{\sum_{i=2}^{N} \text{Latency}(\text{Token}_i)}{N - 1} \approx \frac{1}{\text{Decode-Throughput-per-request}}
+$$
 
 - **⑤ 数量级校验**：人类正常阅读速度约为每秒 5~8 个汉字（约合 8~12 Tokens）。生产服务要求 TPOT 稳定在 **$20\text{ms} \sim 40\text{ms}$（对应 25~50 tokens/s）**，低于 10 tokens/s 用户会明显感知到卡顿。
 
@@ -267,9 +267,9 @@ $$
 ### 4. E2E Latency（端到端总时延）
 - **综合公式**：
 
-  $$
-  \text{E2E Latency} = \text{TTFT} + \sum_{i=2}^{N_{\text{out}}} \text{ITL}_i \approx \text{TTFT} + (N_{\text{out}} - 1) \times \text{TPOT}
-  $$
+$$
+\text{E2E Latency} = \text{TTFT} + \sum_{i=2}^{N_{\text{out}}} \text{ITL}_i \approx \text{TTFT} + (N_{\text{out}} - 1) \times \text{TPOT}
+$$
 
 ---
 
@@ -475,16 +475,16 @@ $$
 其中：
 1. **基于排队深度的伸缩分量（ $R_{\text{queue}}$ ）**：
 
-   $$
-   R_{\text{queue}} = \left\lceil \frac{\text{Total-Waiting-Requests}}{\text{Target-Queue-Depth-per-Pod}} \times \text{CurrentReplicas} \right\rceil
-   $$
+$$
+R_{\text{queue}} = \left\lceil \frac{\text{Total-Waiting-Requests}}{\text{Target-Queue-Depth-per-Pod}} \times \text{CurrentReplicas} \right\rceil
+$$
 
    （在大模型服务中，我们通常设定单个 Pod 允许排队的健康深度 $\text{Target-Queue} = 5$ ）；
 2. **基于显存水线的伸缩分量（ $R_{\text{cache}}$ ）**：
 
-   $$
-   R_{\text{cache}} = \left\lceil \frac{\text{Avg}(\text{KV-Cache-Usage-Ratio})}{\text{Target-Watermark}} \times \text{CurrentReplicas} \right\rceil
-   $$
+$$
+R_{\text{cache}} = \left\lceil \frac{\text{Avg}(\text{KV-Cache-Usage-Ratio})}{\text{Target-Watermark}} \times \text{CurrentReplicas} \right\rceil
+$$
 
    （健康安全水线 $\text{Target-Watermark} = 0.75$ ）。
 
