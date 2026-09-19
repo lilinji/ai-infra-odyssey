@@ -1772,11 +1772,18 @@ $$
 M_{\text{total}} > \text{GPU 物理显存容量} - \text{显存池预留碎片 Headroom (通常 2~3GB)} \implies \mathbf{OOM}
 $$
 
-   - 开启 Full Checkpointing 后，激活显存降为单个 Block 峰值，节约了约 $97\%$ 的激活显存：
+   - 开启 Full Checkpointing 后，激活显存降为单个 Block 峰值（仅维持单个 Block 激活）：
 
 $$
-M_{\text{activation-ckpt}} \propto O(B \cdot S \cdot h) \quad \left(\text{节约比例} \approx \frac{L - 1}{L} \approx 97\%\right)
+M_{\text{activation-ckpt}} \propto O(B \cdot S \cdot h)
 $$
+
+     全网络激活显存理论节约比例可达：
+
+$$
+\text{Savings} = \frac{L - 1}{L} \approx 97\%
+$$
+
 
 
 ---
