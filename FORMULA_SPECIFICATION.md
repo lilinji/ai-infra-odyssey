@@ -40,7 +40,55 @@
   - 中文修饰与量词置于公式外部的正文说明中：
     - ❌ `= \mathbf{16\text{ 字节}}` $\to$ ✅ `= \mathbf{16 \text{ B}}`（即 16 字节）
     - ❌ `= \mathbf{20\text{ 步}}` $\to$ ✅ `= \mathbf{20 \text{ steps}}`（20 步）
-    - ❌ `\approx \mathbf{0.31\text{ 秒}}` $\to$ ✅ `\approx \mathbf{0.31 \text{ s}}`（约 0.31 秒）
+### 准则 4：GitHub GFM 解析器特异性避坑（标点空格避让与列表块隔离）
+
+GitHub Web 页面采用 **GFM (GitHub Flavored Markdown) + MathJax** 渲染引擎，具有以下特定的词法解析规则与陷阱：
+
+1. **行内公式与中文全角标点避让（Leading Space Rule）**：
+   - **致命反模式**：`：$2 \times P \times B \times S$`、`：$\text{FLOPs}$`
+   - **技术原理**：GFM 为了避免将普通文本或货币符号（如 `$100`）误判为 LaTeX，要求行内开头的 `$` 前面必须为**空白字符或行首**。如果前面紧贴全角冒号 `：` 或括号 `（`，GFM 词法分析器将直接放弃匹配，导致整段公式退化为原始文本！
+   - **治理标准**：
+     - 标点与公式之间**必须保留一个半角空格**：
+       - ❌ `前向算力：$2 \times P$` $\to$ ✅ `前向算力： $2 \times P$`
+     - 或使用 GitHub 官方推荐的带反引号转义定界符：
+       - ✅ `前向算力：$`2 \times P`$`
+
+2. **块级公式严禁紧贴/单行嵌在列表项中（List Item Block Conflict）**：
+   - **致命反模式**：
+     ```markdown
+     - **模型 FLOPs 利用率 (MFU)**：$$ \text{MFU} = \frac{6P}{C} $$
+     ```
+     或列表项下没有空行直接缩进 2 空格：
+     ```markdown
+     - **模型 FLOPs 利用率 (MFU)**：
+       $$
+       \text{MFU} = \frac{6P}{C}
+       $$
+     ```
+   - **技术原理**：GFM 会先执行 Markdown 块级切分（List Parser），再执行段落软换行（插入 `<br>`）与斜体强调（将公式中的下划线 `_` 误匹配为 `<em>...</em>`），最后才由前端渲染引擎处理 MathJax。塞在无空行的列表项内会直接生成 `<p>$$<br>...</p>`，彻底摧毁 MathJax 块级匹配，导致整块公式原样吐出！
+   - **治理标准**：
+     - **最佳实践 A（顶级段落独立块，推荐）**：小标题使用加粗文本段落，公式块前后保留干净空行：
+       ```markdown
+       **模型 FLOPs 利用率 (MFU)**：
+
+       $$
+       \text{MFU} = \frac{6P}{C}
+       $$
+       ```
+     - **最佳实践 B（GitHub 官方 Math 代码块）**：
+       ````markdown
+       ```math
+       \text{MFU} = \frac{6P}{C}
+       ```
+       ````
+     - **最佳实践 C（若必须在无序列表中）**：必须保留空行，且公式块必须严格使用 **4 空格** 缩进：
+       ```markdown
+       - **模型 FLOPs 利用率 (MFU)**：
+
+           $$
+           \text{MFU} = \frac{6P}{C}
+           $$
+       ```
 
 ---
 

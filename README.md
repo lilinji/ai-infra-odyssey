@@ -227,31 +227,42 @@ flowchart TD
 在工业级工程实战中，以下三大约束决定了系统吞吐与延迟的物理极限：
 
 ### 1. 算力账本 (Compute Ledger)
-- **标准 Transformer 前向 FLOPs**：$2 \times P \times B \times S$（反向约为 $4 \times P \times B \times S$，单 Step 约为 $6 \times P \times B \times S$）
-- **模型 FLOPs 利用率 (MFU)**：
-  $$
-  \text{MFU} = \frac{\text{实测吞吐 Tokens/s} \times 6P}{\text{集群卡数} \times \text{单卡峰值 FLOPs/s}}
-  $$
+
+- **标准 Transformer 前向 FLOPs**： $2 \times P \times B \times S$（反向约为 $4 \times P \times B \times S$，单 Step 约为 $6 \times P \times B \times S$）
+
+**模型 FLOPs 利用率 (MFU)**：
+
+$$
+\text{MFU} = \frac{\text{实测吞吐 Tokens/s} \times 6P}{\text{集群卡数} \times \text{单卡峰值 FLOPs/s}}
+$$
 
 ### 2. 显存账本 (Memory Ledger)
-- **训练静态四大账本 (FP16/BF16 + AdamW)**：
-  $$
-  M_{\text{static}} = M_{\text{weights}} (2\Phi) + M_{\text{grads}} (2\Phi) + M_{\text{opt}} (12\Phi) = \mathbf{16\Phi \text{ Bytes}}
-  $$
-- **单 Token 动态 KV Cache 开销**：
-  $$
-  \text{KV}_{\text{token}} = 2 \times 2 \times n_{\text{layers}} \times n_{\text{kv-heads}} \times d_{\text{head}} \quad (\text{Bytes/Token})
-  $$
+
+**训练静态四大账本 (FP16/BF16 + AdamW)**：
+
+$$
+M_{\text{static}} = M_{\text{weights}} (2\Phi) + M_{\text{grads}} (2\Phi) + M_{\text{opt}} (12\Phi) = 16\Phi \text{ Bytes}
+$$
+
+**单 Token 动态 KV Cache 开销**：
+
+$$
+\text{KV}_{\text{token}} = 2 \times 2 \times n_{\text{layers}} \times n_{\text{kv-heads}} \times d_{\text{head}} \quad (\text{Bytes/Token})
+$$
 
 ### 3. 通信账本 (Communication Ledger)
-- **Ring AllReduce 传输量**：
-  $$
-  \text{Comm}_{\text{Ring}} = 2 \times \left(\frac{N - 1}{N}\right) \times M_{\text{data}} \approx 2 \times M_{\text{data}}
-  $$
-- **利特尔法则延迟隐藏下界**：
-  $$
-  N_{\text{in-flight}} = B_{\text{mem}} \times L_{\text{latency}} \implies W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil
-  $$
+
+**Ring AllReduce 传输量**：
+
+$$
+\text{Comm}_{\text{Ring}} = 2 \times \left(\frac{N - 1}{N}\right) \times M_{\text{data}} \approx 2 \times M_{\text{data}}
+$$
+
+**利特尔法则延迟隐藏下界**：
+
+$$
+N_{\text{in-flight}} = B_{\text{mem}} \times L_{\text{latency}} \implies W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil
+$$
 
 > 📖 **完整数学公式规范参考**：详见根目录标准指南文档 [`FORMULA_SPECIFICATION.md`](./FORMULA_SPECIFICATION.md)。
 
