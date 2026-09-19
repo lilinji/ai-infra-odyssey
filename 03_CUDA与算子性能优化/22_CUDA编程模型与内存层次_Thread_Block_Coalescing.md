@@ -94,7 +94,7 @@ math: true
   - [3.4 向量化加载（Vectorized Load float4/int4）：用 `LDG.128` 压榨内存指令管线](#34-向量化加载vectorized-load-float4int4用-ldg128-压榨内存指令管线)
 - [4. 共享内存（Shared Memory）与 Bank Conflict：32 个 Bank 的交叉开关与广播机制](#4-共享内存shared-memory与-bank-conflict32-个-bank-的交叉开关与广播机制)
   - [4.1 共享内存硬件结构：32 个 4-Byte Bank 与 Crossbar 网络](#41-共享内存硬件结构32-个-4-byte-bank-与-crossbar-网络)
-  - [4.2 Bank Conflict 成因模型：$\gcd(\text{stride}, 32)$ 与 $N$-way 冲突串行化推导](#42-bank-conflict-成因模型gcdstrid-32与-n-way-冲突串行化推导)
+  - [4.2 Bank Conflict 成因模型： $\gcd(\text{stride}, 32)$ 与 $N$-way 冲突串行化推导](#42-bank-conflict-成因模型gcdstrid-32与-n-way-冲突串行化推导)
   - [4.3 广播机制（Broadcast）与多播机制（Multicast）：同一 Bank 同一地址的免费盛宴](#43-广播机制broadcast与多播机制multicast同一-bank-同一地址的免费盛宴)
   - [4.4 消除 Bank Conflict 的两大杀招：静态填充（Padding）与地址异或（Swizzling）](#44-消除-bank-conflict-的两大杀招静态填充padding与地址异或swizzling)
   - [4.5 经典案例透视：2D 矩阵转置（Matrix Transpose）的“双头蛇”矛盾与解法](#45-经典案例透视2d-矩阵转置matrix-transpose的双头蛇矛盾与解法)
@@ -312,7 +312,7 @@ graph TD
 1. **行地址激活（Row Activation）**：打开整行的晶体管开关，将一整行电容的电荷倾倒到感测放大器（Sense Amplifiers）中；
 2. **列地址选通与突发传输（Column Read & Burst Transfer）**：在感测放大器锁存数据后，内部时钟以 **Burst Length（通常为 8 或 16）** 连续向外喷射数据。
 
-如果 GPU 核心为了读取 1 个字节，就让板载内存的引脚单独传输 8 个 bit，那么整个总线控制器绝大部分时间都会被行激活延迟（$t_{\text{RCD}}$）和预充电延迟（$t_{\text{RP}}$）占死，吞吐量将直接跌入深渊！因此，**物理内存总线天生就是“整块打包批发”的，绝不做“零售”**。
+如果 GPU 核心为了读取 1 个字节，就让板载内存的引脚单独传输 8 个 bit，那么整个总线控制器绝大部分时间都会被行激活延迟（ $t_{\text{RCD}}$ ）和预充电延迟（ $t_{\text{RP}}$ ）占死，吞吐量将直接跌入深渊！因此，**物理内存总线天生就是“整块打包批发”的，绝不做“零售”**。
 
 ---
 
@@ -364,11 +364,11 @@ D_{\text{useful}} = 32 \times 4 \text{ Bytes} = 128 \text{ Bytes}
 $$
 
 - **情况 1（连续且对齐）**：线程 0~31 分别读取地址 $0, 4, 8, \dots, 124$。这 128 字节恰好填满 1 个 128B Cache Line 内的 4 个 32B Sectors。
-  - 硬件发射事务数：$N_{\text{trans}} = 4$ 次（每个 32B），搬运总量：$4 \times 32 = 128 \text{ Bytes}$。
-  - 利用率：$128 / 128 = 100\%$。
+  - 硬件发射事务数： $N_{\text{trans}} = 4$ 次（每个 32B），搬运总量： $4 \times 32 = 128 \text{ Bytes}$。
+  - 利用率： $128 / 128 = 100\%$。
 - **情况 2（跳步 stride = 32）**：线程 0 读取地址 0，线程 1 读取地址 $32 \times 4 = 128$，线程 2 读取地址 256……每个线程的地址都跨越了一条全新的 Cache Line！
-  - 硬件发射事务数：$N_{\text{trans}} = 32$ 次（每个 32B），搬运总量：$32 \times 32 = 1024 \text{ Bytes}$。
-  - 利用率：$128 / 1024 = 12.5\%$（在某些未启用 Sector 的架构上甚至为 $128 / (32 \times 128) = 3.125\%$）。
+  - 硬件发射事务数： $N_{\text{trans}} = 32$ 次（每个 32B），搬运总量： $32 \times 32 = 1024 \text{ Bytes}$。
+  - 利用率： $128 / 1024 = 12.5\%$（在某些未启用 Sector 的架构上甚至为 $128 / (32 \times 128) = 3.125\%$ ）。
 
 ##### ④ Formal Model（标准公式）
 
@@ -579,7 +579,7 @@ Word 编号:   Word 0  Word 1  Word 2  Word 3  ...  Word 30   Word 31   Word 32 
 
 ---
 
-### 4.2 Bank Conflict 成因模型：$\gcd(\text{stride}, 32)$ 与 $N$-way 冲突串行化推导
+### 4.2 Bank Conflict 成因模型： $\gcd(\text{stride}, 32)$ 与 $N$-way 冲突串行化推导
 
 如果同一个 Warp 中的 2 个或多个线程，在同一个周期内不幸访问了**同一个 Bank 中的不同地址**，硬件将无法在一个周期内完成数据提取。此时，Crossbar 交叉开关必须将请求强行**串行化（Serialization）**！
 
@@ -589,9 +589,9 @@ Word 编号:   Word 0  Word 1  Word 2  Word 3  ...  Word 30   Word 31   Word 32 
 - 若 4 个线程冲突：需要 4 个时钟周期（4-way Conflict）；
 - 若 32 个线程全部撞在同一个 Bank 的不同 Word 上：**需要整整 32 个时钟周期（32-way Conflict）**！原本 19 TB/s 的片上神级带宽，瞬间跌成 1/32！
 
-##### 经典冲突公式：$\gcd(\text{stride}, 32)$ 模型
+##### 经典冲突公式： $\gcd(\text{stride}, 32)$ 模型
 
-假设 Warp 内线程 $i$（$i \in [0, 31]$）访问共享内存数组：
+假设 Warp 内线程 $i$（ $i \in [0, 31]$ ）访问共享内存数组：
 
 $$
 \text{addr}_i = \text{base} + i \times \text{stride}
@@ -617,12 +617,12 @@ $$
 
 让我们用这个公式速算常见步长下的性能表现：
 
-- 当 `stride = 1`：$\gcd(1, 32) = 1$ $\rightarrow$ **1-way（无冲突，1 周期完成）**；
-- 当 `stride = 2`：$\gcd(2, 32) = 2$ $\rightarrow$ **2-way 冲突（需要 2 周期）**；
-- 当 `stride = 3`：$\gcd(3, 32) = 1$ $\rightarrow$ **奇数步长无冲突！1 周期完成！**
-- 当 `stride = 4`：$\gcd(4, 32) = 4$ $\rightarrow$ **4-way 冲突（需要 4 周期）**；
-- 当 `stride = 32`：$\gcd(32, 32) = 32$ $\rightarrow$ **32-way 满额冲突（严重串行化 32 周期）**；
-- 当 `stride = 33`：$\gcd(33, 32) = 1$ $\rightarrow$ **无冲突！性能瞬间回血 32 倍！**
+- 当 `stride = 1`： $\gcd(1, 32) = 1$ $\rightarrow$ **1-way（无冲突，1 周期完成）**；
+- 当 `stride = 2`： $\gcd(2, 32) = 2$ $\rightarrow$ **2-way 冲突（需要 2 周期）**；
+- 当 `stride = 3`： $\gcd(3, 32) = 1$ $\rightarrow$ **奇数步长无冲突！1 周期完成！**
+- 当 `stride = 4`： $\gcd(4, 32) = 4$ $\rightarrow$ **4-way 冲突（需要 4 周期）**；
+- 当 `stride = 32`： $\gcd(32, 32) = 32$ $\rightarrow$ **32-way 满额冲突（严重串行化 32 周期）**；
+- 当 `stride = 33`： $\gcd(33, 32) = 1$ $\rightarrow$ **无冲突！性能瞬间回血 32 倍！**
 
 ---
 
@@ -676,11 +676,11 @@ $$
 
 现在我们再来看按列读取（`tile_good[threadIdx.x][0]`）：
 
-- 线程 0 读取第 0 行第 0 列：$\text{Bank} = (0 + 0) \pmod{32} = 0$；
-- 线程 1 读取第 1 行第 0 列：$\text{Bank} = (1 + 0) \pmod{32} = 1$；
-- 线程 2 读取第 2 行第 0 列：$\text{Bank} = (2 + 0) \pmod{32} = 2$；
+- 线程 0 读取第 0 行第 0 列： $\text{Bank} = (0 + 0) \pmod{32} = 0$；
+- 线程 1 读取第 1 行第 0 列： $\text{Bank} = (1 + 0) \pmod{32} = 1$；
+- 线程 2 读取第 2 行第 0 列： $\text{Bank} = (2 + 0) \pmod{32} = 2$；
 - ……
-- 线程 31 读取第 31 行第 0 列：$\text{Bank} = (31 + 0) \pmod{32} = 31$！
+- 线程 31 读取第 31 行第 0 列： $\text{Bank} = (31 + 0) \pmod{32} = 31$！
 
 **32 个线程的访问被完美错位到了 32 个完全不同的 Bank 上！Bank Conflict 瞬间归零！** 代价仅仅是每行多浪费了 4 个字节的存储空间。
 
@@ -707,7 +707,7 @@ float val = tile[row][swizzled_col];
 矩阵转置是体系结构中经典的“双头蛇（Double-edged Sword）”难题：
 
 - **矛盾本相**：
-  在转置操作中，$B[j][i] = A[i][j]$。如果你让全局内存的读取满足连续合并（按行读 $A$），那么写出到 $B$ 时就是跨列写出（跳步为矩阵宽度 $N$），写入变成非合并；反之，如果你让写入满足合并，读取必然非合并！
+  在转置操作中， $B[j][i] = A[i][j]$。如果你让全局内存的读取满足连续合并（按行读 $A$ ），那么写出到 $B$ 时就是跨列写出（跳步为矩阵宽度 $N$ ），写入变成非合并；反之，如果你让写入满足合并，读取必然非合并！
 
 ```mermaid
 sequenceDiagram
@@ -771,8 +771,8 @@ $$
 
 ##### 极简数字手算（A100 真实数据）：
 
-- A100 HBM 带宽：$B = 2039 \text{ GB/s} \approx 2.0 \text{ TB/s}$；
-- 全局内存访问平均延迟：$L \approx 400 \text{ ns}$（约合 500 个时钟周期 @ 1.4 GHz）；
+- A100 HBM 带宽： $B = 2039 \text{ GB/s} \approx 2.0 \text{ TB/s}$；
+- 全局内存访问平均延迟： $L \approx 400 \text{ ns}$（约合 500 个时钟周期 @ 1.4 GHz）；
 - 硬件需要同时保持在空中飞行的**未决数据总量（In-flight Bytes）**：
 
   $$
@@ -1483,7 +1483,7 @@ Warp 调度三十二，连续对齐是一伙。
 
 #### 思考题 1：Corner Case —— 非 2 的幂次与不对齐边界
 
-在实际生产中，大模型张量的维度并不总是 32 或 128 的倍数（例如某词表大小 $V = 32001$）。如果直接使用 `float4` 进行向量化加载，尾部的 1 个元素该如何处理？如果为了图方便，直接让整个 Kernel 统一退化为标量加载，在大规模 Batch 推理下会产生多大的吞吐损失？请给出工业级生产中处理未对齐尾部的“双模态（Vectorized Body + Scalar Tail）”设计方案。
+在实际生产中，大模型张量的维度并不总是 32 或 128 的倍数（例如某词表大小 $V = 32001$ ）。如果直接使用 `float4` 进行向量化加载，尾部的 1 个元素该如何处理？如果为了图方便，直接让整个 Kernel 统一退化为标量加载，在大规模 Batch 推理下会产生多大的吞吐损失？请给出工业级生产中处理未对齐尾部的“双模态（Vectorized Body + Scalar Tail）”设计方案。
 
 #### 思考题 2：硬件微架构冲突 —— Bank Conflict 中的多播（Multicast）限制
 
@@ -1561,7 +1561,7 @@ Warp 调度三十二，连续对齐是一伙。
    - 若首地址对齐在 128 字节边界（`offset = 0`），这 128 字节恰好落在一个 Cache Line 的 Sector 0, 1, 2, 3 内；
    - 此时发射 **4 次 32B 事务**，总搬运 $4 \times 32 = 128$ 字节，有效率 100%。
 2. **推导偏移 4 字节（`offset = 4`）后的物理分布**：
-   - 数据覆盖的地址区间为：$[4, 131]$；
+   - 数据覆盖的地址区间为： $[4, 131]$；
    - 扇区划分：
      - Sector 0 ($0 \sim 31$ 字节)：包含线程 $0 \sim 6$（地址 $4 \sim 31$，共 28 字节）；
      - Sector 1 ($32 \sim 63$ 字节)：包含线程 $7 \sim 14$（地址 $32 \sim 63$，共 32 字节）；
@@ -1571,7 +1571,7 @@ Warp 调度三十二，连续对齐是一伙。
 3. **计算最终事务与损失**：
    - 硬件必须发射 **5 次 32B 事务**（总共物理传输 $5 \times 32 = 160$ 字节）；
    - 有效负载仅为 128 字节；
-   - 有效总线效率为：$128 / 160 = 80.0\%$；
+   - 有效总线效率为： $128 / 160 = 80.0\%$；
    - **结论**：仅仅由于 4 字节未对齐，触发了跨扇区溢出，硬件发射事务数增加 25%，**有效内存带宽直接损失 20%**！
 
 ---
@@ -1622,8 +1622,8 @@ Warp 调度三十二，连续对齐是一伙。
    $$
 
 2. **代入 A100 SXM4 物理常数**：
-   - 全局 HBM 带宽：$B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
-   - 平均 HBM 访存延迟：$L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
+   - 全局 HBM 带宽： $B = 2039 \text{ GB/s} \approx 2.039 \times 10^{12} \text{ B/s}$；
+   - 平均 HBM 访存延迟： $L \approx 400 \text{ ns} = 400 \times 10^{-9} \text{ s}$；
    - 全芯片必须维持在飞行中的数据总量（In-flight Data）：
 
      $$
@@ -1637,7 +1637,7 @@ Warp 调度三十二，连续对齐是一伙。
      N_{\text{SM}} = \frac{N_{\text{total}}}{S_{\text{count}}} = \frac{815,600}{108} \approx 7552 \text{ Bytes/SM}
      $$
 
-   - 假设每个线程采用标准的单精度向量加载（`float4`，每个线程未决数据为 $b_{\text{thread}} = 16 \text{ Bytes}$），则一个 Warp（32 线程）所能贡献的最大未决数据量为：
+   - 假设每个线程采用标准的单精度向量加载（`float4`，每个线程未决数据为 $b_{\text{thread}} = 16 \text{ Bytes}$ ），则一个 Warp（32 线程）所能贡献的最大未决数据量为：
 
      $$
      b_{\text{warp}} = 32 \times b_{\text{thread}} = 32 \times 16 = 512 \text{ Bytes}

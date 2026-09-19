@@ -87,7 +87,7 @@ AI Infra 的每一项核心优化技术，都直接精确对应 Transformer 的�
 | **CUDA 算子优化** | LayerNorm / RMSNorm 算子融合 | 每个 Block 输入与输出处的归一化操作 |
 | **分布式训练** | 张量并行（Tensor Parallelism） | Attention 的多头（Multi-Head）切分与 FFN 的矩阵列/行切分 |
 | **分布式训练** | 流水线并行（Pipeline Parallelism） | 模型中 $N$ 层 Decoder Block 的逐层跨卡堆叠 |
-| **分布式训练** | ZeRO / FSDP 显存分片 | 所有可学习参数矩阵（$W_Q, W_K, W_V, W_O, W_{gate}, W_{up}, W_{down}$）的存储与通信 |
+| **分布式训练** | ZeRO / FSDP 显存分片 | 所有可学习参数矩阵（ $W_Q, W_K, W_V, W_O, W_{gate}, W_{up}, W_{down}$ ）的存储与通信 |
 | **推理部署加速** | KV Cache 显存管理（PagedAttention） | Self-Attention 中每一轮迭代缓存的 $K, V$ 矩阵 |
 | **推理部署加速** | 模型量化（INT8 / FP8 / INT4） | 权重矩阵与 KV Cache 的位宽压缩 |
 | **系统架构调度** | Prefill / Decode 解耦调度（DistServe/Splitwise） | 自回归生成两阶段（Compute Bound vs Memory Bound）特性差异 |
@@ -200,19 +200,19 @@ $$
 
 ## 3.3 逐步拆解完整计算流程（6 步推导 + 数值小算盘）
 
-假设输入序列有 $N$ 个 token，隐藏层维度为 $d$（即输入矩阵 $X \in \mathbb{R}^{N \times d}$）。
+假设输入序列有 $N$ 个 token，隐藏层维度为 $d$（即输入矩阵 $X \in \mathbb{R}^{N \times d}$ ）。
 
 ### 步骤 1：线性投影生成 $Q, K, V$
 $$
 Q = X W_Q, \quad K = X W_K, \quad V = X W_V
 $$
 
-其中 $X \in \mathbb{R}^{N \times d}$，$W_Q, W_K, W_V \in \mathbb{R}^{d \times d}$，输出的 $Q, K, V$ 形状均为 $(N, d)$。
+其中 $X \in \mathbb{R}^{N \times d}$， $W_Q, W_K, W_V \in \mathbb{R}^{d \times d}$，输出的 $Q, K, V$ 形状均为 $(N, d)$。
 > 🛠️ **AI Infra 视点**：这是 3 次标准的 GEMM（通用矩阵乘法）操作，Tensor Core 的绝对主场。
 
 ---
 
-### 步骤 2：计算注意力原始分数（$Q K^T$）
+### 步骤 2：计算注意力原始分数（ $Q K^T$ ）
 衡量每对 token 之间的相关程度：
 
 $$
@@ -222,7 +222,7 @@ $$
 $S[i][j]$ 表示第 $i$ 个 token 对第 $j$ 个 token 的原始打分。
 
 _小白极简数值推导_：
-若 $q = [1, 2]$，$k = [3, 4]$，则：
+若 $q = [1, 2]$， $k = [3, 4]$，则：
 
 $$
 q \cdot k^T = 1 \times 3 + 2 \times 4 = 11
@@ -238,7 +238,7 @@ S_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}}
 $$
 
 > 👓 **Ringi 划重点（公式兼容与原理解析）**：
-> 当维度 $d_k$ 很大时（例如 $d_k = 128$），$Q$ 和 $K$ 的点积相当于 128 个独立分量相乘求和，方差会放大到 $d_k$。
+> 当维度 $d_k$ 很大时（例如 $d_k = 128$ ）， $Q$ 和 $K$ 的点积相当于 128 个独立分量相乘求和，方差会放大到 $d_k$。
 > 这会导致点积数值极其巨大（比如上百），送入 Softmax 后输出会被“推向饱和区”——最大值变成 1，其他全变成 0，**梯度几乎完全消失（Gradient Vanishing）**！
 > 除以 $\sqrt{d_k}$ 就像给分数**“装上降温空调”**，把方差拉回到 1，保证反向传播梯度通畅。
 
@@ -290,8 +290,8 @@ $$
 Q (N × d)  ×  K^T (d × N)  ───>  S (N × N 注意力矩阵)
 ```
 
-1. **计算量**：$O(N^2 \cdot d)$，因为生成 $N \times N$ 个元素，每个元素需要 $d$ 次乘加。
-2. **显存占用**：$O(N^2)$，必须在显存中开辟 $N \times N$ 大小的临时矩阵存储 Softmax 前后的权重。
+1. **计算量**： $O(N^2 \cdot d)$，因为生成 $N \times N$ 个元素，每个元素需要 $d$ 次乘加。
+2. **显存占用**： $O(N^2)$，必须在显存中开辟 $N \times N$ 大小的临时矩阵存储 Softmax 前后的权重。
 
 > 💥 **算力与显存暴击**：
 > 当上下文长度 $N$ 从 2K 扩展到 128K 时：
@@ -333,7 +333,7 @@ Q (N × d)  ×  K^T (d × N)  ───>  S (N × N 注意力矩阵)
 
 为了在推理时大幅削减 KV Cache 显存占用，行业经历了三代演进：
 
-- **MHA (Multi-Head Attention)**：$Q, K, V$ 头部数量完全相等（1:1:1），效果好但推理显存巨大。
+- **MHA (Multi-Head Attention)**： $Q, K, V$ 头部数量完全相等（1:1:1），效果好但推理显存巨大。
 - **MQA (Multi-Query Attention)**：所有 $Q$ 头共享同一对 $K, V$，KV Cache 暴降为 $1/h$，但模型表达力有所损耗。
 - **GQA (Grouped-Query Attention)**：折中方案！例如 8 个 $Q$ 头分为 2 组，每组共享 1 对 $K, V$（LLaMA-2-70B、LLaMA-3、Mistral 标配）。
 
@@ -404,7 +404,7 @@ $$
 \text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
 $$
 
-其中 $\text{Swish}(z) = z \cdot \sigma(z)$，$\odot$ 为逐元素相乘。
+其中 $\text{Swish}(z) = z \cdot \sigma(z)$， $\odot$ 为逐元素相乘。
 > 🌟 **优势**：引入了一个专门负责**“把关”**的门控分支 $W_{\text{gate}}$，动态控制每个特征通道的放行比例，表达能力远超单个激活函数。
 
 ---
@@ -413,7 +413,7 @@ $$
 
 ## 5.1 为什么 Transformer 天生是个“词序脸盲”？
 
-回顾 Attention 计算公式：$S = Q K^T$。
+回顾 Attention 计算公式： $S = Q K^T$。
 如果把句子 `猫 抓 鼠` 打乱成 `鼠 抓 猫`，只要输入向量跟着换行，计算出来的每对词之间的注意力值完全一样！
 数学上称为 **排列等变性（Permutation Equivariance）**——如果不显式注入位置信息，Transformer 根本分不清主语和宾语！
 
@@ -500,7 +500,7 @@ $$
 \text{LayerNorm}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \odot \gamma + \beta
 $$
 
-其中 $\mu$ 为均值，$\sigma^2$ 为方差，$\gamma, \beta$ 为可学习的缩放与平移参数。
+其中 $\mu$ 为均值， $\sigma^2$ 为方差， $\gamma, \beta$ 为可学习的缩放与平移参数。
 
 > 🛠️ **现代演进：RMSNorm**
 > 现代大模型（LLaMA/Mistral 等）普遍改用 **RMSNorm**，省去计算均值 $\mu$ 的步骤，直接用均方根归一化，效果几乎相同，但减少了一遍内存扫描，GPU 跑得更快！
@@ -592,9 +592,9 @@ $$
   $$
 
 ### 2. 全模型总参数量手算（32 层）
-- **32 层 Block**：$32 \times 202.38\text{ M} \approx \mathbf{6,476\text{ M}}$
-- **Token Embedding**：$32000 \times 4096 \approx \mathbf{131.07\text{ M}}$
-- **LM Head 输出头**：$4096 \times 32000 \approx \mathbf{131.07\text{ M}}$
+- **32 层 Block**： $32 \times 202.38\text{ M} \approx \mathbf{6,476\text{ M}}$
+- **Token Embedding**： $32000 \times 4096 \approx \mathbf{131.07\text{ M}}$
+- **LM Head 输出头**： $4096 \times 32000 \approx \mathbf{131.07\text{ M}}$
 - **全模型精确总计**：
 
   $$
@@ -664,7 +664,7 @@ LLM 在线推理分为性质完全不同的两个阶段：
 
 | 对比维度 | Prefill 预填充阶段 | Decode 解码阶段 |
 | :--- | :--- | :--- |
-| **处理数据量** | 一次性处理全部 Prompt（例如 $N=2048$） | 每一步只处理 1 个新 Token（$N=1$） |
+| **处理数据量** | 一次性处理全部 Prompt（例如 $N=2048$ ） | 每一步只处理 1 个新 Token（ $N=1$ ） |
 | **计算模式** | 大矩阵乘大矩阵（GEMM），GPU Tensor Core 满载 | 向量乘大矩阵（GEMV），算力利用率不足 10% |
 | **系统瓶颈** | **算力受限（Compute Bound）** | **显存带宽受限（Memory Bound）**（疯狂搬运显存） |
 | **工程优化重点** | FlashAttention、算子融合、提高吞吐 | **KV Cache 管理、量化压缩、投机采样** |
@@ -708,7 +708,7 @@ $$
   $$
 
 > 💡 **Ringi 划重点**：
-> 传统的连续显存预分配会导致严重的内存碎片化（利用率通常 $< 40\%$）。
+> 传统的连续显存预分配会导致严重的内存碎片化（利用率通常 $< 40\%$ ）。
 > **vLLM (PagedAttention)** 借鉴了操作系统的虚拟内存分页机制，将 KV Cache 划分为固定大小的物理 Block，通过 Page Table 动态按需映射，彻底消除了显存碎片，将显存利用率提升至 **$96\%$ 以上**！这也是现代大模型推理服务吞吐暴涨的核心秘诀。
 
 ---

@@ -152,9 +152,9 @@
    M_{\text{static-SFT}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{opt}}
    $$
 
-   - 权重（FP16）：$2\Phi$ 字节
-   - 梯度（FP16）：$2\Phi$ 字节
-   - AdamW 优化器状态（FP32 Master Weights + FP32 Momentum + FP32 Variance）：$4\Phi + 4\Phi + 4\Phi = 12\Phi$ 字节
+   - 权重（FP16）： $2\Phi$ 字节
+   - 梯度（FP16）： $2\Phi$ 字节
+   - AdamW 优化器状态（FP32 Master Weights + FP32 Momentum + FP32 Variance）： $4\Phi + 4\Phi + 4\Phi = 12\Phi$ 字节
 
    $$
    M_{\text{static-SFT}} = 16\Phi\text{ bytes}
@@ -193,7 +193,7 @@
    \Phi_{\text{LoRA}} = 2 \times 2 \times L \times d \times r
    $$
 
-   对于 70B 模型（$L=80, d=8192, r=16$）：
+   对于 70B 模型（ $L=80, d=8192, r=16$ ）：
 
    $$
    \Phi_{\text{LoRA}} = 4 \times 80 \times 8192 \times 16 \approx 4.19 \times 10^7 \approx 0.042\text{ B (仅为基座的 0.06\%)!}
@@ -207,8 +207,8 @@
 
    **结论**：LoRA 的优化器状态显存消耗从 **840 GB 坍缩为不足 1 GB**！
    总静态显存：
-   - 16-bit LoRA：$140\text{ GB} + 0.67\text{ GB} \approx 140.7\text{ GB}$（2 张 80G 卡即可装下基座）
-   - 4-bit QLoRA：$35\text{ GB} + 0.67\text{ GB} \approx 35.7\text{ GB}$（单张 80G 卡或 2 张 24G RTX 4090 即可起跑！）
+   - 16-bit LoRA： $140\text{ GB} + 0.67\text{ GB} \approx 140.7\text{ GB}$（2 张 80G 卡即可装下基座）
+   - 4-bit QLoRA： $35\text{ GB} + 0.67\text{ GB} \approx 35.7\text{ GB}$（单张 80G 卡或 2 张 24G RTX 4090 即可起跑！）
 
 ---
 
@@ -220,11 +220,11 @@ $$
 \text{Memory}_{\text{PPO}} = \text{Mem}(\text{Actor}) + \text{Mem}(\text{Critic}) + \text{Mem}(\text{Reference}) + \text{Mem}(\text{Reward}) + \text{Mem}(\text{KV-Cache}) + \text{Mem}(\text{Activations})
 $$
 
-假设基座与评判模型同等规模（$70\text{B}$）：
-- **Actor**（需反向更新）：$16 \times 70\text{B} = 1120\text{ GB}$
-- **Critic**（需反向更新）：$16 \times 70\text{B} = 1120\text{ GB}$（即使 Critic 采用 7B 小模型，静态也需要 $16 \times 7\text{B} = 112\text{ GB}$）
-- **Reference**（只读前向）：$2 \times 70\text{B} = 140\text{ GB}$
-- **Reward**（只读前向）：$2 \times 70\text{B} = 140\text{ GB}$
+假设基座与评判模型同等规模（ $70\text{B}$ ）：
+- **Actor**（需反向更新）： $16 \times 70\text{B} = 1120\text{ GB}$
+- **Critic**（需反向更新）： $16 \times 70\text{B} = 1120\text{ GB}$（即使 Critic 采用 7B 小模型，静态也需要 $16 \times 7\text{B} = 112\text{ GB}$ ）
+- **Reference**（只读前向）： $2 \times 70\text{B} = 140\text{ GB}$
+- **Reward**（只读前向）： $2 \times 70\text{B} = 140\text{ GB}$
 - **合计静态显存**（同尺寸全模态）：
 
   $$
@@ -239,7 +239,7 @@ $$
 \text{KV}_{\text{req}} = 2 \times 2 \times L \times H_{\text{kv}} \times D_{\text{head}} \times S \times \text{BytesPerElem}
 $$
 
-对于 LLaMA-3-70B（$L=80, H_{\text{kv}}=8, D_{\text{head}}=128$，FP16）：
+对于 LLaMA-3-70B（ $L=80, H_{\text{kv}}=8, D_{\text{head}}=128$，FP16）：
 
 $$
 \text{KV}_{\text{per-token}} = 2 \times 2 \times 80 \times 8 \times 128 \times 2 = 655,360\text{ bytes} \approx 0.625\text{ MB/token}
@@ -999,11 +999,11 @@ if __name__ == "__main__":
 - [ ] **1. 显存底账预审核**：上线前必须运行精确参数化脚本，算清静态权重、梯度、优化器与峰值 KV Cache。
 - [ ] **2. 序列无填充（Packing）**：SFT 训练必须启用 FlashAttention 的 VarLen 变长序列拼接模式，彻底禁止补零。
 - [ ] **3. 梯度累积合理切分**：Rollout 生成的大批次（如 512）在反向更新时必须切分为 Micro-batch 逐步累积。
-- [ ] **4. 学习率严格保卫**：后训练学习率通常比预训练低 1~2 个数量级（$1\times 10^{-5} \sim 5\times 10^{-6}$），防止“灾难性遗忘”。
+- [ ] **4. 学习率严格保卫**：后训练学习率通常比预训练低 1~2 个数量级（ $1\times 10^{-5} \sim 5\times 10^{-6}$ ），防止“灾难性遗忘”。
 - [ ] **5. 及时权重合并（Merge）**：LoRA 微调结束进入生产评估前，必须执行 `merge()` 算子，阻断双分支多余时延。
 - [ ] **6. PagedAttention 标配**：只要涉及 Rollout 采样，必须接入 Paged KV Cache 管理，禁止静态张量预分配。
 - [ ] **7. GRPO 优先选型**：在推理类、数学题与代码对齐场景，坚决废弃四模型 PPO，优先采用单模型 GRPO 架构。
-- [ ] **8. 组内无偏标准化**：GRPO 优势计算必须添加小微扰 $\epsilon$（$10^{-8}$），防范全组得分一致时除以零引发 NaN。
+- [ ] **8. 组内无偏标准化**：GRPO 优势计算必须添加小微扰 $\epsilon$（ $10^{-8}$ ），防范全组得分一致时除以零引发 NaN。
 - [ ] **9. 严格显存释放钩子**：跨阶段调用结束必须显式调用垃圾回收，清理未引用的张量与临时图。
 - [ ] **10. 跨节点心跳守护**：推训分离架构下，Worker 间必须部署毫秒级轻量心跳探针，防止单卡挂死引起全流水线停摆。
 
@@ -1091,8 +1091,8 @@ if __name__ == "__main__":
 **Ringi 考官拆解与满分回答**：
 1. **观点完全错误**！
 2. **单步计算量（FLOPs）甚至略微增加**：
-   - 在前向传播中，除了基座 $W_0 x$ 的全量计算外，还额外增加了两个低秩矩阵的乘法：$(x A^T) B^T$；
-   - 在反向传播中，虽然基座参数 $W_0$ 不需要求梯度（无需 $\nabla W_0$），但为了将梯度传回前面的网络层，基座依然需要执行针对输入激活值的反向求导计算（$\nabla x = \nabla y \cdot W_0^T$）。
+   - 在前向传播中，除了基座 $W_0 x$ 的全量计算外，还额外增加了两个低秩矩阵的乘法： $(x A^T) B^T$；
+   - 在反向传播中，虽然基座参数 $W_0$ 不需要求梯度（无需 $\nabla W_0$ ），但为了将梯度传回前面的网络层，基座依然需要执行针对输入激活值的反向求导计算（ $\nabla x = \nabla y \cdot W_0^T$ ）。
    - 因此，单步迭代的理论矩阵乘法量不仅没少，反而因为多了 Adapter 旁路分支而略微上升！
 3. **LoRA 真正变快的原因是系统工程红利，而非单步 FLOPs 减少**：
    - **显存暴降允许更大的 Batch Size**：因为没有 800+ GB 的优化器状态拖累，单卡能塞入数倍于 Full SFT 的 Batch Size，让 GPU Tensor Core 处于最高效的饱和计算区间；

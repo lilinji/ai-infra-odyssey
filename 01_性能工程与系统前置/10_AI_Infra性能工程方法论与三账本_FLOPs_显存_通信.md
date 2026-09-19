@@ -28,7 +28,7 @@ math: true
 > **篇章范式**：🏛️ 性能工程与系统前置篇（Performance Engineering & System Baseline）  
 > **核心导读**：一个顶级的 AI Infra 工程师与普通算法调包侠之间，最根本的分水岭是什么？不是看谁能背出更多的 PyTorch API，而是看谁拥有**“在写下第一行代码前，就能在草稿纸上精确算清整个系统算力、显存与网络通信物理账本”的硬核内功**！  
 > 很多初入大厂的同学，面对一个全新的大模型训练或推理任务时，往往两眼一抹黑：不知道该申请 8 张卡还是 64 张卡、不知道 Batch Size 设多大才不会 OOM、不知道 `nvidia-smi` 里的 GPU-Util 99% 背后其实隐藏着极其严重的内存等待、更不知道集群训练速度慢究竟是卡在 Tensor Core 算力不足、显存带宽受限（Memory-Bound）还是被跨机 AllReduce 网络活活拖垮。  
-> 性能工程的本质就是“算账”。本讲作为 Module 00 的终极集大成篇，我们将彻底告别盲目试错，用极客大白话、生活直觉比喻、手把手极简数字算盘与 Roofline 物理模型，带你手撕大模型 **算力账本（$2P/6P/8P$）、显存四账本与跨卡通信账本**，彻底掌握千卡集群资源规划的最高心法！
+> 性能工程的本质就是“算账”。本讲作为 Module 00 的终极集大成篇，我们将彻底告别盲目试错，用极客大白话、生活直觉比喻、手把手极简数字算盘与 Roofline 物理模型，带你手撕大模型 **算力账本（ $2P/6P/8P$ ）、显存四账本与跨卡通信账本**，彻底掌握千卡集群资源规划的最高心法！
 
 ![Ringi 导师解构：AI Infra 性能工程与三账本全景工坊](assets/ringi_10_performance_ledgers_overview.png)
 
@@ -144,8 +144,8 @@ math: true
 - **草率估算**：负责人简单拍脑袋：“70B 模型嘛，我们租 128 张 A100-80GB 显卡跑 3 个月肯定够了”；
 - **残酷现实**：任务上线跑了一个月后，发现才刚刚跑完 20% 的进度！
 - **血淋淋的物理账本复盘**：
-  1. 训练 70B 模型需要总算力：$C = 6P \times \text{Tokens} = 6 \times 70 \times 10^9 \times 2 \times 10^{12} = \mathbf{8.4 \times 10^{23}\text{ FLOPs}}$；
-  2. 128 张 A100 即使在极限 50% MFU 效率下，每秒总算力仅为：$128 \times 312\text{ TFLOPS} \times 50\% \approx \mathbf{20,000\text{ TFLOPS}}$；
+  1. 训练 70B 模型需要总算力： $C = 6P \times \text{Tokens} = 6 \times 70 \times 10^9 \times 2 \times 10^{12} = \mathbf{8.4 \times 10^{23}\text{ FLOPs}}$；
+  2. 128 张 A100 即使在极限 50% MFU 效率下，每秒总算力仅为： $128 \times 312\text{ TFLOPS} \times 50\% \approx \mathbf{20,000\text{ TFLOPS}}$；
   3. 跑完 2T Tokens 所需的物理净时间为：
 
      $$
@@ -203,8 +203,8 @@ math: true
 
 ### 1. 硬件理论峰值算力（Peak Hardware TFLOPS）
 以 NVIDIA A100-SXM4-80GB 为例：
-- FP32 传统 CUDA Core 算力：$19.5\text{ TFLOPS}$；
-- **BF16 / FP16 Tensor Core 密集算力：$312\text{ TFLOPS}$**（不考虑稀疏化）。
+- FP32 传统 CUDA Core 算力： $19.5\text{ TFLOPS}$；
+- **BF16 / FP16 Tensor Core 密集算力： $312\text{ TFLOPS}$**（不考虑稀疏化）。
 
 ### 2. 硬件浮点利用率（HFU, Hardware FLOPs Utilization）
 $$
@@ -217,7 +217,7 @@ $$
 $$
 
 > 💡 **Ringi 工程师第一性原理**：  
-> - 如果你为了省显存开启了**激活值全重计算（Full Checkpointing）**，硬件实际上多算了 $2P$ 的计算量（总计算量变成了 $8P$）；
+> - 如果你为了省显存开启了**激活值全重计算（Full Checkpointing）**，硬件实际上多算了 $2P$ 的计算量（总计算量变成了 $8P$ ）；
 > - 此时，`HFU` 会显得很高（因为 GPU 确实在拼命多算），但 **`MFU` 严格只除以理论净计算量 $6P$**！
 > - **只有 MFU 才能真实反映你消耗的电费和美金到底有多少转化为了有效的训练进度！** 在大厂万卡集群上，MFU 能够达到 **50%~55%** 就属于世界顶级水准。
 
@@ -249,11 +249,11 @@ $ nvidia-smi
 
 ## 2.1 单次 GEMM 矩阵乘法的计算量为什么是 $2MKN$ FLOPs？
 
-设有两个矩阵相乘：$A \in \mathbb{R}^{M \times K}$ 与 $B \in \mathbb{R}^{K \times N}$，相乘得到 $C \in \mathbb{R}^{M \times N}$。
+设有两个矩阵相乘： $A \in \mathbb{R}^{M \times K}$ 与 $B \in \mathbb{R}^{K \times N}$，相乘得到 $C \in \mathbb{R}^{M \times N}$。
 
 ### 🔢 极简数字小算盘推导：
 1. 输出矩阵 $C$ 总共有 $M \times N$ 个元素；
-2. 为了计算 $C$ 中的每一个元素 $C[i][j]$，需要将 $A$ 的第 $i$ 行（长为 $K$）与 $B$ 的第 $j$ 列（长为 $K$）做向量内积：
+2. 为了计算 $C$ 中的每一个元素 $C[i][j]$，需要将 $A$ 的第 $i$ 行（长为 $K$ ）与 $B$ 的第 $j$ 列（长为 $K$ ）做向量内积：
 
    $$
    C[i][j] = \sum_{k=1}^K A[i][k] \times B[k][j]
@@ -273,10 +273,10 @@ $ nvidia-smi
 
 ## 2.2 大模型推理单 Token 计算量推导：为什么是 $2P$ FLOPs/token？
 
-设一个 Transformer 模型的总参数量为 $P$（以 70B 模型为例，$P = 70 \times 10^9$）：
+设一个 Transformer 模型的总参数量为 $P$（以 70B 模型为例， $P = 70 \times 10^9$ ）：
 
 1. 在自回归推理（Decode 阶段）生成 **1 个 Token** 时，输入张量维度为 $(1, d)$；
-2. 输入向量需要与模型中所有的全连接权重矩阵（$W_Q, W_K, W_V, W_O, W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$）依次进行矩阵相乘（GEMV）；
+2. 输入向量需要与模型中所有的全连接权重矩阵（ $W_Q, W_K, W_V, W_O, W_{\text{gate}}, W_{\text{up}}, W_{\text{down}}$ ）依次进行矩阵相乘（GEMV）；
 3. 对于每一个参数矩阵 $W \in \mathbb{R}^{K \times N}$，输入为 $(1, K)$，其计算量为：
 
    $$
@@ -310,15 +310,15 @@ $ nvidia-smi
 ```
 
 > 📌 **Ringi 工程师第一性原理**：  
-> 反向传播的计算量恰好是前向传播的 **整整 2 倍（$4P$）**！因为反向传播必须执行两次独立的矩阵乘法：一次用于将梯度传给浅层（算 $\frac{\partial \mathcal{L}}{\partial X}$），另一次用于更新本地权重参数（算 $\frac{\partial \mathcal{L}}{\partial W}$）。
+> 反向传播的计算量恰好是前向传播的 **整整 2 倍（ $4P$ ）**！因为反向传播必须执行两次独立的矩阵乘法：一次用于将梯度传给浅层（算 $\frac{\partial \mathcal{L}}{\partial X}$ ），另一次用于更新本地权重参数（算 $\frac{\partial \mathcal{L}}{\partial W}$ ）。
 
 ---
 
 ## 2.4 激活值重计算下的计算量膨胀：为什么 Full Checkpointing 会变成 $8P$ FLOPs？
 
 在大模型训练中，为了防止反向传播保存过多中间激活值而导致显存 OOM，业界普遍采用 **激活值重计算（Activation Checkpointing）**：
-- **前向计算**：正常执行一次前向（$2P$ FLOPs），但**不保存任何 Block 的中间激活值**；
-- **反向计算**：在反向求导到达某一层之前，**重新跑一遍该层的前向计算（多花 $2P$ FLOPs）**，再立即执行反向梯度求解（$4P$ FLOPs）；
+- **前向计算**：正常执行一次前向（ $2P$ FLOPs），但**不保存任何 Block 的中间激活值**；
+- **反向计算**：在反向求导到达某一层之前，**重新跑一遍该层的前向计算（多花 $2P$ FLOPs）**，再立即执行反向梯度求解（ $4P$ FLOPs）；
 - **总计算量膨胀**：
 
   $$
@@ -380,7 +380,7 @@ $$
 $$
 
 ### 🔢 极简数字小算盘手算（LLaMA-3-70B，采用 GQA）：
-- 配置：$L=80$ 层，KV 头数 $h_{\text{kv}}=8$，单头维度 $d_k=128$，FP16 占 2 字节；
+- 配置： $L=80$ 层，KV 头数 $h_{\text{kv}}=8$，单头维度 $d_k=128$，FP16 占 2 字节；
 - 单 Token 的 KV Cache 显存为：
 
   $$
@@ -436,7 +436,7 @@ Roofline（屋顶线模型，Williams et al., 2009）是计算机体系结构中
 
 ## 5.2 硬件拐点（Turning Point）计算公式与物理意义
 
-屋顶由斜坡（带宽上限）和天花板（算力上限）构成，两者的交点就是 **硬件物理拐点（Turning Point, $I_{\text{knee}}$）**：
+屋顶由斜坡（带宽上限）和天花板（算力上限）构成，两者的交点就是 **硬件物理拐点（Turning Point, $I_{\text{knee}}$ ）**：
 
 $$
 \boxed{\Large I_{\text{knee}} = \frac{\text{Peak Compute Performance (TFLOPS)}}{\text{Peak Memory Bandwidth (TB/s)}}}
@@ -444,16 +444,16 @@ $$
 
 ### 🔢 顶级 GPU 硬件拐点手算：
 1. **NVIDIA A100-SXM4-80GB**：
-   - 峰值算力：$312\text{ TFLOPS}$ (BF16 Tensor Core)
-   - 显存带宽：$2.0\text{ TB/s}$ (HBM2e)
+   - 峰值算力： $312\text{ TFLOPS}$ (BF16 Tensor Core)
+   - 显存带宽： $2.0\text{ TB/s}$ (HBM2e)
 
    $$
    I_{\text{knee}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOP/Byte}}
    $$
 
 2. **NVIDIA H100-SXM5-80GB**：
-   - 峰值算力：$989\text{ TFLOPS}$ (FP16/BF16 Dense)
-   - 显存带宽：$3.35\text{ TB/s}$ (HBM3)
+   - 峰值算力： $989\text{ TFLOPS}$ (FP16/BF16 Dense)
+   - 显存带宽： $3.35\text{ TB/s}$ (HBM3)
 
    $$
    I_{\text{knee}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOP/Byte}}
@@ -490,14 +490,14 @@ $$
 ## 6.1 实战 1：单台 8 卡 A100-80GB 训练 LLaMA-7B 的显存四账本与 MFU 预测
 
 ### 1. 显存规划手算：
-- 静态参数（BF16）：$14\text{ GB}$；
-- 梯度（BF16）：$14\text{ GB}$；
-- AdamW 优化器状态（FP32）：$112\text{ GB}$；
+- 静态参数（BF16）： $14\text{ GB}$；
+- 梯度（BF16）： $14\text{ GB}$；
+- AdamW 优化器状态（FP32）： $112\text{ GB}$；
 - 采用 **ZeRO-2 显存切分（8 卡均摊）**：
-  - 每张卡分摊的优化器显存：$112 \div 8 = \mathbf{14\text{ GB}}$；
-  - 每张卡分摊的梯度显存：$14 \div 8 = \mathbf{1.75\text{ GB}}$；
-  - 单卡静态显存底座：$14 + 14 + 1.75 = \mathbf{29.75\text{ GB}}$；
-- 剩余可用显存：$80 - 29.75 - 4\text{ (Workspace)} \approx \mathbf{46.25\text{ GB}}$，足以容纳 $b=4, s=4096$ 的动态激活值！
+  - 每张卡分摊的优化器显存： $112 \div 8 = \mathbf{14\text{ GB}}$；
+  - 每张卡分摊的梯度显存： $14 \div 8 = \mathbf{1.75\text{ GB}}$；
+  - 单卡静态显存底座： $14 + 14 + 1.75 = \mathbf{29.75\text{ GB}}$；
+- 剩余可用显存： $80 - 29.75 - 4\text{ (Workspace)} \approx \mathbf{46.25\text{ GB}}$，足以容纳 $b=4, s=4096$ 的动态激活值！
 
 ---
 
@@ -510,10 +510,10 @@ $$
   - **TP（张量并行）= 8**：严格限制在单机 8 卡内部（NVLink 900GB/s）；
   - **PP（流水线并行）= 4**：跨机切分为 4 个 Stage（每 2 台机器 16 卡为一个 Stage）；
   - **DP / ZeRO-1（数据并行）= 2**：全集群跨 2 个副本数据并行；
-  - **验证**：$\text{TP} \times \text{PP} \times \text{DP} = 8 \times 4 \times 2 = \mathbf{64 \text{ cards}}（64 卡）$！
+  - **验证**： $\text{TP} \times \text{PP} \times \text{DP} = 8 \times 4 \times 2 = \mathbf{64 \text{ cards}}（64 卡）$！
 - **单步吞吐与 MFU 预测**：
   - 目标 MFU 设定为业界顶级 **52%**；
-  - 单卡有效算力：$989\text{ TFLOPS} \times 52\% \approx 514\text{ TFLOPS}$；
+  - 单卡有效算力： $989\text{ TFLOPS} \times 52\% \approx 514\text{ TFLOPS}$；
   - 64 卡集群每秒训练 Token 数：
 
     $$
@@ -667,17 +667,17 @@ if __name__ == "__main__":
 
 | 序号 | ❌ 常见小白错误理解 | ✅ 大厂 AI Infra 工程师正确理解 |
 | :---: | :--- | :--- |
-| **1** | “大模型训练的计算量就是参数量乘以 Token 数（$1P$）。” | **严重错误（相差 6 倍！）**。单次前向是 $2P$，反向求导是 $4P$，**标准的训练净计算量严格为 $6P$ FLOPs/token**。 |
+| **1** | “大模型训练的计算量就是参数量乘以 Token 数（ $1P$ ）。” | **严重错误（相差 6 倍！）**。单次前向是 $2P$，反向求导是 $4P$，**标准的训练净计算量严格为 $6P$ FLOPs/token**。 |
 | **2** | “只要显卡没报 OOM，我的 Batch Size 就可以随便往大了开。” | **片面**。过大的 Batch Size 可能会导致梯度噪声减小、模型收敛泛化变差；同时激活显存超出 L2 Cache 驻留范围，引发算子访存降级。 |
 | **3** | “`nvidia-smi` 里面看 GPU-Util 到了 100%，说明我的算子已经优化到极限了。” | **惊天骗局**。GPU-Util 仅表示硬件处于活跃发射状态。如果存在大量非合并内存访问，Tensor Core 有 80% 的时间在发呆，真实 MFU 可能不足 15%！ |
-| **4** | “开启全重计算（Full Checkpointing）省了显存，训练速度一定会变慢。” | **不一定**。虽然计算量增加了 33%（$6P \to 8P$），但重计算省出了海量显存，使得你可以将 Batch Size 扩大数倍，让 Tensor Core 跑在算术强度极高的高效区间，**整体端到端吞吐反而经常大幅提升**！ |
+| **4** | “开启全重计算（Full Checkpointing）省了显存，训练速度一定会变慢。” | **不一定**。虽然计算量增加了 33%（ $6P \to 8P$ ），但重计算省出了海量显存，使得你可以将 Batch Size 扩大数倍，让 Tensor Core 跑在算术强度极高的高效区间，**整体端到端吞吐反而经常大幅提升**！ |
 | **5** | “Decode 阶段生成慢是因为 GPU 算力不够，换算力更强的卡就能解决一切。” | **大错特错**。Decode 阶段是典型的 **Memory-Bound**，算术强度仅为 $1.0\text{ FLOP/Byte}$。决定吐词速度的是 **HBM 显存带宽与 KV Cache 管理效率**，而非峰值 TFLOPS。 |
 
 ---
 
 ## 8.2 生产性能工程黄金 Checklist
 
-1. **项目启动三必算**：开工前必须白板手算：① 总算力需求与集群天数（$6P \times T$）；② 显存四账本底座；③ 通信算力比与网络带宽瓶颈；
+1. **项目启动三必算**：开工前必须白板手算：① 总算力需求与集群天数（ $6P \times T$ ）；② 显存四账本底座；③ 通信算力比与网络带宽瓶颈；
 2. **拒绝单一指标欺骗**：评测性能必须综合抓取 **MFU、GPU 功耗瓦数（Power）、实际 TFLOPS 与端到端 Step 耗时**，严禁只看 `GPU-Util`；
 3. **分阶段优化策略**：
    - **Prefill 阶段**：主攻 Tensor Core 算力与 FlashAttention Tiling；
@@ -722,7 +722,7 @@ if __name__ == "__main__":
 ## 9.3 3 道高阶开放式课后思考题（含极限 Corner Case）
 
 1. **混合精度 FP8 训练算力账本跃迁题**：随着 NVIDIA Hopper / Blackwell 架构对 FP8 的全面支持，如果将训练的 GEMM 矩阵乘法从 BF16 切换为 FP8，计算量账本（FLOPs）、显存四账本（Weights/Gradients/Optimizer）与 Roofline 硬件拐点分别会发生什么剧烈变化？为什么反向传播的某些高精度累加仍需维持 FP32？
-2. **Decode 阶段投机采样（Speculative Decoding）的算术强度救赎题**：针对单 Token Decode 阶段极端受制于 HBM 带宽（$AI \approx 1\text{ FLOP/Byte}$）的死穴，**投机采样（使用小模型一次猜 5 个 Token，大模型一次性前向验证 5 个 Token）** 是如何将 Memory-Bound 转化为 Compute-Bound 的？结合 Roofline 模型分析其加速比上限。
+2. **Decode 阶段投机采样（Speculative Decoding）的算术强度救赎题**：针对单 Token Decode 阶段极端受制于 HBM 带宽（ $AI \approx 1\text{ FLOP/Byte}$ ）的死穴，**投机采样（使用小模型一次猜 5 个 Token，大模型一次性前向验证 5 个 Token）** 是如何将 Memory-Bound 转化为 Compute-Bound 的？结合 Roofline 模型分析其加速比上限。
 3. **千万卡集群训练中的“隐形通信税”思考题**：当集群规模从 512 卡扩展到 16,384 卡时，虽然 Ring-AllReduce 的每卡数据量恒定为 $2M$，但由于光纤链路故障、交换机丢包重传以及跨机房延迟抖动，通信时间往往不再符合理想的 $\alpha$-$\beta$ 模型。作为 AI Infra 架构师，你会从网络协议栈（如 NCCL NET Plugin / RoCE Adaptive Routing）和容灾 Checkpoint 的角度如何构建确定性性能保障？
 
 ---
@@ -797,7 +797,7 @@ if __name__ == "__main__":
 
 3. **对比 A100 硬件拐点**：
    - A100 的硬件物理拐点为 $I_{\text{knee}} = \frac{312\text{ TFLOPS}}{2.0\text{ TB/s}} = \mathbf{156\text{ FLOP/Byte}}$；
-   - 实际算术强度（$1.0$）比硬件拐点（$156$）**低了整整 150 多倍！**
+   - 实际算术强度（ $1.0$ ）比硬件拐点（ $156$ ）**低了整整 150 多倍！**
 4. **归因结论**：  
    系统处于极端的 **Memory-Bound（访存受限）** 状态。GPU 计算核心在 99% 的时间里都在眼巴巴等待慢速 HBM 搬运数据，算力被彻底闲置浪费。
 
@@ -819,7 +819,7 @@ if __name__ == "__main__":
      - 梯度同步：执行 1 次 `ReduceScatter` 规约分片存储梯度，通信量为 $1M$；
      - 单步单卡总通信量为 $1M + 1M + 1M = \mathbf{3 \text{ MB}}（3 兆字节）$；
 3. **Trade-off 结论**：  
-   ZeRO-3 的通信量相比 DDP **增加了整整 50%（$2M \to 3M$）**！  
+   ZeRO-3 的通信量相比 DDP **增加了整整 50%（ $2M \to 3M$ ）**！  
    **决策准则**：只有在单卡显存实在装不下模型（如 70B 模型在小集群训练）时才开启 ZeRO-3；如果通过张量并行或卡数扩展已经能装下模型，优先选择通信量更小的 **ZeRO-2**（仅需 $2M$ 通信量）！
 
 ---
@@ -837,10 +837,10 @@ if __name__ == "__main__":
    $$
 
 2. **单卡剩余可用显存手算**：
-   - A100 总显存：$80\text{ GB}$；
-   - 扣除权重：$80 - 17.5 = 62.5\text{ GB}$；
-   - 扣除 CUDA 运行时与 Workspace 缓冲区（约 $4.5\text{ GB}$）及 10% 碎片留白（$8\text{ GB}$）；
-   - **单卡实际可分配给 KV Cache 的显存空间为：$62.5 - 4.5 - 8 = \mathbf{50.0\text{ GB}}$**；
+   - A100 总显存： $80\text{ GB}$；
+   - 扣除权重： $80 - 17.5 = 62.5\text{ GB}$；
+   - 扣除 CUDA 运行时与 Workspace 缓冲区（约 $4.5\text{ GB}$ ）及 10% 碎片留白（ $8\text{ GB}$ ）；
+   - **单卡实际可分配给 KV Cache 的显存空间为： $62.5 - 4.5 - 8 = \mathbf{50.0\text{ GB}}$**；
 3. **TP=8 下的单 Token KV Cache 显存手算（LLaMA-70B GQA）**：
    - 全模型单 Token 的 KV Cache 为 $320\text{ KB/token}$；
    - 在 8 张卡上通过 GQA 均分，**单卡单 Token 的 KV Cache 仅为 $320 \div 8 = \mathbf{40\text{ KB/token}}$**；

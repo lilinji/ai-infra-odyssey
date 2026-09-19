@@ -114,7 +114,7 @@ $$
 算法团队为了支持一种特殊的相对位置编码，在代码库中绕过了 Triton / FlashAttention 内核，使用原生 PyTorch 算子手写了 Attention 过程（`torch.baddbmm` + `torch.softmax` + `torch.bmm`）。在 4K 和 8K 压测时，由于单卡显存能够容纳中间矩阵，测试集延迟表现尚可接受。
 然而，当全量流量切入，线上请求涌入大量 32K 的超长 PDF 分析任务时：
 
-1. **显存阶跃爆炸**：$32\text{K}$ 相比 $8\text{K}$，序列长度增加 4 倍，中间矩阵 $S$ 和 $P$ 的显存占用直接暴增 $4^2 = 16$ 倍！
+1. **显存阶跃爆炸**： $32\text{K}$ 相比 $8\text{K}$，序列长度增加 4 倍，中间矩阵 $S$ 和 $P$ 的显存占用直接暴增 $4^2 = 16$ 倍！
 2. **CUDA 显存分配器锁死**：PyTorch 的 `caching_allocator` 在面对单次超过 40GB 的瞬时巨型张量申请时，触发了显存碎片的紧急整理与系统级垃圾回收，导致 GPU 工作线程陷入长达数百毫秒的软锁死；
 3. **节点级联超时崩溃**：显卡被巨量 HBM 搬运堵死，导致推理网关的心跳包超时，Kubernetes 集群将正在处理任务的 Pod 判定为 Unhealthy 并强制杀进程重启；而重启后流量重新路由至邻近节点，瞬间将邻近节点也打入 OOM 循环，造成了多达 64 台 8 卡 H800 服务器的连环崩溃。
 
@@ -126,12 +126,12 @@ $$
 
 | 算子架构 / 技术方案              | 核心技术特征                                                           | 显存复杂度（激活值）               | HBM 访存复杂度（IO Traffic）             | A100 实测算力利用率（MFU）         | 依赖的核心硬件特性                 |
 | :------------------------------- | :--------------------------------------------------------------------- | :--------------------------------- | :--------------------------------------- | :--------------------------------- | :--------------------------------- |
-| **Standard Attention (PyTorch)** | $QK^T \rightarrow \text{Softmax} \rightarrow PV$ 三步分立调度          | $O(N^2)$（物化存储 $S, P$）        | $\Theta(N d + N^2)$（巨大访存流量）      | 15% ~ 25%（极度访存受限）          | 传统 CUDA Core / cuBLAS            |
+| **Standard Attention (PyTorch)** | $QK^T \rightarrow \text{Softmax} \rightarrow PV$ 三步分立调度          | $O(N^2)$（物化存储 $S, P$ ）        | $\Theta(N d + N^2)$（巨大访存流量）      | 15% ~ 25%（极度访存受限）          | 传统 CUDA Core / cuBLAS            |
 | **Tiled Attention (Naive)**      | 将 $Q, K, V$ 划分子块放入 Shared Memory，但未融合 Softmax              | $O(N^2)$（仍需保存全局得分）       | $\Theta(N^2)$（部分命中 SRAM）           | 25% ~ 35%                          | Shared Memory (SRAM)               |
 | **FlashAttention-1 (2022)**      | Tiling + Online Softmax + 反向重计算（Recomputation）                  | $O(N)$（彻底消除 $N^2$ 存储）      | $\Theta(N^2 d^2 / M)$（降低 $M/d^2$ 倍） | 35% ~ 45%（约 120 TFLOPS）         | Ampere `cp.async` / Shared Memory  |
-| **FlashAttention-2 (2023)**      | 循环反转（$Q$ 外 $KV$ 内）+ Softmax 缩放后置 + Warp 切分优化           | $O(N)$（无额外开销）               | $\Theta(N^2 d^2 / M)$（访存进一步规整）  | 55% ~ 72%（突破 220 TFLOPS）       | Register Tiling / Warp Level MMA   |
+| **FlashAttention-2 (2023)**      | 循环反转（ $Q$ 外 $KV$ 内）+ Softmax 缩放后置 + Warp 切分优化           | $O(N)$（无额外开销）               | $\Theta(N^2 d^2 / M)$（访存进一步规整）  | 55% ~ 72%（突破 220 TFLOPS）       | Register Tiling / Warp Level MMA   |
 | **FlashAttention-3 (2024)**      | TMA 硬件异步传输 + WGMMA 张量核心 + FP8 低精累加 + 软流水线            | $O(N)$（支持极大 Batch/Seq）       | 逼近物理极限（硬件流水重叠）             | 75% ~ 85%（H100 突破 750 TFLOPS）  | Hopper TMA / WGMMA / Warp 特化     |
-| **FlashDecoding (2023)**         | 针对推理 Decode 阶段（$Q=1, K,V=N$），沿 $N$ 维度切分多 Block 并行规约 | $O(B \cdot H \cdot \text{Splits})$ | 彻底打满 GPU 并行计算单元                | Decode 加速 2~8 倍（消灭访存气泡） | Split-KV Grid / Atomic/Tree Reduce |
+| **FlashDecoding (2023)**         | 针对推理 Decode 阶段（ $Q=1, K,V=N$ ），沿 $N$ 维度切分多 Block 并行规约 | $O(B \cdot H \cdot \text{Splits})$ | 彻底打满 GPU 并行计算单元                | Decode 加速 2~8 倍（消灭访存气泡） | Split-KV Grid / Atomic/Tree Reduce |
 | **FlashInfer (2024)**            | 面向 vLLM / SGLang 生产推理：Paged KV Cache + GQA 聚合 + 跨请求批处理  | 零内存拷贝（物理块映射）           | 针对 Page 寻址极致优化的向量化搬运       | 生产级端到端吞吐提升 30%~50%       | PagedAttention 硬件级重构          |
 
 ---
@@ -155,7 +155,7 @@ $$
 - $Q \in \mathbb{R}^{N \times d}$（Query 矩阵）
 - $K \in \mathbb{R}^{N \times d}$（Key 矩阵）
 - $V \in \mathbb{R}^{N \times d}$（Value 矩阵）
-- $N$ 为序列长度（Sequence Length），$d$ 为头维度（Head Dimension，通常为 64 或 128）。
+- $N$ 为序列长度（Sequence Length）， $d$ 为头维度（Head Dimension，通常为 64 或 128）。
 
 在传统的深度学习框架（如原生 PyTorch、TensorFlow）中，这个计算图被拆分为三个物理上独立的 CUDA Kernel 发射到 GPU 执行：
 
@@ -196,20 +196,20 @@ flowchart TD
 
 让我们仔细清点这三个独立 Kernel 在 GPU HBM 显存总线上产生的真实物理读写字节数（假设采用 FP16，每个数值 2 字节）：
 
-1. **Kernel 1（$S = Q K^T$）**：
-   - 读 $Q$：$2 N d$ 字节；
-   - 读 $K$：$2 N d$ 字节；
-   - 写 $S$：$2 N^2$ 字节；
-   - 浮点运算量（FLOPs）：$2 N^2 d$（乘加各一次）。
-2. **Kernel 2（$P = \text{softmax}(S)$）**：
-   - 读 $S$：$2 N^2$ 字节；
-   - 写 $P$：$2 N^2$ 字节；
+1. **Kernel 1（ $S = Q K^T$ ）**：
+   - 读 $Q$： $2 N d$ 字节；
+   - 读 $K$： $2 N d$ 字节；
+   - 写 $S$： $2 N^2$ 字节；
+   - 浮点运算量（FLOPs）： $2 N^2 d$（乘加各一次）。
+2. **Kernel 2（ $P = \text{softmax}(S)$ ）**：
+   - 读 $S$： $2 N^2$ 字节；
+   - 写 $P$： $2 N^2$ 字节；
    - 浮点运算量（FLOPs）：约 $3 N^2$（减最大值、取指数、累加求和、除法归一化）。
-3. **Kernel 3（$O = P V$）**：
-   - 读 $P$：$2 N^2$ 字节；
-   - 读 $V$：$2 N d$ 字节；
-   - 写 $O$：$2 N d$ 字节；
-   - 浮点运算量（FLOPs）：$2 N^2 d$。
+3. **Kernel 3（ $O = P V$ ）**：
+   - 读 $P$： $2 N^2$ 字节；
+   - 读 $V$： $2 N d$ 字节；
+   - 写 $O$： $2 N d$ 字节；
+   - 浮点运算量（FLOPs）： $2 N^2 d$。
 
 **全流程总物理访存量（HBM IO Traffic）**：
 
@@ -233,7 +233,7 @@ $$
 
 想象你是一个顶级厨师（Tensor Core，翻炒速度极快，每秒翻炒 300 次）。
 
-- **标准 Attention 模式**：你炒完了半成品（$S$ 矩阵），非要盛进盘子里，让服务员端回地下的冷库大仓库（HBM）；过了一秒钟，你让服务员再从冷库把这盘半成品端回厨房操作台，淋上酱汁（Softmax 得到 $P$ 矩阵），然后再盛进盘子端回冷库；又过了一秒，你再让服务员把盘子从冷库端出来，和配料（$V$ 矩阵）一起下锅翻炒出成品（$O$ 矩阵）。
+- **标准 Attention 模式**：你炒完了半成品（ $S$ 矩阵），非要盛进盘子里，让服务员端回地下的冷库大仓库（HBM）；过了一秒钟，你让服务员再从冷库把这盘半成品端回厨房操作台，淋上酱汁（Softmax 得到 $P$ 矩阵），然后再盛进盘子端回冷库；又过了一秒，你再让服务员把盘子从冷库端出来，和配料（ $V$ 矩阵）一起下锅翻炒出成品（ $O$ 矩阵）。
 - 结果：厨师 90% 的时间在等服务员跑腿端盘子，冷库大门（显存接口）被挤得水泄不通，而炉灶（Tensor Core）全程熄火等待！
 
 #### ③ Tiny Calculator（极简数字小算盘）
@@ -273,14 +273,14 @@ $$
 \lim_{N \to \infty} I_{\text{standard}} = \frac{2}{3} d \text{ FLOPs/Byte}
 $$
 
-无论你把序列拉到多长（$N=16\text{K}, 64\text{K}, 128\text{K}$），标准 Attention 的算术强度**永远被头维度 $d$ 钉死在上界**！当 $d=64$ 时，强度仅为 42.6 FLOPs/Byte；当 $d=128$ 时，强度仅为 85.3 FLOPs/Byte。
+无论你把序列拉到多长（ $N=16\text{K}, 64\text{K}, 128\text{K}$ ），标准 Attention 的算术强度**永远被头维度 $d$ 钉死在上界**！当 $d=64$ 时，强度仅为 42.6 FLOPs/Byte；当 $d=128$ 时，强度仅为 85.3 FLOPs/Byte。
 
 #### ⑤ Sanity Check（A100 硬件真实物理校验）
 
 看一下 NVIDIA A100 SXM4 的硬件指标：
 
-- 半精度 Tensor Core 峰值算力：$C_{\text{peak}} = 312 \text{ TFLOPS} = 3.12 \times 10^{14} \text{ FLOPs/s}$
-- HBM2e 物理峰值带宽：$B_{\text{peak}} = 2.039 \text{ TB/s} = 2.039 \times 10^{12} \text{ Bytes/s}$
+- 半精度 Tensor Core 峰值算力： $C_{\text{peak}} = 312 \text{ TFLOPS} = 3.12 \times 10^{14} \text{ FLOPs/s}$
+- HBM2e 物理峰值带宽： $B_{\text{peak}} = 2.039 \text{ TB/s} = 2.039 \times 10^{12} \text{ Bytes/s}$
 - **硬件拐点算术强度（Roofline Knee）**：
 
   $$
@@ -289,7 +289,7 @@ $$
 
   **物理结论一目了然**：
   硬件要求每个字节的访存必须支撑至少 **153 次浮点计算**，才能让 Tensor Core 完全满载！
-  而 Standard Attention 无论序列多长，算术强度最多只有 **85 FLOPs/Byte**（$d=128$）甚至 **42 FLOPs/Byte**（$d=64$）。
+  而 Standard Attention 无论序列多长，算术强度最多只有 **85 FLOPs/Byte**（ $d=128$ ）甚至 **42 FLOPs/Byte**（ $d=64$ ）。
   它从物理层面上就被判了死刑——**永远死死卡在 Roofline 模型的 Memory-bound 倾斜上升段！你的 Tensor Core 无论如何优化代码，利用率理论上限也绝对超不过 55%！**
 
 ---
@@ -302,7 +302,7 @@ $$
 
 ### 2.1 传统 Safe Softmax 的两次全局遍历困境
 
-给定一个长度为 $N$ 的向量 $x = [x_1, x_2, \dots, x_N]$，为了防止浮点数指数运算发生上溢（$e^{x_i} \to \infty$），工业界通行的 Safe Softmax 必须包含三步操作：
+给定一个长度为 $N$ 的向量 $x = [x_1, x_2, \dots, x_N]$，为了防止浮点数指数运算发生上溢（ $e^{x_i} \to \infty$ ），工业界通行的 Safe Softmax 必须包含三步操作：
 
 1. **求全局最大值**：
 
@@ -457,9 +457,9 @@ FlashAttention 的核心哲学就是：**宁可多花算力在片上做重复计
 
 设 SRAM 大小为 $M$ 字节。我们将输入分块：
 
-- Block 尺寸：$B_r = \lceil \frac{M}{4d} \rceil$，$B_c = \lceil \frac{M}{4d} \rceil$
-- $Q$ 被切分成 $T_r = \lceil N / B_r \rceil$ 个块：$Q_1, Q_2, \dots, Q_{T_r}$
-- $K, V$ 被切分成 $T_c = \lceil N / B_c \rceil$ 个块：$K_1, K_2, \dots, K_{T_c}$ 与 $V_1, V_2, \dots, V_{T_c}$
+- Block 尺寸： $B_r = \lceil \frac{M}{4d} \rceil$， $B_c = \lceil \frac{M}{4d} \rceil$
+- $Q$ 被切分成 $T_r = \lceil N / B_r \rceil$ 个块： $Q_1, Q_2, \dots, Q_{T_r}$
+- $K, V$ 被切分成 $T_c = \lceil N / B_c \rceil$ 个块： $K_1, K_2, \dots, K_{T_c}$ 与 $V_1, V_2, \dots, V_{T_c}$
 
 FlashAttention-1 的循环调度嵌套如下：
 
@@ -540,10 +540,10 @@ FlashAttention-1 论文中最核心的理论贡献，是证明了其 HBM 访问�
   $$
 
 **证明简述**：
-在 FlashAttention 中，$K, V$ 的 Block 大小为 $B_c \approx \frac{M}{4d}$。
+在 FlashAttention 中， $K, V$ 的 Block 大小为 $B_c \approx \frac{M}{4d}$。
 
 - 外层循环遍历 $K, V$ 分块，共需要迭代 $T_c = \frac{N}{B_c} = \frac{4 N d}{M}$ 次；
-- 在每一次外层循环中，内层循环必须遍历一遍完整的 $Q$ 矩阵（大小为 $N \times d$），因此读取 $Q$ 的总量为：
+- 在每一次外层循环中，内层循环必须遍历一遍完整的 $Q$ 矩阵（大小为 $N \times d$ ），因此读取 $Q$ 的总量为：
 
   $$
   \text{Read}(Q) = T_c \times (N d) = \frac{4 N d}{M} \times N d = \frac{4 N^2 d^2}{M}
@@ -565,7 +565,7 @@ $$
 $$
 
 在 NVIDIA A100 上，每个 SM 的 Shared Memory 可配置为 $M \approx 164 \text{ KB} = 82,000 \text{ FP16 elements}$。
-当 $d = 64$ 时，$d^2 = 4,096$：
+当 $d = 64$ 时， $d^2 = 4,096$：
 
 $$
 \frac{M}{d^2} \approx \frac{82,000}{4,096} \approx 20 \times
@@ -758,7 +758,7 @@ FlashAttention-3 还是业界首个将生产级 FP8 引入超长上下文 Attent
 
 ### 实验 1：Standard Attention vs FlashAttention 显存开销与 IO 流量微基准（Python）
 
-本实验通过 PyTorch 原生 API 与底层内存分配器跟踪，直观量化随着序列长度 $N$ 增长，$O(N^2)$ 与 $O(N)$ 之间的显存与耗时鸿沟。
+本实验通过 PyTorch 原生 API 与底层内存分配器跟踪，直观量化随着序列长度 $N$ 增长， $O(N^2)$ 与 $O(N)$ 之间的显存与耗时鸿沟。
 
 保存为 `attention_io_memory_benchmark.py` 并运行：
 
@@ -1486,8 +1486,8 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 ### 8.3 3 道大厂高阶课后深度思考题
 
 1. **FlashDecoding 的跨 Block 树状规约开销**：在 Decode 阶段，由于 $Q$ 只有 1 个 Token，FlashDecoding 将超长的 $K, V$ 序列切分成多个 Split 分配给不同的 SM 并行处理，各个 SM 独立算出一个局部输出 $O_{\text{split}}$ 与局部统计量 $(m_{\text{split}}, \ell_{\text{split}})$。请设计一个高效的跨 SM 归并算法（如基于原子操作或两阶段规约），并分析当 Split 数量达到 128 时，规约开销与并行度收益的平衡点在哪里？
-2. **PagedAttention 与 FlashAttention 的天作之合**：在 vLLM 的 PagedAttention 机制中，$K, V$ Cache 在物理显存中是不连续的非物理页（Pages）。如果要将 FlashAttention-2 的 Triton 内核与 PagedAttention 融合，内核的内存地址计算与加载流水线应做出何种改动？如何避免非连续跨页读取导致的内存合并访问失效？
-3. **FP8 Attention 的数值下溢（Underflow）死穴**：在 FlashAttention-3 中使用 FP8（E4M3）格式存储 $S$ 和 $P$ 矩阵时，由于 E4M3 的动态范围极其有限（最小非规格化数约为 $2^{-9}$），在经过 Softmax 减去最大值后，大量稍小的非核心 Attention 权重会直接下溢变成 0，导致长文本检索任务中细微线索丢失。请提出一种基于局部块动态缩放（Per-block Quantization Scale）或混合精度累加的工程补救方案。
+2. **PagedAttention 与 FlashAttention 的天作之合**：在 vLLM 的 PagedAttention 机制中， $K, V$ Cache 在物理显存中是不连续的非物理页（Pages）。如果要将 FlashAttention-2 的 Triton 内核与 PagedAttention 融合，内核的内存地址计算与加载流水线应做出何种改动？如何避免非连续跨页读取导致的内存合并访问失效？
+3. **FP8 Attention 的数值下溢（Underflow）死穴**：在 FlashAttention-3 中使用 FP8（E4M3）格式存储 $S$ 和 $P$ 矩阵时，由于 E4M3 的动态范围极其有限（最小非规格化数约为 $2^{-9}$ ），在经过 Softmax 减去最大值后，大量稍小的非核心 Attention 权重会直接下溢变成 0，导致长文本检索任务中细微线索丢失。请提出一种基于局部块动态缩放（Per-block Quantization Scale）或混合精度累加的工程补救方案。
 
 ---
 
@@ -1548,10 +1548,10 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 
 1. **Standard Attention 访存量手算**：
    每个数据以 FP16（2 字节）存储。
-   - 读取 $Q, K, V$：$3 \times (N \times d \times 2) = 6 \times 8192 \times 128 = 6.29 \times 10^6 \text{ Bytes} \approx 6.29 \text{ MB}$；
-   - 写入中间矩阵 $S$：$N \times N \times 2 = (8192)^2 \times 2 = 134.22 \times 10^6 \text{ Bytes} \approx 134.22 \text{ MB}$；
-   - 读取 $S$ 并写入 $P$（Softmax）：$2 \times (N \times N \times 2) \approx 268.44 \text{ MB}$；
-   - 读取 $P$ 并写入输出 $O$：$N \times N \times 2 + N \times d \times 2 \approx 134.22 \text{ MB} + 2.10 \text{ MB}$；
+   - 读取 $Q, K, V$： $3 \times (N \times d \times 2) = 6 \times 8192 \times 128 = 6.29 \times 10^6 \text{ Bytes} \approx 6.29 \text{ MB}$；
+   - 写入中间矩阵 $S$： $N \times N \times 2 = (8192)^2 \times 2 = 134.22 \times 10^6 \text{ Bytes} \approx 134.22 \text{ MB}$；
+   - 读取 $S$ 并写入 $P$（Softmax）： $2 \times (N \times N \times 2) \approx 268.44 \text{ MB}$；
+   - 读取 $P$ 并写入输出 $O$： $N \times N \times 2 + N \times d \times 2 \approx 134.22 \text{ MB} + 2.10 \text{ MB}$；
    - **总访存量**：
 
      $$
@@ -1562,9 +1562,9 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
    - SRAM 大小 $M = 100 \text{ KB} = 102,400 \text{ Bytes} = 51,200 \text{ FP16 elements}$；
    - 分块大小 $B_c \approx \frac{M}{4 \times d} = \frac{51200}{4 \times 128} = 100$ 个 Token；
    - 外层循环次数 $T_c = \lceil N / B_c \rceil = 8192 / 100 \approx 82$ 次；
-   - 每次外层循环必须读取一次完整的 $Q$ 矩阵：$82 \times (N \times d \times 2) = 82 \times 2.10 \text{ MB} \approx 172.2 \text{ MB}$；
-   - $K, V$ 仅在外层循环加载一次：$2 \times (N \times d \times 2) \approx 4.2 \text{ MB}$；
-   - 最终输出 $O$ 仅在最后写回一次：$N \times d \times 2 \approx 2.1 \text{ MB}$；
+   - 每次外层循环必须读取一次完整的 $Q$ 矩阵： $82 \times (N \times d \times 2) = 82 \times 2.10 \text{ MB} \approx 172.2 \text{ MB}$；
+   - $K, V$ 仅在外层循环加载一次： $2 \times (N \times d \times 2) \approx 4.2 \text{ MB}$；
+   - 最终输出 $O$ 仅在最后写回一次： $N \times d \times 2 \approx 2.1 \text{ MB}$；
    - **总访存量**：
 
      $$
@@ -1589,11 +1589,11 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 **考核大厂**：美团（基础模型算子团队）、NVIDIA（GPU Computing 架构面试）  
 **解题标准答案**：
 
-1. **FA-1 的冲突本质（外层 $KV$，内层 $Q$）**：
+1. **FA-1 的冲突本质（外层 $KV$，内层 $Q$ ）**：
    在外层循环中，每个迭代只持有一段 $K_j, V_j$ 数据。内层循环计算所有 $Q_i$ 与当前 $K_j$ 的点积。
    这意味着，针对同一个输出行块 $O_i$，它的完整结果是由所有的 $K_j, V_j$ 共同贡献的。
-   如果在 Grid 级别将内层循环并行化（多个 Thread Block 同时处理不同的 $Q_i$），那么当下一个外层循环 $K_{j+1}, V_{j+1}$ 开始时，计算出的增量必须累加到同一个全局显存位置 $O_i$ 上。这会导致**多个不同时间片发射的线程块竞争写入相同的全局内存行**，必须通过全局内存原子操作（Atomic Add）或将未完成的中间累加值频繁写回并重新读取来维持同步。
-2. **FA-2 的架构解耦（外层 $Q$，内层 $KV$）**：
+   如果在 Grid 级别将内层循环并行化（多个 Thread Block 同时处理不同的 $Q_i$ ），那么当下一个外层循环 $K_{j+1}, V_{j+1}$ 开始时，计算出的增量必须累加到同一个全局显存位置 $O_i$ 上。这会导致**多个不同时间片发射的线程块竞争写入相同的全局内存行**，必须通过全局内存原子操作（Atomic Add）或将未完成的中间累加值频繁写回并重新读取来维持同步。
+2. **FA-2 的架构解耦（外层 $Q$，内层 $KV$ ）**：
    FA-2 将整个输出矩阵 $O$ 沿行维度切分，每个行分块 $Q_i$ 被**独占性地分配给唯一的一个 Thread Block（线程块）**。
    - 该线程块在启动后，拥有对输出子块 $O_i$ 的**绝对唯一写权限**；
    - 在内层循环中，该线程块依次加载所有的 $K_1, K_2, \dots, K_M$，将中间贡献持续累加在**线程块私有的片上寄存器（Registers）** 中；
@@ -1610,7 +1610,7 @@ Hopper 借力 TMA 走，十倍吞吐立封神！（FlashAttention-3 硬件融合
 1. **反向重计算的核心机理**：
    在反向传播中，根据链式法则需要计算 $\nabla V = P^T \nabla O$ 以及由 $\nabla O V^T$ 推导出的 $\nabla Q$ 和 $\nabla K$。
    标准实现选择在 Forward 阶段将整个注意力概率矩阵 $P \in \mathbb{R}^{N \times N}$ 保存到 HBM 中，Backward 直接读取。
-   FlashAttention 则在前向阶段彻底丢弃 $P$，仅在全局内存中保存尺寸为 $O(N)$ 的行统计量（最大值 $m$ 和配分对数总和 $L$）。在反向传播处理到当前分块时，再次从 HBM 读取分块 $Q_i$ 和 $K_j$，在 SRAM 内部重新执行一次小矩阵乘法 $Q_i K_j^T$ 并利用保存的 $m_i, L_i$ 当场复原出局部 $P_{ij}$。
+   FlashAttention 则在前向阶段彻底丢弃 $P$，仅在全局内存中保存尺寸为 $O(N)$ 的行统计量（最大值 $m$ 和配分对数总和 $L$ ）。在反向传播处理到当前分块时，再次从 HBM 读取分块 $Q_i$ 和 $K_j$，在 SRAM 内部重新执行一次小矩阵乘法 $Q_i K_j^T$ 并利用保存的 $m_i, L_i$ 当场复原出局部 $P_{ij}$。
 2. **算力与显存的收支平衡账本**：
    - **计算成本**：重新计算一次 $S_{ij} = Q_i K_j^T$ 和 Softmax，为整个 Attention 反向传播增加了约 **$2 N^2 d$ 的 FLOPs**（占 Attention 全流程总浮点运算量的约 25%~30%）；
    - **显存与访存收益**：

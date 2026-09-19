@@ -82,7 +82,7 @@ math: true
   - [0.2 线上真实事故复盘：某头部代码助手在早高峰遭遇“长文本炸弹”与重试踩踏的 45 分钟雪崩](#02-线上真实事故复盘某头部代码助手在早高峰遭遇长文本炸弹与重试踩踏的-45-分钟雪崩)
   - [0.3 离线批处理（Offline Batching）vs 在线低延迟（Online Serving）全栈维度对照速查表](#03-离线批处理offline-batching-vs-在线低延迟online-serving全栈维度对照速查表)
 - [1. 第一性原理穿透：大模型在线推理的资源消耗方程与吞吐延迟权衡](#1-第一性原理穿透大模型在线推理的资源消耗方程与吞吐延迟权衡)
-  - [1.1 经典微服务容量公式（$N = QPS \times Latency / Worker$）为什么彻底失效？](#11-经典微服务容量公式n--qps-times-latency--worker为什么彻底失效)
+  - [1.1 经典微服务容量公式（ $N = QPS \times Latency / Worker$ ）为什么彻底失效？](#11-经典微服务容量公式n--qps-times-latency--worker为什么彻底失效)
   - [1.2 Prefill 与 Decode 动态异构负载下的资源错配：算力墙 vs 显存双墙](#12-prefill-与-decode-动态异构负载下的资源错配算力墙-vs-显存双墙)
   - [1.3 核心约束铁三角（Iron Triangle）：TTFT、TPOT 与 Throughput 的不可兼得](#13-核心约束铁三角iron-trianglettfttpot-与-throughput-的不可兼得)
 - [2. 公式五步穿透：工业级 GPU 卡数与显存容量预测性规划模型](#2-公式五步穿透工业级-gpu-卡数与显存容量预测性规划模型)
@@ -226,7 +226,7 @@ sequenceDiagram
 > 
 > ![大模型在线推理容量规划、SLO 治理与生产故障诊断全景架构图](assets/arch_36_online_capacity_planning_slo_governance.svg)
 
-## 1.1 经典微服务容量公式（$N = QPS \times Latency / Worker$）为什么彻底失效？
+## 1.1 经典微服务容量公式（ $N = QPS \times Latency / Worker$ ）为什么彻底失效？
 
 在传统互联网后台架构中，利特尔法则（Little's Law）是容量规划的定海神针：
 
@@ -342,21 +342,21 @@ $$
 └───────────────────┴───────────────────┴───────────────────────┴────────────────────────┘
 ```
 
-1. **账本一：模型参数权重显存（$M_{\text{weights}}$）**
+1. **账本一：模型参数权重显存（ $M_{\text{weights}}$ ）**
    - **计算公式**：
 
      $$
      M_{\text{weights}} = \frac{P \times b_w}{\text{TP}}
      $$
 
-     其中 $P$ 为模型总参数量（Parameters），$b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节），$\text{TP}$ 为张量并行度（Tensor Parallelism）。
+     其中 $P$ 为模型总参数量（Parameters）， $b_w$ 为每个参数的字节数（FP16/BF16 为 2 字节，FP8 为 1 字节，INT4 为 0.5 字节）， $\text{TP}$ 为张量并行度（Tensor Parallelism）。
    - *注意*：必须计入 Embedding 层及非 Transformer 层的显存占用（在部分框架中可能未切分）。
-2. **账本二：中间激活与运行时框架驻留显存（$M_{\text{runtime}}$）**
+2. **账本二：中间激活与运行时框架驻留显存（ $M_{\text{runtime}}$ ）**
    - 包含 PyTorch 运行时上下文、CUDA Driver Context（约 1~1.5 GB）、中间激活值（Activation Memory）以及 **CUDA Graph 捕获专有内存池**。
    - 在启用 CUDA Graph 加速 Decode 时，引擎会为一系列固定的 Batch 尺寸预先捕获静态执行图，这部分显存开销通常在 2 GB ~ 4 GB 不等。
-3. **账本三：安全缓冲与内存防抖预算（$M_{\text{buffer}}$）**
+3. **账本三：安全缓冲与内存防抖预算（ $M_{\text{buffer}}$ ）**
    - 生产环境中决不能将显存用至 100%。通常由引擎参数 `gpu_memory_utilization` 严格控制（例如设定为 0.90，意味着主动扣除 10% 的物理显存作为系统防止碎片和瞬时申请崩溃的绝对安全垫）。
-4. **账本四：动态 Paged KV Cache 内存池（$M_{\text{kv-pool}}$）**
+4. **账本四：动态 Paged KV Cache 内存池（ $M_{\text{kv-pool}}$ ）**
    - 扣除上述三项后，剩下的全部连续物理显存，被划分为固定大小的 Page（Block，通常每个 Block 容纳 16 或 32 个 Tokens），构建成 PagedAttention 的动态内存池。
    - **这一账本的大小，直接在物理上锁死了该节点能够同时容纳的 Token 宇宙上限！**
 
@@ -364,7 +364,7 @@ $$
 
 ## 2.2 公式五步穿透：单节点最大稳定并发数 $B_{\max}$ 与单卡极限吞吐推导
 
-现在，我们要推导决定集群命脉的核心指标：**单个节点在给定上下文长度下，到底能并发扛住多少个请求（$B_{\max}$）？**
+现在，我们要推导决定集群命脉的核心指标：**单个节点在给定上下文长度下，到底能并发扛住多少个请求（ $B_{\max}$ ）？**
 
 ### 第一步：为什么需要算它？（The Problem）
 很多工程师在部署 vLLM 时，直接把 `max_num_seqs` 默认拉到 256。结果一旦业务请求的平均输入长度从 500 漂移到 3000，集群立刻因为 KV Cache 耗尽发生剧烈 Preemption，大量请求被挂起。我们必须在物理上精准界定：在既定显存池大小和预期的 P90 上下文长度下，**最大安全并发窗口是多少**，从而为网关限流与引擎参数提供不可逾越的底账依据。
@@ -381,7 +381,7 @@ $$
 - 隐藏层数 $L = 2$ 层；
 - 键值头数 $N_{\text{kv}} = 2$；
 - 每个头的维度 $d_{\text{head}} = 64$；
-- 精度为 FP16（$b_{\text{kv}} = 2$ 字节）；
+- 精度为 FP16（ $b_{\text{kv}} = 2$ 字节）；
 - 显存池总共有可怜的 $1 \text{ MB} = 1,048,576 \text{ 字节}$；
 - 单个请求的总序列长度 $S = 512$ Tokens。
 
@@ -412,7 +412,7 @@ $$
    如果硬塞第 3 个并发，显存直接打满雪崩！
 
 ### 第四步：Formal Model（标准通用工业公式）
-对于任何具备 GQA（分组查询注意力）的现代大模型，单个 Token 在单张卡（经过张量并行切分 $\text{TP}$）上的 KV Cache 消耗公式为：
+对于任何具备 GQA（分组查询注意力）的现代大模型，单个 Token 在单张卡（经过张量并行切分 $\text{TP}$ ）上的 KV Cache 消耗公式为：
 
 $$
 \text{KV}_{\text{token-per-gpu}} = \frac{2 \times L \times N_{\text{kv}} \times d_{\text{head}} \times b_{\text{kv}}}{\text{TP}} \quad (\text{Bytes/Token})
@@ -425,7 +425,7 @@ $$
 M_{\text{kv-pool}} = \left( V_{\text{total}} \times \alpha \right) - M_{\text{weights}} - M_{\text{runtime}}
 $$
 
-设业务场景中，并发请求在生命周期内的总上下文长度（Prompt 长度 $S_{\text{prompt}}$ + 生成长度 $S_{\text{gen}}$）的规划评估值为 $S_{\text{total}}$。
+设业务场景中，并发请求在生命周期内的总上下文长度（Prompt 长度 $S_{\text{prompt}}$ + 生成长度 $S_{\text{gen}}$ ）的规划评估值为 $S_{\text{total}}$。
 则**单节点支持的最大稳定物理并发数 $B_{\max}$** 为：
 
 $$
@@ -434,12 +434,12 @@ $$
 
 ### 第五步：Sanity Check（真实工业级数量级校验）
 我们以生产环境最标杆的配置做一次实战验算：
-- **模型**：Qwen2.5-72B-Instruct（$L = 80$, $N_{\text{kv}} = 8$, $d_{\text{head}} = 128$, FP16 精度 $b_{\text{kv}} = 2$）；
-- **硬件**：单机 8 卡 H800（$\text{TP} = 8$，单卡 80GB HBM3，实际可用 $V_{\text{total}} \approx 74.5 \text{ GiB} \approx 80 \times 10^9 \text{ Bytes}$）；
+- **模型**：Qwen2.5-72B-Instruct（ $L = 80$, $N_{\text{kv}} = 8$, $d_{\text{head}} = 128$, FP16 精度 $b_{\text{kv}} = 2$ ）；
+- **硬件**：单机 8 卡 H800（ $\text{TP} = 8$，单卡 80GB HBM3，实际可用 $V_{\text{total}} \approx 74.5 \text{ GiB} \approx 80 \times 10^9 \text{ Bytes}$ ）；
 - **参数显存**：72B 模型切到 8 卡，单卡权重 $M_{\text{weights}} \approx 18 \text{ GB}$；
-- **运行时开销**：$M_{\text{runtime}} \approx 4 \text{ GB}$；
-- **安全阈值**：$\alpha = 0.90$（可用上限 $80 \times 0.90 = 72 \text{ GB}$）；
-- 则单卡 KV 池容量：$M_{\text{kv-pool}} = 72 - 18 - 4 = 50 \text{ GB} = 50 \times 10^9 \text{ Bytes}$。
+- **运行时开销**： $M_{\text{runtime}} \approx 4 \text{ GB}$；
+- **安全阈值**： $\alpha = 0.90$（可用上限 $80 \times 0.90 = 72 \text{ GB}$ ）；
+- 则单卡 KV 池容量： $M_{\text{kv-pool}} = 72 - 18 - 4 = 50 \text{ GB} = 50 \times 10^9 \text{ Bytes}$。
 
 1. **手算单 Token KV 显存**：
 
@@ -449,7 +449,7 @@ $$
 
    （注意：8 卡合起来全节点单 Token 消耗为 $40 \text{ KB} \times 8 = 320 \text{ KB}$！）
 2. **假设常规对话场景**：输入 1500 Tokens，输出 500 Tokens，合计 $S_{\text{total}} = 2000$ Tokens。
-   单个请求消耗单卡 KV 显存：$2000 \times 40 \text{ KB} = 80 \text{ MB}$。
+   单个请求消耗单卡 KV 显存： $2000 \times 40 \text{ KB} = 80 \text{ MB}$。
 3. **计算单机最大物理并发数**：
 
    $$
@@ -457,7 +457,7 @@ $$
    $$
 
 4. **假设长文档总结场景**：输入 16K Tokens，输出 1K Tokens，合计 $S_{\text{total}} = 17,000$ Tokens。
-   单个请求消耗单卡 KV 显存：$17,000 \times 40 \text{ KB} = 680 \text{ MB}$。
+   单个请求消耗单卡 KV 显存： $17,000 \times 40 \text{ KB} = 680 \text{ MB}$。
 
    $$
    B_{\max} = \frac{50 \times 10^9 \text{ Bytes}}{680 \times 10^6 \text{ Bytes}} \approx 73 \text{ 并发}
@@ -556,7 +556,7 @@ $$
 
 ### 业务背景设定
 - **业务场景**：企业级研发协同 AI Copilot 助手；
-- **模型规格**：Qwen2.5-72B-Instruct（FP16 精度，单机 8 卡 H800，$\text{TP}=8$）；
+- **模型规格**：Qwen2.5-72B-Instruct（FP16 精度，单机 8 卡 H800， $\text{TP}=8$ ）；
 - **流量特征**：
   - 早高峰峰值 $QPS_{\text{peak-P99}} = 40$；
   - 平均 Prompt 长度 $\overline{S}_{\text{prompt}} = 1200$ Tokens；
@@ -582,9 +582,9 @@ $$
 
 #### 步骤 3：核算单台 8 卡 H800 节点的显存容积与最大安全并发 $B_{\max}$
 由 2.2 节实测已知：
-- 单卡可分配 KV Cache 显存：$M_{\text{kv-pool}} = 50\text{ GB}$；
-- 单 Token 在单卡上的 KV 开销：$\text{KV}_{\text{token-per-gpu}} = 40\text{ KB}$；
-- 单个请求平均总长度：$S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}$；
+- 单卡可分配 KV Cache 显存： $M_{\text{kv-pool}} = 50\text{ GB}$；
+- 单 Token 在单卡上的 KV 开销： $\text{KV}_{\text{token-per-gpu}} = 40\text{ KB}$；
+- 单个请求平均总长度： $S_{\text{total}} = 1200 + 400 = 1600\text{ Tokens}$；
 - 单个请求在单卡上消耗的 KV Cache：
 
   $$
@@ -626,7 +626,7 @@ $$
 
 #### 步骤 5：容量交叉对账与反思
 现在回过头来看：
-- 15 台节点总共能提供的并发容量池为：$15 \times 781 \approx 11,715$ 个并发，而我们的峰值并发需求只有 504 个！
+- 15 台节点总共能提供的并发容量池为： $15 \times 781 \approx 11,715$ 个并发，而我们的峰值并发需求只有 504 个！
 - 这意味着什么？**在长生成短输入的对话场景下，系统是极其典型的“算力受限（Compute-Bound）”型架构！显存利用率长期只有 10%~20%，但为了满足 30ms 的 TPOT 与峰值 QPS，我们不得不采购 15 台机器去堆算力吞吐！**
 - 如果你当初按“显存放得下”去估算，你以为 1~2 台机器就能扛住 504 个并发，那么上线瞬间你的 1 台机器将被 16,000 Tokens/s 的生成洪峰活活打瘫，TPOT 飙升到 200ms 以上，系统彻底失去可用性！
 
@@ -660,9 +660,9 @@ $$
 | 指标全称 | 核心定义与计算口径 | 典型大厂线上 SLO 目标（P95/P99） | 决定该指标的底层物理与系统瓶颈 |
 | :--- | :--- | :--- | :--- |
 | **TTFT (Time To First Token)** | 从网关接收到 HTTP 请求开始，到向客户端写出第一个 SSE Data Chunk 的时间间隔 | **P90 < 500ms<br>P99 < 1500ms** | 1. 网关排队延迟<br>2. Prefill 计算算力（GEMM 吞吐）<br>3. Prefix Cache 命中率 |
-| **TPOT (Time Per Output Token)** | 生成阶段，客户端接收相邻两个流式 Token 之间的时间差平均值：$\frac{\text{E2E} - \text{TTFT}}{S_{\text{gen}} - 1}$ | **P95 < 30ms<br>P99 < 50ms** | 1. Decode 阶段 HBM 显存带宽<br>2. Continuous Batching 并发装箱尺寸<br>3. Chunked Prefill 抢占干扰 |
+| **TPOT (Time Per Output Token)** | 生成阶段，客户端接收相邻两个流式 Token 之间的时间差平均值： $\frac{\text{E2E} - \text{TTFT}}{S_{\text{gen}} - 1}$ | **P95 < 30ms<br>P99 < 50ms** | 1. Decode 阶段 HBM 显存带宽<br>2. Continuous Batching 并发装箱尺寸<br>3. Chunked Prefill 抢占干扰 |
 | **ITL (Inter-Token Latency)** | 每次自回归步中每一个单步的实际耗时分布序列（衡量流式吐字的平滑度与方差） | **抖动方差 $\sigma < 10\text{ms}$<br>无超过 100ms 尖刺** | 突发的大 Prefill 插入导致的流水线气泡与临时挂起 |
-| **Normalized Latency** | 消除输出长度干扰的归一化端到端耗时：$\frac{\text{E2E Latency}}{S_{\text{prompt}} + S_{\text{gen}}}$ | **P95 < 2.5ms/Token** | 全生命周期综合执行效率，适用于多场景公平横向比对 |
+| **Normalized Latency** | 消除输出长度干扰的归一化端到端耗时： $\frac{\text{E2E Latency}}{S_{\text{prompt}} + S_{\text{gen}}}$ | **P95 < 2.5ms/Token** | 全生命周期综合执行效率，适用于多场景公平横向比对 |
 
 ---
 
@@ -1643,10 +1643,10 @@ if __name__ == "__main__":
    - 假定典型企业代码/聊天场景：平均 Prompt = 1500 Tokens，平均生成 = 500 Tokens，总长 = 2000 Tokens；
    - 选定工业标准模型与部署方案：Llama-3.3-70B 或 Qwen2.5-72B（FP16，单机 8 卡 H800 TP=8）。
 2. **单节点容量推导（显存池限制）**：
-   - 单卡 KV 池容量：$80 \times 0.90 - 18\text{ (权重)} - 4\text{ (运行时)} = 50\text{ GB}$；
-   - GQA 单 Token 单卡 KV 开销：$\frac{2 \times 80 \times 8 \times 128 \times 2}{8} = 40\text{ KB/Token}$；
-   - 单请求消耗单卡显存：$2000 \times 40\text{ KB} = 80\text{ MB}$；
-   - 单节点最大安全并发：$B_{\max} = \frac{50\text{ GB}}{80\text{ MB}} = 625$ 并发。
+   - 单卡 KV 池容量： $80 \times 0.90 - 18\text{ (权重)} - 4\text{ (运行时)} = 50\text{ GB}$；
+   - GQA 单 Token 单卡 KV 开销： $\frac{2 \times 80 \times 8 \times 128 \times 2}{8} = 40\text{ KB/Token}$；
+   - 单请求消耗单卡显存： $2000 \times 40\text{ KB} = 80\text{ MB}$；
+   - 单节点最大安全并发： $B_{\max} = \frac{50\text{ GB}}{80\text{ MB}} = 625$ 并发。
 3. **基于并发水线计算显存节点底线**：
    - 支撑 10,000 活跃并发，纯显存维度最少需要：
 

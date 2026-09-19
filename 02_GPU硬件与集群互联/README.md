@@ -45,7 +45,7 @@ Register ↔ Shared Mem   Shared Mem ↔ L2 ↔ HBM  GPU ↔ NVLink ↔ GPU    G
  追踪 Tensor 形状变化    量化 FLOPs/带宽/显存    分析指令/Kernel/同步   绘制物理 Data Path
 ```
 
-1. **📐 Shape 是什么？**：追踪 Tensor 的物理维度变化（$[B, S, H] \to [B, S, H/TP]$），明确切分轴与通信前后的语义。
+1. **📐 Shape 是什么？**：追踪 Tensor 的物理维度变化（ $[B, S, H] \to [B, S, H/TP]$ ），明确切分轴与通信前后的语义。
 2. **💰 钱花在哪里？**：定量手算参数量、FLOPs、HBM 访存量、通信数据量，判断是 Compute-bound、Memory-bound 还是 Communication-bound。
 3. **⚙️ 机器上怎么跑？**：穿透 PyTorch、NCCL、CUDA Kernel、Copy Engine 到 DMA 引擎，明确谁发起、谁等待、占不占 SM。
 4. **🚚 数据到底怎么搬？**：在脑海中展开完整的硬件物理路径（HBM $\to$ LSU/TMA $\to$ PCIe/NVLink $\to$ NVSwitch $\to$ NIC $\to$ IB/RoCE $\to$ 远端 HBM）。
@@ -54,9 +54,9 @@ Register ↔ Shared Mem   Shared Mem ↔ L2 ↔ HBM  GPU ↔ NVLink ↔ GPU    G
 
 ## 🧠 2. 本模块统一性能模型与四大核心公式
 
-### 1. 通信耗时基础模型：$T = \alpha + \frac{S}{\beta}$
-- $\alpha$（固定时延/握手开销）：小消息（$S \to 0$）主导，属于 **Latency-bound**（如 Decode 逐字生成、MoE 稀疏 Dispatch）；
-- $\frac{S}{\beta}$（传输带宽开销）：大消息（$S \gg 1\text{MB}$）主导，属于 **Bandwidth-bound**（如 DDP 反向梯度 AllReduce、FSDP AllGather）。
+### 1. 通信耗时基础模型： $T = \alpha + \frac{S}{\beta}$
+- $\alpha$（固定时延/握手开销）：小消息（ $S \to 0$ ）主导，属于 **Latency-bound**（如 Decode 逐字生成、MoE 稀疏 Dispatch）；
+- $\frac{S}{\beta}$（传输带宽开销）：大消息（ $S \gg 1\text{MB}$ ）主导，属于 **Bandwidth-bound**（如 DDP 反向梯度 AllReduce、FSDP AllGather）。
 
 ### 2. 单算子算力与访存边界：Roofline 模型
 $$
@@ -68,12 +68,12 @@ $$
 T_{\text{step}} = T_{\text{compute}} + T_{\text{exposed-comm}} = T_{\text{compute}} + \max(0, T_{\text{comm}} - T_{\text{compute-overlap}})
 $$
 
-### 4. Overlap 惩罚因子模型：$k \ge 1.0$
+### 4. Overlap 惩罚因子模型： $k \ge 1.0$
 $$
 \text{实际总耗时 } T_{\text{total}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)
 $$
 
-当通信与计算并发争抢 SM、L2 Cache 或 HBM 带宽时，两者速度都会下降（$k > 1$）。
+当通信与计算并发争抢 SM、L2 Cache 或 HBM 带宽时，两者速度都会下降（ $k > 1$ ）。
 
 ---
 
@@ -101,7 +101,7 @@ $$
 | 序号 | 章节名称 | 核心知识点与第一性原理 | 关键产出 | 建议时长 | 文档链接 |
 |:---:|:---|:---|:---|:---:|:---:|
 | **12** | **GPU 执行与存储体系架构** | SM、Warp 调度、Tensor Core、Memory Hierarchy、Arithmetic Intensity 与 Roofline 边界 | Roofline 手算 + Kernel 分类 | 2h | [`12_GPU执行与存储体系...md`](./12_GPU执行与存储体系_SM_Warp_TensorCore_HBM_Roofline.md) |
-| **13** | **通信第一性原理与性能模型** | 并行通信根源、$\alpha+S/\beta$ 模型、通信优化五层级、分层物理带宽瓶颈 | 通信耗时估算模型 | 1.5h | [`13_通信第一性原理...md`](./13_通信第一性原理与性能模型_AlphaBeta_Latency_Bandwidth.md) |
+| **13** | **通信第一性原理与性能模型** | 并行通信根源、 $\alpha+S/\beta$ 模型、通信优化五层级、分层物理带宽瓶颈 | 通信耗时估算模型 | 1.5h | [`13_通信第一性原理...md`](./13_通信第一性原理与性能模型_AlphaBeta_Latency_Bandwidth.md) |
 | **14** | **GPU 节点与集群硬件拓扑** | PCIe 拓扑、NUMA 亲和性、NVLink/NVSwitch、Rail-Optimized 组网与 Rank Placement | 拓扑图 + Rank 映射表 | 2h | [`14_GPU节点与集群硬件拓扑...md`](./14_GPU节点与集群硬件拓扑_PCIe_NVLink_NVSwitch_Clos_Rail.md) |
 | **15** | **RDMA 与 GPUDirect RDMA** | TCP/IP 缺陷、控制面与数据面分离、QP/WQE/CQ/MR 原理、Zero-Copy 旁路 CPU | RDMA 时序图与抓包剖析 | 2h | [`15_RDMA与GPUDirect_RDMA...md`](./15_RDMA与GPUDirect_RDMA_QP_WQE_CQ_MR_ZeroCopy.md) |
 | **16** | **机内数据搬运机制与硬件卸载** | LSU vs TMA、Copy Engine、mbarrier 硬件同步、CUDA IPC 与 Activation Offloading | SM-free 路径比对表 | 2h | [`16_机内数据搬运...md`](./16_机内数据搬运_LSU_TMA_CopyEngine_mbarrier_IPC.md) |
@@ -123,7 +123,7 @@ $$
 ```
 
 1. **Lab 01（Kernel Roofline 分析）**：手算 GEMM 与 Softmax 的 AI 值，绘制 Roofline 曲线定位瓶颈。
-2. **Lab 02（$\alpha + S/\beta$ 通信模型实测）**：使用不同 Message Size 拟合单机与跨机 $\alpha$ 和 $\beta$ 参数。
+2. **Lab 02（ $\alpha + S/\beta$ 通信模型实测）**：使用不同 Message Size 拟合单机与跨机 $\alpha$ 和 $\beta$ 参数。
 3. **Lab 03（Topology Mapping 与 Rank 映射）**：通过 `nvidia-smi topo -m` 探测拓扑，设计 TP/DP/PP 的最优 Rank Placement。
 4. **Lab 04（RDMA 基准测试）**：运行 `ibv_rc_pingpong`，比对 RDMA Write vs Send 的带宽与延迟差异。
 5. **Lab 05（机内 Data Movement 评测）**：使用 Nsight Compute 观察 LSU vs TMA 搬运对 SM Occupancy 的影响。

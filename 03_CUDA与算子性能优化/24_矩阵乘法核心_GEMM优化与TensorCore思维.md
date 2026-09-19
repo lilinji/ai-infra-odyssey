@@ -69,12 +69,12 @@ math: true
   - [0.2 线上事故复盘：某大模型微调团队手写自定义 LoRA 线性层性能雪崩](#02-线上事故复盘某大模型微调团队手写自定义-lora-线性层性能雪崩)
   - [0.3 AI Infra GEMM 各演进阶段速查表](#03-ai-infra-gemm-各演进阶段速查表)
 - [1. 算术强度与 Roofline 极限：GEMM 为什么是“算力王冠上的明珠”？](#1-算术强度与-roofline-极限gemm-为什么是算力王冠上的明珠)
-  - [1.1 GEMM 运算量与访存量的代数账本：$2MNK$ vs 存储搬运](#11-gemm-运算量与访存量的代数账本2mnk-vs-存储搬运)
+  - [1.1 GEMM 运算量与访存量的代数账本： $2MNK$ vs 存储搬运](#11-gemm-运算量与访存量的代数账本2mnk-vs-存储搬运)
   - [1.2 No Naked Formula 2.0：GEMM 算术强度模型与 A100 平衡点](#12-no-naked-formula-20gemm-算术强度模型与-a100-平衡点)
   - [1.3 现代 GPU 存储层级金字塔与数据搬运代价](#13-现代-gpu-存储层级金字塔与数据搬运代价)
 - [2. Thread Block 级分块（Block Tiling）：利用 Shared Memory 实现第一次数据复用跃迁](#2-thread-block-级分块block-tiling利用-shared-memory-实现第一次数据复用跃迁)
   - [2.1 朴素 GEMM 的死穴：对全局内存的狂轰滥炸](#21-朴素-gemm-的死穴对全局内存的狂轰滥炸)
-  - [2.2 Block Tile 物理切分：$BM \times BN$ 与沿 $K$ 维度的滑动窗口](#22-block-tile-物理切分bm-times-bn-与沿-k-维度的滑动窗口)
+  - [2.2 Block Tile 物理切分： $BM \times BN$ 与沿 $K$ 维度的滑动窗口](#22-block-tile-物理切分bm-times-bn-与沿-k-维度的滑动窗口)
   - [2.3 协作搬运（Cooperative Fetching）：Block 内所有线程的集体搬运](#23-协作搬运cooperative-fetchingblock-内所有线程的集体搬运)
   - [2.4 数据复用收益倍数精准推导](#24-数据复用收益倍数精准推导)
 - [3. Thread 级分块与寄存器复用（2D Register Tiling）：突破 Shared Memory 带宽瓶颈](#3-thread-级分块与寄存器复用2d-register-tiling突破-shared-memory-带宽瓶颈)
@@ -114,7 +114,7 @@ math: true
 
 ### 0.1 真实工程矛盾：为什么直接用三重循环写矩阵乘，算力利用率只有 1.2%？
 
-在任何一本通用编程教科书里，矩阵乘法 $C = A \times B$（$A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times N}$）的代码实现都是如此平易近人：
+在任何一本通用编程教科书里，矩阵乘法 $C = A \times B$（ $A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times N}$ ）的代码实现都是如此平易近人：
 
 ```cpp
 // 朴素三重循环
@@ -144,7 +144,7 @@ C[row * N + col] = sum;
 
 你开了几十万个线程，把它扔上单卡售价数十万元的 NVIDIA A100-SXM4-80GB（理论单精度峰值算力高达 **19.5 TFLOPS**）。你满心期待它能在几十微秒内跑完，结果实测报告打印出来：
 
-- 计算规模：$M = N = K = 4096$；
+- 计算规模： $M = N = K = 4096$；
 - 算子耗时：**约 548 毫秒**；
 - 实测有效算力：**仅有 0.25 TFLOPS**！
 
@@ -162,7 +162,7 @@ C[row * N + col] = sum;
 
 2024 年秋，某大厂算法团队在对百亿参数稠密大模型进行特定下游任务的高阶 LoRA 微调。为了在一个算子中把低秩矩阵乘与特定的量化激活函数融合（Fuse），一位工程师信心满满地参考了某开源简单代码，手写了一个定制化的 GEMM Kernel 替换掉原生的 `torch.matmul`（底层调用 cuBLAS）。
 
-在小规模单测（矩阵为 $128 \times 128$）下，数值完全对齐，测试耗时似乎也“挺快”。然而，一旦上到真实分布式微调集群（Batch 增大，隐藏层维度 $M=4096, N=4096, K=4096$），整个训练集群的 GPU 利用率（GPU-Util）瞬间从 **92% 暴跌到 8%**！单步 Iteration 耗时拉长了整整 **11 倍**！原本计划 3 天跑完的模型微调任务，进度条显示需要耗时 33 天！
+在小规模单测（矩阵为 $128 \times 128$ ）下，数值完全对齐，测试耗时似乎也“挺快”。然而，一旦上到真实分布式微调集群（Batch 增大，隐藏层维度 $M=4096, N=4096, K=4096$ ），整个训练集群的 GPU 利用率（GPU-Util）瞬间从 **92% 暴跌到 8%**！单步 Iteration 耗时拉长了整整 **11 倍**！原本计划 3 天跑完的模型微调任务，进度条显示需要耗时 33 天！
 
 架构团队迅速介入，使用 **Nsight Compute (NCU)** 对该 Kernel 进行了深入剖析，发现了三重严重的体系结构级硬伤：
 
@@ -194,7 +194,7 @@ C[row * N + col] = sum;
 
 ![CUDA GEMM 九重分块天梯与 Tensor Core Warp 协同计算全景图](assets/arch_24_gemm_tensor_core_optimization.svg)
 
-### 1.1 GEMM 运算量与访存量的代数账本：$2MNK$ vs 存储搬运
+### 1.1 GEMM 运算量与访存量的代数账本： $2MNK$ vs 存储搬运
 
 要优化一个算子，首先必须在草稿纸上算清它的“理论账本”。
 对于标准通用矩阵乘法：
@@ -204,7 +204,7 @@ C = A \times B, \quad A \in \mathbb{R}^{M \times K}, B \in \mathbb{R}^{K \times 
 $$
 
 1. **计算量账本（FLOPs）**：
-   矩阵 $C$ 共有 $M \times N$ 个元素。每个元素的产生，都需要将 $A$ 的一行（$K$ 个数）与 $B$ 的一列（$K$ 个数）做点积内积。
+   矩阵 $C$ 共有 $M \times N$ 个元素。每个元素的产生，都需要将 $A$ 的一行（ $K$ 个数）与 $B$ 的一列（ $K$ 个数）做点积内积。
    每个数参与 1 次乘法和 1 次加法（FMA，Fused Multiply-Add），共计 2 次浮点运算。
 
    $$
@@ -257,14 +257,14 @@ $$
 设 $M = N = K = 4$ 的微型矩阵：
 
 - **朴素实现（无复用）**：
-  计算每个 $C[i][j]$，读取 $A$ 的 4 个数和 $B$ 的 4 个数（共 $8 \times 4\text{B} = 32\text{B}$），完成 $2 \times 4 = 8$ 次计算。
+  计算每个 $C[i][j]$，读取 $A$ 的 4 个数和 $B$ 的 4 个数（共 $8 \times 4\text{B} = 32\text{B}$ ），完成 $2 \times 4 = 8$ 次计算。
 
   $$
   \text{算术强度} = \frac{8 \text{ FLOPs}}{32 \text{ Bytes}} = \mathbf{0.25 \text{ FLOPs/Byte}}
   $$
 
 - **理想完全分块（全部放入片上复用）**：
-  总共把 $A(16 \text{数}) + B(16 \text{数})$ 搬进片上（共 $32 \times 4\text{B} = 128\text{B}$），算出 $C(16 \text{数})$ 写出（$16 \times 4\text{B} = 64\text{B}$），总流量 192 Bytes。
+  总共把 $A(16 \text{数}) + B(16 \text{数})$ 搬进片上（共 $32 \times 4\text{B} = 128\text{B}$ ），算出 $C(16 \text{数})$ 写出（ $16 \times 4\text{B} = 64\text{B}$ ），总流量 192 Bytes。
   总运算量为 $2 \times 4^3 = 128$ FLOPs。
 
   $$
@@ -287,13 +287,13 @@ $$
 
 以 **NVIDIA A100-SXM4-80GB** 为例：
 
-- **CUDA Core FP32 峰值**：$19.5 \text{ TFLOPS}$，HBM 带宽：$2039 \text{ GB/s}$。
+- **CUDA Core FP32 峰值**： $19.5 \text{ TFLOPS}$，HBM 带宽： $2039 \text{ GB/s}$。
 
   $$
   \text{Balance Point}_{\text{FP32}} = \frac{19.5 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{9.56 \text{ FLOPs/Byte}}
   $$
 
-- **Tensor Core FP16 峰值**：$312 \text{ TFLOPS}$，HBM 带宽：$2039 \text{ GB/s}$。
+- **Tensor Core FP16 峰值**： $312 \text{ TFLOPS}$，HBM 带宽： $2039 \text{ GB/s}$。
 
   $$
   \text{Balance Point}_{\text{TensorCore}} = \frac{312 \times 10^{12}}{2039 \times 10^9} \approx \mathbf{153.0 \text{ FLOPs/Byte}}
@@ -349,14 +349,14 @@ for (int k = 0; k < K; ++k) {
 
 ---
 
-### 2.2 Block Tile 物理切分：$BM \times BN$ 与沿 $K$ 维度的滑动窗口
+### 2.2 Block Tile 物理切分： $BM \times BN$ 与沿 $K$ 维度的滑动窗口
 
 解决这一死穴的第一道防线，就是 **Thread Block 级分块（Block Tiling）**。
 
-我们将输出矩阵 $C$ 划分为多个大小为 $BM \times BN$ 的子块（Block Tile，例如 $128 \times 128$）。
+我们将输出矩阵 $C$ 划分为多个大小为 $BM \times BN$ 的子块（Block Tile，例如 $128 \times 128$ ）。
 每个 Thread Block 专门负责计算其中一个子块。
 为了完成这个子块的计算，我们需要 $A$ 矩阵中对应的 $BM \times K$ 条带，以及 $B$ 矩阵中对应的 $K \times BN$ 条带。
-但片上 Shared Memory 放不下整个条带（$K=4096$ 太长），因此我们将长条带沿 $K$ 维度切分成一个个步长为 $BK$（例如 $BK = 8$ 或 $16$）的小窗口：
+但片上 Shared Memory 放不下整个条带（ $K=4096$ 太长），因此我们将长条带沿 $K$ 维度切分成一个个步长为 $BK$（例如 $BK = 8$ 或 $16$ ）的小窗口：
 
 ```text
 ====================================================================================================
@@ -447,12 +447,12 @@ $$
 当 Block Tiling 把全局内存的压力卸掉后，新的性能高墙在 **Shared Memory** 上拔地而起。
 
 让我们计算 SM 内部的吞吐瓶颈：
-在上一节的 Block Tiling 中，如果每个线程只计算 $C$ 的 1 个元素（$1 \times 1$）：
+在上一节的 Block Tiling 中，如果每个线程只计算 $C$ 的 1 个元素（ $1 \times 1$ ）：
 在内部的 $K$ 维循环中，为了完成 1 次乘加（2 FLOPs），线程必须从 Shared Memory 读取 1 个 $A$ 元素（4 字节）和 1 个 $B$ 元素（4 字节），共消耗 8 字节的 Shared Memory 带宽！
 
 - 算术强度在共享内存层面依然被按在 **0.25 FLOPs/Byte**；
 - A100 单 SM 的共享内存聚合带宽约为 180 GB/s（全卡 19 TB/s）；
-- 180 GB/s 能够喂饱的片上算力只有：$180 \times 0.25 = \mathbf{45 \text{ GFLOPS/SM}}$（全卡仅约 4.8 TFLOPS）！
+- 180 GB/s 能够喂饱的片上算力只有： $180 \times 0.25 = \mathbf{45 \text{ GFLOPS/SM}}$（全卡仅约 4.8 TFLOPS）！
   **共享内存的 Crossbar 总线被打到冒烟，算子性能卡死在 20%~25% 无法寸进！**
 
 ---
@@ -462,7 +462,7 @@ $$
 要想彻底解放 Shared Memory，必须迈出体系结构最关键的一步——**2D 寄存器分块（Thread-level 2D Register Tiling）**！
 
 核心思想极其精妙：
-**绝对不能让一个线程只算一个元素！必须让每个线程同时负责计算输出矩阵中的一个小矩阵块（$TM \times TN$，例如 $8 \times 8 = 64$ 个元素）！**
+**绝对不能让一个线程只算一个元素！必须让每个线程同时负责计算输出矩阵中的一个小矩阵块（ $TM \times TN$，例如 $8 \times 8 = 64$ 个元素）！**
 并且，这 64 个累加和直接保存在该线程的**私有通用寄存器堆（Registers）**中，全程不写任何内存！
 
 ```text
@@ -628,7 +628,7 @@ sequenceDiagram
 
 NVIDIA 从 Volta 架构开始引入、在 Ampere/Hopper 上发扬光大的 **Tensor Core（张量核心）**，代表了处理器的完全代际革命：
 
-- **传统 CUDA Core**：纯标量执行单元。每个周期、每个线程发射 1 条指令，处理 1 对标量的乘加（$a \times b + c$）；
+- **传统 CUDA Core**：纯标量执行单元。每个周期、每个线程发射 1 条指令，处理 1 对标量的乘加（ $a \times b + c$ ）；
 - **Tensor Core**：**微观脉动阵列（Systolic-like Tensor Array）**。它直接以矩阵乘累加作为单条硬件指令的执行基元：
 
   $$
@@ -647,7 +647,7 @@ NVIDIA 从 Volta 架构开始引入、在 Ampere/Hopper 上发扬光大的 **Ten
 Tensor Core 属于整个 **Warp（32 线程）**：
 一条 Tensor Core 指令（如 `mma.sync.aligned.m16n8k16`），必须由 **同一个 Warp 内的全部 32 个线程同步联合发射**！
 
-- 矩阵 $A$（$16 \times 16$）和矩阵 $B$（$16 \times 16$）并不是保存在某一个线程的内存里；
+- 矩阵 $A$（ $16 \times 16$ ）和矩阵 $B$（ $16 \times 16$ ）并不是保存在某一个线程的内存里；
 - **它们被硬件切碎成很多微小的碎片（Fragments），均匀分散打桩在 Warp 内 32 个线程的各个私有寄存器中！**
 
 ---
@@ -671,9 +671,9 @@ Tensor Core 属于整个 **Warp（32 线程）**：
 以 Ampere 架构最常用的 `mma.sync.aligned.m16n8k16` 指令为例：
 它完成一个 $16 \times 16$ 的矩阵 $A$ 与 $16 \times 8$ 的矩阵 $B$ 相乘，累加到 $16 \times 8$ 的矩阵 $C$ 中。
 
-- **矩阵 $A$ 的碎片分布**：$16 \times 16 = 256$ 个半精度元素（512 字节）。分配给 32 个线程，**每个线程持有 8 个 FP16 元素（刚好保存在 4 个 32-bit 寄存器中）**；
-- **矩阵 $B$ 的碎片分布**：$16 \times 8 = 128$ 个半精度元素。每个线程持有 4 个 FP16 元素（保存在 2 个 32-bit 寄存器中）；
-- **矩阵 $C$ 的累加碎片**：$16 \times 8 = 128$ 个单精度 float 元素。每个线程持有 4 个 FP32 寄存器。
+- **矩阵 $A$ 的碎片分布**： $16 \times 16 = 256$ 个半精度元素（512 字节）。分配给 32 个线程，**每个线程持有 8 个 FP16 元素（刚好保存在 4 个 32-bit 寄存器中）**；
+- **矩阵 $B$ 的碎片分布**： $16 \times 8 = 128$ 个半精度元素。每个线程持有 4 个 FP16 元素（保存在 2 个 32-bit 寄存器中）；
+- **矩阵 $C$ 的累加碎片**： $16 \times 8 = 128$ 个单精度 float 元素。每个线程持有 4 个 FP32 寄存器。
 
 当 32 个线程同时发射这条指令时，Tensor Core 硬件矩阵乘法器如同魔术一般，瞬间将 32 个线程寄存器中的碎片接入片内脉动阵列，在一个时钟周期内完成所有的交叉乘加，并将结果写回各自的累加寄存器中！这就是现代 AI 硬件算力爆发的终极真相。
 
@@ -1348,7 +1348,7 @@ int main() {
 ### 7.2 生产性能工程黄金 Checklist
 
 - [ ] 1. 【**Roofline 瓶颈前置测算**】：在动工前，用矩阵维度 $M, N, K$ 精确计算算术强度与硬件平衡点，明确目标算力上限。
-- [ ] 2. 【**三级分块尺寸正交设计**】：遵循黄金经验规则：Block Tile 设为 $128 \times 128$（配合 $BK = 8$ 或 $16$）；Thread Tile 设为 $8 \times 8$；Block 内分配 256 线程。
+- [ ] 2. 【**三级分块尺寸正交设计**】：遵循黄金经验规则：Block Tile 设为 $128 \times 128$（配合 $BK = 8$ 或 $16$ ）；Thread Tile 设为 $8 \times 8$；Block 内分配 256 线程。
 - [ ] 3. 【**强制 128-bit 向量化访存**】：在全局显存加载与共享内存写入中，全量使用 `float4` / `half8`（`LDG.128`），消灭指令发射瓶颈。
 - [ ] 4. 【**共享内存 Bank 冲突彻底清零**】：对 `As` 矩阵使用转置存储或对每行添加 `+4 Padding`，确保内层外积循环中 32 个 Bank 零串行化。
 - [ ] 5. 【**双缓冲寄存器预取流水线**】：严格排布主循环，确保全局异步加载指令在当前外积计算刚开始时便发射完毕。
@@ -1390,11 +1390,11 @@ int main() {
 
 #### 思考题 1：Wave Quantization 效应与尾块气泡
 
-当矩阵规模不是 Block Tile 的整数倍时（例如 $M = 4097, BM = 128$），边缘的最后一个 Block 只有 1 个有效行，其余 127 行全为空跑。在大型集群调度中，这种现象被称为 **Wave Quantization 效应**。请分析：在大模型推理动态 Batch 场景下，应如何动态调整 $BM$ 和 $BN$（或者采用 Split-K 技术）来消除尾块气泡对算力利用率的断崖式侵蚀？
+当矩阵规模不是 Block Tile 的整数倍时（例如 $M = 4097, BM = 128$ ），边缘的最后一个 Block 只有 1 个有效行，其余 127 行全为空跑。在大型集群调度中，这种现象被称为 **Wave Quantization 效应**。请分析：在大模型推理动态 Batch 场景下，应如何动态调整 $BM$ 和 $BN$（或者采用 Split-K 技术）来消除尾块气泡对算力利用率的断崖式侵蚀？
 
 #### 思考题 2：Split-K GEMM 的系统级取舍
 
-当矩阵的 $M$ 和 $N$ 非常小（例如大模型解码生成阶段 Batch=1，GEMV 模式），但 $K$ 维度极大（如 $K = 16384$）时，常规的 2D 网格切分只能发射很少的 Block，根本填不满 A100 的 108 个 SM。此时业界常采用 **Split-K** 架构（沿 $K$ 维度切分到不同 Block 并行算，最后做 Atomic 归约）。请推导 Split-K 带来的并行度收益与其引入的全局原子写同步代价之间的临界平衡点。
+当矩阵的 $M$ 和 $N$ 非常小（例如大模型解码生成阶段 Batch=1，GEMV 模式），但 $K$ 维度极大（如 $K = 16384$ ）时，常规的 2D 网格切分只能发射很少的 Block，根本填不满 A100 的 108 个 SM。此时业界常采用 **Split-K** 架构（沿 $K$ 维度切分到不同 Block 并行算，最后做 Atomic 归约）。请推导 Split-K 带来的并行度收益与其引入的全局原子写同步代价之间的临界平衡点。
 
 #### 思考题 3：CUTLASS 3.x 与 Hopper TMA/WGMMA 的硬件代际跃迁
 
@@ -1431,7 +1431,7 @@ int main() {
 ##### 【白板标准解答与推导路径】
 
 - **第一步：朴素 GEMM（无复用）**
-  计算 1 个 $C$ 元素需要 $K$ 次乘加（$2K$ FLOPs），从全局显存读取 $A$ 的 $K$ 个数与 $B$ 的 $K$ 个数（$2K \times 4$ 字节）。
+  计算 1 个 $C$ 元素需要 $K$ 次乘加（ $2K$ FLOPs），从全局显存读取 $A$ 的 $K$ 个数与 $B$ 的 $K$ 个数（ $2K \times 4$ 字节）。
 
   $$
   I_{\text{naive}} = \frac{2K}{8K} = \mathbf{0.25 \text{ FLOPs/Byte}}
@@ -1445,17 +1445,17 @@ int main() {
   $$
 
 - **第三步：2D Register Tiling（二级外积复用）**
-  每个线程负责 $TM \times TN$ 局部块。在每个 $K$ 步长中，从 Shared Memory 读取 $(TM + TN) \times 4$ 字节，在寄存器中产生 $TM \times TN$ 次乘加（$2 \cdot TM \cdot TN$ FLOPs）。
+  每个线程负责 $TM \times TN$ 局部块。在每个 $K$ 步长中，从 Shared Memory 读取 $(TM + TN) \times 4$ 字节，在寄存器中产生 $TM \times TN$ 次乘加（ $2 \cdot TM \cdot TN$ FLOPs）。
 
   $$
   I_{\text{thread}} = \frac{TM \cdot TN}{2 \cdot (TM + TN)}
   $$
 
 - **第四步：论证 $8 \times 8$ 为什么是黄金平衡点**
-  - 若取 $TM = TN = 4$：$I_{\text{thread}} = 16 / 16 = 1.0$ FLOPs/Byte，共享内存带宽仍显局促；
-  - 若取 $TM = TN = 8$：$I_{\text{thread}} = 64 / 32 = 2.0$ FLOPs/Byte，共享内存带宽压力骤减 87.5%；此时单个线程占用 64 个累加寄存器 + 16 个缓存寄存器 $\approx 80$ 个寄存器。A100 单线程上限 255 个，80 个寄存器刚好保证 50%~62.5% 的高 Occupancy 且**绝不发生 Register Spilling**；
+  - 若取 $TM = TN = 4$： $I_{\text{thread}} = 16 / 16 = 1.0$ FLOPs/Byte，共享内存带宽仍显局促；
+  - 若取 $TM = TN = 8$： $I_{\text{thread}} = 64 / 32 = 2.0$ FLOPs/Byte，共享内存带宽压力骤减 87.5%；此时单个线程占用 64 个累加寄存器 + 16 个缓存寄存器 $\approx 80$ 个寄存器。A100 单线程上限 255 个，80 个寄存器刚好保证 50%~62.5% 的高 Occupancy 且**绝不发生 Register Spilling**；
   - 若激进取 $TM = TN = 16$：需要 $16 \times 16 = 256$ 个累加寄存器，直接打穿硬件上限，触发 Local Memory 溢出雪崩！
-  - **结论**：$8 \times 8$ 是兼顾寄存器复用最大化与防止寄存器溢出的绝对黄金甜点。
+  - **结论**： $8 \times 8$ 是兼顾寄存器复用最大化与防止寄存器溢出的绝对黄金甜点。
 
 ---
 
@@ -1469,8 +1469,8 @@ int main() {
 
 1. **分析冲突成因**：
    - 共享内存划分为 32 个 4 字节 Bank，地址 $(row \times \text{Stride} + col)$ 映射到的 Bank 为 $(row \times \text{Stride} + col) \pmod{32}$；
-   - 矩阵 $A$ 在 Block Tiling 维度中是 $BM \times BK$（例如 $128 \times 8$）。如果按常规方式存储，在做外积时，线程需要沿 $K$ 维度垂直读取同一列的连续行元素（$row$ 变化，而 $col$ 固定）；
-   - 此时若 $\text{Stride} = BK = 8$，相邻行的 Bank 差值为 $8$。当 4 个线程跨越 4 行时，$4 \times 8 = 32$，**线程 0 和线程 4 会撞入同一个 Bank**；当规模更大时，直接退化为严重的 32-way Bank Conflict！
+   - 矩阵 $A$ 在 Block Tiling 维度中是 $BM \times BK$（例如 $128 \times 8$ ）。如果按常规方式存储，在做外积时，线程需要沿 $K$ 维度垂直读取同一列的连续行元素（ $row$ 变化，而 $col$ 固定）；
+   - 此时若 $\text{Stride} = BK = 8$，相邻行的 Bank 差值为 $8$。当 4 个线程跨越 4 行时， $4 \times 8 = 32$，**线程 0 和线程 4 会撞入同一个 Bank**；当规模更大时，直接退化为严重的 32-way Bank Conflict！
 2. **给出解决方案 A：转置存储（Transpose Storage）**：
    在协作将 $A$ 从全局显存搬入共享内存时，不按行存，而是按转置格式存入 `As[BK][BM]`。此时读取时变为沿 $BM$ 维度横向读取，连续线程读取连续列，**天然无冲突**！
 3. **给出解决方案 B：列填充（Padding）**：
@@ -1523,11 +1523,11 @@ int main() {
 2. **输入矩阵 $A$ 的碎片分布（Row-Major）**：
    - 矩阵 $A$ 大小为 $16 \times 16 = 256$ 个 FP16 元素（共 512 字节）；
    - Warp 内 32 个线程，每个线程分配 $256 / 32 = 8$ 个 FP16 元素；
-   - 每个元素 2 字节，8 个元素共 16 字节，**刚好装入每个线程的 4 个 32-bit 通用寄存器（$R_0, R_1, R_2, R_3$）**；
+   - 每个元素 2 字节，8 个元素共 16 字节，**刚好装入每个线程的 4 个 32-bit 通用寄存器（ $R_0, R_1, R_2, R_3$ ）**；
    - 线程 Lane ID 为 $0 \sim 3$ 负责前 4 行的切片，依次交错排布。
 3. **输入矩阵 $B$ 的碎片分布（Col-Major）**：
    - 矩阵 $B$ 大小为 $16 \times 8 = 128$ 个 FP16 元素；
-   - 每个线程分配 $128 / 32 = 4$ 个 FP16 元素，**刚好装入 2 个 32-bit 寄存器（$R_4, R_5$）**。
+   - 每个线程分配 $128 / 32 = 4$ 个 FP16 元素，**刚好装入 2 个 32-bit 寄存器（ $R_4, R_5$ ）**。
 4. **输出矩阵 $C/D$ 的累加碎片**：
    - 输出矩阵大小为 $16 \times 8 = 128$ 个单精度 float 元素；
    - 每个线程分配 4 个 FP32 元素，保存在 4 个专用累加寄存器中。

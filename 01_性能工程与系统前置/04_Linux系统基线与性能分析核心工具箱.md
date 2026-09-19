@@ -382,7 +382,7 @@ load average: 12.50, 8.20, 4.15
 > L(t) = L(t - \Delta t) \cdot e^{-\Delta t / \tau} + n \cdot (1 - e^{-\Delta t / \tau})
 > $$
 > 
-> 其中 $\tau$ 为时间衰减常数（分别对应 1、5、15 分钟），$n$ 为当前采样的活跃任务数。
+> 其中 $\tau$ 为时间衰减常数（分别对应 1、5、15 分钟）， $n$ 为当前采样的活跃任务数。
 
 ### 2. 为什么 CPU 使用率 5%，但 Load 可以高达 100？
 根据上述公式：
@@ -455,7 +455,7 @@ nvme0n1  12.0  1500.0     128.0  750000.0    0.00   85.00   0.00   5.36     0.45
 ```
 
 - **`r/s, w/s` (IOPS)**：每秒读/写请求次数；
-- **`rkB/s, wkB/s` (Throughput)**：每秒读/写吞吐量（例如这里写吞吐为 $750000\text{ KB/s} \approx 732\text{ MB/s}$）；
+- **`rkB/s, wkB/s` (Throughput)**：每秒读/写吞吐量（例如这里写吞吐为 $750000\text{ KB/s} \approx 732\text{ MB/s}$ ）；
 - **`r_await, w_await` (Response Time)**：读/写请求的**平均响应时间（包含排队等待时间 + 硬件服务时间，单位 ms）**。NVMe SSD 的正常写入 `w_await` 应在 **< 2 ms**，如果飙升到数十甚至上千毫秒，说明存储已极度超载；
 - **`aqu-sz` (Average Queue Size)**：请求队列平均深度；
 - **`%util`**：设备处于忙碌状态的时间百分比。
@@ -468,7 +468,7 @@ L = \lambda \cdot W
 $$
 
 - $L$：系统内平均排队请求数（`aqu-sz`）；
-- $\lambda$：到达吞吐率（$\text{IOPS} = r/s + w/s$）；
+- $\lambda$：到达吞吐率（ $\text{IOPS} = r/s + w/s$ ）；
 - $W$：平均等待与服务时间（`await`）。
 
 $$
@@ -489,7 +489,7 @@ $$
 IFACE      rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil
 eth0       85000.0   92000.0 1250000.0 1340000.0      0.00      0.00      0.00     98.5
 ```
-- **`rxkB/s, txkB/s`**：收发带宽（$1340000\text{ kB/s} \approx 1.34\text{ GB/s} \approx 10.7\text{ Gbps}$）；
+- **`rxkB/s, txkB/s`**：收发带宽（ $1340000\text{ kB/s} \approx 1.34\text{ GB/s} \approx 10.7\text{ Gbps}$ ）；
 - **`%ifutil`**：网卡物理带宽利用率。
 
 ### 2. 微突发丢包（Microburst Drops）与 Ring Buffer
@@ -1026,7 +1026,7 @@ echo "✅ 内核优化参数注入完成！当前 swappiness: $(sysctl vm.swappi
 ### 💡 面试题 1：当遇到一台服务器 CPU Load 极高（如 Load=64）但 CPU 使用率（%CPU）极低（如 5%）时，可能的原因是什么？请给出一步步排查的指令链路。
 
 > **🎯 大厂标准答题路径**：
-> 1. **第一性原理定性**：根据 Linux 内核 `loadavg.c` 模型，$\text{Load} = N_{\text{TASK-RUNNING}} + N_{\text{TASK-UNINTERRUPTIBLE}}$。当 CPU 使用率低而 Load 极高时，说明系统中积压了大量处于 **D 状态（Uninterruptible Sleep 不可中断睡眠）** 的进程，任务并非在消耗算力，而是在内核中等待硬件或锁资源。
+> 1. **第一性原理定性**：根据 Linux 内核 `loadavg.c` 模型， $\text{Load} = N_{\text{TASK-RUNNING}} + N_{\text{TASK-UNINTERRUPTIBLE}}$。当 CPU 使用率低而 Load 极高时，说明系统中积压了大量处于 **D 状态（Uninterruptible Sleep 不可中断睡眠）** 的进程，任务并非在消耗算力，而是在内核中等待硬件或锁资源。
 > 2. **Step-by-Step 排查指令链**：
 >    - **第一步：确认进程状态**：执行 `ps -eo state,pid,ppid,comm | grep -E '^D'`，抓出所有处于 D 状态的进程 PID 与命令名；
 >    - **第二步：读取内核挂起调用栈**：执行 `cat /proc/<PID>/stack`，查看该进程阻塞在内核的哪一个系统调用和驱动函数中；

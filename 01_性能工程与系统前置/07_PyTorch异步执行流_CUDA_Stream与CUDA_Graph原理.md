@@ -725,10 +725,10 @@ with torch.cuda.stream(data_stream):
 
 1. **GPU 实际物理计算时间**：
    - 在 H100 强悍的带宽和算力下，每个小算子的实际执行时间只有 $0.5 \sim 2\ \mu\text{s}$；
-   - 1440 个 Kernel 的 GPU 纯计算时间总计：$1440 \times 1.2\ \mu\text{s} \approx \mathbf{1.728\text{ ms}}$；
+   - 1440 个 Kernel 的 GPU 纯计算时间总计： $1440 \times 1.2\ \mu\text{s} \approx \mathbf{1.728\text{ ms}}$；
 2. **CPU 串行发射总耗时**：
    - 每次发射平均消耗 $7\ \mu\text{s}$；
-   - 1440 个 Kernel 的 CPU 发射时间总计：$1440 \times 7\ \mu\text{s} \approx \mathbf{10.08\text{ ms}}$！
+   - 1440 个 Kernel 的 CPU 发射时间总计： $1440 \times 7\ \mu\text{s} \approx \mathbf{10.08\text{ ms}}$！
 
 ```text
 CPU 发射速度远远跟不上 GPU 的吞吐速度！
@@ -762,7 +762,7 @@ GPU 算力利用率 = 1.728 ms / 10.08 ms ≈ 17.1% !
 为了彻底根除 CPU Launch Overhead，NVIDIA 在 CUDA 10 中正式引入了 **CUDA Graph** 机制。
 
 - **传统 Eager 模式（解释执行）**：CPU 就像一个啰嗦的指挥官，站在前线每隔几微秒就向 GPU 士兵大喊一声：“现在算 RMSNorm！”……“现在算 RoPE！”……“现在算 GEMM！”。通信和下发延迟占据了绝大部分时间；
-- **CUDA Graph 模式（预制执行图）**：在正式战斗前，指挥官把一整套战术（包含 1440 个算子的执行拓扑、依赖关系、显存地址、Grid 参数）**一次性画成一张精密的作战地图（Graph），直接烧录进 GPU 芯片内部**。在正式战斗时，CPU 只需要扣动一次扳机（下发 1 条 `cudaGraphLaunch` 指令，耗时 $< 3\ \mu\text{s}$），GPU 内部的硬件调度器就会自主按照拓扑图，以光速连续触发所有 1440 个算子！
+- **CUDA Graph 模式（预制执行图）**：在正式战斗前，指挥官把一整套战术（包含 1440 个算子的执行拓扑、依赖关系、显存地址、Grid 参数）**一次性画成一张精密的作战地图（Graph），直接烧录进 GPU 芯片内部**。在正式战斗时，CPU 只需要扣动一次扳机（下发 1 条 `cudaGraphLaunch` 指令，耗时 $< 3\ \mu\text{s}$ ），GPU 内部的硬件调度器就会自主按照拓扑图，以光速连续触发所有 1440 个算子！
 
 ```mermaid
 graph LR
@@ -904,7 +904,7 @@ PyTorch 内部为 CUDA Graph 设计了 **专属私有显存池（Graph Private M
 | 约束项                                          | 严苛规则                                                                                     | 违背后果                                                                                              |
 | :---------------------------------------------- | :------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------- |
 | **1. 静态指针绑定 (Static Pointers)**           | 录制时 Kernel 绑定的显存地址在 Replay 时严禁改变                                             | 若 Replay 前重新 `input = torch.randn()` 产生新指针，Graph 仍会读取录制时的旧地址，输入更新完全失效！ |
-| **2. 严格静态 Shape (Static Shapes)**           | 张量的维度（$B, S, H$ 等）在录制后绝不允许发生任何动态变化                                   | 任何变长 Sequence 都会导致非法内存访问或计算错误                                                      |
+| **2. 严格静态 Shape (Static Shapes)**           | 张量的维度（ $B, S, H$ 等）在录制后绝不允许发生任何动态变化                                   | 任何变长 Sequence 都会导致非法内存访问或计算错误                                                      |
 | **3. 严禁 CPU 控制流 (No CPU Branching)**       | 图内部不能包含任何依赖 GPU 计算结果的 CPU 条件分支（如 `if (loss.item() > 0.1)`）            | 录制直接报错：`CUDA driver error: operation not permitted during capture`                             |
 | **4. 闭包式多流依赖 (Closed Stream Hierarchy)** | 录制过程中如果分叉（Fork）出子流，必须在 Capture 结束前全部通过 Event 汇聚（Join）到捕获流中 | 悬空未汇聚的流会导致图捕获不完整或死锁                                                                |
 | **5. 集合通信限制 (NCCL Compatibility)**        | 录制中包含分布式 NCCL 通信时，NCCL 通信缓冲区与通信拓扑必须完全静态预分配                    | 旧版 NCCL 会直接报错崩溃（需 NCCL 2.14+ 及特定环境变量支持）                                          |
@@ -954,7 +954,7 @@ class CUDAGraphRunner:
 著名的开源推理框架 **vLLM** 和 **TensorRT-LLM** 给出了教科书级的工业级解法——**Multi-Bucket CUDA Graphs（多桶分箱图机制）**：
 
 1. **预录制离散分箱（Buckets）**：
-   - 引擎在系统冷启动时，针对一组预设的常用 Batch Size 列表（如 $[1, 2, 4, 8, 16, 32, 64, 128, 256]$），**分别为每个 Batch Size 录制并维护一张专属的 CUDA Graph**；
+   - 引擎在系统冷启动时，针对一组预设的常用 Batch Size 列表（如 $[1, 2, 4, 8, 16, 32, 64, 128, 256]$ ），**分别为每个 Batch Size 录制并维护一张专属的 CUDA Graph**；
 2. **运行时动态路由（Dynamic Dispatch & Padding）**：
    - 当调度器（Scheduler）当前打包了 13 个 Token 时，系统向上寻找最近的桶（Batch Size = 16 的 Graph）；
    - 将这 13 个有效 Token 填入静态 Buffer 的前 13 个槽位，剩余的 3 个槽位用无意义的 Padding Token 填充（设置 Mask 忽略其计算或计算后丢弃）；
@@ -1435,15 +1435,15 @@ if __name__ == "__main__":
 #### 🎯 答题思考路径与推导
 
 1. **量化 Prefill 阶段特征**：
-   - 输入为数百上千个 Token，矩阵乘法规模巨大（$M \ge 512$）；
+   - 输入为数百上千个 Token，矩阵乘法规模巨大（ $M \ge 512$ ）；
    - 单个 Kernel 在 GPU 上的物理计算耗时通常为 $100\ \mu\text{s} \sim 5\text{ ms}$；
-   - 相比之下，CPU 的单个 Launch Overhead（约 $5 \sim 8\ \mu\text{s}$）占总时延比例 $< 5\%$，系统处于 **Compute-Bound**（算力受限），GPU 没有气泡；
+   - 相比之下，CPU 的单个 Launch Overhead（约 $5 \sim 8\ \mu\text{s}$ ）占总时延比例 $< 5\%$，系统处于 **Compute-Bound**（算力受限），GPU 没有气泡；
 2. **量化 Decode 阶段特征**：
-   - 每步仅生成 1 个 Token（$M = 1$），算子计算量极小；
+   - 每步仅生成 1 个 Token（ $M = 1$ ），算子计算量极小；
    - 单个 Kernel 在 GPU 上的纯物理计算耗时仅为 $0.5 \sim 2\ \mu\text{s}$；
    - 80 层 Transformer 总计发射 1400+ 个 Kernel，CPU 串行下发总耗时高达 $1400 \times 7\ \mu\text{s} \approx 10\text{ ms}$，而 GPU 纯计算只需 $1.5\text{ ms}$；
    - 系统处于严重的 **Launch-Bound**，80%+ 的时间在等待 CPU 下发；
-3. **结论**：CUDA Graph 能够将 1400 次发射压缩为 1 次（耗时 $< 3\ \mu\text{s}$），彻底消灭了这 8.5ms 的 CPU 气泡，因此在 Decode 阶段能带来 2~5 倍的巨大端到端提速！
+3. **结论**：CUDA Graph 能够将 1400 次发射压缩为 1 次（耗时 $< 3\ \mu\text{s}$ ），彻底消灭了这 8.5ms 的 CPU 气泡，因此在 Decode 阶段能带来 2~5 倍的巨大端到端提速！
 
 ---
 
@@ -1486,7 +1486,7 @@ with torch.cuda.stream(stream_consumer):
 
 #### 🎯 答题核心要点
 
-1. **预烘焙离散桶（Batch Bucketing）**：在系统启动阶段，为预定义的一组离散 Batch Size（如 $1, 2, 4, 8, 16, 32, 64, 128$）预先录制 N 张 CUDA Graph；
+1. **预烘焙离散桶（Batch Bucketing）**：在系统启动阶段，为预定义的一组离散 Batch Size（如 $1, 2, 4, 8, 16, 32, 64, 128$ ）预先录制 N 张 CUDA Graph；
 2. **Padding 与动态路由**：运行时根据当前实际请求数向上对齐到最近的 Bucket，将实际数据写入静态 Buffer 的前缀区域，其余部分 Padding，执行后切片截取有效结果；
 3. **统一私有显存池（Shared Graph Memory Pool）**：所有 Bucket Graph 共享同一个 `graph_pool_handle`，保证预分配的显存池能够在不同的 Graph 之间分时复用，避免显存爆炸；
 4. **结合 PagedAttention**：输入/输出 Buffer 采用静态指针，而注意力底层的 KV Cache 采用分页虚拟内存指针数组索引，使得静态图依然能够寻址动态非连续的 KV 块！

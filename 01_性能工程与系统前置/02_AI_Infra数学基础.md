@@ -284,7 +284,7 @@ $$
 2. 至少一个大小为 1；或
 3. 某一方不存在该维度。
 
-- **物理实现**：$\mathbf{b}$ 在底层并未复制 $B \times S$ 份，而是被赋予了 `stride[0]=0, stride[1]=0, stride[2]=1` 的逻辑视图；
+- **物理实现**： $\mathbf{b}$ 在底层并未复制 $B \times S$ 份，而是被赋予了 `stride[0]=0, stride[1]=0, stride[2]=1` 的逻辑视图；
 - **语义陷阱**：若将本应为 $[B, S]$ 的张量误写为 $[S, B]$ 且某维恰好为 1，广播机制会静默运行出错误结果，不报任何异常！
 
 ---
@@ -298,20 +298,20 @@ $$
 $$
 
 两种经典工程直觉：
-1. **加权求和**：$\mathbf{q}$ 是加权系数，$\mathbf{k}$ 是特征数值；
+1. **加权求和**： $\mathbf{q}$ 是加权系数， $\mathbf{k}$ 是特征数值；
 2. **方向相似性**：余弦相似度 $\cos\theta = \frac{\mathbf{q}^\top\mathbf{k}}{\|\mathbf{q}\|_2\|\mathbf{k}\|_2}$。
 
-在 Transformer Self-Attention 中，$Q$ 与 $K$ 的点积衡量了语义匹配度；为防止随维度 $D_h$ 增大导致点积方差膨胀、Softmax 梯度饱和消失，必须除以缩放因子 $\sqrt{D_h}$。
+在 Transformer Self-Attention 中， $Q$ 与 $K$ 的点积衡量了语义匹配度；为防止随维度 $D_h$ 增大导致点积方差膨胀、Softmax 梯度饱和消失，必须除以缩放因子 $\sqrt{D_h}$。
 
 ---
 
 ## 2.6 范数（Norm）与浮点容差（atol / rtol）
 
 常见向量范数与矩阵 Frobenius 范数：
-- $L_1$ 范数：$\|\mathbf{x}\|_1 = \sum |x_i|$；
-- $L_2$ 范数：$\|\mathbf{x}\|_2 = \sqrt{\sum x_i^2}$；
-- $L_\infty$ 范数：$\|\mathbf{x}\|_\infty = \max |x_i|$；
-- Frobenius 范数：$\|\mathbf{A}\|_F = \sqrt{\sum_i \sum_j A_{ij}^2}$。
+- $L_1$ 范数： $\|\mathbf{x}\|_1 = \sum |x_i|$；
+- $L_2$ 范数： $\|\mathbf{x}\|_2 = \sqrt{\sum x_i^2}$；
+- $L_\infty$ 范数： $\|\mathbf{x}\|_\infty = \max |x_i|$；
+- Frobenius 范数： $\|\mathbf{A}\|_F = \sqrt{\sum_i \sum_j A_{ij}^2}$。
 
 在算子测试中检验两个浮点结果是否一致，必须采用复合容差公式：
 
@@ -328,7 +328,7 @@ $$
 
 若 $\mathbf{A} \in \mathbb{R}^{M \times K}, \mathbf{B} \in \mathbb{R}^{K \times N}$，输出 $\mathbf{C} = \mathbf{A}\mathbf{B} \in \mathbb{R}^{M \times N}$ 的每个元素 $C_{ij} = \sum_{k=1}^K A_{ik} B_{kj}$ 都是 $\mathbf{A}$ 的第 $i$ 行与 $\mathbf{B}$ 的第 $j$ 列的向量内积。
 
-标准 GEMM 形式：$\mathbf{C} \leftarrow \alpha \mathbf{A}\mathbf{B} + \beta \mathbf{C}$。  
+标准 GEMM 形式： $\mathbf{C} \leftarrow \alpha \mathbf{A}\mathbf{B} + \beta \mathbf{C}$。  
 矩阵乘法满足结合律 $(\mathbf{A}\mathbf{B})\mathbf{C} = \mathbf{A}(\mathbf{B}\mathbf{C})$，但不满足交换律。选择不同的乘法结合顺序，中间张量显存与 FLOPs 会有天壤之别！
 
 ---
@@ -347,7 +347,7 @@ $$
 
 ## 2.9 线性变换与仿射变换
 
-- **严格线性变换**：$f(a\mathbf{x} + b\mathbf{y}) = a f(\mathbf{x}) + b f(\mathbf{y})$，对应无偏置矩阵乘 $\mathbf{y} = \mathbf{W}\mathbf{x}$；
+- **严格线性变换**： $f(a\mathbf{x} + b\mathbf{y}) = a f(\mathbf{x}) + b f(\mathbf{y})$，对应无偏置矩阵乘 $\mathbf{y} = \mathbf{W}\mathbf{x}$；
 - **仿射变换（Affine）**：包含偏置项 $\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$。  
 由于连续多个线性层可以无损合并为一个大矩阵，因此**非线性激活函数（ReLU, GELU, SwiGLU）是深层网络拥有非线性拟合能力的唯一源泉**。
 
@@ -364,7 +364,7 @@ $$
 ## 2.11 线性相关、张成空间与矩阵秩（Rank）
 
 矩阵的**秩（Rank）** $\operatorname{rank}(\mathbf{A}) \le \min(M, N)$ 代表矩阵中线性无关的特征方向数量。  
-若矩阵低秩（$r \ll \min(M, N)$），则矩阵存在极大的信息冗余，可以分解为 $\mathbf{A} \approx \mathbf{U}\mathbf{V}$（$\mathbf{U} \in \mathbb{R}^{M \times r}, \mathbf{V} \in \mathbb{R}^{r \times N}$），将参数量从 $MN$ 骤降至 $r(M+N)$。
+若矩阵低秩（ $r \ll \min(M, N)$ ），则矩阵存在极大的信息冗余，可以分解为 $\mathbf{A} \approx \mathbf{U}\mathbf{V}$（ $\mathbf{U} \in \mathbb{R}^{M \times r}, \mathbf{V} \in \mathbb{R}^{r \times N}$ ），将参数量从 $MN$ 骤降至 $r(M+N)$。
 
 ---
 
@@ -376,7 +376,7 @@ $$
 \mathbf{A}\mathbf{v} = \lambda \mathbf{v}
 $$
 
-则 $\mathbf{v}$ 为特征向量，$\lambda$ 为特征值。矩阵变换在该方向上只做缩放、不改变方向。特征值的大小决定了系统经过多层变换后信号是放大（$\lambda > 1$）还是衰减（$\lambda < 1$），直接关联到梯度爆炸与消失。
+则 $\mathbf{v}$ 为特征向量， $\lambda$ 为特征值。矩阵变换在该方向上只做缩放、不改变方向。特征值的大小决定了系统经过多层变换后信号是放大（ $\lambda > 1$ ）还是衰减（ $\lambda < 1$ ），直接关联到梯度爆炸与消失。
 
 ---
 
@@ -401,8 +401,8 @@ $$
 $$
 
 以 $d_{in} = d_{out} = 4096, r = 16$ 为例：
-- 原全量参数：$4096 \times 4096 = 16,777,216$（约 16.7M 参数）；
-- LoRA 参数量：$16 \times (4096 + 4096) = 131,072$（约 0.13M 参数）；
+- 原全量参数： $4096 \times 4096 = 16,777,216$（约 16.7M 参数）；
+- LoRA 参数量： $16 \times (4096 + 4096) = 131,072$（约 0.13M 参数）；
 - **参数量缩减了 99.22%**！极大地节省了微调时的可训练参数与 AdamW 显存开销。
 
 ---
@@ -429,7 +429,7 @@ $$
 ## 3.2 朴素 GEMM 计算量（2MKN）与访存灾难
 
 对于 $\mathbf{A}(M \times K) \times \mathbf{B}(K \times N)$：
-- 输出元素数：$MN$；
+- 输出元素数： $MN$；
 - 每个元素执行 $K$ 次乘法与 $K$ 次加法；
 - **总计算量**：
 
@@ -476,7 +476,7 @@ $$
 
 ## 3.6 浮点分块结果为什么可能不逐位一致？
 
-实数加法满足结合律，但浮点加法**不满足结合律**（$(a+b)+c \ne a+(b+c)$）。  
+实数加法满足结合律，但浮点加法**不满足结合律**（ $(a+b)+c \ne a+(b+c)$ ）。  
 不同的 Tile 划分、Warp 规约树顺序与 Tensor Core 累加路径会微调浮点累加次序。因此：优化后的 CUDA Kernel 与参考实现之间存在微小数值差异是完全正常的，必须使用 `atol + rtol` 进行验证。
 
 ---
@@ -498,9 +498,9 @@ $$
 
 ## 4.2 联合概率、边缘概率与条件概率
 
-- **联合概率**：$P(X=x, Y=y)$；
-- **边缘概率**：$P(X=x) = \sum_y P(X=x, Y=y)$；
-- **条件概率**：$P(X=x \mid Y=y) = \frac{P(X=x, Y=y)}{P(Y=y)}$。
+- **联合概率**： $P(X=x, Y=y)$；
+- **边缘概率**： $P(X=x) = \sum_y P(X=x, Y=y)$；
+- **条件概率**： $P(X=x \mid Y=y) = \frac{P(X=x, Y=y)}{P(Y=y)}$。
 
 ---
 
@@ -522,14 +522,14 @@ $$
 
 ## 4.5 期望：概率加权平均及其线性性质
 
-离散期望：$\mathbb{E}[X] = \sum_x x P(X=x)$。  
-**线性性质**：$\mathbb{E}[aX + bY] = a\mathbb{E}[X] + b\mathbb{E}[Y]$（不要求 $X, Y$ 独立！）。大模型训练的优化目标即为最小化真实数据分布上的期望损失。
+离散期望： $\mathbb{E}[X] = \sum_x x P(X=x)$。  
+**线性性质**： $\mathbb{E}[aX + bY] = a\mathbb{E}[X] + b\mathbb{E}[Y]$（不要求 $X, Y$ 独立！）。大模型训练的优化目标即为最小化真实数据分布上的期望损失。
 
 ---
 
 ## 4.6 方差、标准差与 LayerNorm 总体方差
 
-方差公式：$\operatorname{Var}(X) = \mathbb{E}[(X-\mu)^2] = \mathbb{E}[X^2] - \mu^2$。  
+方差公式： $\operatorname{Var}(X) = \mathbb{E}[(X-\mu)^2] = \mathbb{E}[X^2] - \mu^2$。  
 深度学习算子中统一采用**除以 $H$ 的总体方差**：
 
 $$
@@ -570,7 +570,7 @@ $$
 P_i = \frac{e^{z_i}}{\sum_{j=1}^V e^{z_j}}
 $$
 
-**平移不变性**：$\operatorname{Softmax}(z + C) = \operatorname{Softmax}(z)$。
+**平移不变性**： $\operatorname{Softmax}(z + C) = \operatorname{Softmax}(z)$。
 
 ---
 
@@ -585,7 +585,7 @@ $$
 P_i = \frac{e^{z_i - m}}{\sum_{j=1}^V e^{z_j - m}}
 $$
 
-最大输入变为 $0$，$e^0 = 1$，彻底杜绝溢出！
+最大输入变为 $0$， $e^0 = 1$，彻底杜绝溢出！
 
 ---
 
@@ -613,7 +613,7 @@ $$
 
 ## 5.5 交叉熵 Loss 计算
 
-真实分布 $\mathbf{q}$ 与模型分布 $\mathbf{p}$ 的交叉熵：$H(\mathbf{q}, \mathbf{p}) = -\sum_i q_i \log p_i$。对于 One-hot 标签 $y$，简化为 $\mathcal{L} = -\log p_y$。
+真实分布 $\mathbf{q}$ 与模型分布 $\mathbf{p}$ 的交叉熵： $H(\mathbf{q}, \mathbf{p}) = -\sum_i q_i \log p_i$。对于 One-hot 标签 $y$，简化为 $\mathcal{L} = -\log p_y$。
 
 ---
 
@@ -623,7 +623,7 @@ $$
 H(\mathbf{p}) = - \sum_i p_i \log p_i
 $$
 
-衡量系统的不确定性。当均匀分布时熵最大（$\log V$），当完全确定时熵为 0。
+衡量系统的不确定性。当均匀分布时熵最大（ $\log V$ ），当完全确定时熵为 0。
 
 ---
 
@@ -633,7 +633,7 @@ $$
 D_{KL}(\mathbf{q} \parallel \mathbf{p}) = \sum_i q_i \log \frac{q_i}{p_i} \ge 0
 $$
 
-交叉熵可分解为：$H(\mathbf{q}, \mathbf{p}) = H(\mathbf{q}) + D_{KL}(\mathbf{q} \parallel \mathbf{p})$。在 RLHF / PPO 中用于约束新旧策略的偏移。
+交叉熵可分解为： $H(\mathbf{q}, \mathbf{p}) = H(\mathbf{q}) + D_{KL}(\mathbf{q} \parallel \mathbf{p})$。在 RLHF / PPO 中用于约束新旧策略的偏移。
 
 ---
 
@@ -667,14 +667,14 @@ $$
 
 ## 6.2 偏导数与梯度下降
 
-梯度 $\nabla_\theta \mathcal{L}$ 指示函数上升最快方向，更新公式：$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}$。
+梯度 $\nabla_\theta \mathcal{L}$ 指示函数上升最快方向，更新公式： $\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}$。
 
 ---
 
 ## 6.3 Jacobian 雅可比矩阵与 Hessian 曲率
 
-- **Jacobian**：$\mathbf{J}_{ij} = \frac{\partial y_i}{\partial x_j}$（一阶偏导矩阵）；
-- **Hessian**：$\mathbf{H}_{ij} = \frac{\partial^2 f}{\partial x_i \partial x_j}$（二阶曲率矩阵）。
+- **Jacobian**： $\mathbf{J}_{ij} = \frac{\partial y_i}{\partial x_j}$（一阶偏导矩阵）；
+- **Hessian**： $\mathbf{H}_{ij} = \frac{\partial^2 f}{\partial x_i \partial x_j}$（二阶曲率矩阵）。
 
 ---
 
@@ -702,7 +702,7 @@ PyTorch 采用反向模式自动微分（Vector-Jacobian Product），从标量 
 
 ## 6.7 线性层反向传播手算：两次 GEMM 与一次归约
 
-设前向：$Y = XW + b$，上游梯度为 $G = \frac{\partial L}{\partial Y}$：
+设前向： $Y = XW + b$，上游梯度为 $G = \frac{\partial L}{\partial Y}$：
 
 1. **输入梯度（GEMM 1）**：
 
@@ -722,7 +722,7 @@ PyTorch 采用反向模式自动微分（Vector-Jacobian Product），从标量 
    \frac{\partial L}{\partial b} = \sum_{i=1}^B G_{i, :} \in \mathbb{R}^{d_{out}}
    $$
 
-> 💡 **核心定理**：前向 1 次 GEMM（$2P$ FLOPs），反向 2 次 GEMM（$4P$ FLOPs），反向计算量恰好是前向的 **2 倍**！
+> 💡 **核心定理**：前向 1 次 GEMM（ $2P$ FLOPs），反向 2 次 GEMM（ $4P$ FLOPs），反向计算量恰好是前向的 **2 倍**！
 
 ---
 
@@ -775,18 +775,18 @@ $$
 ## 7.3 Adam 与 AdamW 状态自适应与 16 字节显存账本
 
 AdamW 维护一阶矩 $m_t$ 与二阶矩 $v_t$。对于每个模型参数：
-- 模型权重（FP16）：$2\text{ 字节}$
-- 梯度（FP16）：$2\text{ 字节}$
-- FP32 Master Weights：$4\text{ 字节}$
-- FP32 Momentum $m_t$：$4\text{ 字节}$
-- FP32 Variance $v_t$：$4\text{ 字节}$
-- **总显存消耗**：$2 + 2 + 4 + 4 + 4 = 16\text{ 字节 / 参数}$！
+- 模型权重（FP16）： $2\text{ 字节}$
+- 梯度（FP16）： $2\text{ 字节}$
+- FP32 Master Weights： $4\text{ 字节}$
+- FP32 Momentum $m_t$： $4\text{ 字节}$
+- FP32 Variance $v_t$： $4\text{ 字节}$
+- **总显存消耗**： $2 + 2 + 4 + 4 + 4 = 16\text{ 字节 / 参数}$！
 
 ---
 
 ## 7.4 梯度消失与梯度爆炸物理根源
 
-深层网络反向传播是多个 Jacobian 矩阵的连乘：$\frac{\partial L}{\partial h_0} = \frac{\partial L}{\partial h_L} \prod_{l=1}^L \frac{\partial h_l}{\partial h_{l-1}}$。矩阵谱半径持续偏离 1 将引发指数级衰减或爆炸。
+深层网络反向传播是多个 Jacobian 矩阵的连乘： $\frac{\partial L}{\partial h_0} = \frac{\partial L}{\partial h_L} \prod_{l=1}^L \frac{\partial h_l}{\partial h_{l-1}}$。矩阵谱半径持续偏离 1 将引发指数级衰减或爆炸。
 
 ---
 
@@ -856,7 +856,7 @@ $$
 
 ## 8.3 舍入误差与机器精度 $\epsilon_{mach}$
 
-二进制无法精确表示很多十进制小数（如 `0.1 + 0.2 != 0.3`）。当更新量 $\delta$ 远小于主权重 $x$ 的最小可表示步进时，$\operatorname{fl}(x + \delta) = x$，更新会被直接抹杀！
+二进制无法精确表示很多十进制小数（如 `0.1 + 0.2 != 0.3`）。当更新量 $\delta$ 远小于主权重 $x$ 的最小可表示步进时， $\operatorname{fl}(x + \delta) = x$，更新会被直接抹杀！
 
 ---
 
@@ -913,17 +913,17 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 # 9. AI Infra 核心实战综合大算例（8 大全景案例）
 
 ### 9.1 算例一：Transformer 线性层的 Shape、FLOPs 与显存代价
-设 $B=8, S=2048, H=4096$，线性层权重 $W \in \mathbb{R}^{H \times 4H}$（$4096 \times 16384$）：
-- **输入张量展平**：$X' \in \mathbb{R}^{(BS) \times H} = \mathbb{R}^{16384 \times 4096}$；
-- **前向计算量**：$2 \cdot (BS) \cdot H \cdot 4H = 8BSH^2 = 8 \times 8 \times 2048 \times 4096^2 \approx 2.20 \times 10^{12}\text{ FLOPs} \approx 2.20\text{ TFLOPs}$；
-- **反向计算量**：$2 \times 2.20 = 4.40\text{ TFLOPs}$。
+设 $B=8, S=2048, H=4096$，线性层权重 $W \in \mathbb{R}^{H \times 4H}$（ $4096 \times 16384$ ）：
+- **输入张量展平**： $X' \in \mathbb{R}^{(BS) \times H} = \mathbb{R}^{16384 \times 4096}$；
+- **前向计算量**： $2 \cdot (BS) \cdot H \cdot 4H = 8BSH^2 = 8 \times 8 \times 2048 \times 4096^2 \approx 2.20 \times 10^{12}\text{ FLOPs} \approx 2.20\text{ TFLOPs}$；
+- **反向计算量**： $2 \times 2.20 = 4.40\text{ TFLOPs}$。
 
 ---
 
 ### 9.2 算例二：多头 Attention 完整维度与 $O(S^2)$ 显存爆炸推导
 从输入 $X \in \mathbb{R}^{B \times S \times H}$ 生成 $Q, K, V \in \mathbb{R}^{B \times N_h \times S \times D_h}$：
-- **分数矩阵**：$S = \frac{QK^\top}{\sqrt{D_h}} \in \mathbb{R}^{B \times N_h \times S \times S}$；
-- **显存占用（FP16）**：$2 B N_h S^2\text{ 字节}$；
+- **分数矩阵**： $S = \frac{QK^\top}{\sqrt{D_h}} \in \mathbb{R}^{B \times N_h \times S \times S}$；
+- **显存占用（FP16）**： $2 B N_h S^2\text{ 字节}$；
 - **当 $B=1, N_h=32, S=32768$ 时**：
 
   $$
@@ -943,7 +943,7 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 
 ### 9.4 算例四：Online Softmax 分块状态合并推导（FlashAttention 数学核心）
 将 Logits 拆成多个 Tile 块。已处理部分的状态为 $(m, l)$（最大值与指数和），新 Tile 块状态为 $(m_b, l_b)$：
-1. **全局最大值更新**：$m_{new} = \max(m, m_b)$；
+1. **全局最大值更新**： $m_{new} = \max(m, m_b)$；
 2. **指数和重标定合并**：
 
    $$
@@ -957,7 +957,7 @@ Stable Softmax、Welford 方差与 Fused CrossEntropy 不仅解决了数值稳�
 ### 9.5 算例五：LoRA 微调的参数比例与额外前向 GEMM 开销
 在 $d_{in}=d_{out}=4096$ 的线性层上加 rank=16 LoRA：
 - 参数量占比仅为 $\frac{16(4096+4096)}{4096^2} \approx 0.78\%$；
-- 在线推理需多执行 2 次小矩阵乘：$x \cdot A^\top ([BS, 16])$ 与 $(xA^\top) \cdot B^\top ([BS, 4096])$；
+- 在线推理需多执行 2 次小矩阵乘： $x \cdot A^\top ([BS, 16])$ 与 $(xA^\top) \cdot B^\top ([BS, 4096])$；
 - 部署时可将 $B A$ 离线合并回主权重消除额外延迟。
 
 ---
@@ -976,7 +976,7 @@ $$
 \text{Memory (Bytes)} = B \times S \times H \times b
 $$
 
-例如 BF16 的 $(8, 4096, 8192)$：$8 \times 4096 \times 8192 \times 2 = 512\text{ MiB}$。
+例如 BF16 的 $(8, 4096, 8192)$： $8 \times 4096 \times 8192 \times 2 = 512\text{ MiB}$。
 
 ---
 
@@ -1065,7 +1065,7 @@ print(f"Loss Scale 放大并还原后的结果: {(scaled_grad.to(torch.float32) 
 | 场景 | ❌ 常见小白错误理解 | ✅ 大厂 AI Infra 正确理解 | 为什么？ |
 | :--- | :--- | :--- | :--- |
 | **张量转置** | “转置会把显存数据重新搬运一遍，很耗时。” | 转置只修改 Shape 和 Strides 元数据，是**零拷贝**。 | 物理连续数组未动，仅修改步长计算公式。 |
-| **反向传播** | “反向传播只是求个导数，计算量比前向小。” | 反向传播计算量（$4P$ FLOPs）是前向（$2P$ FLOPs）的 **2 倍**！ | 1 个前向线性层需 1 次 GEMM；反向要求导 $dX$ 与 $dW$，需要 **2 次 GEMM**。 |
+| **反向传播** | “反向传播只是求个导数，计算量比前向小。” | 反向传播计算量（ $4P$ FLOPs）是前向（ $2P$ FLOPs）的 **2 倍**！ | 1 个前向线性层需 1 次 GEMM；反向要求导 $dX$ 与 $dW$，需要 **2 次 GEMM**。 |
 | **浮点格式** | “BF16 比 FP16 先进，所以 BF16 的数值精度更高。” | BF16 的精度（7位尾数）**低于** FP16（10位尾数），但动态范围更大。 | BF16 用 8 位指数换取了防溢出能力，牺牲了微小精度。 |
 | **GPU 利用率** | “`nvidia-smi` 看到 GPU-Util 100%，说明算力跑满了。” | GPU-Util 只表示硬件有线程活动，不代表 Tensor Core 在全速计算。 | 算子受限于访存（Memory Bound）时，大部分周期 SM 都在等待读写 HBM。 |
 
@@ -1084,10 +1084,10 @@ print(f"Loss Scale 放大并还原后的结果: {(scaled_grad.to(torch.float32) 
 ### 题 2【白板推导题】：请现场手推一个线性层 $Y = XW$ 的反向传播公式并给出 FLOPs。
 - **思考路径**：
   1. 写出 $X \in [B, K], W \in [K, N], Y \in [B, N]$；
-  2. 前向计算量：$2BKN$ FLOPs；
+  2. 前向计算量： $2BKN$ FLOPs；
   3. 上游梯度 $G = \frac{\partial L}{\partial Y} \in [B, N]$；
-  4. 推导 $\frac{\partial L}{\partial X} = G \cdot W^\top \in [B, K]$（计算量 $2BKN$）；
-  5. 推导 $\frac{\partial L}{\partial W} = X^\top \cdot G \in [K, N]$（计算量 $2BKN$）；
+  4. 推导 $\frac{\partial L}{\partial X} = G \cdot W^\top \in [B, K]$（计算量 $2BKN$ ）；
+  5. 推导 $\frac{\partial L}{\partial W} = X^\top \cdot G \in [K, N]$（计算量 $2BKN$ ）；
   6. 结论：反向总计算量为 $4BKN$ FLOPs，是前向的 2 倍。
 
 ---
@@ -1097,7 +1097,7 @@ print(f"Loss Scale 放大并还原后的结果: {(scaled_grad.to(torch.float32) 
   1. 列出算术强度公式 $AI = \frac{2MKN}{2(MK + KN + MN)}$；
   2. 指出 Decode 阶段每次只输入 1 个 Token，此时 $M=1$；
   3. 将 $M=1$ 带入公式，化简得到 $AI \approx 1\text{ FLOP/Byte}$；
-  4. 结合 H100 硬件 Roofline 拐点（$150\text{ FLOPs/Byte}$），得出 Decode 是极度严重的 Memory-bound，算子大部分时间在等权重和 KV Cache 从 HBM 搬运。
+  4. 结合 H100 硬件 Roofline 拐点（ $150\text{ FLOPs/Byte}$ ），得出 Decode 是极度严重的 Memory-bound，算子大部分时间在等权重和 KV Cache 从 HBM 搬运。
 
 ---
 
@@ -1142,7 +1142,7 @@ print(f"Loss Scale 放大并还原后的结果: {(scaled_grad.to(torch.float32) 
 - [ ] 能区分 IEEE 754 中精度与动态范围的物理权衡
 - [ ] 能说明 FP16 为什么必须搭配 Loss Scaling，而 BF16 通常不需要
 - [ ] 能解释为什么浮点非结合性导致分布式训练 Loss 无法逐位一致
-- [ ] 能从 Attention Shape 推导 $O(S^2)$ 显存爆炸（$S=32k$ 需 64GB）
+- [ ] 能从 Attention Shape 推导 $O(S^2)$ 显存爆炸（ $S=32k$ 需 64GB）
 - [ ] 能根据 10 步工程检查表完成一个新算子的系统性能剖析
 
 ---

@@ -281,7 +281,7 @@ def custom_loss_function(logits, labels):
 ---
 
 ### 病灶 4：小算子发射延迟堆叠（Launch-Bound Operator Sprawl）
-- **时间线特征**：GPU 流上堆积了密密麻麻、成百上千个极细微的 Kernel（每个 Kernel 执行仅 $1 \sim 2\ \mu\text{s}$），但 Kernel 与 Kernel 之间存在着巨大的 $5 \sim 8\ \mu\text{s}$ 的空白间隙；
+- **时间线特征**：GPU 流上堆积了密密麻麻、成百上千个极细微的 Kernel（每个 Kernel 执行仅 $1 \sim 2\ \mu\text{s}$ ），但 Kernel 与 Kernel 之间存在着巨大的 $5 \sim 8\ \mu\text{s}$ 的空白间隙；
 - **物理成因**：典型的大模型 Decode 阶段或未融合网络。CPU 下发指令的速度比 GPU 执行的速度慢 5 倍；
 - **解法**：开启 **CUDA Graph 录制重放**，或使用 **Triton / TorchInductor 算子融合（Fusion）** 将几十个小 Kernel 合并为一个大 Kernel！
 
@@ -585,7 +585,7 @@ if __name__ == "__main__":
 ## 7.3 3 道高阶开放式课后思考题（含极限 Corner Case）
 
 1. **分布式千卡集群 Trace 对齐与网络毛刺定位题**：在 1024 卡分布式训练集群中，由于单机 Trace 文件巨大，不可能把所有卡的 Trace 同时导出分析。作为 AI Infra 工程师，你如何设计一套**分布式抽样 Profiling 方案（例如只抓 Rank 0、Rank 7 以及边界节点）**？如何通过跨机时间戳同步来排查个别慢节点（Straggler）引发的全局 NCCL 阻塞？
-2. **CUPTI 驱动探针的“测不准效应（Heisenberg Effect）”思考题**：当我们在极其微小的算子（耗时 $< 1\ \mu\text{s}$）上开启 `with_stack=True` 和 `profile_memory=True` 时，Profiler 自身注入的探针开销可能会让小算子的耗时被虚假放大 3~5 倍，导致原本不是瓶颈的地方被误判为瓶颈。如何通过分层分次开启不同参数来消除这种观察者干扰？
+2. **CUPTI 驱动探针的“测不准效应（Heisenberg Effect）”思考题**：当我们在极其微小的算子（耗时 $< 1\ \mu\text{s}$ ）上开启 `with_stack=True` 和 `profile_memory=True` 时，Profiler 自身注入的探针开销可能会让小算子的耗时被虚假放大 3~5 倍，导致原本不是瓶颈的地方被误判为瓶颈。如何通过分层分次开启不同参数来消除这种观察者干扰？
 3. **混合精度与算子 Shape 对齐专项排查题**：在某些模型中，算法同学将某个线性层的输入维度设为 4093（质数，非 8/16 对齐）。请分析：在 Profiler 中如何通过 `record_shapes=True` 捕获该算子？该算子在底层会发生什么硬件性能退化（Tensor Core 降级到 CUDA Core 慢速执行）？
 
 ---
@@ -615,7 +615,7 @@ if __name__ == "__main__":
    - **Trace 特征**：CPU 线程在每个 Step 开始时出现长达数十/数百毫秒的 `DataLoader::next` 阻塞；底下 GPU 物理流（CUDA Stream）处于大面积空白空转状态（GPU Starvation），GPU 算力利用率低下；
    - **解法**：开启多进程读取 `DataLoader(num_workers=8, pin_memory=True)`，使用异步流将数据拷贝（H2D）与计算重叠。
 2. **CPU-Bound / Launch-Bound（主机调度与 Python 发射瓶颈）**：
-   - **Trace 特征**：CPU 核心持续高负荷运行，正在逐个发射大量极细微的算子（如逐元素加法、Norm、激活）；GPU 端的每个 Kernel 执行极快（$1\sim 2\ \mu\text{s}$），但 Kernel 之间存在巨大的发射空白间隙（$5\sim 10\ \mu\text{s}$），GPU 在等待 CPU 下发指令；
+   - **Trace 特征**：CPU 核心持续高负荷运行，正在逐个发射大量极细微的算子（如逐元素加法、Norm、激活）；GPU 端的每个 Kernel 执行极快（ $1\sim 2\ \mu\text{s}$ ），但 Kernel 之间存在巨大的发射空白间隙（ $5\sim 10\ \mu\text{s}$ ），GPU 在等待 CPU 下发指令；
    - **解法**：开启 **CUDA Graph 录制重放** 将全网指令打包为单发，或使用 **Triton / TorchInductor 算子融合** 消灭小算子。
 3. **GPU-Bound（纯算力或显存带宽瓶颈）**：
    - **Trace 特征**：GPU 硬件流被打得满满当当，前后 Kernel 之间严丝合缝（Zero Bubble），但整个 Step 的总时间依然很长；

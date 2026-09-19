@@ -270,7 +270,7 @@ $$
 $$
 
 假设某 70B 模型分布式训练（采用 AdamW 优化器，全量状态约 1.1 TB）：
-- 若采用传统同步写入共享存储，$T_{\text{save}} = 600\text{ s}$（10 分钟），$N = 500$，$T_{\text{step}} = 1.2\text{ s}$：
+- 若采用传统同步写入共享存储， $T_{\text{save}} = 600\text{ s}$（10 分钟）， $N = 500$， $T_{\text{step}} = 1.2\text{ s}$：
 
   $$
   \text{MFU}_{\text{effective}} = \frac{500 \times 1.2}{500 \times 1.2 + 600} \times \text{MFU}_{\text{raw}} = \frac{600}{1200} \times \text{MFU}_{\text{raw}} = 0.50 \times \text{MFU}_{\text{raw}}

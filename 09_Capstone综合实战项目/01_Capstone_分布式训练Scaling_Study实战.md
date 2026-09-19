@@ -160,8 +160,8 @@ graph TD
 
 | 评测维度 | 物理定义 | 保持恒定者 | 随卡数 $N$ 变化者 | 工业生产挑战与瓶颈 |
 | :--- | :--- | :--- | :--- | :--- |
-| **强扩展性 (Strong Scaling)** | 用更多算力把同一个固定大小的任务以更短时间跑完 | 全局总 Batch Size（$B_{\text{global}}$） | 单卡 Micro Batch（$B_{\text{local}} = B / N$）缩小 | **计算时间线性缩短，但通信量维持不变**；计算与通信的比值恶化，极快撞上阿姆达尔定律上限。 |
-| **弱扩展性 (Weak Scaling)** | 用更多算力去承载等比例放大的超大负载任务 | 单卡负载（$B_{\text{local}}$） | 全局总 Batch Size（$B_{\text{global}} = N \times B$）线性增大 | 系统扩展效率通常较高，但大模型的超大 Batch 会导致**优化器泛化能力下降、学习率调参困难**。 |
+| **强扩展性 (Strong Scaling)** | 用更多算力把同一个固定大小的任务以更短时间跑完 | 全局总 Batch Size（ $B_{\text{global}}$ ） | 单卡 Micro Batch（ $B_{\text{local}} = B / N$ ）缩小 | **计算时间线性缩短，但通信量维持不变**；计算与通信的比值恶化，极快撞上阿姆达尔定律上限。 |
+| **弱扩展性 (Weak Scaling)** | 用更多算力去承载等比例放大的超大负载任务 | 单卡负载（ $B_{\text{local}}$ ） | 全局总 Batch Size（ $B_{\text{global}} = N \times B$ ）线性增大 | 系统扩展效率通常较高，但大模型的超大 Batch 会导致**优化器泛化能力下降、学习率调参困难**。 |
 
 在大模型预训练的工程实践中，我们通常首先保证**弱扩展性**（维持单卡显存占满的 Micro Batch），并辅以梯度累积（Gradient Accumulation）调整全局 Batch。但无论哪种，一旦跨越机器物理节点边界，通信时延都会向算力索取高昂的过路费。
 
@@ -256,7 +256,7 @@ Layer L-1 Grad Done ──> [NCCL AllReduce: 12KB Tensor] (又一次握手开销
 数千个小张量引发千次小包风暴，网络硬件有效带宽利用率趋近于 0！
 ```
 
-现代网络（无论是 NVLink 还是 RoCE）都存在固有的**延迟开销（Latency Overhead $\alpha$）**。如果张量尺寸太小，传输时间完全被协议栈打头包、建立连接和内存同步开销所支配。
+现代网络（无论是 NVLink 还是 RoCE）都存在固有的**延迟开销（Latency Overhead $\alpha$ ）**。如果张量尺寸太小，传输时间完全被协议栈打头包、建立连接和内存同步开销所支配。
 
 为了解决这一矛盾，PyTorch DDP 引入了 **Bucket 分桶机制（`bucket_cap_mb`，默认 25MB）**：
 1. **反向注册 Hook**：在模型构建 DDP 包装器时，DDP 为每一个模型参数注册 Autograd Post-accumulate-grad Hook；
@@ -337,8 +337,8 @@ $$
 DDP 采用的是最质朴的**数据并行范式**：每一张 GPU 都必须常驻一份**完整无缺**的模型权重、梯度以及优化器状态。
 
 我们来拉出 7B 模型的静态显存账本（采用 AdamW 优化器，混合精度训练）：
-1. **模型权重（FP16/BF16）**：$7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
-2. **模型梯度（FP16/BF16）**：$7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
+1. **模型权重（FP16/BF16）**： $7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
+2. **模型梯度（FP16/BF16）**： $7 \times 10^9 \times 2\text{ Bytes} = 14\text{ GB}$；
 3. **优化器状态（FP32 Master Weight + 动量 + 方差）**：
 
    $$
@@ -394,9 +394,9 @@ graph LR
   $$
 
 - **FSDP 通信量**：
-  - 前向 AllGather：$\frac{N-1}{N} \times M \approx M$；
-  - 反向 AllGather：$\frac{N-1}{N} \times M \approx M$；
-  - 反向 ReduceScatter：$\frac{N-1}{N} \times M \approx M$；
+  - 前向 AllGather： $\frac{N-1}{N} \times M \approx M$；
+  - 反向 AllGather： $\frac{N-1}{N} \times M \approx M$；
+  - 反向 ReduceScatter： $\frac{N-1}{N} \times M \approx M$；
 
   $$
   \text{Volume}_{\text{FSDP}} = M + M + M = 3M
@@ -461,7 +461,7 @@ T(N) = 2(N - 1)\alpha + 2\frac{N - 1}{N}\frac{S}{B}
 $$
 
 当集群从单机 8 卡扩展到 64 卡时：
-1. **网络延迟项**：$2(N-1)\alpha$ 从 $14\alpha$ 激增到 $126\alpha$（增长了 **9 倍**）；
+1. **网络延迟项**： $2(N-1)\alpha$ 从 $14\alpha$ 激增到 $126\alpha$（增长了 **9 倍**）；
 2. **跨机链路拥塞**：若机房网络配置不当（例如未开启 PFC 优先级流控导致丢包重传，或者多台节点跨越了不同 Spine 交换机产生超订收敛比），单次集合通信的实际尾部延迟（P99）将高达数毫秒；
 3. **反向计算被击穿**：单层反向计算可能只需要 1.2 毫秒，而跨机的 Bucket 通信却要消耗 2.8 毫秒。
 
@@ -921,7 +921,7 @@ if __name__ == "__main__":
    T_{\text{AllReduce}} = 2 \times \frac{N - 1}{N} \times \frac{S}{B}
    $$
 
-   当 $N \ge 8$ 或更大时，$\frac{N-1}{N} \approx 1$：
+   当 $N \ge 8$ 或更大时， $\frac{N-1}{N} \approx 1$：
 
    $$
    \lim_{N \to \infty} T_{\text{AllReduce}} = \frac{2S}{B}

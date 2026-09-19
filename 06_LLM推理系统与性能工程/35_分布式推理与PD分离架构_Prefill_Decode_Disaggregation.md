@@ -236,14 +236,14 @@ $$
    \text{Bubble Ratio} = \frac{P - 1}{P + B - 1}
    $$
 
-   - 假设 $P=4$（模型切在 4 台节点上），当线上并发较低、$B=1$ 时：
+   - 假设 $P=4$（模型切在 4 台节点上），当线上并发较低、 $B=1$ 时：
 
      $$
      \text{Bubble Ratio} = \frac{4 - 1}{4 + 1 - 1} = \frac{3}{4} = 75\%！
      $$
 
      整整 75% 的时间里，四分之三的服务器处于完全空转状态！每个 Token 必须像击鼓传花一样在 4 台机器间串行走一圈，**单步延迟被硬生生放大了 4 倍**！
-3. **唯一的救赎场景**：只有在超大并发（$B \gg 64$）或者超大模型（如 405B、万亿模型单机 8 卡 HBM 根本放不下权重）时，PP 才是不得已而为之的容量妥协方案。
+3. **唯一的救赎场景**：只有在超大并发（ $B \gg 64$ ）或者超大模型（如 405B、万亿模型单机 8 卡 HBM 根本放不下权重）时，PP 才是不得已而为之的容量妥协方案。
 
 ---
 
@@ -316,7 +316,7 @@ $$
 **这远远超越了现代任何 GPU 的平衡转折点！** 此时 GPU 的显存总线完全来得及供数，所有计算管线被全部填满，SM 上的 Tensor Cores 在极限轰鸣。
 
 #### 2. Decode 阶段：典型的 Memory-Bound
-而在自回归生成的第 $t$ 步，每个请求只有一个新生成的 Token（$S=1$）。
+而在自回归生成的第 $t$ 步，每个请求只有一个新生成的 Token（ $S=1$ ）。
 此时执行同样的权重矩阵相乘：计算量为 $2 \times 1 \times d^2 \approx 3.35 \times 10^7 \text{ FLOPs}$。  
 但为了这区区 3300 万次运算，GPU **必须把整整 33.5 MB 的权重完整地从 HBM 读取一遍！**  
 其算术强度为：
@@ -399,11 +399,11 @@ $$
 把 Prefill 节点想象为中央厨房，把 Decode 节点想象为快餐厅。中央厨房切好了一整箱半成品食材（KV Cache）。如果等整桌 80 道菜全切完，再叫一辆货车（网络）整体运过去，快餐厅在货车到达前只能干等；而如果货车速度不够快，食材甚至会在路上堵半小时。
 
 #### 步骤 3：Tiny Calculator（极简数字小算盘）
-我们以业界标杆 **LLaMA-3-70B（80 层，GQA 机制下 Key/Value 各有 8 个 Head，每个 Head 维度 $d_{\text{head}}=128$）** 为例：
+我们以业界标杆 **LLaMA-3-70B（80 层，GQA 机制下 Key/Value 各有 8 个 Head，每个 Head 维度 $d_{\text{head}}=128$ ）** 为例：
 1. **单个 Token、单个 Layer 的 KV 大小**：
-   - Key 张量：$8 \text{ heads} \times 128 \times 2 \text{ bytes (FP16/BF16)} = 2,048 \text{ bytes} = 2 \text{ KB}$；
+   - Key 张量： $8 \text{ heads} \times 128 \times 2 \text{ bytes (FP16/BF16)} = 2,048 \text{ bytes} = 2 \text{ KB}$；
    - Value 张量：同样为 $2 \text{ KB}$；
-   - 单层合计：$2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}$。
+   - 单层合计： $2 \text{ KB} + 2 \text{ KB} = 4 \text{ KB}$。
 2. **单个 Token 在全部 80 层累积的 KV 大小**：
 
    $$
@@ -443,7 +443,7 @@ $$
 
 #### 步骤 5：Sanity Check（数量级校验与残酷现实）
 我们对比两种常见的数据中心网络环境：
-- **场景 A：通用数据中心 100 Gbps 网络**（有效带宽约 $B_{\text{net}} \approx 11 \text{ GB/s}$）
+- **场景 A：通用数据中心 100 Gbps 网络**（有效带宽约 $B_{\text{net}} \approx 11 \text{ GB/s}$ ）
   - 传输一个 32K Prompt 的 KV Cache（10 GB）：
 
     $$
@@ -451,15 +451,15 @@ $$
     $$
 
   - **结论**：在 100G 网络下，光是跨机传输就耗费了将近 1 秒钟！这比 H100 算这 32K Tokens 的时间还要长，PD 分离完全不可行！
-- **场景 B：高性能智算中心 400 Gbps RoCE / InfiniBand 网络**（有效带宽约 $B_{\text{net}} \approx 45 \text{ GB/s}$）
+- **场景 B：高性能智算中心 400 Gbps RoCE / InfiniBand 网络**（有效带宽约 $B_{\text{net}} \approx 45 \text{ GB/s}$ ）
   - 传输 10 GB KV Cache：
 
     $$
     T_{\text{transfer}} = \frac{10 \text{ GB}}{45 \text{ GB/s}} \approx \mathbf{222 \text{ ms}}
     $$
 
-  - **若开启 FP8 格式压缩（$b_{\text{bytes}} = 1$）**：
-    数据量直接减半至 5 GB，$T_{\text{transfer}}$ 瞬间压缩至 **约 111 ms**！
+  - **若开启 FP8 格式压缩（ $b_{\text{bytes}} = 1$ ）**：
+    数据量直接减半至 5 GB， $T_{\text{transfer}}$ 瞬间压缩至 **约 111 ms**！
 
 ---
 
@@ -634,7 +634,7 @@ $$
 \text{Score}(i) = (1 - H_i) \times D_{\text{prefill}} + \alpha \times Q_i
 $$
 
-- **$H_i$（前缀缓存命中率，Cache Hit Ratio）**：Conductor 查询全局前缀树（Radix Tree）。如果发现 P 节点 $i$ 已经缓存了该请求 80% 的前缀（$H_i = 0.8$），则意味着只需要计算剩下的 20%，不仅计算极快，而且需要传输的 KV Cache 极少；
+- **$H_i$（前缀缓存命中率，Cache Hit Ratio）**：Conductor 查询全局前缀树（Radix Tree）。如果发现 P 节点 $i$ 已经缓存了该请求 80% 的前缀（ $H_i = 0.8$ ），则意味着只需要计算剩下的 20%，不仅计算极快，而且需要传输的 KV Cache 极少；
 - **$D_{\text{prefill}}$**：该序列长度在硬件上的理论预填充耗时；
 - **$Q_i$（队列等待时延）**：实例 $i$ 当前排队等待任务的预估清空时间；
 - **$\alpha$（自适应负载平衡权重）**：在业务高峰期调大 $\alpha$（优先保障各个节点不被撑爆），在业务平稳期调小 $\alpha$（优先追求前缀命中与算力节省）。
@@ -1103,7 +1103,7 @@ if __name__ == "__main__":
 ### 8.3 3 道高阶开放式课后思考题（含极端 Corner Case）
 
 1. **【极限网络丢包 Corner Case】**：在 PD 分离架构中，假设某台 P 节点正在通过 RDMA 逐层流水线向 D 节点传输一个 64K 上下文的 KV Cache。当传输到第 72 层时，机房交换机由于拥塞丢弃了该 RDMA QP（Queue Pair）的几个数据包，导致 RDMA 连接断开超时。此时 D 节点尚未开始生成第一个 Token。作为系统架构师，你该如何设计容灾状态机？是让 P 节点重传整包、仅重传失败层，还是将该请求降级在 P 节点原地执行 Decode？各种方案的延迟代价与显存风险是什么？
-2. **【超长思考链模型（Reasoning Models）冲击】**：随着类似 DeepSeek-R1、OpenAI o1 这类倾向于输出数万 Token 思维链（CoT）的模型成为主流，传统的输入远大于输出（$\overline{L_{\text{in}}} \gg \overline{L_{\text{out}}}$）假设被彻底颠覆，变成了输出远大于输入（$\overline{L_{\text{out}}} \gg \overline{L_{\text{in}}}$）。在这种业务场景下，PD 分离架构的瓶颈会发生什么转移？P 节点和 D 节点的服务器配比会发生什么极限倾斜？
+2. **【超长思考链模型（Reasoning Models）冲击】**：随着类似 DeepSeek-R1、OpenAI o1 这类倾向于输出数万 Token 思维链（CoT）的模型成为主流，传统的输入远大于输出（ $\overline{L_{\text{in}}} \gg \overline{L_{\text{out}}}$ ）假设被彻底颠覆，变成了输出远大于输入（ $\overline{L_{\text{out}}} \gg \overline{L_{\text{in}}}$ ）。在这种业务场景下，PD 分离架构的瓶颈会发生什么转移？P 节点和 D 节点的服务器配比会发生什么极限倾斜？
 3. **【异构芯片混编下的 KV Cache 兼容性】**：假设某智算中心为了降本增效，采用国产算力卡跑 Prefill（生成特定布局的 KV Cache），而使用 NVIDIA A100 跑 Decode。此时两端硬件的底层 PagedAttention Block 内存布局（Layout）、对齐要求（Alignment）以及浮点量化格式可能完全不同。如果要在它们之间实现微秒级的跨机 RDMA 直通传输，中间的格式转换开销该如何抹平？
 
 ---
@@ -1132,7 +1132,7 @@ if __name__ == "__main__":
 
 #### 考察维度：GPU 硬件执行模型、GEMV 算子特性、集合通信底层底噪、Roofline 模型。
 #### 标准参考答案：
-1. **GEMV 计算耗时极度微小（微秒级）**：在小 Batch（例如 $B=1$ 到 $4$）的 Decode 阶段，自回归计算退化为向量与矩阵相乘（GEMV）。在现代 GPU（如 H100）上，单个切分后的 GEMV 内核计算时间仅在 $10\sim 15\mu s$ 左右；
+1. **GEMV 计算耗时极度微小（微秒级）**：在小 Batch（例如 $B=1$ 到 $4$ ）的 Decode 阶段，自回归计算退化为向量与矩阵相乘（GEMV）。在现代 GPU（如 H100）上，单个切分后的 GEMV 内核计算时间仅在 $10\sim 15\mu s$ 左右；
 2. **通信同步底噪反客为主**：TP 每一个 Transformer 层需要严格串行执行 2 次 AllReduce 操作。即便在机内 NVLink 900 GB/s 的超高带宽下，由于多卡软硬件同步屏障（Barrier）、GPU Warp 调度与内核启动开销，单次 AllReduce 的最小物理底噪延迟为 $5\sim 8\mu s$；
 3. **多卡通信惩罚超过算力红利**：当 TP 从 8 卡扩展到跨机 16 卡时，必须跨越 PCIe 和 InfiniBand 网络，单次 AllReduce 时延飙升至 $30\sim 50\mu s$。整整 80 层的模型累积 160 次 AllReduce，通信等待时间从 1ms 暴增至 6ms 以上！此时通信等待时间已远远压倒计算时间，计算单元绝大多数时间处于阻塞挂起状态，导致推理延迟严重恶化。因此，推理场景下的 TP 严格被限制在单机 8 卡 NVLink 拓扑以内。
 
@@ -1171,7 +1171,7 @@ if __name__ == "__main__":
 
 3. **Layerwise Pipelining 重叠隐藏设计**：
    - **单层计算耗时 vs 单层传输耗时**：
-     - 单层传输耗时：$444 \text{ ms} / 80 \text{ layers} \approx 5.55 \text{ ms}$；
+     - 单层传输耗时： $444 \text{ ms} / 80 \text{ layers} \approx 5.55 \text{ ms}$；
      - 70B 模型在 H100 8 卡上计算 64K Tokens 的单层 Attention+FFN 耗时大约为 $7.0 \text{ ms}$；
    - **流水线掩盖机制**：
      - 当 GPU 计算完 Layer $i$ 的瞬间，立即将其 KV Cache 挂入独立的后台 CUDA Stream，触发 GPUDirect RDMA 异步发送给 Decode 节点；

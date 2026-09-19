@@ -165,17 +165,17 @@ graph LR
 #### 步骤 3：Tiny Calculator（极简数字小算盘）
 以一个拥有 $P = 7\text{B} = 7 \times 10^9$ 参数的模型为例（权重采用 FP16，占用 $14 \times 10^9$ 字节）：
 - **Decode 阶段（Batch Size = 1）**：
-  - 生成 1 个 Token 的计算量：$2P = 14 \times 10^9$ FLOPs；
-  - 必须读取的模型权重数据量：$14 \times 10^9$ Bytes；
+  - 生成 1 个 Token 的计算量： $2P = 14 \times 10^9$ FLOPs；
+  - 必须读取的模型权重数据量： $14 \times 10^9$ Bytes；
   - 算术强度为：
 
     $$
     \text{AI}_{\text{Decode}} = \frac{14 \times 10^9 \text{ FLOPs}}{14 \times 10^9 \text{ Bytes}} = 1.0 \text{ FLOPs/Byte}
     $$
 
-- **Prefill 阶段（Prompt 长度 $S = 2,048$）**：
-  - 计算量：$2P \times S = 14 \times 10^9 \times 2,048 = 28.67 \times 10^{12}$ FLOPs；
-  - 读取权重数据量：$14 \times 10^9$ Bytes；
+- **Prefill 阶段（Prompt 长度 $S = 2,048$ ）**：
+  - 计算量： $2P \times S = 14 \times 10^9 \times 2,048 = 28.67 \times 10^{12}$ FLOPs；
+  - 读取权重数据量： $14 \times 10^9$ Bytes；
   - 算术强度为：
 
     $$
@@ -184,8 +184,8 @@ graph LR
 
 #### 步骤 4：Formal Model（与硬件天花板对照）
 已知 NVIDIA A100 SXM4 80GB 的物理极限规格：
-- **Tensor Core 密实峰值算力**：$C_{\text{peak}} = 312 \text{ TFLOPS}$；
-- **HBM2e 显存物理带宽**：$B_{\text{mem}} = 2.039 \text{ TB/s} = 2,039 \text{ GB/s}$；
+- **Tensor Core 密实峰值算力**： $C_{\text{peak}} = 312 \text{ TFLOPS}$；
+- **HBM2e 显存物理带宽**： $B_{\text{mem}} = 2.039 \text{ TB/s} = 2,039 \text{ GB/s}$；
 - **硬件拐点算术强度（Hardware Balance Point）**：
 
   $$
@@ -197,8 +197,8 @@ graph LR
 - **若 $\text{AI} > \text{AI}_{\text{knee}}$**：处于 **Compute-Bound**，性能受限于算力核心。
 
 #### 步骤 5：Sanity Check（结论落地）
-- **Decode 阶段**：$\text{AI} = 1.0 \ll 153.0$，单卡算力利用率甚至不足理论峰值的 1%！完全卡死在 2 TB/s 的显存搬运上；
-- **Prefill 阶段**：$\text{AI} = 2,048 \gg 153.0$，算力引擎全速运转，Tensor Core 被彻底榨干！
+- **Decode 阶段**： $\text{AI} = 1.0 \ll 153.0$，单卡算力利用率甚至不足理论峰值的 1%！完全卡死在 2 TB/s 的显存搬运上；
+- **Prefill 阶段**： $\text{AI} = 2,048 \gg 153.0$，算力引擎全速运转，Tensor Core 被彻底榨干！
 
 这就是大模型在线推理一切调度矛盾的**底层物理根源**。
 
@@ -350,11 +350,11 @@ graph TD
 
 #### 步骤 1：业务输入与变量定义
 设：
-- 峰值并发请求到达率：$Q = 100 \text{ QPS}$；
-- 平均输入 Prompt 长度：$S_{\text{in}} = 1,024 \text{ Tokens}$；
-- 平均输出生成长度：$S_{\text{out}} = 256 \text{ Tokens}$；
-- 期望吐字时延目标（SLO）：$\text{TPOT} \le 25 \text{ ms/Token}$（即单请求生成耗时 $T_{\text{gen}} = 256 \times 0.025 = 6.4 \text{ 秒}$）；
-- 期望首字时延目标（SLO）：$\text{TTFT} \le 400 \text{ ms}$。
+- 峰值并发请求到达率： $Q = 100 \text{ QPS}$；
+- 平均输入 Prompt 长度： $S_{\text{in}} = 1,024 \text{ Tokens}$；
+- 平均输出生成长度： $S_{\text{out}} = 256 \text{ Tokens}$；
+- 期望吐字时延目标（SLO）： $\text{TPOT} \le 25 \text{ ms/Token}$（即单请求生成耗时 $T_{\text{gen}} = 256 \times 0.025 = 6.4 \text{ 秒}$ ）；
+- 期望首字时延目标（SLO）： $\text{TTFT} \le 400 \text{ ms}$。
 
 #### 步骤 2：并发度（Concurrency）推导（利特尔法则 Little's Law）
 系统常态下需要承载的在途并发请求数（In-flight Requests）为：
@@ -371,7 +371,7 @@ $$
   \text{Mem}_{\text{token}} = 2 \times 2 \times (n_{\text{layers}} \times n_{\text{kv-heads}} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}
   $$
 
-- 单个请求全生命周期峰值占用（$1024 + 256 = 1280 \text{ Tokens}$）：
+- 单个请求全生命周期峰值占用（ $1024 + 256 = 1280 \text{ Tokens}$ ）：
 
   $$
   \text{Mem}_{\text{req}} = 1,280 \times 64 \text{ KB} \approx 80 \text{ MB}

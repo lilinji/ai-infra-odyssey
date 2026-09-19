@@ -128,7 +128,7 @@ math: true
 - 单步 Decode 的耗时本应在 10ms 以内，但在 Profiler 监控图谱上，实际单步延迟却高达 **25ms 甚至 30ms**；
 - 调出 NVIDIA Nsight Systems 抓取硬件执行时间线，眼前的一幕让所有算法工程师大跌眼镜：
   - **GPU 的核心计算单元（SM）并不是在慢吞吐，而是在大片大片地“空转等待”**！
-  - 每一个小算子（比如一个 LayerNorm 或一个轻量 Elementwise 激活）在 GPU 上只执行了区区 **3 微秒（$\mu s$）**；
+  - 每一个小算子（比如一个 LayerNorm 或一个轻量 Elementwise 激活）在 GPU 上只执行了区区 **3 微秒（ $\mu s$ ）**；
   - 但随后，GPU 陷入长达 **15 微秒的绝对寂静**，直到下一个小算子姗姗来迟！
 
 **算力没有瓶颈，显存也没有满，到底是谁卡住了硬件？**
@@ -340,25 +340,25 @@ Radix Tree 前缀复用微观匹配流:
   \text{期望计算 Token 数} = 0.9 \times 200 + 0.1 \times 2000 = 180 + 200 = \mathbf{380\text{ Tokens}}
   $$
 
-- **算力开销直接暴降**：$\frac{380}{2000} = \mathbf{19\%}$（计算量仅剩不到两成，理论提速超过 5 倍！）。
+- **算力开销直接暴降**： $\frac{380}{2000} = \mathbf{19\%}$（计算量仅剩不到两成，理论提速超过 5 倍！）。
 
 #### ④ Formal Model（标准公式）
 设长 Prompt 总长为 $S$，公共前缀长度为 $S_{\text{prefix}}$，命中率为 $\alpha$。
-在没有网络排队前提下，首字延迟与 Prefill 计算量呈高度线性关系：$T_{\text{prefill}}(L) \approx k \cdot L$。
+在没有网络排队前提下，首字延迟与 Prefill 计算量呈高度线性关系： $T_{\text{prefill}}(L) \approx k \cdot L$。
 平均首字延迟期望值 $\mathbb{E}[\text{TTFT}]$ 满足：
 
 $$
 \mathbb{E}[\text{TTFT}] = (1 - \alpha) \cdot k \cdot S + \alpha \cdot k \cdot (S - S_{\text{prefix}}) = k \cdot \left[ S - \alpha \cdot S_{\text{prefix}} \right]
 $$
 
-系统在 Prefill 受限场景下的 **吞吐放大系数（Throughput Speedup Factor, $\mathcal{S}_{\text{throughput}}$）** 为：
+系统在 Prefill 受限场景下的 **吞吐放大系数（Throughput Speedup Factor, $\mathcal{S}_{\text{throughput}}$ ）** 为：
 
 $$
 \mathcal{S}_{\text{throughput}} = \frac{S}{S - \alpha \cdot S_{\text{prefix}}} = \frac{1}{1 - \alpha \cdot \left(\frac{S_{\text{prefix}}}{S}\right)}
 $$
 
 #### ⑤ Sanity Check（数量级校验）
-如果在一个重度依赖大上下文知识库的 Agent 场景中，$S_{\text{prefix}} / S = 0.95$（前缀占 95%），命中率 $\alpha = 0.9$：
+如果在一个重度依赖大上下文知识库的 Agent 场景中， $S_{\text{prefix}} / S = 0.95$（前缀占 95%），命中率 $\alpha = 0.9$：
 
 $$
 \mathcal{S}_{\text{throughput}} = \frac{1}{1 - 0.9 \times 0.95} = \frac{1}{1 - 0.855} \approx \mathbf{6.9 \times}（约 6.9 倍！）
@@ -531,7 +531,7 @@ AWQ 的数学优雅之处在于：
 #### 核心双角色设定：
 1. **草稿小模型（Draft Model，如 1B 参数）**：
    - 特点：模型极小、速度飞快（单步耗时可能只有 1.5ms）；
-   - 任务：让小模型在前面狂奔，自回归连续“盲猜”出 $K$ 个后续 Token（例如 $K=4$ 个候选词：$[w_1, w_2, w_3, w_4]$）；
+   - 任务：让小模型在前面狂奔，自回归连续“盲猜”出 $K$ 个后续 Token（例如 $K=4$ 个候选词： $[w_1, w_2, w_3, w_4]$ ）；
 2. **目标大模型（Target Model，如 70B 参数）**：
    - 特点：模型庞大、单步耗时慢（单步耗时 25ms），但算力利用率极度不满；
    - 任务：**大模型不进行单步循环，而是把这 $K$ 个候选词像 Prefill 一样，一次性并行送进网络验证！**
@@ -894,7 +894,7 @@ if __name__ == "__main__":
   - **NVIDIA Hopper 架构（H100/H800/H200）**：生产优先选用 **原生 FP8（E4M3）** 格式，搭配 FP8 KV Cache（`--kv-cache-dtype fp8`）；
   - **NVIDIA Ampere 架构（A100/A800/3090）**：生产优先选用 **AWQ INT4** 配合 Marlin 汇编内核，显存直接压缩至四分之一。
 - [ ] **4. 投机采样（Speculative Decoding）业务准入审查**：
-  - 准入规则：仅当业务属于**高确定性上下文（如代码生成、规范翻译、JSON 提取，预期接受率 $\alpha \ge 70\%$）** 时才开启投机采样；
+  - 准入规则：仅当业务属于**高确定性上下文（如代码生成、规范翻译、JSON 提取，预期接受率 $\alpha \ge 70\%$ ）** 时才开启投机采样；
   - 盲猜窗口推荐黄金配置：**$K = 3 \sim 5$**，严禁激进设置 $K > 6$；
   - 对发散创意性闲聊对话，显式禁用投机解码，防止产生 0.9x 算力倒挂。
 - [ ] **5. CPU 异步解耦与进程隔离底线**：
@@ -1029,7 +1029,7 @@ $$
      - 批次内各请求的上下文长度参差不齐。若直接整体捕获，只要长度一变，显存指针即刻越界非法访问。
 2. **vLLM Piecewise CUDA Graph 的破局架构**：
    - **分而治之**：将 Transformer Layer 沿 Attention 边界切开；
-   - **静态部分归图**：针对 LayerNorm、MLP、QKV Projection 等 Token-wise 规整算子（输入永远只跟 Batch Size 相关，维度恒为 $[B, d_{\text{model}}]$），为常见的 Batch 尺寸（如 1, 2, 4, 8, 16）分别预录制 CUDA Graph，在运行时以单指令 `cudaGraphLaunch` 消除数百次 CPU Launch 延迟；
+   - **静态部分归图**：针对 LayerNorm、MLP、QKV Projection 等 Token-wise 规整算子（输入永远只跟 Batch Size 相关，维度恒为 $[B, d_{\text{model}}]$ ），为常见的 Batch 尺寸（如 1, 2, 4, 8, 16）分别预录制 CUDA Graph，在运行时以单指令 `cudaGraphLaunch` 消除数百次 CPU Launch 延迟；
    - **动态部分归 Eager**：将复杂的变长 Attention 算子封装为不透明自定义算子，在运行时保持 Eager 模式直接调用 FlashAttention/FlashInfer 汇编内核处理变长非连续物理块；
    - **双赢结果**：既享受了 CUDA Graph 消除 90% 以上小算子 CPU 发射开销的红利，又完美保留了处理动态上下文与 Paged KV Cache 的极致灵活性。
 
@@ -1045,7 +1045,7 @@ $$
    - 32B 模型若采用原生 FP16，静态权重就需要 $32 \times 2 = \mathbf{64\text{ GB}}$，一张 24GB 卡根本连模型都加载不进去！
 2. **第一步：激进权重量化（AWQ INT4 + Marlin）**：
    - 采用 AWQ 将模型权重全面量化为 4-bit 整数；
-   - 静态权重显存锐减至：$32 \times 0.5 = \mathbf{16\text{ GB}}$；
+   - 静态权重显存锐减至： $32 \times 0.5 = \mathbf{16\text{ GB}}$；
    - 底层选用 Marlin Kernel，小 Batch 下充分跑满 4090 的显存带宽；
 3. **第二步：动态 KV Cache 压缩与分页管理**：
    - 24GB 扣除 16GB 权重，剩余约 **$8\text{ GB}$ 空间**；

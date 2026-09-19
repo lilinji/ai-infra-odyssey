@@ -81,7 +81,7 @@ math: true
 - [3. Tensor Core 革命：从标量乘加到高维张量微内核（MMA）](#3-tensor-core-革命从标量乘加到高维张量微内核mma)
   - [3.1 为什么标量 CUDA Core 算大矩阵会遭遇指令发射天花板？](#31-为什么标量-cuda-core-算大矩阵会遭遇指令发射天花板)
   - [3.2 Tensor Core 物理执行机制：Warp 级协同与 MMA 原语](#32-tensor-core-物理执行机制warp-级协同与-mma-原语)
-  - [3.3 MMA 指令的 Shape 演进与寄存器数据布局（$16 \times 8 \times 16$ 到 FP8）](#33-mma-指令的-shape-演进与寄存器数据布局16-times-8-times-16-到-fp8)
+  - [3.3 MMA 指令的 Shape 演进与寄存器数据布局（ $16 \times 8 \times 16$ 到 FP8）](#33-mma-指令的-shape-演进与寄存器数据布局16-times-8-times-16-到-fp8)
   - [3.4 计算单元饥饿（Starvation）的算力账本：喂饱 Tensor Core 究竟需要多快？](#34-计算单元饥饿starvation的算力账本喂饱-tensor-core-究竟需要多快)
 - [4. GPU 存储层次金字塔与内存搬运的物理极限](#4-gpu-存储层次金字塔与内存搬运的物理极限)
   - [4.1 物理存储金字塔：越靠近计算核心，每字节代价越高昂](#41-物理存储金字塔越靠近计算核心每字节代价越高昂)
@@ -95,7 +95,7 @@ math: true
   - [5.3 现代双顶与多顶 Roofline 模型：Tensor Core 顶、CUDA Core 顶与多级缓存顶](#53-现代双顶与多顶-roofline-模型tensor-core-顶cuda-core-顶与多级缓存顶)
   - [5.4 算术强度的迁移法则：如何让算子翻越物理转折点？](#54-算术强度的迁移法则如何让算子翻越物理转折点)
 - [6. 经典 AI 算子 Roofline 逐案推导与生产优化解法](#6-经典-ai-算子-roofline-逐案推导与生产优化解法)
-  - [6.1 算子 A：大矩阵乘法 GEMM（$Y = A \cdot B$）的算术强度推导与 Tiling 阶梯](#61-算子-a大矩阵乘法-gemmy--a-cdot-b的算术强度推导与-tiling-阶梯)
+  - [6.1 算子 A：大矩阵乘法 GEMM（ $Y = A \cdot B$ ）的算术强度推导与 Tiling 阶梯](#61-算子-a大矩阵乘法-gemmy--a-cdot-b的算术强度推导与-tiling-阶梯)
   - [6.2 算子 B：FlashAttention 如何通过片上 SRAM 分块将 Attention 变成 Compute-Bound？](#62-算子-bflashattention-如何通过片上-sram-分块将-attention-变成-compute-bound)
   - [6.3 算子 C：LayerNorm / RMSNorm / Softmax 为什么永远被困在 Memory-Bound 深渊？](#63-算子-clayernorm--rmsnorm--softmax-为什么永远被困在-memory-bound-深渊)
   - [6.4 算子 D：LLM Decode 阶段的 KV Cache 访存危机（Batch Size = 1 为什么是算力杀手？）](#64-算子-dllm-decode-阶段的-kv-cache-访存危机batch-size--1-为什么是算力杀手)
@@ -523,7 +523,7 @@ Cycle 3: 两个分支均执行完毕，Divergence Stack 出栈，32 个线程重
 
 在 Volta 架构（V100）诞生之前，深度学习的所有矩阵乘加都是用传统的标量 CUDA Core 硬算的。
 
-我们来算一笔账：对于一个经典的通用矩阵乘法 GEMM（$C = A \times B$），假设我们要算一个 $16 \times 16 \times 16$ 的子矩阵块：
+我们来算一笔账：对于一个经典的通用矩阵乘法 GEMM（ $C = A \times B$ ），假设我们要算一个 $16 \times 16 \times 16$ 的子矩阵块：
 
 - 完成这个计算需要进行 $16 \times 16 \times 16 = 4096$ 次乘法与 4096 次加法，共计 **8192 次浮点运算（8192 FLOPs）**。
 - 如果用标量 FMA（Fused Multiply-Add）指令来算，一条 FMA 指令完成 2 次浮点操作（一次乘加）。
@@ -582,7 +582,7 @@ $$
 
 ---
 
-## 3.3 MMA 指令的 Shape 演进与寄存器数据布局（$16 \times 8 \times 16$ 到 FP8）
+## 3.3 MMA 指令的 Shape 演进与寄存器数据布局（ $16 \times 8 \times 16$ 到 FP8）
 
 从 Volta 到 Hopper，Tensor Core 的微架构经历了一场波澜壮阔的演进：
 
@@ -596,7 +596,7 @@ $$
 在 Ampere 和 Hopper 时代，硬件最核心的微内核 Shape 稳定为 **$M=16, N=8, K=16$（针对 FP16）** 或 **$M=16, N=8, K=32$（针对更小精度）**。
 
 这是极其反直觉的一点：**为什么不是对称的 $16 \times 16$，而是 $N=8$？**
-这是因为在物理布线中，$N=8$ 能够最完美地契合 Warp 32 线程的寄存器对齐，让 32 个线程的寄存器切片在不发生任何 Bank 冲突的情况下，以最大的位宽（128-bit 向量化）直接喂入 Tensor Core 阵列。
+这是因为在物理布线中， $N=8$ 能够最完美地契合 Warp 32 线程的寄存器对齐，让 32 个线程的寄存器切片在不发生任何 Bank 冲突的情况下，以最大的位宽（128-bit 向量化）直接喂入 Tensor Core 阵列。
 
 ---
 
@@ -821,8 +821,8 @@ Bank 31:  0x7C~0x7F, 0xFC~0xFF, 0x17C~0x17F ...
 > 👓 **Ringi 工程师比喻**：
 > 想象一个建筑工地：
 >
-> - 工地里有一群泥瓦匠，他们双手砌砖的极限速度是每秒 1000 块（$P_{\text{peak}}$ 峰值算力）；
-> - 运送砖块的道路只有一条，卡车车队每秒最多只能向工地倾倒 10 吨砖（$\text{BW}_{\text{HBM}}$ 物理显存带宽）。
+> - 工地里有一群泥瓦匠，他们双手砌砖的极限速度是每秒 1000 块（ $P_{\text{peak}}$ 峰值算力）；
+> - 运送砖块的道路只有一条，卡车车队每秒最多只能向工地倾倒 10 吨砖（ $\text{BW}_{\text{HBM}}$ 物理显存带宽）。
 > - 如果你的工程规范要求“每搬来 1 吨砖，泥瓦匠必须在其上反复精雕细琢 150 次”（高计算强度），那么卡车送来的砖足够泥瓦匠忙个不停，限制整体进度的是泥瓦匠手速的极限（**Compute-Bound 算力受限**）；
 > - 如果你的工程规范要求“砖块只要往地上一铺就行，每吨砖只要敲 2 下”（低计算强度），那么泥瓦匠每秒钟都在原地干等卡车卸货，限制进度的绝对不是泥瓦匠的能力，而是公路的运载极限（**Memory-Bound 访存受限**）！
 
@@ -830,7 +830,7 @@ Bank 31:  0x7C~0x7F, 0xFC~0xFF, 0x17C~0x17F ...
 
 我们拿两个极简的例子在草稿纸上手算一遍：
 
-- **算例 A（标量向量加法：$C = A + B$，数组长度 $N=4$，FP16 2 字节）**：
+- **算例 A（标量向量加法： $C = A + B$，数组长度 $N=4$，FP16 2 字节）**：
   - 浮点运算量（FLOPs）：每个元素做 1 次加法，共 **$4\text{ FLOPs}$**；
   - 访存量（Bytes）：读取 $A$（8 字节）+ 读取 $B$（8 字节）+ 写回 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比（Arithmetic Intensity）：
@@ -839,8 +839,8 @@ Bank 31:  0x7C~0x7F, 0xFC~0xFF, 0x17C~0x17F ...
     \text{AI} = \frac{4\text{ FLOPs}}{24\text{ Bytes}} = \mathbf{0.167\text{ FLOPs/Byte}}
     $$
 
-- **算例 B（极简小矩阵乘法：$2 \times 2$ 乘 $2 \times 2$，FP16 2 字节）**：
-  - 浮点运算量：$2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}$；
+- **算例 B（极简小矩阵乘法： $2 \times 2$ 乘 $2 \times 2$，FP16 2 字节）**：
+  - 浮点运算量： $2 \times M \times N \times K = 2 \times 2 \times 2 \times 2 = \mathbf{16\text{ FLOPs}}$；
   - 访存量（假设无缓存）：读 $A$（8 字节）+ 读 $B$（8 字节）+ 写 $C$（8 字节）= **$24\text{ Bytes}$**；
   - 计算访存比：
 
@@ -858,8 +858,8 @@ $$
 
 其中核心参量物理定义如下：
 
-- **$P_{\text{peak}}$（硬件峰值算力）**：芯片在当前数据精度下的理论硬件算力顶峰（单位：$\text{TFLOPS} = 10^{12}\text{ FLOPs/s}$）；
-- **$\text{BW}_{\text{HBM}}$（硬件显存物理带宽）**：显卡主存储总线的理论或实测最大吞吐速率（单位：$\text{TB/s} = 10^{12}\text{ Bytes/s}$）；
+- **$P_{\text{peak}}$（硬件峰值算力）**：芯片在当前数据精度下的理论硬件算力顶峰（单位： $\text{TFLOPS} = 10^{12}\text{ FLOPs/s}$ ）；
+- **$\text{BW}_{\text{HBM}}$（硬件显存物理带宽）**：显卡主存储总线的理论或实测最大吞吐速率（单位： $\text{TB/s} = 10^{12}\text{ Bytes/s}$ ）；
 - **$\text{AI}$（Arithmetic Intensity，算术强度 / 计算访存比）**：算法自身固有的数学物理特征：
 
   $$
@@ -883,7 +883,7 @@ P_peak │───────────────────────�
                                   物理转折点 AI* = P_peak / BW_HBM
 ```
 
-由几何关系显然可知，斜线与平顶的交汇点被定义为 **硬件固有物理转折点（Turning Point $\text{AI}^*$）**：
+由几何关系显然可知，斜线与平顶的交汇点被定义为 **硬件固有物理转折点（Turning Point $\text{AI}^*$ ）**：
 
 $$
 \text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}
@@ -897,8 +897,8 @@ $$
 我们代入当前工业界最主流的两款旗舰大模型加速卡手算校验：
 
 - **NVIDIA A100-SXM4-80GB (Ampere 架构)**：
-  - Dense FP16 峰值算力：$P_{\text{peak}} = 312\text{ TFLOPS}$；
-  - HBM2e 物理实测带宽：$\text{BW} = 2.0\text{ TB/s}$；
+  - Dense FP16 峰值算力： $P_{\text{peak}} = 312\text{ TFLOPS}$；
+  - HBM2e 物理实测带宽： $\text{BW} = 2.0\text{ TB/s}$；
   - **A100 硬件固有转折点**：
 
     $$
@@ -906,8 +906,8 @@ $$
     $$
 
 - **NVIDIA H100-SXM5-80GB (Hopper 架构)**：
-  - Dense FP16 峰值算力：$P_{\text{peak}} = 989\text{ TFLOPS}$；
-  - HBM3 物理实测带宽：$\text{BW} = 3.35\text{ TB/s}$；
+  - Dense FP16 峰值算力： $P_{\text{peak}} = 989\text{ TFLOPS}$；
+  - HBM3 物理实测带宽： $\text{BW} = 3.35\text{ TB/s}$；
   - **H100 硬件固有转折点**：
 
     $$
@@ -959,7 +959,7 @@ $$
 
 现在，我们把大模型中最核心的四个算子推上 Roofline 白板，逐一验明正身！
 
-## 6.1 算子 A：大矩阵乘法 GEMM（$Y = A \cdot B$）的算术强度推导与 Tiling 阶梯
+## 6.1 算子 A：大矩阵乘法 GEMM（ $Y = A \cdot B$ ）的算术强度推导与 Tiling 阶梯
 
 考虑大模型 Linear 线性层中最标准的矩阵乘法：
 
@@ -969,7 +969,7 @@ $$
 
 ### 1. 浮点运算量（FLOPs）：
 
-每一个输出元素都需要做 $K$ 次乘法和 $K$ 次加法（$2K$ 次操作）：
+每一个输出元素都需要做 $K$ 次乘法和 $K$ 次加法（ $2K$ 次操作）：
 
 $$
 \text{FLOPs} = 2 \times M \times N \times K = 2 \times 4096^3 = \mathbf{1.374 \times 10^{11}\text{ FLOPs}} \quad (137.4\text{ GFLOPs})
@@ -977,9 +977,9 @@ $$
 
 ### 2. 物理访存量（Bytes）：
 
-- 读矩阵 $A$：$M \times K \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
-- 读矩阵 $B$：$K \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
-- 写矩阵 $C$：$M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
+- 读矩阵 $A$： $M \times K \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
+- 读矩阵 $B$： $K \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
+- 写矩阵 $C$： $M \times N \times 2 = 4096^2 \times 2 = 33.55\text{ MB}$；
 - **总 HBM 搬运量（假定理想片上复用）**：
 
   $$
@@ -1063,9 +1063,9 @@ $$
    - 平方 $d$ 次，求和规约 $d-1$ 次，除法加开方约 3 次，乘以缩放权重 $\gamma$ $d$ 次；
    - 总运算量约 **$3d\text{ FLOPs}$**；
 2. **访存量（Bytes）**：
-   - 从 HBM 读取输入 $x$：$2d$ 字节；
-   - 读取权重 $\gamma$：$2d$ 字节；
-   - 将结果 $y$ 写回 HBM：$2d$ 字节；
+   - 从 HBM 读取输入 $x$： $2d$ 字节；
+   - 读取权重 $\gamma$： $2d$ 字节；
+   - 将结果 $y$ 写回 HBM： $2d$ 字节；
    - 总访存量约 **$6d\text{ Bytes}$**；
 3. **算术强度**：
 
@@ -1532,8 +1532,8 @@ if __name__ == "__main__":
 >
 > 1. **第一性原理定性**：
 >    - 在 Batch Size = 1 的自回归生成阶段，每生成一个 Token，必须将模型的 70B 权重从 HBM 完整加载一次。
->    - 矩阵乘向量计算量：$\text{FLOPs} = 2 \times 70 \times 10^9 = 1.4 \times 10^{11}\text{ FLOPs}$；
->    - FP16 权重显存读取量：$\text{Bytes} = 70 \times 10^9 \times 2\text{ Bytes} = 1.4 \times 10^{11}\text{ Bytes} = 140\text{ GB}$；
+>    - 矩阵乘向量计算量： $\text{FLOPs} = 2 \times 70 \times 10^9 = 1.4 \times 10^{11}\text{ FLOPs}$；
+>    - FP16 权重显存读取量： $\text{Bytes} = 70 \times 10^9 \times 2\text{ Bytes} = 1.4 \times 10^{11}\text{ Bytes} = 140\text{ GB}$；
 >    - 该算子的计算访存比：
 >
 >      $$
@@ -1607,8 +1607,8 @@ if __name__ == "__main__":
 > 2. **转置冲突诱因推导**：
 >    - 声明二维共享数组 `float tile[32][32]`；
 >    - 其在内存中的线性展开为：`tile[row][col]` 对应的扁平下标为 $k = \text{row} \times 32 + \text{col}$；
->    - 当 Warp 写入该数组时按行写入（$\text{row}$ 固定，$\text{col} = \text{tid}$），$\text{Bank} = \text{tid} \pmod{32}$，32 个线程落入 32 个不同的 Bank，无冲突；
->    - 但在转置读取阶段，线程必须**按列读取**（$\text{col}$ 固定，$\text{row} = \text{tid}$）：
+>    - 当 Warp 写入该数组时按行写入（ $\text{row}$ 固定， $\text{col} = \text{tid}$ ）， $\text{Bank} = \text{tid} \pmod{32}$，32 个线程落入 32 个不同的 Bank，无冲突；
+>    - 但在转置读取阶段，线程必须**按列读取**（ $\text{col}$ 固定， $\text{row} = \text{tid}$ ）：
 >
 >      $$
 >      k = \text{tid} \times 32 + \text{col}
@@ -1621,14 +1621,14 @@ if __name__ == "__main__":
 >    - **32 个线程计算出的 Bank ID 完全相同！全部砸在同一个 Bank 上！触发最高级别的 32-way Bank Conflict，原本 1 个周期的访问被强制分拆为 32 个连续周期！**
 > 3. **错位 Padding 的数学解法**：
 >    - 将数组定义修改为：`__shared__ float tile[32][33];`（每行末尾多加 1 个无用 float）；
->    - 新的扁平下标为：$k = \text{row} \times 33 + \text{col}$；
->    - 按列读取时（$\text{row} = \text{tid}$）：
+>    - 新的扁平下标为： $k = \text{row} \times 33 + \text{col}$；
+>    - 按列读取时（ $\text{row} = \text{tid}$ ）：
 >
 >      $$
 >      \text{Bank ID} = (\text{tid} \times 33 + \text{col}) \pmod{32} = (\text{tid} \times 32 + \text{tid} + \text{col}) \pmod{32} = (\text{tid} + \text{col}) \pmod{32}
 >      $$
 >
->    - 对于不同的 $\text{tid} \in [0, 31]$，$(\text{tid} + \text{col}) \pmod{32}$ 严格互不相同、单调双射覆盖 $[0, 31]$！
+>    - 对于不同的 $\text{tid} \in [0, 31]$， $(\text{tid} + \text{col}) \pmod{32}$ 严格互不相同、单调双射覆盖 $[0, 31]$！
 >    - **32 个线程的访问被完美分流到 32 个互不冲突的 Bank 中，冲突瞬间归零！**
 
 ---
@@ -1638,7 +1638,7 @@ if __name__ == "__main__":
 > 🎯 **大厂标准答题路径与白板推导**：
 >
 > 1. **单级 Roofline 的局限性**：
->    - 传统 Roofline 默认假设所有数据都必须从片外 HBM 读写（带宽为 $\text{BW}_{\text{HBM}} = 3.35\text{ TB/s}$）。
+>    - 传统 Roofline 默认假设所有数据都必须从片外 HBM 读写（带宽为 $\text{BW}_{\text{HBM}} = 3.35\text{ TB/s}$ ）。
 >    - 但现代旗舰 GPU（如 H100）配备了高达 **50 MB 的超大片上统一 L2 Cache**，其内部 Crossbar 互联带宽高达 **$\sim 6\text{ TB/s}$（几乎是 HBM 的 2 倍）**。
 > 2. **多级 Roofline 物理模型**：
 >    - 当算子所需的数据体量小于 50MB，或者经过精巧的 Cache-Blocking 能够高频命中 L2 Cache 时，算子的访存倾斜线不再受限于 3.35 TB/s，而是受限于 L2 的 6 TB/s！

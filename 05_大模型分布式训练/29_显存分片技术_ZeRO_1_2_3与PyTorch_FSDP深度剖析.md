@@ -73,7 +73,7 @@ math: true
   - [0.2 线上真实事故复盘：某 70B 模型盲开全切分引发的“跨机网络大堵塞”](#02-线上真实事故复盘某-70b-模型盲开全切分引发的跨机网络大堵塞)
   - [0.3 显存分片架构与 FSDP 策略演进速查表](#03-显存分片架构与-fsdp-策略演进速查表)
 - [1. 显存状态第一性原理：为什么大模型状态可以分片？](#1-显存状态第一性原理为什么大模型状态可以分片)
-  - [1.1 静态显存的三座大山剖析：$16\Psi$ 底账的结构性冗余](#11-静态显存的三座大山剖析16psi-底账的结构性冗余)
+  - [1.1 静态显存的三座大山剖析： $16\Psi$ 底账的结构性冗余](#11-静态显存的三座大山剖析16psi-底账的结构性冗余)
   - [1.2 冗余消除的三阶演进：ZeRO-1、ZeRO-2 与 ZeRO-3](#12-冗余消除的三阶演进zero-1zero-2-与-zero-3)
   - [1.3 通信与显存的黄金权衡曲线（Pareto Frontier）](#13-通信与显存的黄金权衡曲线pareto-frontier)
 - [2. 通信代价的数学推导：为什么 FSDP 是 $3\Psi$，DDP 是 $2\Psi$？](#2-通信代价的数学推导为什么-fsdp-是-3psi-ddp-是-2psi)
@@ -112,8 +112,8 @@ math: true
 
 但是，当大模型的参数量一路狂飙突进到 7B、13B、70B 时，DDP 的天花板被瞬间撞碎：
 - **DDP 只能摊薄计算时间，绝不能摊薄单卡显存！**
-- 对于任意一个参数量为 $\Psi$ 的模型，用混合精度 AdamW 训练时，每张 GPU 必须死死背负 **$16\Psi$ 的完整静态显存**（权重 $2\Psi$ + 梯度 $2\Psi$ + 优化器 $12\Psi$）；
-- 面对一个经典的 7B 模型（$\Psi = 7 \times 10^9$），$16\Psi \approx \mathbf{112\text{ GB}}$！哪怕单张卡 Batch Size 设为 1，哪怕调用 10,000 张卡，**单张 80GB 的 A100/H100 显卡连静态模型都放不进去，任务在初始化阶段就因 OOM 胎死腹中！**
+- 对于任意一个参数量为 $\Psi$ 的模型，用混合精度 AdamW 训练时，每张 GPU 必须死死背负 **$16\Psi$ 的完整静态显存**（权重 $2\Psi$ + 梯度 $2\Psi$ + 优化器 $12\Psi$ ）；
+- 面对一个经典的 7B 模型（ $\Psi = 7 \times 10^9$ ）， $16\Psi \approx \mathbf{112\text{ GB}}$！哪怕单张卡 Batch Size 设为 1，哪怕调用 10,000 张卡，**单张 80GB 的 A100/H100 显卡连静态模型都放不进去，任务在初始化阶段就因 OOM 胎死腹中！**
 
 算法团队绝望地发问：“难道单卡装不下的模型，就只能上极其复杂的张量并行（TP）和流水线并行（PP）吗？代码要被大改，算子要被切分，通信气泡更是难以收拾！”
 
@@ -160,9 +160,9 @@ Total Step Time: 14.8s | MFU: 12.3%
 
 ### 0.3 显存分片架构与 FSDP 策略演进速查表
 
-| 技术方案 | 分片切分内容 | 单卡静态显存需求（$N$ 卡） | 单卡每步通信量 | 核心通信原语组合 | 最佳生产适用场景 |
+| 技术方案 | 分片切分内容 | 单卡静态显存需求（ $N$ 卡） | 单卡每步通信量 | 核心通信原语组合 | 最佳生产适用场景 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **DDP (基线)** | **无分片**（全量冗余） | $16\Psi$ | **$2\Psi$** | 反向传播 1 次 AllReduce | 单卡显存充裕的小模型（$\le 3B$） |
+| **DDP (基线)** | **无分片**（全量冗余） | $16\Psi$ | **$2\Psi$** | 反向传播 1 次 AllReduce | 单卡显存充裕的小模型（ $\le 3B$ ） |
 | **ZeRO-1 ($P_{\text{os}}$)** | **仅优化器状态**（占 75%） | $4\Psi + \frac{12\Psi}{N}$ | **$2\Psi$（通信零增加！）** | 反向 AllReduce + 广播更新 | 显存微超、希望保持纯 DDP 通信性能 |
 | **ZeRO-2 / `SHARD_GRAD_OP`** | **优化器状态 + 梯度** | $2\Psi + \frac{14\Psi}{N}$ | **$2\Psi$（通信零增加！）** | 反向 1 次 ReduceScatter | 中等模型（7B~13B）性价比最高的黄金策略 |
 | **ZeRO-3 / `FULL_SHARD`** | **优化器 + 梯度 + 模型参数** | **$\frac{16\Psi}{N}$（完全解耦）** | **$3\Psi$（增加 50%）** | 前向 AllGather + 反向 AllGather + ReduceScatter | 超大模型（70B+）单机无论如何塞不下的场景 |
@@ -176,7 +176,7 @@ Total Step Time: 14.8s | MFU: 12.3%
 > 
 > ![显存分片技术 ZeRO-1/2/3 与 PyTorch FSDP 深度剖析全景架构图](assets/arch_29_fsdp_zero_sharding_hybrid.svg)
 
-### 1.1 静态显存的三座大山剖析：$16\Psi$ 底账的结构性冗余
+### 1.1 静态显存的三座大山剖析： $16\Psi$ 底账的结构性冗余
 
 在第 27 讲中，我们手算了混合精度 AdamW 训练的静态显存公式：
 
@@ -219,7 +219,7 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
 
 #### 1. ZeRO-1（优化器分片）：
 - 每张卡只保存 $\frac{1}{N}$ 的优化器状态（Master 权重、一阶动量、二阶动量）；
-- 反向传播时，依然做传统的全卡梯度 AllReduce（通信量 $2\Psi$）；
+- 反向传播时，依然做传统的全卡梯度 AllReduce（通信量 $2\Psi$ ）；
 - 更新时，每张卡只用自己负责的那部分梯度更新自己负责的那 $\frac{1}{N}$ 权重；
 - 更新完毕后，执行一次轻量的跨卡分片收集（AllGather 权重，或等效广播）；
 - **结论**：**消灭了 75% 冗余的大头，单卡直接省下约 $\frac{7}{8}$ 优化器显存，且通信量与 DDP 完全相同！**
@@ -234,7 +234,7 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
   \text{ReduceScatter 通信量} = \left(\frac{N-1}{N}\right) \Psi \approx \mathbf{\Psi}
   $$
 
-  加上更新后的权重 AllGather（$\Psi$），总通信量严格等于：
+  加上更新后的权重 AllGather（ $\Psi$ ），总通信量严格等于：
 
   $$
   \Psi + \Psi = \mathbf{2\Psi}
@@ -252,7 +252,7 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
 
 ### 1.3 通信与显存的黄金权衡曲线（Pareto Frontier）
 
-以一个 7B 模型（$\Psi = 7 \times 10^9$）在 8 张 80GB A100 上的表现为例：
+以一个 7B 模型（ $\Psi = 7 \times 10^9$ ）在 8 张 80GB A100 上的表现为例：
 
 | 分片方案 | 单卡模型静态显存 | 相比 DDP 节省幅度 | 单步通信总量 | 通信相对于 DDP 的膨胀比 | 80GB 卡能否单卡启动（不含激活） |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -289,15 +289,15 @@ Samyam Rajbhandari 等人在 ZeRO 论文中，提出了一套阶梯式的“手�
 1. **前向计算该层**：
    - 必须通过 AllGather 拼出完整 $4\text{ MB}$；
    - 每张卡把自己持有的 $1\text{ MB}$ 发送给其他 3 张卡，同时接收其他卡各 $1\text{ MB}$；
-   - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}$；
+   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = 3 \times 1\text{ MB} = \mathbf{3\text{ MB}}$；
    - 算完前向后，释放非本地的 $3\text{ MB}$；
 2. **反向求导该层**：
    - 必须再次执行 AllGather 拼出完整 $4\text{ MB}$（因为前向完已经释放了！）；
-   - 单卡再次发送：$\mathbf{3\text{ MB}}$；
+   - 单卡再次发送： $\mathbf{3\text{ MB}}$；
 3. **梯度同步并分片**：
    - 求导计算出的梯度也是 $4\text{ MB}$；
    - 执行 ReduceScatter，把 4 张卡的梯度累加，并切分成 4 份，每卡只收回属于自己的那 $1\text{ MB}$ 聚合梯度；
-   - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = \mathbf{3\text{ MB}}$。
+   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} = \mathbf{3\text{ MB}}$。
 
 **单层单步三个通信阶段累加**：
 
@@ -312,7 +312,7 @@ $$
 $$
 
 #### ④ Formal Model（标准公式与渐进极限）
-累加全模型所有层（全模型参数为 $\Psi$），在包含 $N$ 张 GPU 的 FSDP（`FULL_SHARD`）集群中：
+累加全模型所有层（全模型参数为 $\Psi$ ），在包含 $N$ 张 GPU 的 FSDP（`FULL_SHARD`）集群中：
 单张 GPU 在一个完整的训练迭代（Step）中发送的总数据量严格为：
 
 $$
@@ -325,16 +325,16 @@ $$
 \mathbf{\text{Comm}_{\text{FSDP}} \approx 3\Psi \quad (\text{Bytes})}
 $$
 
-对比 DDP 的通信量公式（基于第 28 讲证明的 $\text{Comm}_{\text{DDP}} = 2 \frac{N-1}{N}\Psi \approx 2\Psi$）：
+对比 DDP 的通信量公式（基于第 28 讲证明的 $\text{Comm}_{\text{DDP}} = 2 \frac{N-1}{N}\Psi \approx 2\Psi$ ）：
 
 $$
 \mathbf{\frac{\text{Comm}_{\text{FSDP}}}{\text{Comm}_{\text{DDP}}} = \frac{3\Psi}{2\Psi} = \mathbf{1.5 \quad (+50\%)}}
 $$
 
 #### ⑤ Sanity Check（数量级校验）
-对于 **70B 模型**（$\Psi = 70 \times 10^9$ 参数，BF16 下为 $140\text{ GB}$ 权重）：
-- **DDP 模式单卡每步通信量**：$2 \times 140\text{ GB} = \mathbf{280\text{ GB}}$；
-- **FSDP 全切分单卡每步通信量**：$3 \times 140\text{ GB} = \mathbf{420\text{ GB}}$！
+对于 **70B 模型**（ $\Psi = 70 \times 10^9$ 参数，BF16 下为 $140\text{ GB}$ 权重）：
+- **DDP 模式单卡每步通信量**： $2 \times 140\text{ GB} = \mathbf{280\text{ GB}}$；
+- **FSDP 全切分单卡每步通信量**： $3 \times 140\text{ GB} = \mathbf{420\text{ GB}}$！
 - **差额净增**：单卡整整多出了 **$140\text{ GB}$** 的物理传输负荷！
 
 ---
@@ -837,7 +837,7 @@ DDP 虽好显存死，十六匹量单卡逼；
 ### 7.2 10 条白板自我检验清单
 
 1. 能否闭卷默写出混合精度 AdamW 训练下，模型参数、梯度与优化器各自占用的字节比例？
-2. 为什么 ZeRO-1 和 ZeRO-2 可以在大幅削减显存的同时，做到每步通信量与 DDP 严格相同（都是 $2\Psi$）？
+2. 为什么 ZeRO-1 和 ZeRO-2 可以在大幅削减显存的同时，做到每步通信量与 DDP 严格相同（都是 $2\Psi$ ）？
 3. 能否在白板上推导为什么 ZeRO-3 / FSDP 的单步通信量是 $3\Psi$？这多出的 $1\Psi$ 发生在哪个阶段？
 4. 如果对一个 Transformer 模型不设置任何 Auto Wrap Policy，直接整体外包一层 FSDP，底层前向会发生什么？
 5. 为什么说优化器状态（Optimizer States）是大模型训练静态显存中“性价比最高”的切分目标？
@@ -890,15 +890,15 @@ DDP 虽好显存死，十六匹量单卡逼；
 2. **阶段一：前向传播（Forward Pass）**：
    - 在计算该 Block 前，必须持有完整的 $\Psi_{\text{layer}}$ 权重矩阵；
    - 触发通信：执行 **AllGather**，收集所有卡的参数切片；
-   - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
+   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
    - 计算完毕后，立即执行内存释放（Free），显存回落至 $\frac{\Psi_{\text{layer}}}{N}$。
 3. **阶段二：反向传播（Backward Pass）**：
    - 在求导计算时，由于前向权重已被销毁，必须再次获取完整参数；
    - 触发通信 1：再次执行 **AllGather**，重新拼装出 $\Psi_{\text{layer}}$；
-   - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
+   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
    - 执行矩阵求导，计算出该层完整的权重梯度 $\nabla W_{\text{layer}}$；
    - 触发通信 2：由于每张卡最终只更新属于自己的 $\frac{1}{N}$ 权重分片，因此无需将全量梯度广播回所有卡，而是执行 **ReduceScatter**（全局规约求和并分散切片）；
-   - 单卡发送量：$(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
+   - 单卡发送量： $(N - 1) \times \frac{\Psi_{\text{layer}}}{N} \approx \Psi_{\text{layer}}$；
    - 随后释放完整参数，每张卡仅持有自身负责的 $\frac{1}{N}$ 聚合梯度。
 4. **全流程累加**：
 
@@ -932,13 +932,13 @@ DDP 虽好显存死，十六匹量单卡逼；
 
 #### 考察维度：网络带宽瓶颈诊断、Communication-to-Computation Ratio、架构选型 Trade-off。
 #### 标准参考答案：
-1. **根本原因：通信量的本质差距（$2\Psi$ vs $3\Psi$）**：
+1. **根本原因：通信量的本质差距（ $2\Psi$ vs $3\Psi$ ）**：
    - ZeRO-2 / `SHARD_GRAD_OP` 只切分优化器状态和梯度，参数全量常驻，每步单卡通信量严格为 **$2\Psi$**（仅在反向时做一次 ReduceScatter）；
    - ZeRO-3 / `FULL_SHARD` 参数全切分，每步单卡通信量为 **$3\Psi$**（多了前向和反向两次 AllGather，通信量净增 50%）。
 2. **发生性能反转的硬件网络工况**：
    - **跨机低带宽网络互联**：当训练扩展到多机跨节点，且网络仅配备千兆、万兆网卡，或单口 100G RoCE 时；
    - **网络成为全系统绝对瓶颈（Communication-Bound）**：此时机间网络带宽较窄，计算内核耗时远远小于数据传输耗时，多出来的这 $1\Psi$ 通信量**根本无法被前向/反向计算所掩盖（Overlap 彻底失效）**；
-   - **显存尚有裕量**：如果单卡物理显存（如 80GB）在容纳了 ZeRO-2 的静态显存（$2\Psi + \frac{14\Psi}{N}$）以及动态激活值之后**仍有剩余**；
+   - **显存尚有裕量**：如果单卡物理显存（如 80GB）在容纳了 ZeRO-2 的静态显存（ $2\Psi + \frac{14\Psi}{N}$ ）以及动态激活值之后**仍有剩余**；
 3. **选型决策结论**：
    - 在此工况下，硬上 ZeRO-3 会让每张 GPU 花费大量时间在慢速跨机网络上空等 AllGather；
    - 而采用 ZeRO-2，直接**抹掉了 33.3% 的网络传输负载**，使得通信等待时间大幅缩短，因此**端到端训练吞吐（Tokens/s）和 MFU 往往能够高出 ZeRO-3 整整 30% ~ 50% 以上**！

@@ -134,7 +134,7 @@
   \text{FLOPs} = 2 \times N \times D
   $$
 
-- 当 $N = 10,000,000$（一千万条知识），$D = 1536$：
+- 当 $N = 10,000,000$（一千万条知识）， $D = 1536$：
 
   $$
   \text{FLOPs} = 2 \times 10^7 \times 1536 \approx 3.07 \times 10^{10} = 30.7\text{ GFLOPs}
@@ -265,7 +265,7 @@
 ```
 
 #### 数学推导过程：
-设大模型参数量为 $\Phi$，Prompt 总 Token 数为 $S = S_{\text{ctx}} + S_{\text{query}}$，其中固定知识库上下文长度为 $S_{\text{ctx}}$，用户新提问长度为 $S_{\text{query}}$（通常 $S_{\text{ctx}} \gg S_{\text{query}}$）。
+设大模型参数量为 $\Phi$，Prompt 总 Token 数为 $S = S_{\text{ctx}} + S_{\text{query}}$，其中固定知识库上下文长度为 $S_{\text{ctx}}$，用户新提问长度为 $S_{\text{query}}$（通常 $S_{\text{ctx}} \gg S_{\text{query}}$ ）。
 
 1. **未启用缓存（Cold Prefill）计算量与时延**：
 
@@ -279,7 +279,7 @@
    \text{TTFT}_{\text{cold}} \approx \frac{2 \cdot \Phi \cdot (S_{\text{ctx}} + S_{\text{query}})}{\text{FLOPS}_{\text{effective}}} + T_{\text{memory-fetch}}
    $$
 
-   对于 70B 模型，有效算力 $\text{FLOPS}_{\text{effective}} = 500\text{ TFLOPS}$，$S_{\text{ctx}} = 32,768$，$S_{\text{query}} = 128$：
+   对于 70B 模型，有效算力 $\text{FLOPS}_{\text{effective}} = 500\text{ TFLOPS}$， $S_{\text{ctx}} = 32,768$， $S_{\text{query}} = 128$：
 
    $$
    \text{TTFT}_{\text{cold}} \approx \frac{2 \times 70 \times 10^9 \times 32896}{500 \times 10^{12}} \approx \frac{4.605 \times 10^{15}}{500 \times 10^{12}} \approx 9.21\text{ 秒！}
@@ -1127,7 +1127,7 @@ spec:
 **Ringi 考官拆解与满分回答**：
 1. **KD-Tree 的维度灾难**：
    - KD-Tree 本质是空间二叉划分树，每次选一个维度做正交超平面切分；
-   - 随着维度 $D$ 上升（例如 $D > 20$），超立方体的“角”占据了绝大部分体积，查询超球体几乎必定会与所有的划分超平面相交；
+   - 随着维度 $D$ 上升（例如 $D > 20$ ），超立方体的“角”占据了绝大部分体积，查询超球体几乎必定会与所有的划分超平面相交；
    - 为了寻找最近邻，算法被迫回溯（Backtracking）遍历几乎整棵树的叶子节点，复杂度直接退化为 $O(N)$，比单纯的连续内存点积更慢！
 2. **HNSW 的破局之道**：
    - HNSW 彻底放弃了对物理空间的笛卡尔正交切分，转为**基于距离拓扑的小世界图结构**；

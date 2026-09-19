@@ -126,7 +126,7 @@ math: true
 - 模型静态权重占用约 $26\text{ GB}$ 显存；
 - 单卡 80GB 显存扣除权重后，还足足剩下 **$54\text{ GB}$ 的巨额显存空间**专门给 KV Cache 使用；
 - 按上一讲的手算结果，13B 模型单 Token KV Cache 仅占约 $160\text{ KB}$，哪怕平均会话长达 2048 Token，一个请求也就占约 $0.32\text{ GB}$；
-- 算盘打得噼里啪啦响：$54\text{ GB} / 0.32\text{ GB} \approx 168$。也就是说，单卡理论上至少应该能轻松扛起 **150 个并发请求**！
+- 算盘打得噼里啪啦响： $54\text{ GB} / 0.32\text{ GB} \approx 168$。也就是说，单卡理论上至少应该能轻松扛起 **150 个并发请求**！
 
 然而，当你将并发压测工具的目标调到 **区区 35 个并发** 时，终端屏幕瞬间一片血红：
 
@@ -260,8 +260,8 @@ torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.25 GiB (GPU
 #### ③ Tiny Calculator（极简数字手算）
 假设系统最大上下文预分配长度为 $S_{\text{max}} = 2048$。
 真实业务流量的实际生成长度 $S_{\text{actual}}$ 服从均匀分布，介于 $50$ 到 $450$ 之间（平均值 $\mu = 250$ Token）。
-- 单个请求平均实际消耗槽位：$250$；
-- 单个请求强制预分配槽位：$2048$；
+- 单个请求平均实际消耗槽位： $250$；
+- 单个请求强制预分配槽位： $2048$；
 - **单请求内部利用率**：
 
   $$
@@ -334,7 +334,7 @@ CPU 应用程序虚拟内存空间       <=======>    请求逻辑上下文序�
 
 在 PagedAttention 的世界中，显存管理被重构为三层精密的抽象结构：
 
-#### 1. 块大小（Block Size, $B_{\text{size}}$）
+#### 1. 块大小（Block Size, $B_{\text{size}}$ ）
 系统将每个物理块能够容纳的连续 Token 数量定义为 **Block Size**（在 vLLM 中，标准基线通常取 **$B_{\text{size}} = 16$ 或 $32$**）。
 - 为什么不选 $B_{\text{size}} = 1$？如果每个 Token 都是一个独立块，块表的长度和管理开销会过大，且无法利用 CUDA 内存合并访存（Coalesced Memory Access）；
 - 为什么不选 $B_{\text{size}} = 256$？块过大又会导致最后一个块内的内部碎片回潮。实测证明 $16$ 和 $32$ 是碎片控制与访存吞吐的黄金平衡点。
@@ -593,7 +593,7 @@ $$
 > **如果一个巨型集装箱会压垮桥梁，就必须在收费站前将其拆解为若干个标准托盘，以均匀的间隙放行！**
 
 系统不再允许任何长 Prompt“整存整取”地霸占 GPU 单步时间。
-- 设定一个固定的分块切片阈值（如 $\text{Chunk Size} = 512$）；
+- 设定一个固定的分块切片阈值（如 $\text{Chunk Size} = 512$ ）；
 - 当一个 4000 Token 的长 Prompt 到达时，调度器将其切为 $4000 / 512 = 8$ 个连续的 Chunk；
 - **第 1 步**：仅执行 Chunk 0（计算 512 个 Token 的 Attention，将其写入 KV Cache），并与批次内的其他 Decode 请求一同执行，单步耗时稳定在 35ms；
 - **第 2 步**：继续执行 Chunk 1（此时利用已经算好的 Chunk 0 的 KV Cache 作为历史进行掩码注意力），耗时依然为 35ms；
@@ -741,14 +741,14 @@ $$
 2 \times \frac{\text{KV}_{\text{token}}}{B_{\text{pcie}}} = \frac{2W}{P_{\text{eff}}} \implies \mathbf{B_{\text{pcie}} \times W = \text{KV}_{\text{token}} \times P_{\text{eff}}}
 $$
 
-以 LLaMA-3 70B（$W = 70 \times 10^9$，单 Token KV $\approx 320\text{ KB}$）为例：
+以 LLaMA-3 70B（ $W = 70 \times 10^9$，单 Token KV $\approx 320\text{ KB}$ ）为例：
 - 重新计算该模型 1000 Token Prefill 的耗时：
 
   $$
   T_{\text{recompute}} = \frac{2 \times 70 \times 10^9 \times 1000}{500 \times 10^{12}} = \mathbf{0.28 \text{ s}} \ (280 \text{ ms})
   $$
 
-- 而跨 PCIe 4.0 换出再换入这 1000 个 Token 的 KV（约 $320\text{ MB}$）的耗时：
+- 而跨 PCIe 4.0 换出再换入这 1000 个 Token 的 KV（约 $320\text{ MB}$ ）的耗时：
 
   $$
   T_{\text{swap}} = 2 \times \frac{0.32\text{ GB}}{32\text{ GB/s}} = \mathbf{0.02 \text{ s}} \ (20 \text{ ms})
@@ -1144,7 +1144,7 @@ $$
 
 #### 💡 详细三维权衡分析
 
-| 评测维度 | 极端调小：$\text{Block Size} = 4$ | 黄金基线：$\text{Block Size} = 16 \sim 32$ | 极端调大：$\text{Block Size} = 128$ |
+| 评测维度 | 极端调小： $\text{Block Size} = 4$ | 黄金基线： $\text{Block Size} = 16 \sim 32$ | 极端调大： $\text{Block Size} = 128$ |
 | :--- | :--- | :--- | :--- |
 | **内部碎片控制** | **极致优秀**：每个请求尾部最多只浪费 3 个 Token 的空间（几十 KB），碎片几乎物理归零。 | **极其优秀**：尾部最多浪费 15~31 个 Token，碎片率通常控制在 $<3\%$。 | **大幅恶化**：每个请求尾部平均浪费 64 个 Token，在短请求（如输出仅 20 字）场景下内部碎片再次高达 70%！ |
 | **块表（Block Table）管理开销** | **严重恶化**：块数量暴增 4 倍，Block Table 长度翻 4 倍，CPU 调度开销与 GPU 常量内存占用显著加剧。 | **处于最优平衡点**：块表长度适中，完全可常驻 SM 共享内存与 L1 Cache。 | **极轻量**：块数量锐减，块表非常短小，调度元数据管理负担极低。 |

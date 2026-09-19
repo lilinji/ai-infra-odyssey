@@ -462,8 +462,8 @@ t_{\text{comm-overlap}} = t_{\text{comm-solo}} \times k \quad (k > 1.0)
 $$
 
 在大模型训练小规模集群的真实测试中：
-- 当与 Compute-Bound 的大 GEMM 算子重叠时，竞争相对缓和，$k \approx 1.05 \sim 1.15$；
-- **而当与 Memory-Bound 的 Attention、Softmax、RMSNorm 算子重叠时，$k$ 倍率会剧烈飙升至 $1.3 \sim 1.5$！**
+- 当与 Compute-Bound 的大 GEMM 算子重叠时，竞争相对缓和， $k \approx 1.05 \sim 1.15$；
+- **而当与 Memory-Bound 的 Attention、Softmax、RMSNorm 算子重叠时， $k$ 倍率会剧烈飙升至 $1.3 \sim 1.5$！**
 
 ---
 
@@ -1083,8 +1083,8 @@ if __name__ == "__main__":
 
 > 🎯 **大厂标准答题路径与白板推导**：
 > 1. **数学模型与现象**：
->    - 理论公式假设两者物理互不相干：$T = \max(T_{\text{comp}}, T_{\text{comm}})$；
->    - 实际上实测通信耗时膨胀：$t_{\text{comm-overlap}} = t_{\text{comm-solo}} \times k$（$k \approx 1.1 \sim 1.4$）。
+>    - 理论公式假设两者物理互不相干： $T = \max(T_{\text{comp}}, T_{\text{comm}})$；
+>    - 实际上实测通信耗时膨胀： $t_{\text{comm-overlap}} = t_{\text{comm-solo}} \times k$（ $k \approx 1.1 \sim 1.4$ ）。
 > 2. **微架构资源的五大冲突点**：
 >    - **L2 Cache 带宽挤占**：跨卡 NVLink 传输的大流量穿透 L2，冲垮了 GEMM 矩阵计算的权重缓存命中，迫使计算线程向 HBM 发起昂贵的重加载；
 >    - **内存控制器（Memory Controller）排队**：通信的突发写入与计算的密集读取在片外显存总线端口迎头相撞，队列溢出导致平均延迟翻倍；

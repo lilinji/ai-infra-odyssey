@@ -173,7 +173,7 @@ math: true
 
 ### 1.1 为什么单一并行必败：四种并行维度的正交互补性
 
-我们在第 30 讲中建立了世界规模约束方程：$\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$。  
+我们在第 30 讲中建立了世界规模约束方程： $\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$。  
 在实际的生产架构中，面对一个具体的千亿参数模型，**没有任何单一策略能够单独挑起大梁**：
 
 ```text
@@ -186,7 +186,7 @@ math: true
 
 **正交协同的艺术**：
 1. **TP 负责微观爆破**：在节点内部利用 900 GB/s 的 NVLink，将每一个庞大的 Linear 层撕成 8 份，单卡只计算其中一部分，彻底粉碎单层 GEMM 显存墙；
-2. **PP 负责纵向解耦**：将 80 层或 120 层的模型沿着深度横切成若干个 Stage（如 $\text{PP}=4$ 或 $8$），跨机器之间仅通过点对点（P2P）传递微批次激活张量，完美规避跨机全量参数通信；
+2. **PP 负责纵向解耦**：将 80 层或 120 层的模型沿着深度横切成若干个 Stage（如 $\text{PP}=4$ 或 $8$ ），跨机器之间仅通过点对点（P2P）传递微批次激活张量，完美规避跨机全量参数通信；
 3. **DP 负责算力聚合**：在外层跨越所有副本并行吞吐海量数据，将全局有效 Batch Size 撑大到数百万 Token，加速模型收敛；
 4. **EP 负责参数扩容**：在 FFN 区域将专家分散在所有卡上，以几乎不增加计算 FLOPs 的代价将模型容量拉升 4~8 倍！
 
@@ -199,7 +199,7 @@ math: true
 **在大厂 AI Infra 生产规范中，这是一条被无数次线上事故证实的红线禁令：生产级 3D 并行严禁开启 ZeRO-3，必须且只能开启 ZeRO-1！**
 
 #### 为什么 ZeRO-3 会把流水线并行（PP）彻底害死？
-1. **流水线调度的微批次本质**：为了把 PP 的气泡率压低，我们将一个全局 Batch 切成了几十个甚至上百个微批次（Micro-batches，例如 $M = 32$ 或 $64$）；
+1. **流水线调度的微批次本质**：为了把 PP 的气泡率压低，我们将一个全局 Batch 切成了几十个甚至上百个微批次（Micro-batches，例如 $M = 32$ 或 $64$ ）；
 2. **通信频率灾难性放大**：
    - ZeRO-3 的核心哲学是**流式按需组装**——算一层拼一层，算完立刻销毁；
    - 在纯数据并行下，每个 Step 每一层只执行 1 次 AllGather；
@@ -243,7 +243,7 @@ math: true
 **Mixture of Experts（MoE，混合专家网络）** 打破了这个死结：
 - 保持 Attention 模块依然为稠密结构（处理通用的全局序列关联）；
 - 将占据全网参数大头的 **FFN（前馈网络）层** 替换为一个门控路由器（Router）与一组并行的**独立小专家网络（Experts）**（例如 8 个、64 个乃至 256 个专家）；
-- **稀疏激活机制**：对于输入的每一个 Token，Router 仅动态挑选其中最匹配的 **Top-K 个专家（通常 $K=1$ 或 $K=2$）** 参与计算！
+- **稀疏激活机制**：对于输入的每一个 Token，Router 仅动态挑选其中最匹配的 **Top-K 个专家（通常 $K=1$ 或 $K=2$ ）** 参与计算！
 
 **震撼的经济学收益**：
 - 模型的总参数量（Capacity）被放大到了原来的 $E$ 倍；
@@ -331,7 +331,7 @@ $$
 
 1. **第一阶段：Dispatch 分发**：
    - GPU 0 需要把 1 个 Token 发给 GPU 1；
-   - 单个 Token 数据大小：$1 \times 4 \times 2\text{ Bytes} = \mathbf{8 \text{ B}}（8 字节）$；
+   - 单个 Token 数据大小： $1 \times 4 \times 2\text{ Bytes} = \mathbf{8 \text{ B}}（8 字节）$；
    - GPU 0 发出 8 字节，同时接收 8 字节；
 2. **第二阶段：Combine 收回**：
    - GPU 1 算完该 Token 的 FFN 输出后，必须把这 8 字节的结果送回 GPU 0；
@@ -350,7 +350,7 @@ $$
 \text{Comm}_{\text{fwd, MoE}} = \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Dispatch 通信量}} + \underbrace{\left(\frac{N_{\text{ep}}-1}{N_{\text{ep}}}\right) \times K \cdot b \cdot s \cdot h \times 2}_{\text{Combine 通信量}} \quad (\text{Bytes})
 $$
 
-当 $N_{\text{ep}}$ 较大时，$\frac{N_{\text{ep}}-1}{N_{\text{ep}}} \to 1$：
+当 $N_{\text{ep}}$ 较大时， $\frac{N_{\text{ep}}-1}{N_{\text{ep}}} \to 1$：
 
 $$
 \mathbf{\text{Comm}_{\text{fwd, MoE}} \approx 4 \times K \cdot b \cdot s \cdot h \quad (\text{Bytes})}
@@ -364,8 +364,8 @@ $$
 $$
 
 #### ⑤ Sanity Check（数量级校验）
-以 **DeepSeek-V3** 架构风格（$h = 7168$, 采用 $\text{Top-8}$ 路由，每个 Token 激活 8 个小专家）为例：
-- 每个 Token 在一个 MoE 层单步往返通信量：$8 \times 8 \times 7168 \times 2\text{ Bytes} \approx \mathbf{917.5\text{ KB}}$！
+以 **DeepSeek-V3** 架构风格（ $h = 7168$, 采用 $\text{Top-8}$ 路由，每个 Token 激活 8 个小专家）为例：
+- 每个 Token 在一个 MoE 层单步往返通信量： $8 \times 8 \times 7168 \times 2\text{ Bytes} \approx \mathbf{917.5\text{ KB}}$！
 - 仅处理单个 Token 就需要传输近 **1 MB** 的网络数据！
 - 若一个批次包含 $4096$ 个 Token，全网 58 个 MoE 层累加，单步通信吞吐高达数百 GB！这直接解释了为什么 **MoE 模型的端到端吞吐完全被集群跨机全交换网络（All-to-All）所统治**。
 
@@ -379,7 +379,7 @@ $$
 1. **慢卡拖垮全网（Straggler Disaster）**：承载网红专家的 GPU 算力被挤爆，计算耗时飙升数倍，其余持有冷门专家的 GPU 全部闲置空等；
 2. **显存溢出与容量因子（Capacity Factor）**：
    - 在静态显存分配中，每张 GPU 分配给专家的输入 Buffer 是有限的；
-   - 工业界引入 **Capacity Factor（容量因子 $C$）**：限制每个专家最多只能接收 $C \times \frac{\text{Tokens}}{E}$ 个样本；
+   - 工业界引入 **Capacity Factor（容量因子 $C$ ）**：限制每个专家最多只能接收 $C \times \frac{\text{Tokens}}{E}$ 个样本；
    - 一旦超出上限，多余的 Token 将被**强行丢弃（Token Dropping）**！被丢弃的 Token 跳过专家计算，直接通过残差连接输出；
    - **丢 Token 的代价极其惨痛**：模型在复杂逻辑和长文本上的表征能力遭到永久性阉割，训练收敛曲线严重恶化！
 
@@ -738,7 +738,7 @@ if __name__ == "__main__":
 | :--- | :--- | :--- | :--- |
 | **01** | “ZeRO-3 是最省显存的技术，因此在千卡 3D 并行中无脑开启收益最大。” | **生产级 3D 并行严禁开启 ZeRO-3，必须且只能开启 ZeRO-1！** | ZeRO-3 会让每个流水线微批次反复发起 AllGather，通信开销直接放大几十倍，整机算力当场雪崩。 |
 | **02** | “MoE 模型参数量虽大，但每个 Token 算力极小，因此训练一定比同参数稠密模型快。” | **MoE 极大降低了 GEMM 计算耗时，但引入了海量的跨卡 All-to-All 交换，对网络通信带宽与延迟极其挑剔。** | 一旦网络出现瓶颈或专家负载倾斜，GPU 大量时间都在等 All-to-All，端到端速度可能反比 Dense 模型更慢。 |
-| **03** | “MoE 训练只要设置了容量因子（Capacity Factor），就能彻底解决显存溢出，没有副作用。” | **当容量因子设得过小（如 $C=1.0$）且专家负载倾斜时，多出的 Token 会被无情直接丢弃（Token Dropping）！** | 严重丢 Token 会让模型无法学到专业领域的表征，导致下游测评精度崩塌，工业界宁可略微增大 Buffer 也不要丢 Token。 |
+| **03** | “MoE 训练只要设置了容量因子（Capacity Factor），就能彻底解决显存溢出，没有副作用。” | **当容量因子设得过小（如 $C=1.0$ ）且专家负载倾斜时，多出的 Token 会被无情直接丢弃（Token Dropping）！** | 严重丢 Token 会让模型无法学到专业领域的表征，导致下游测评精度崩塌，工业界宁可略微增大 Buffer 也不要丢 Token。 |
 | **04** | “千卡训练发生 NCCL Hang，肯定是某张 GPU 的通信硬件彻底坏掉了。” | **超过 80% 的 NCCL Hang 本质上不是硬件损坏，而是由于某张卡计算变慢（Straggler）或路由倾斜引发的级联排队等待。** | 集合通信必须所有人同时就绪才能完成，一人稍慢，全网在下一个通信节点集体锁死，表现与断网完全相同。 |
 | **05** | “为了追求最高精度，训练大模型必须在 Attention 和前向全流程使用 FP32 或 FP16。” | **生产级大模型训练首选 BF16！FP16 动态范围仅 $10^4$，极其容易因梯度累加导致数值溢出（Loss Spike）。** | BF16 的指数位与 FP32 完全等宽，动态范围达 $10^{38}$，彻底消除前向溢出风险，同时享受 Tensor Core 满血吞吐。 |
 | **06** | “训练集群只要配了高速网络，单张卡的 PCIe 速率哪怕掉一点也不影响大局。” | **只要集群中哪怕只有 1 张卡的 PCIe 从 Gen5 x16 掉到 Gen4 x4，整个千卡流水线都会被拖慢至该慢卡的速度！** | 分布式木桶效应极其残酷，单卡延迟会被流水线依赖级联放大为全集群的空转气泡。 |
@@ -749,7 +749,7 @@ if __name__ == "__main__":
 ### 5.2 生产 3D+MoE 混合并行与集群排障黄金 Checklist
 
 - [ ] 1. **【ZeRO 策略严格绑定】**：在包含流水线并行（PP）的 3D 训练任务中，强制配置优化器切分为 ZeRO-1，严禁开启 ZeRO-2 或 ZeRO-3。
-- [ ] 2. **【MoE 辅助平衡损失必加】**：训练 MoE 模型必须在 Router 中显式启用 `aux_loss_coeff > 0`（通常配置为 $0.01\sim 0.05$），防止马太效应催生网红专家。
+- [ ] 2. **【MoE 辅助平衡损失必加】**：训练 MoE 模型必须在 Router 中显式启用 `aux_loss_coeff > 0`（通常配置为 $0.01\sim 0.05$ ），防止马太效应催生网红专家。
 - [ ] 3. **【Capacity Factor 冗余保障】**：在预训练中，MoE 的容量因子推荐设置为 $C \ge 1.25$；在预留充裕显存前提下，严禁开启激进的 Token Dropping。
 - [ ] 4. **【全集群精度强制 BF16】**：在模型初始化时，强制指定 `dtype=torch.bfloat16`，并对全局梯度范数开启 `clip_grad_norm_ <= 1.0` 刚性约束。
 - [ ] 5. **【NCCL 排障三探针默认注入】**：生产启动脚本中必须注入 `NCCL_ASYNC_ERROR_HANDLING=1` 与可配置的 `TORCH_DISTRIBUTED_DEBUG=INFO`，杜绝静默假死。
@@ -791,7 +791,7 @@ if __name__ == "__main__":
 
 1. **【DeepSeek-V3 细粒度 MoE 的超重叠双缓冲设计】**：DeepSeek-V3 采用了惊人的 256 个路由专家与 1 个共享专家，每个 Token 激活其中的 8 个小专家。由于专家粒度极细，单个 All-to-All 的小包通信量极其频繁。请从双 CUDA Stream、Shared Expert 计算时间与 All-to-All 通信时间的微观时序图推导：DeepSeek-V3 是如何巧妙地利用共享专家的 GEMM 计算时间，将 256 个路由专家的跨机 All-to-All 物理传输延迟 **100% 隐藏在计算阴影内部** 的？
 2. **【网络单点微丢包引发的全集群级联雪崩】**：在万卡集群上跑 3D 并行时，假设核心交换机某一个端口的光纤发生轻微弯曲，导致每 10,000 个数据包中随机出现 1 个 CRC 校验错误丢包。请结合 InfiniBand 的 Go-Back-N 重传机制或 RoCEv2 的 PFC 拥塞反压推导：这 0.01% 的偶发性微小丢包，是如何通过网络暂停帧（PFC Pause Frame）层层向上反压、波及整个无损网络树，最终导致数千张卡集体 Hang 死的？现代智算中心如何利用动态 ECN 与 Packet Trimming 进行防范？
-3. **【混合精度训练中梯度累加的隐式舍入截断】**：为了增大有效批大小，工业界普遍使用梯度累加（Gradient Accumulation，如每 8 步更新一次）。假设模型权重与反向梯度均使用 BF16 格式。当一个极微小的梯度值（如 $10^{-5}$）被连续 8 次累加到一个较大的梯度中间张量（如 $1.0$）中时，请从 IEEE 754 浮点数阶码对齐和尾数截断（Mantissa Truncation）的角度分析：为什么这些微小梯度会被数学硬件直接“吃掉”（Underflow to Zero）？工程上为什么必须强制在 FP32 缓冲区中进行累加？
+3. **【混合精度训练中梯度累加的隐式舍入截断】**：为了增大有效批大小，工业界普遍使用梯度累加（Gradient Accumulation，如每 8 步更新一次）。假设模型权重与反向梯度均使用 BF16 格式。当一个极微小的梯度值（如 $10^{-5}$ ）被连续 8 次累加到一个较大的梯度中间张量（如 $1.0$ ）中时，请从 IEEE 754 浮点数阶码对齐和尾数截断（Mantissa Truncation）的角度分析：为什么这些微小梯度会被数学硬件直接“吃掉”（Underflow to Zero）？工程上为什么必须强制在 FP32 缓冲区中进行累加？
 
 ---
 
@@ -887,7 +887,7 @@ if __name__ == "__main__":
 2. **工程级防御与自动回滚防护网构建**：
    - **前置拦截（Data Sanitization & BF16）**：严格清洗数据，剔除极端长度离群样本；全网强制使用 **BF16** 统一精度，消除前向数值上溢；
    - **梯度刚性裁剪（Gradient Clipping）**：配置 `clip_grad_norm_ <= 1.0`，在反向更新前对全网全局梯度做等比例缩放，切断梯度爆炸的传递链；
-   - **激活范数实时监控（Activation Norm Monitor）**：在训练循环中实时计算各层输出激活的 $L_2$ 范数，建立滑动平均基线；一旦探测到当前 Step 的激活范数偏离超过阈值（如 $5\sigma$），自动判定为 Spike 异常；
+   - **激活范数实时监控（Activation Norm Monitor）**：在训练循环中实时计算各层输出激活的 $L_2$ 范数，建立滑动平均基线；一旦探测到当前 Step 的激活范数偏离超过阈值（如 $5\sigma$ ），自动判定为 Spike 异常；
    - **全自动秒级容灾回滚（Auto-Rollback）**：
      - 系统自动丢弃本步更新，阻断被污染的梯度注入优化器；
      - 触发训练调度器，从最近保存的健康 Checkpoint（依托异步 Checkpoint 缓存）快速热回滚；

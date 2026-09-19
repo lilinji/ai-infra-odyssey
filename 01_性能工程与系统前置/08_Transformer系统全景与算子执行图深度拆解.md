@@ -176,7 +176,7 @@ AI Infra 领域每一项声名赫赫的硬核优化技术，都能在 Transforme
 | **CUDA 算子优化**     | RMSNorm 算子融合与向量化加载 `float4` | 每个 Block 输入与输出处的特征均方根归一化                                                |
 | **分布式训练 (TP)**   | 张量并行（Tensor Parallelism）        | Attention 的多头（Multi-Head）列切/行切与 FFN 矩阵切分                                   |
 | **分布式训练 (PP)**   | 流水线并行（Pipeline Parallelism）    | 模型中 $N$ 层标准 Decoder Block 的跨卡逐层流水线编排                                     |
-| **分布式训练 (DP)**   | ZeRO-1/2/3、PyTorch FSDP 显存分片     | 权重矩阵（$W_Q, W_K, W_V, W_O, W_{gate}, W_{up}, W_{down}$）的参数、梯度与优化器状态分摊 |
+| **分布式训练 (DP)**   | ZeRO-1/2/3、PyTorch FSDP 显存分片     | 权重矩阵（ $W_Q, W_K, W_V, W_O, W_{gate}, W_{up}, W_{down}$ ）的参数、梯度与优化器状态分摊 |
 | **长文本训练**        | Activation Checkpointing (重计算)     | 剪枝并重新计算 Attention/FFN 中间激活张量，显存 $O(L) \to O(1)$                          |
 | **高性能 Serving**    | PagedAttention (vLLM)、KV Cache 分页  | 自回归生成过程中每一轮迭代追加的历史 $K, V$ 显存虚拟分页管理                             |
 | **量化压缩加速**      | FP8 / INT4 GEMM、SmoothQuant          | 权重矩阵与 KV Cache 的位宽压缩与 Tensor Core 混合精度计算                                |
@@ -278,7 +278,7 @@ $$
 
 ## 2.3 6 步逐步推导与手把手数字算盘（GEMM $\to$ 打分 $\to$ 缩放 $\to$ 掩码 $\to$ Softmax $\to$ 输出）
 
-设输入张量为 $X \in \mathbb{R}^{B \times S \times d}$，其中 $B$ 为批大小（Batch Size），$S$ 为序列长度（Sequence Length），$d$ 为隐藏层维度（Hidden Dimension）。为了便于小白理解，我们暂时省略 Batch 维度，考察单个序列 $X \in \mathbb{R}^{S \times d}$。
+设输入张量为 $X \in \mathbb{R}^{B \times S \times d}$，其中 $B$ 为批大小（Batch Size）， $S$ 为序列长度（Sequence Length）， $d$ 为隐藏层维度（Hidden Dimension）。为了便于小白理解，我们暂时省略 Batch 维度，考察单个序列 $X \in \mathbb{R}^{S \times d}$。
 
 ### 步骤 1：线性投影生成 $Q, K, V$（3 次标准 GEMM）
 
@@ -288,13 +288,13 @@ $$
 Q = X W_Q, \quad K = X W_K, \quad V = X W_V
 $$
 
-- **Tensor Shape**：$X(S, d) \times W(d, d) \to Q, K, V$ 形状均为 $(S, d)$；
+- **Tensor Shape**： $X(S, d) \times W(d, d) \to Q, K, V$ 形状均为 $(S, d)$；
 - **FLOPs 计算量**：每个投影执行一次标准矩阵乘法，单次 GEMM 计算量为 $2 S d^2$ FLOPs，三次总计为 **$6 S d^2$ FLOPs**；
 - **GPU 机器底层**：由 cuBLAS / CUTLASS 驱动的 Tensor Core 极速矩阵乘法内核执行。
 
 ---
 
-### 步骤 2：计算原始注意力打分矩阵（$Q K^T$）
+### 步骤 2：计算原始注意力打分矩阵（ $Q K^T$ ）
 
 计算序列中任意两个 Token 之间的点积相似度：
 
@@ -302,8 +302,8 @@ $$
 S_{\text{raw}} = Q K^T \in \mathbb{R}^{S \times S}
 $$
 
-- **Tensor Shape**：$Q(S, d) \times K^T(d, S) \to S_{\text{raw}}(S, S)$；
-- **物理意义**：$S_{\text{raw}}[i][j]$ 表示第 $i$ 个 Token 的 Query 与第 $j$ 个 Token 的 Key 之间的向量内积。
+- **Tensor Shape**： $Q(S, d) \times K^T(d, S) \to S_{\text{raw}}(S, S)$；
+- **物理意义**： $S_{\text{raw}}[i][j]$ 表示第 $i$ 个 Token 的 Query 与第 $j$ 个 Token 的 Key 之间的向量内积。
 
 #### 🔢 手把手极简数字算盘：
 
@@ -323,7 +323,7 @@ $$
 S_{\text{scaled}} = \frac{Q K^T}{\sqrt{d_k}} \in \mathbb{R}^{S \times S}
 $$
 
-其中 $d_k$ 为单个注意力头的维度（如 $d_k = 128$）。
+其中 $d_k$ 为单个注意力头的维度（如 $d_k = 128$ ）。
 
 ---
 
@@ -342,7 +342,7 @@ A = \text{softmax}\left( \frac{Q K^T}{\sqrt{d_k}} + \text{Mask} \right) \in \mat
 $$
 
 - 因为 $e^{-\infty} = 0$，未来位置在 Softmax 后的注意力权重严格为 **0**；
-- 矩阵 $A$ 的每一行所有元素非负且和严格等于 1：$\sum_{j=1}^S A[i][j] = 1.0$。
+- 矩阵 $A$ 的每一行所有元素非负且和严格等于 1： $\sum_{j=1}^S A[i][j] = 1.0$。
 
 ---
 
@@ -352,7 +352,7 @@ $$
 O_{\text{attn}} = A \cdot V \in \mathbb{R}^{S \times d}
 $$
 
-- **Tensor Shape**：$A(S, S) \times V(S, d) \to O_{\text{attn}}(S, d)$；
+- **Tensor Shape**： $A(S, S) \times V(S, d) \to O_{\text{attn}}(S, d)$；
 - **物理意义**：第 $i$ 个 Token 的输出向量，就是整篇序列中所有 Token 的 $V$ 按照第 $i$ 行权重概率分布 $A[i]$ 进行加权线性求和。
 
 ---
@@ -412,7 +412,7 @@ $$
 
    **标准差（Standard Deviation）为 $\sqrt{d_k}$！**
 2. **后果：Softmax 饱和与梯度消失**：  
-   在现代大模型中，单头维度通常为 $d_k = 128$。如果不除以 $\sqrt{128} \approx 11.31$，点积数值的标准差就会放大到 11 以上，导致打分矩阵中出现极大的正数（如 $+50$）和极小的负数（如 $-50$）；  
+   在现代大模型中，单头维度通常为 $d_k = 128$。如果不除以 $\sqrt{128} \approx 11.31$，点积数值的标准差就会放大到 11 以上，导致打分矩阵中出现极大的正数（如 $+50$ ）和极小的负数（如 $-50$ ）；  
    当输入极大时，Softmax 函数输出会被极端推向 **one-hot 饱和区**（最大值趋近于 1.0，其余全部趋近于 0.0）；  
    而在饱和区，Softmax 的导数 $\frac{\partial \text{Softmax}(z_i)}{\partial z_j} = S_i (\delta_{ij} - S_j) \approx 1 \times (1 - 1) = 0$！**反向传播梯度瞬间衰减归零（Gradient Vanishing），模型参数彻底停止学习！**
 3. **结论**：除以 $\sqrt{d_k}$ 将点积分布重新缩放回均值为 0、方差为 1 的平稳区间，确保 Softmax 处于对输入变化最敏感、梯度流动最健康的线性激活带。
@@ -427,8 +427,8 @@ $$
 Q (S × d) × K^T (d × S) ──► S_raw (S × S 注意力矩阵) ──► Softmax (S × S) ──► × V (S × d)
 ```
 
-1. **计算复杂度**：$O(S^2 \cdot d)$，因为生成 $S \times S$ 个分数，每个分数需要 $d$ 次乘加；
-2. **显存存储复杂度**：$O(S^2)$，因为在标准 PyTorch 实现中，必须在 GPU 显存（HBM）中显式分配大小为 $(B, h, S, S)$ 的临时中间张量，用于保存 Softmax 前后的打分权重。
+1. **计算复杂度**： $O(S^2 \cdot d)$，因为生成 $S \times S$ 个分数，每个分数需要 $d$ 次乘加；
+2. **显存存储复杂度**： $O(S^2)$，因为在标准 PyTorch 实现中，必须在 GPU 显存（HBM）中显式分配大小为 $(B, h, S, S)$ 的临时中间张量，用于保存 Softmax 前后的打分权重。
 
 ### 💥 长文本下的显存海啸手算：
 
@@ -472,7 +472,7 @@ Multi-Head Attention 与 GPU 分布式张量并行天然契合：
 2. **行并行切分（Row Parallel GEMM）**：  
    将输出投影矩阵 $W_O$ 沿**行方向（Row）**切分，各卡用局部的 Attention 输出乘以局部的 $W_O^i$；
 3. **通信汇总（AllReduce）**：  
-   根据矩阵乘法分配律：$\text{Output} = \sum_{i=1}^P (\text{head}_i \cdot W_O^i)$，最后只需在多卡之间执行一次极快的集合通信 **`AllReduce(Sum)`**，即可完美还原全量输出，通信开销达到理论最小！
+   根据矩阵乘法分配律： $\text{Output} = \sum_{i=1}^P (\text{head}_i \cdot W_O^i)$，最后只需在多卡之间执行一次极快的集合通信 **`AllReduce(Sum)`**，即可完美还原全量输出，通信开销达到理论最小！
 
 ---
 
@@ -489,9 +489,9 @@ K1 K2 K3 K4 K5 K6 K7 K8              KV 1          KV 2                         
 (KV Cache 显存 100%)              (KV Cache 显存 25%, 性能无损!)        (KV Cache 显存 12.5%, 精度微损)
 ```
 
-1. **MHA (Multi-Head Attention)**：$Q, K, V$ 头数完全相同（如 32 个 $Q$ 头对应 32 对 $K, V$）。表达能力最强，但推理时 KV Cache 显存开销巨大；
+1. **MHA (Multi-Head Attention)**： $Q, K, V$ 头数完全相同（如 32 个 $Q$ 头对应 32 对 $K, V$ ）。表达能力最强，但推理时 KV Cache 显存开销巨大；
 2. **MQA (Multi-Query Attention, Shazeer 2019)**：所有 $Q$ 头**强行共享同 1 对 $K, V$**。KV Cache 显存暴降至 $1/h$（降至 1/32），但由于强制压缩了键值特征空间，复杂任务下的模型表达精度略有下滑；
-3. **GQA (Grouped-Query Attention, Ainslie 2023)**：**完美的折中方案！** 将 $Q$ 头分为 $G$ 个组（如 32 个 $Q$ 头分为 8 组，每组 4 个 $Q$ 头共享 1 对 $K, V$）。KV Cache 显存直接削减 75%~87.5%，且模型推理能力几乎与 MHA 100% 持平，已成为 LLaMA-2-70B、LLaMA-3、Mistral、Qwen 等现代开源大模型的**绝对统一标配**！
+3. **GQA (Grouped-Query Attention, Ainslie 2023)**：**完美的折中方案！** 将 $Q$ 头分为 $G$ 个组（如 32 个 $Q$ 头分为 8 组，每组 4 个 $Q$ 头共享 1 对 $K, V$ ）。KV Cache 显存直接削减 75%~87.5%，且模型推理能力几乎与 MHA 100% 持平，已成为 LLaMA-2-70B、LLaMA-3、Mistral、Qwen 等现代开源大模型的**绝对统一标配**！
 
 ---
 
@@ -567,7 +567,7 @@ f(x) = max(0, x)                 f(x) = x * P(X <= x)             f(x) = Swish(x
    \text{SwiGLU}(x) = \left( \text{Swish}(x W_{\text{gate}}) \odot (x W_{\text{up}}) \right) W_{\text{down}}
    $$
 
-   其中 $\text{Swish}(z) = z \cdot \sigma(\beta z)$，$\odot$ 为逐元素哈达玛积（Hadamard Product）。
+   其中 $\text{Swish}(z) = z \cdot \sigma(\beta z)$， $\odot$ 为逐元素哈达玛积（Hadamard Product）。
    - **第一性原理优势**：引入了 **双通道门控（Gating）** 机制。$W_{\text{up}}$ 负责生成纯粹的特征内容，而 $W_{\text{gate}}$ 负责动态学习一个 $0 \sim 1$ 的门控系数，精准控制每个通道信息的通过率，非线性表达能力出现质的飞跃！
 
 ---
@@ -576,7 +576,7 @@ f(x) = max(0, x)                 f(x) = x * P(X <= x)             f(x) = Swish(x
 
 ## 4.1 为什么 Transformer 天生是个“词序脸盲”？排列等变性与绝对位置缺失
 
-回顾 Self-Attention 的核心计算：$S = Q K^T$。  
+回顾 Self-Attention 的核心计算： $S = Q K^T$。  
 如果我们把输入句子 `张三 借了 李四 一百块` 彻底打乱成 `李四 借了 张三 一百块`：
 
 - 因为矩阵乘法是逐行逐列的点积，打乱输入行顺序，输出的注意力分数矩阵仅仅是对应地交换了行和列；
@@ -627,10 +627,10 @@ $$
 
 ### 4.3.2 复数内积：为什么绝对位置旋转能自然涌现相对距离 $(m - n)$？
 
-这是 RoPE 最惊艳的数学之美！将 2D 向量视为复数：$q = q_0 + i q_1 = r_q e^{i \phi_q}$。  
-在位置 $m$ 旋转后变为：$\tilde{q}_m = q \cdot e^{i m \theta}$；同样在位置 $n$ 处的 Key 旋转后变为：$\tilde{k}_n = k \cdot e^{i n \theta}$。
+这是 RoPE 最惊艳的数学之美！将 2D 向量视为复数： $q = q_0 + i q_1 = r_q e^{i \phi_q}$。  
+在位置 $m$ 旋转后变为： $\tilde{q}_m = q \cdot e^{i m \theta}$；同样在位置 $n$ 处的 Key 旋转后变为： $\tilde{k}_n = k \cdot e^{i n \theta}$。
 
-当它们计算注意力打分点积时（对应复数共轭内积 $\text{Re}(\tilde{q}_m \tilde{k}_n^*)$）：
+当它们计算注意力打分点积时（对应复数共轭内积 $\text{Re}(\tilde{q}_m \tilde{k}_n^*)$ ）：
 
 $$
 \langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( (q e^{i m \theta}) (k e^{i n \theta})^* \right) = \text{Re}\left( q k^* e^{i (m - n) \theta} \right)
@@ -688,7 +688,7 @@ $$
 
    缺点：计算 $\mu$ 需要遍历一遍张量，计算 $\sigma^2$ 又需要再遍历一遍，访存开销大；
 2. **现代标配 RMSNorm（Root Mean Square Normalization）**：  
-   Zhang & Sennrich (2019) 证明，LayerNorm 的成功核心在于**尺度缩放不变性**，均值平移（$\mu$）几乎没有贡献。  
+   Zhang & Sennrich (2019) 证明，LayerNorm 的成功核心在于**尺度缩放不变性**，均值平移（ $\mu$ ）几乎没有贡献。  
    RMSNorm 直接舍弃均值计算：
 
    $$
@@ -841,7 +841,7 @@ $$
    M_{\text{static}} = 13.48 + 13.48 + 107.84 = \mathbf{134.8\text{ GB}}
    $$
 
-   > 💡 7B 模型的静态训练显存基线高达 134.8GB，远超单张 A100（80GB）容量！必须通过 **ZeRO-1/2/3 显存切分** 将 107.8GB 优化器状态均匀打散到 8 张 GPU 上（单卡优化器显存降为 $107.84 / 8 = 13.48\text{ GB}$），才能在单机 8 卡上稳健训练。
+   > 💡 7B 模型的静态训练显存基线高达 134.8GB，远超单张 A100（80GB）容量！必须通过 **ZeRO-1/2/3 显存切分** 将 107.8GB 优化器状态均匀打散到 8 张 GPU 上（单卡优化器显存降为 $107.84 / 8 = 13.48\text{ GB}$ ），才能在单机 8 卡上稳健训练。
 
 ---
 
@@ -869,10 +869,10 @@ LLM 在线推理具有截然相反的两个物理阶段：
 
 | 对比维度         | Prefill 预填充阶段（输入处理）              | Decode 解码阶段（逐字生成）                                           |
 | :--------------- | :------------------------------------------ | :-------------------------------------------------------------------- |
-| **输入规模**     | 一次性输入整段用户 Prompt（如 $S=2048$）    | 每次仅输入上一步刚生成的 **1 个 Token（$S=1$）**                      |
-| **计算模式**     | 大矩阵乘大矩阵（GEMM），算术强度极高        | 向量乘大矩阵（GEMV），算术强度极低（$AI \approx 1\text{ FLOP/Byte}$） |
+| **输入规模**     | 一次性输入整段用户 Prompt（如 $S=2048$ ）    | 每次仅输入上一步刚生成的 **1 个 Token（ $S=1$ ）**                      |
+| **计算模式**     | 大矩阵乘大矩阵（GEMM），算术强度极高        | 向量乘大矩阵（GEMV），算术强度极低（ $AI \approx 1\text{ FLOP/Byte}$ ） |
 | **硬件瓶颈定位** | **算力受限（Compute-Bound）**               | **显存带宽受限（Memory-Bound）与 CPU Launch-Bound**                   |
-| **GPU 硬件状态** | Tensor Core 算力利用率打满（$>85\%$）       | 算力利用率极其低下（$<15\%$），大部分时间在等 HBM 传输                |
+| **GPU 硬件状态** | Tensor Core 算力利用率打满（ $>85\%$ ）       | 算力利用率极其低下（ $<15\%$ ），大部分时间在等 HBM 传输                |
 | **核心优化手段** | FlashAttention、算子融合、TensorRT-LLM 编译 | **KV Cache 分页（PagedAttention）、量化压缩、CUDA Graph**             |
 
 ---
@@ -1265,7 +1265,7 @@ if __name__ == "__main__":
 #### 🎯 答题思考路径与标准推导：
 
 1. **构造 2D 平面旋转矩阵**：  
-   设二维实数向量 $q = [q_0, q_1]^T \in \mathbb{R}^2$。将其视作复数：$q = q_0 + i q_1 = r_q e^{i \phi_q}$；  
+   设二维实数向量 $q = [q_0, q_1]^T \in \mathbb{R}^2$。将其视作复数： $q = q_0 + i q_1 = r_q e^{i \phi_q}$；  
    在位置 $m$ 处，旋转矩阵 $\mathcal{R}_m$ 对应复数乘法算子 $e^{i m \theta}$。旋转后的向量为：
 
    $$
@@ -1304,7 +1304,7 @@ if __name__ == "__main__":
 
 ### 💡 题目二：手算 70B GQA 模型（如 LLaMA-2-70B）单 Token KV Cache 大小与并发显存需求
 
-> **面试官追问**：已知 LLaMA-2-70B 配置为：80 层（$L=80$），隐藏维度 $d=8192$，Query 头数 64，采用 GQA（8 对 KV 头，$h_{\text{kv}}=8$），单头维度 128，采用 FP16 存储。请手算：
+> **面试官追问**：已知 LLaMA-2-70B 配置为：80 层（ $L=80$ ），隐藏维度 $d=8192$，Query 头数 64，采用 GQA（8 对 KV 头， $h_{\text{kv}}=8$ ），单头维度 128，采用 FP16 存储。请手算：
 >
 > 1. 单个 Token 的 KV Cache 显存大小；
 > 2. 当序列长度为 4096，并发 Batch Size = 64 时，整套集群需要多少 GB 的显存专门存放 KV Cache？
@@ -1348,10 +1348,10 @@ if __name__ == "__main__":
 #### 🎯 答题思考路径与标准答案：
 
 1. **Self-Attention 切分流水线**：
-   - **Column Parallelism（列切）**：$W_Q, W_K, W_V$ 沿输出通道切分，每张 GPU 独立持有 $1/P$ 的注意力头，直接在本地算完局部点积与 Value 聚合，**中间零通信**；
+   - **Column Parallelism（列切）**： $W_Q, W_K, W_V$ 沿输出通道切分，每张 GPU 独立持有 $1/P$ 的注意力头，直接在本地算完局部点积与 Value 聚合，**中间零通信**；
    - **Row Parallelism（行切）**：输出投影矩阵 $W_O$ 沿输入通道切分，每张卡用局部注意力输出乘以局部的 $W_O^i$；在离开 Attention 模块前，执行 **第 1 次 `AllReduce(Sum)`** 将多卡局部结果累加求和并与残差相加；
 2. **FFN 模块切分流水线**：
-   - **Column Parallelism（列切）**：升维矩阵 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 沿输出通道（中间维度 $d_{\text{ff}}$）切分，各卡在本地独立完成 GEMM 并在片上完成 SwiGLU 逐元素门控激活，**中间零通信**；
+   - **Column Parallelism（列切）**：升维矩阵 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 沿输出通道（中间维度 $d_{\text{ff}}$ ）切分，各卡在本地独立完成 GEMM 并在片上完成 SwiGLU 逐元素门控激活，**中间零通信**；
    - **Row Parallelism（行切）**：降维矩阵 $W_{\text{down}}$ 沿输入通道切分，各卡乘以局部激活值；在离开 FFN 模块前，执行 **第 2 次 `AllReduce(Sum)`** 累加多卡输出并与残差相加；
 3. **通信开销极致精简**：  
    每个 Decoder Block 包含 2 次大矩阵乘法组合，通过“列切 $\to$ 激活 $\to$ 行切 $\to$ AllReduce”的巧妙镜像对称设计，**将跨卡集合通信严格压制在每层仅有 2 次 AllReduce**，最大化利用了 NVLink 的高带宽。
@@ -1392,7 +1392,7 @@ if __name__ == "__main__":
      $$
 
 4. **归因结论**：  
-   Decode 阶段的实际算术强度（$1.0\text{ FLOP/Byte}$）**远小于硬件拐点（$156\text{ FLOP/Byte}$）整整两个数量级**！  
+   Decode 阶段的实际算术强度（ $1.0\text{ FLOP/Byte}$ ）**远小于硬件拐点（ $156\text{ FLOP/Byte}$ ）整整两个数量级**！  
    系统处于极端的 **Memory-Bound（带宽受限）** 状态。GPU 强大的 Tensor Core 几乎全程处于饥饿空转，每秒能够生成的 Token 上限完全被 HBM 显存读取带宽死死卡住！
 
 ---

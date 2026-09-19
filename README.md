@@ -228,7 +228,7 @@ flowchart TD
 
 ### 1. 算力账本 (Compute Ledger)
 
-- **标准 Transformer 前向 FLOPs**： $2 \times P \times B \times S$（反向约为 $4 \times P \times B \times S$，单 Step 约为 $6 \times P \times B \times S$）
+- **标准 Transformer 前向 FLOPs**： $2 \times P \times B \times S$（反向约为 $4 \times P \times B \times S$，单 Step 约为 $6 \times P \times B \times S$ ）
 
 **模型 FLOPs 利用率 (MFU)**：
 
@@ -264,7 +264,7 @@ $$
 N_{\text{in-flight}} = B_{\text{mem}} \times L_{\text{latency}} \implies W_{\text{needed}} = \left\lceil \frac{N_{\text{SM}}}{b_{\text{warp}}} \right\rceil
 $$
 
-> 📖 **完整数学公式规范参考**：详见根目录标准指南文档 [`FORMULA_SPECIFICATION.md`](./FORMULA_SPECIFICATION.md)。
+> 📖 **完整数学公式规范参考**：详见根目录权威指南文档 [`LATEX_FORMULA_SPECIFICATION.md`](./LATEX_FORMULA_SPECIFICATION.md)。
 
 ---
 
@@ -310,17 +310,18 @@ ai-infra-odyssey/
 │   ├── ai_infra_master_architecture.svg    # 🗺️ 全景知识体系总架构图 (超清矢量图)
 │   └── book_cover.png                # 专栏官方封面
 ├── scripts/                          # 🛠️ 工业级自动化质检工具链
-│   └── verify_katex_formulas.py      # 一键公式合规性与 KaTeX 自动化校验脚本
-├── FORMULA_SPECIFICATION.md          # 📐 全局数学公式排版与 KaTeX 规范指南
+│   ├── verify_latex_formulas.py      # 一键 LaTeX 公式与 GitHub 原生渲染合规性校验脚本
+│   └── fix_github_latex_spacing.py   # 全库标点空格自动化规范化脚本
+├── LATEX_FORMULA_SPECIFICATION.md    # 📐 全局生产级 LaTeX 数学公式排版规范指南
 ├── .agents/rules/formula-standard.md # 🤖 IDE Agent 自动化生成强制规则
 └── [01~09 各篇分卷目录]/             # 📁 各分篇生产级讲义与架构资产
     ├── README.md                     # 分篇核心导读与快速导航
     └── assets/                       # 模块专用超清架构图与实战插图
 ```
 
-- **执行自动化公式语法校验**：
+- **执行自动化公式语法与 GitHub 原生渲染校验**：
   ```bash
-  python3 scripts/verify_katex_formulas.py
+  python3 scripts/verify_latex_formulas.py
   ```
 
 ---

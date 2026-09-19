@@ -98,7 +98,7 @@ math: true
   - [4.2 Sequence 维度切分：将 Batch/Seq 划分为 $K$ 个微块（Chunks）](#42-sequence-维度切分将-batchseq-划分为-k-个微块chunks)
   - [4.3 Chunked GEMM + ReduceScatter / AllGather 交叉流水线（Gemm $i+1$ 与 Comm $i$ 重叠）](#43-chunked-gemm--reducescatter--allgather-交叉流水线gemm-i1-与-comm-i-重叠)
   - [4.4 CUDA Graph 与 User-Defined Overlap 在微秒级调度上的收益](#44-cuda-graph-与-user-defined-overlap-在微秒级调度上的收益)
-- [5. 隐形刺客：Overlap 资源争抢惩罚因子模型（$k \ge 1.0$）](#5-隐形刺客overlap-资源争抢惩罚因子模型k-ge-10)
+- [5. 隐形刺客：Overlap 资源争抢惩罚因子模型（ $k \ge 1.0$ ）](#5-隐形刺客overlap-资源争抢惩罚因子模型k-ge-10)
   - [5.1 为什么并发后的耗时不是 $\max(T_{\text{comp}}, T_{\text{comm}})$？](#51-为什么并发后的耗时不是-maxt_textcompt_textcomm)
   - [5.2 争抢冲突点 1：SM 计算单元与 NCCL 通信 Kernel 的夺核之争](#52-争抢冲突点-1sm-计算单元与-nccl-通信-kernel-的夺核之争)
   - [5.3 争抢冲突点 2：L2 Cache 污染——巨量通信 DMA 流量冲刷 GEMM 热点缓存行](#53-争抢冲突点-2l2-cache-污染巨量通信-dma-流量冲刷-gemm-热点缓存行)
@@ -112,7 +112,7 @@ math: true
 - [7. 动手实战与代码实验室（Minimal Runnable Code）](#7-动手实战与代码实验室minimal-runnable-code)
   - [7.1 实验 1：多 CUDA Stream 异步并发与数据依赖排队验证](#71-实验-1多-cuda-stream-异步并发与数据依赖排队验证)
   - [7.2 实验 2：DDP 梯度分桶与暴露通信时间仿真器](#72-实验-2ddp-梯度分桶与暴露通信时间仿真器)
-  - [7.3 实验 3：计算-通信并发资源争抢（Penalty Factor $k$）测定实验](#73-实验-3计算-通信并发资源争抢penalty-factor-k测定实验)
+  - [7.3 实验 3：计算-通信并发资源争抢（Penalty Factor $k$ ）测定实验](#73-实验-3计算-通信并发资源争抢penalty-factor-k测定实验)
   - [7.4 实验 4：Chunk 流水线微重叠算法模拟](#74-实验-4chunk-流水线微重叠算法模拟)
 - [8. Ringi 避坑指南与生产性能工程黄金 Checklist](#8-ringi-避坑指南与生产性能工程黄金-checklist)
   - [8.1 避坑表格（❌ 常见小白误区 vs ✅ 大厂 AI Infra 正解）](#81-避坑表格-常见小白误区-vs--大厂-ai-infra-正解)
@@ -252,17 +252,17 @@ torch.cuda.nvtx.range_pop()
 分布式系统的端到端吞吐，取决于通信耗时中有多少是**赤裸裸暴露在关键路径上的（Exposed）**。我们的目标不是消灭通信物理时间，而是将暴露通信时间压缩至零！
 
 ### 2. Mental Model（物理直觉比喻）：
-你点了一份外卖（通信耗时 $T_{\text{comm}}$），同时你开始在家里打扫房间（计算耗时 $T_{\text{compute}}$）：
+你点了一份外卖（通信耗时 $T_{\text{comm}}$ ），同时你开始在家里打扫房间（计算耗时 $T_{\text{compute}}$ ）：
 - 如果你一边打扫一边等外卖，只要外卖在打扫结束前送到，你感觉到的额外等待时间就是 **0**！
 - 如果打扫完了外卖还没到，你坐在沙发上无聊刷手机干等的时间，就是**暴露时间（Exposed Time）**！
 
 ### 3. Tiny Calculator（极简数字小算盘）：
 - **情况 A**：计算耗时 $T_{\text{compute}} = 50\,\text{ms}$，通信耗时 $T_{\text{comm}} = 30\,\text{ms}$。
-  - 暴露通信时间：$T_{\text{exposed}} = \max(0, 30 - 50) = 0\,\text{ms}$；
-  - 总耗时：$T_{\text{step}} = 50 + 0 = 50\,\text{ms}$（通信完全隐形！）。
+  - 暴露通信时间： $T_{\text{exposed}} = \max(0, 30 - 50) = 0\,\text{ms}$；
+  - 总耗时： $T_{\text{step}} = 50 + 0 = 50\,\text{ms}$（通信完全隐形！）。
 - **情况 B**：计算耗时 $T_{\text{compute}} = 40\,\text{ms}$，通信耗时 $T_{\text{comm}} = 70\,\text{ms}$。
-  - 暴露通信时间：$T_{\text{exposed}} = \max(0, 70 - 40) = 30\,\text{ms}$；
-  - 总耗时：$T_{\text{step}} = 40 + 30 = 70\,\text{ms}$。
+  - 暴露通信时间： $T_{\text{exposed}} = \max(0, 70 - 40) = 30\,\text{ms}$；
+  - 总耗时： $T_{\text{step}} = 40 + 30 = 70\,\text{ms}$。
 
 ### 4. Formal Model（标准形式化公式）：
 单步执行总时间（Step Time）的通用数学模型为：
@@ -293,7 +293,7 @@ $$
 
 在最朴素的数据并行实现中，模型拥有数百甚至上千个参数张量（LayerNorm 权重、Bias 偏置、线性层权重等）：
 - 如果反向传播每算出一个参数的梯度，就立刻发射一次 `dist.all_reduce(param.grad)`；
-- **灾难降临**：一个 7B 模型可能拥有超过 300 个小参数张量（很多只有几 KB 或几十 KB）。每一次 AllReduce 都必须经历网络底噪 $\alpha$（约 $2.5\,\mu\text{s}$）以及 GPU Kernel 启动开销（约 $5\,\mu\text{s}$）；
+- **灾难降临**：一个 7B 模型可能拥有超过 300 个小参数张量（很多只有几 KB 或几十 KB）。每一次 AllReduce 都必须经历网络底噪 $\alpha$（约 $2.5\,\mu\text{s}$ ）以及 GPU Kernel 启动开销（约 $5\,\mu\text{s}$ ）；
 - 300 次独立通信的静态底噪开销累计超过数毫秒，网络带宽利用率不足 5%，整个反向传播彻底被小包通信撕裂！
 
 ---
@@ -481,7 +481,7 @@ FSDP 的破局之道是构建精密的 **前向预取流水线（Prefetch Pipeli
 
 为了破解 TP 的关键路径死结，Megatron Core 引入了 **TP Comm Overlap（Chunk 微流水线）**：
 - **第一性原理切入点**：矩阵乘法 $Y = X \cdot W$ 在行维度上是完全解耦的！
-- 将输入的激活值张量按照 Sequence（或 Batch）维度均匀切分为 $K$ 个分块（通常 $K=2$ 或 $K=4$）：
+- 将输入的激活值张量按照 Sequence（或 Batch）维度均匀切分为 $K$ 个分块（通常 $K=2$ 或 $K=4$ ）：
 
   $$
   X = [X_0, \, X_1, \, \dots, \, X_{K-1}]
@@ -520,7 +520,7 @@ FSDP 的破局之道是构建精密的 **前向预取流水线（Prefetch Pipeli
 
 ---
 
-# 5. 隐形刺客：Overlap 资源争抢惩罚因子模型（$k \ge 1.0$）
+# 5. 隐形刺客：Overlap 资源争抢惩罚因子模型（ $k \ge 1.0$ ）
 
 ## 5.1 为什么并发后的耗时不是 $\max(T_{\text{comp}}, T_{\text{comm}})$？
 
@@ -530,7 +530,7 @@ $$
 T_{\text{ideal}} = \max(T_{\text{compute}}, \, T_{\text{comm}})
 $$
 
-但在真实的 GPU 芯片上，实测总耗时总是令人沮丧地大于理论值。这背后的隐形刺客就是**硬件资源冲突带来的惩罚因子（Penalty Factor $k$）**：
+但在真实的 GPU 芯片上，实测总耗时总是令人沮丧地大于理论值。这背后的隐形刺客就是**硬件资源冲突带来的惩罚因子（Penalty Factor $k$ ）**：
 
 $$
 \mathbf{T_{\text{real}} = \max\left(k_{\text{comp}} \cdot T_{\text{compute}}, \, k_{\text{comm}} \cdot T_{\text{comm}}\right)} \quad (k \ge 1.0)
@@ -556,7 +556,7 @@ $$
 
 ## 5.4 争抢冲突点 3：HBM 物理带宽饱和——算术强度（AI）决定惩罚因子
 
-这是决定惩罚因子 $k$ 大小的决定性物理法则！它严格受制于当前算子的 **算术强度（Arithmetic Intensity，$\text{AI} = \frac{\text{FLOPs}}{\text{Bytes}}$）**：
+这是决定惩罚因子 $k$ 大小的决定性物理法则！它严格受制于当前算子的 **算术强度（Arithmetic Intensity， $\text{AI} = \frac{\text{FLOPs}}{\text{Bytes}}$ ）**：
 
 | 算子类型与特征 | 典型算子示例 | 算术强度 AI | 对 HBM 带宽的需求 | 并发通信时的惩罚因子 $k$ | Overlap 建议 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -573,7 +573,7 @@ $$
 k_{\text{comp}} = 1.0 + \gamma \cdot \left(\frac{\text{BW}_{\text{comm-HBM}}}{\text{BW}_{\text{HBM-peak}}}\right) \cdot \left(\frac{1}{\text{AI}_{\text{comp}}}\right)
 $$
 
-- 当算子算术强度 $\text{AI} \to \infty$（如超大 GEMM），$k \to 1.0$；
+- 当算子算术强度 $\text{AI} \to \infty$（如超大 GEMM）， $k \to 1.0$；
 - 当算子算术强度低且通信吞吐极高，惩罚项急剧发散，甚至会导致 Overlap 后的耗时反超纯串行耗时！
 
 ---
@@ -751,7 +751,7 @@ if __name__ == '__main__':
 
 ---
 
-## 7.3 实验 3：计算-通信并发资源争抢（Penalty Factor $k$）测定实验
+## 7.3 实验 3：计算-通信并发资源争抢（Penalty Factor $k$ ）测定实验
 
 本实验定量重现“朴素无脑 Overlap 导致性能倒退”的硬件现场，对比计算密集与访存密集场景下的惩罚因子差异：
 
@@ -851,7 +851,7 @@ if __name__ == '__main__':
 | **3** | 为了追求“极限大包”将 DDP 桶大小强设为 1GB | **保留默认 25MB，或根据网络带宽与反向时间微调至 20~50MB** | 导致反向求导完全结束后第一个桶才满，流水线退化为 100% 串行通信 |
 | **4** | 试图在 LayerNorm / Softmax 执行期间并发重叠大规模通信 | **优先将通信调度在计算密集型的高维 GEMM 执行窗口内** | 访存密集算子死死卡住 HBM 带宽，并发通信导致严重争抢，惩罚因子 $k > 1.4$ |
 | **5** | 在 FSDP 中为了消灭通信盲目将预取深度设为 4 或更高 | **严格维持前向预取深度为 1（下一层），严禁跨过多层超前预取** | 预取的全量权重与中间激活值挤爆 GPU HBM，直接触发灾难性 OOM 崩溃 |
-| **6** | 在未开启 CUDA Graph 的情况下在 TP 中切分过多的 Chunk（如 $K=16$） | **Chunk 划分必须权衡 CPU Launch 开销，通常 $K=2$ 或 $K=4$ 为甜点** | 极小 Kernel 导致 CPU 派发速度追不上 GPU 执行速度，引发严重的发射空洞 |
+| **6** | 在未开启 CUDA Graph 的情况下在 TP 中切分过多的 Chunk（如 $K=16$ ） | **Chunk 划分必须权衡 CPU Launch 开销，通常 $K=2$ 或 $K=4$ 为甜点** | 极小 Kernel 导致 CPU 派发速度追不上 GPU 执行速度，引发严重的发射空洞 |
 | **7** | 调试性能时只看 GPU 单卡利用率指标（`nvidia-smi`） | **必须抓取 Nsight Systems Timeline，逐 Stream 查看 Kernel 垂直重叠** | `nvidia-smi` 看到 100% 利用率可能是 SM 在通信自旋等待，存在严重假象 |
 | **8** | 在 Hopper 架构上忽视 TMA 与 Warp Specialization，仍用老写法搬运 | **利用 CUTLASS 3.x 或 Triton 编译器生成特化 Producer-Consumer 汇编** | 白白占用 20% 的 SM 核心去当数据搬运工，错失硬件全异步解耦红利 |
 
@@ -952,7 +952,7 @@ FSDP 预取下一层，显存通信双平衡。
    - 设全模型共有 $N$ 个桶，每个桶的通信时间为 $t_{\text{comm}}$，每个桶对应的反向计算时间为 $t_{\text{comp}}$；
    - 只要单桶计算时间满足 $t_{\text{comp}} \ge t_{\text{comm}}$（计算吞吐大于通信吞吐）；
    - 则第 $0$ 至第 $N-2$ 个桶的通信时间均被完全重叠在下一桶的计算窗口内部；
-   - **最终暴露在关键路径上的通信时间，仅为最后一个桶（Bucket $N-1$）的收尾通信时间**：
+   - **最终暴露在关键路径上的通信时间，仅为最后一个桶（Bucket $N-1$ ）的收尾通信时间**：
 
      $$
      T_{\text{exposed-ideal}} = t_{\text{comm-last-bucket}} \approx \frac{25\,\text{MB}}{\text{BusBW}} \approx \mathbf{0.5 \sim 1.0\,\text{ms}}
@@ -987,7 +987,7 @@ FSDP 预取下一层，显存通信双平衡。
      $$
 
 3. **工业生产权衡（Trade-off）结论**：
-   - 在现代高速网络（NVLink 或 400G IB）环境下，单层通信通常快于或接近单层计算（即 $\frac{T_{\text{comm}}}{T_{\text{comp}}} \le 1.0$）；
+   - 在现代高速网络（NVLink 或 400G IB）环境下，单层通信通常快于或接近单层计算（即 $\frac{T_{\text{comm}}}{T_{\text{comp}}} \le 1.0$ ）；
    - 此时取 **$D = 1$** 即可实现 $100\%$ 的流水线隐藏；
    - 若盲目将 $D$ 提高至 3 或 4，显存将凭空多吃数个 GB，挤占原本用于扩大 Batch Size 或长上下文的显存空间，直接诱发 OOM；故最优预取深度恒为 **$D = 1$**。
 
@@ -1010,7 +1010,7 @@ FSDP 预取下一层，显存通信双平衡。
 3. **第三步（核心测谎：检查计算 Kernel 的执行时间膨胀率）**：
    - 单独测量没有通信并发时，该 GEMM Kernel 的基准执行时间 $T_{\text{base}}$；
    - 测量并发重叠状态下，该 GEMM Kernel 的实测时间 $T_{\text{concurrent}}$；
-   - 计算膨胀比：$r = \frac{T_{\text{concurrent}}}{T_{\text{base}}}$；
+   - 计算膨胀比： $r = \frac{T_{\text{concurrent}}}{T_{\text{base}}}$；
    - **若 $r \le 1.10$**：说明争抢极小，为**高效黄金重叠**；
    - **若 $r \ge 1.30$**：说明发生了严重的 L2 缓存冲刷或 HBM 控制器争抢，属于**表面重叠、实则降速的负向优化**；
 4. **第四步（检查 SM 利用率与吞吐指标）**：

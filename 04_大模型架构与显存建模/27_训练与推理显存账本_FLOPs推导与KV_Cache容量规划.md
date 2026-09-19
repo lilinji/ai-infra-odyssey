@@ -87,7 +87,7 @@ math: true
   - [0.1 真实工程矛盾：千卡训练的“幽灵 OOM” vs 线上推理的“虚胖碎片”](#01-真实工程矛盾千卡训练的幽灵-oom-vs-线上推理的虚胖碎片)
   - [0.2 线上真实事故复盘：某 1024 卡集群扩充 16K 上下文引发的全链路瘫痪](#02-线上真实事故复盘某-1024-卡集群扩充-16k-上下文引发的全链路瘫痪)
   - [0.3 显存四大账本（容量 vs 流量）与全景指标速查表](#03-显存四大账本容量-vs-流量与全景指标速查表)
-- [1. 静态显存白板手算：权重、梯度与 AdamW 优化器（$16\Psi \sim 20\Psi$ 底账）](#1-静态显存白板手算权重梯度与-adamw-优化器16psi-sim-20psi-底账)
+- [1. 静态显存白板手算：权重、梯度与 AdamW 优化器（ $16\Psi \sim 20\Psi$ 底账）](#1-静态显存白板手算权重梯度与-adamw-优化器16psi-sim-20psi-底账)
   - [1.1 混合精度训练的四重身：从 BF16 到 FP32 Master Weight](#11-混合精度训练的四重身从-bf16-到-fp32-master-weight)
   - [1.2 为什么是 $16\Psi$？什么时候会膨胀到 $18\Psi$ 或 $20\Psi$？](#12-为什么是-16psi什么时候会膨胀到-18psi-或-20psi)
   - [1.3 ZeRO-1 / ZeRO-2 / ZeRO-3 状态切分模型与单卡显存推导](#13-zero-1--zero-2--zero-3-状态切分模型与单卡显存推导)
@@ -173,14 +173,14 @@ Tried to allocate 2.14 GiB (GPU 3; 79.25 GiB total capacity; 77.82 GiB already a
 
 | 显存账本类别 | 包含实体 | 生命周期 | 决定性公式 / 典型开销 | 核心受限维度 | 优化与破局武器 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **训练静态账本** | 权重、梯度、AdamW 优化器状态 | 训练全生命周期常驻 | **$16\Psi \sim 20\Psi$ 字节**（$\Psi$ 为参数量） | Capacity-Bound（单卡绝对容量） | ZeRO-1/2/3 切分、张量并行（TP）、流水线并行（PP） |
+| **训练静态账本** | 权重、梯度、AdamW 优化器状态 | 训练全生命周期常驻 | **$16\Psi \sim 20\Psi$ 字节**（ $\Psi$ 为参数量） | Capacity-Bound（单卡绝对容量） | ZeRO-1/2/3 切分、张量并行（TP）、流水线并行（PP） |
 | **训练动态账本** | 前向激活值（Activation）、临时规约缓冲区 | 随前向反向步数瞬态分配与释放 | **$34bsh + 5bs^2$ 字节/层**（无重算） | Capacity + Bandwidth 双重敏感 | 激活值全重算、选择性重算、FlashAttention 反向融合 |
 | **推理静态账本** | 模型推理权重（BF16/FP8/INT4） | 推理服务进程常驻 | **$2\Psi$ 字节 (BF16) / $1\Psi$ 字节 (FP8)** | Capacity-Bound | 权重量化（AWQ/GPTQ）、张量并行切分 |
 | **推理动态账本** | KV Cache（Key/Value 缓存）、输出 Logits | 随请求生成长度线性激增 | **$4 \cdot B \cdot S \cdot L \cdot d \cdot \frac{H_{kv}}{H_q}$ 字节** | Bandwidth-Bound（Decode 阶段极度访存受限） | GQA 架构、PagedAttention 分页调度、FP8 KV Cache、投机采样 |
 
 ---
 
-# 1. 静态显存白板手算：权重、梯度与 AdamW 优化器（$16\Psi \sim 20\Psi$ 底账）
+# 1. 静态显存白板手算：权重、梯度与 AdamW 优化器（ $16\Psi \sim 20\Psi$ 底账）
 
 为了在深入具体细节前建立完整的物理心智模型，下方给出了大模型显存四大账本、ZeRO 状态切分模型、动态激活值三档重算博弈与 FLOPs 矩阵计数的工业级全景架构拓扑：
 
@@ -194,8 +194,8 @@ Tried to allocate 2.14 GiB (GPU 3; 79.25 GiB total capacity; 77.82 GiB already a
 ![Ringi 导师解构：ZeRO 切分工坊](assets/ringi_27_zero_sharding.png)
 
 #### 为什么不能纯用 BF16 完成更新？
-在优化器步进（`optimizer.step()`）时，学习率 $\eta$ 通常是一个微小的数字（如 $1 \times 10^{-4}$ 到 $5 \times 10^{-5}$）。  
-当计算参数增量 $\Delta W = -\eta \cdot \frac{m_t}{\sqrt{v_t} + \epsilon}$ 时，$\Delta W$ 的数值通常处于 $10^{-6} \sim 10^{-8}$ 数量级。  
+在优化器步进（`optimizer.step()`）时，学习率 $\eta$ 通常是一个微小的数字（如 $1 \times 10^{-4}$ 到 $5 \times 10^{-5}$ ）。  
+当计算参数增量 $\Delta W = -\eta \cdot \frac{m_t}{\sqrt{v_t} + \epsilon}$ 时， $\Delta W$ 的数值通常处于 $10^{-6} \sim 10^{-8}$ 数量级。  
 而 BF16 只有 7 位尾数（有效数字仅 2~3 位十进制精度）。如果直接在 BF16 权重上累加：
 
 $$
@@ -231,10 +231,10 @@ BF16 Gradient ─── 传给 ───► AdamW 优化器:
 1. **模型权重（Model Weights）**：BF16 存储，占用 $2\Psi$ 字节；
 2. **模型梯度（Gradients）**：BF16 存储，占用 $2\Psi$ 字节；
 3. **AdamW 优化器状态（Optimizer States）**：
-   - FP32 Master Weight：$4\Psi$ 字节；
-   - FP32 梯度一阶动量（First Moment $m$）：$4\Psi$ 字节；
-   - FP32 梯度二阶动量（Second Moment $v$）：$4\Psi$ 字节；
-   - 优化器状态小计：$4 + 4 + 4 = \mathbf{12\Psi}$ 字节。
+   - FP32 Master Weight： $4\Psi$ 字节；
+   - FP32 梯度一阶动量（First Moment $m$ ）： $4\Psi$ 字节；
+   - FP32 梯度二阶动量（Second Moment $v$ ）： $4\Psi$ 字节；
+   - 优化器状态小计： $4 + 4 + 4 = \mathbf{12\Psi}$ 字节。
 
 $$
 M_{\text{static-16}} = 2\Psi (\text{权重}) + 2\Psi (\text{梯度}) + 12\Psi (\text{优化器}) = \mathbf{16\Psi} \quad (\text{Bytes})
@@ -256,7 +256,7 @@ $$
 
 ### 1.3 ZeRO-1 / ZeRO-2 / ZeRO-3 状态切分模型与单卡显存推导
 
-对于一个 70B 模型（$\Psi = 70 \times 10^9$），$16\Psi$ 意味着静态显存需要：
+对于一个 70B 模型（ $\Psi = 70 \times 10^9$ ）， $16\Psi$ 意味着静态显存需要：
 
 $$
 70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}
@@ -264,12 +264,12 @@ $$
 
 单张 80GB 卡显然不可能装下。微软提出的 **ZeRO（Zero Redundancy Optimizer）** 算法，通过数据并行维度的切分彻底粉碎了这一死局：
 
-| ZeRO 级别 | 核心切分策略 | 单卡显存公式（数据并行度为 $N_{\text{DP}}$） | 70B 模型在 $N=8$ 卡时的单卡显存 | 通信开销变化 |
+| ZeRO 级别 | 核心切分策略 | 单卡显存公式（数据并行度为 $N_{\text{DP}}$ ） | 70B 模型在 $N=8$ 卡时的单卡显存 | 通信开销变化 |
 | :--- | :--- | :--- | :--- | :--- |
-| **Baseline (DDP)** | 无切分，每卡保存完整冗余副本 | $2\Psi + 2\Psi + 12\Psi = 16\Psi$ | **$1120\text{ GB}$ (直接 OOM)** | 基线：反向传播 1 次 AllReduce（通信量 $2\Psi$） |
-| **ZeRO-1 ($P_{\text{os}}$)** | **仅切分优化器状态**，权重与梯度全量保存 | $2\Psi + 2\Psi + \frac{12\Psi}{N_{\text{DP}}}$ | $140 + 140 + 105 = \mathbf{385\text{ GB}}$ | 通信量无增加（仅在更新后广播分片，总量 $2\Psi$） |
+| **Baseline (DDP)** | 无切分，每卡保存完整冗余副本 | $2\Psi + 2\Psi + 12\Psi = 16\Psi$ | **$1120\text{ GB}$ (直接 OOM)** | 基线：反向传播 1 次 AllReduce（通信量 $2\Psi$ ） |
+| **ZeRO-1 ($P_{\text{os}}$)** | **仅切分优化器状态**，权重与梯度全量保存 | $2\Psi + 2\Psi + \frac{12\Psi}{N_{\text{DP}}}$ | $140 + 140 + 105 = \mathbf{385\text{ GB}}$ | 通信量无增加（仅在更新后广播分片，总量 $2\Psi$ ） |
 | **ZeRO-2 ($P_{\text{os+g}}$)**| **切分优化器状态 + 梯度**，仅权重全量保存 | $2\Psi + \frac{2\Psi + 12\Psi}{N_{\text{DP}}} = 2\Psi + \frac{14\Psi}{N_{\text{DP}}}$ | $140 + 122.5 = \mathbf{262.5\text{ GB}}$ | 通信量无增加（反向时用 Reduce-Scatter 替代 AllReduce） |
-| **ZeRO-3 ($P_{\text{os+g+p}}$)**| **切分优化器 + 梯度 + 模型参数（全切分）** | $\frac{16\Psi}{N_{\text{DP}}}$ | $1120 / 8 = \mathbf{140\text{ GB}}$（$N=64$ 时仅需 **$17.5\text{ GB}$**） | **通信量增加 50%**（前向每层前需 AllGather 收集权重，前向完即丢弃；反向需再次 AllGather） |
+| **ZeRO-3 ($P_{\text{os+g+p}}$)**| **切分优化器 + 梯度 + 模型参数（全切分）** | $\frac{16\Psi}{N_{\text{DP}}}$ | $1120 / 8 = \mathbf{140\text{ GB}}$（ $N=64$ 时仅需 **$17.5\text{ GB}$**） | **通信量增加 50%**（前向每层前需 AllGather 收集权重，前向完即丢弃；反向需再次 AllGather） |
 
 ---
 
@@ -301,23 +301,23 @@ $$
 
 在前向传播中，除了静态权重，每一层计算出的中间变量（Activations）都必须缓存在显存中，直到反向传播求导用完后才能被销毁。
 
-我们以单层标准 Transformer Block 为例，输入批大小 $B$，序列长度 $S$，主干维度 $d$，Query 头数 $H_q$（为简化推导先按标准 MHA $H_q = H_{kv}$ 分析，单头维度 $d_h = d / H_q$）：
+我们以单层标准 Transformer Block 为例，输入批大小 $B$，序列长度 $S$，主干维度 $d$，Query 头数 $H_q$（为简化推导先按标准 MHA $H_q = H_{kv}$ 分析，单头维度 $d_h = d / H_q$ ）：
 
 #### 1. Attention 模块激活值明细：
-- **$Q, K, V$ 投影输入**：共享输入 $X$，无需存三份，保存输入 $X \in \mathbb{R}^{B \times S \times d}$（BF16）：$2BSd$ 字节；
-- **$Q, K$ 投影产物**：用于求导，需存 $Q, K \in \mathbb{R}^{B \times S \times d}$：$2 \times 2BSd = 4BSd$ 字节；
-- **注意力得分矩阵 $S = QK^T$**：尺寸为 $[B, H_q, S, S]$，元素数为 $B H_q S^2$：$2B H_q S^2$ 字节；
-- **Softmax 归一化概率矩阵 $P$**：尺寸同为 $[B, H_q, S, S]$：$2B H_q S^2$ 字节；
-- **Dropout 掩码（若开启）**：按 Byte 存储（1 字节/元素）：$1B H_q S^2$ 字节；
-- **Value 投影产物与 Attention 输出**：$2BSd$ 字节；
-- **输出投射 $W_o$ 与残差连接**：$2BSd$ 字节。
+- **$Q, K, V$ 投影输入**：共享输入 $X$，无需存三份，保存输入 $X \in \mathbb{R}^{B \times S \times d}$（BF16）： $2BSd$ 字节；
+- **$Q, K$ 投影产物**：用于求导，需存 $Q, K \in \mathbb{R}^{B \times S \times d}$： $2 \times 2BSd = 4BSd$ 字节；
+- **注意力得分矩阵 $S = QK^T$**：尺寸为 $[B, H_q, S, S]$，元素数为 $B H_q S^2$： $2B H_q S^2$ 字节；
+- **Softmax 归一化概率矩阵 $P$**：尺寸同为 $[B, H_q, S, S]$： $2B H_q S^2$ 字节；
+- **Dropout 掩码（若开启）**：按 Byte 存储（1 字节/元素）： $1B H_q S^2$ 字节；
+- **Value 投影产物与 Attention 输出**： $2BSd$ 字节；
+- **输出投射 $W_o$ 与残差连接**： $2BSd$ 字节。
 
 #### 2. FFN 模块激活值明细（以标准 FFN $4d$ 为例）：
-- **输入 LayerNorm 状态**：$2BSd$ 字节；
-- **第一层升维线性投射产物**：$[B, S, 4d]$，占用 $2 \times 4BSd = 8BSd$ 字节；
-- **激活函数（GELU/ReLU）中间保留值**：$8BSd$ 字节；
-- **第二层降维线性投射输入与残差**：$4BSd$ 字节；
-- **FFN 激活值小计**：$\approx 22BSd \sim 24BSd$ 字节。
+- **输入 LayerNorm 状态**： $2BSd$ 字节；
+- **第一层升维线性投射产物**： $[B, S, 4d]$，占用 $2 \times 4BSd = 8BSd$ 字节；
+- **激活函数（GELU/ReLU）中间保留值**： $8BSd$ 字节；
+- **第二层降维线性投射输入与残差**： $4BSd$ 字节；
+- **FFN 激活值小计**： $\approx 22BSd \sim 24BSd$ 字节。
 
 #### 单层激活值总量大一统公式（无重算）：
 $$
@@ -331,7 +331,7 @@ M_{\text{act-total}} = L \times (34BSd + 5B H_q S^2) \quad (\text{Bytes})
 $$
 
 **致命痛点**：注意公式右侧的 **$5B H_q S^2$**！  
-当序列长度从 $S=2048$ 放大到 $S=32768$（放大 16 倍）时，$S^2$ 项被放大了整整 **256 倍**！激活显存会瞬间突破数百 GB，这就是引发长文本 OOM 的头号元凶。
+当序列长度从 $S=2048$ 放大到 $S=32768$（放大 16 倍）时， $S^2$ 项被放大了整整 **256 倍**！激活显存会瞬间突破数百 GB，这就是引发长文本 OOM 的头号元凶。
 
 ---
 
@@ -341,8 +341,8 @@ $$
 
 | 重算策略 | 显存中保留的内容 | 反向传播时的额外操作 | 单层激活显存占用 | 额外计算量（FLOPs 开销） | 生产场景建议 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **档位 1: 无重算 (No Recompute)** | 所有前向算子的中间产物完整保留在 HBM | 零额外重算，直接读取激活值求导 | **$34BSd + 5BS^2 H_q$** | **0%（理论最快）** | 仅适用于短文本（$S \le 2K$）且显存极度宽裕的场景 |
-| **档位 2: 全重算 (Full Checkpoint)** | 仅保留每一层 Block 最外层的输入张量（Checkpoint） | 反向传播到该层时，**当场重新跑一遍前向传播** | **$2BSd$**（极小，与层数 $L$ 解耦） | **+33.3%**（前向算 2 次，总计算量从 $6P$ 飙升至 $8P$） | 极致长文本（128K+）且显存即将见底时的保命底牌 |
+| **档位 1: 无重算 (No Recompute)** | 所有前向算子的中间产物完整保留在 HBM | 零额外重算，直接读取激活值求导 | **$34BSd + 5BS^2 H_q$** | **0%（理论最快）** | 仅适用于短文本（ $S \le 2K$ ）且显存极度宽裕的场景 |
+| **档位 2: 全重算 (Full Checkpoint)** | 仅保留每一层 Block 最外层的输入张量（Checkpoint） | 反向传播到该层时，**当场重新跑一遍前向传播** | **$2BSd$**（极小，与层数 $L$ 解耦） | **+33.3%**（前向算 2 次，总计算量从 $6P$ 飙升至 $8P$ ） | 极致长文本（128K+）且显存即将见底时的保命底牌 |
 | **档位 3: 选择性重算 (Selective Recompute)** | 保留大 GEMM 矩阵乘的输入输出，**仅丢弃并重算 Attention 内部的 Softmax 与 Dropout** | 仅重新计算 $QK^T$ 和 Softmax，跳过所有沉重的 GEMM | **$34BSd$**（**彻底抹除 $S^2$ 二次项！**） | **< 3%（微乎其微）** | **大厂工业生产必选的黄金标准！** |
 
 ---
@@ -401,13 +401,13 @@ KV Cache 就像是你在读一本长篇侦探小说时手边做的人物关系�
 - 数据类型：BF16（2 字节/元素）
 
 对于单个 Token：
-- Key 向量大小：$H_{kv} \times d_h = 1 \times 2 = 2$ 个元素，占 $2 \times 2 = 4$ 字节；
-- Value 向量大小：$H_{kv} \times d_h = 1 \times 2 = 2$ 个元素，占 $2 \times 2 = 4$ 字节；
-- 单 Token 单层 KV 字节：$4 + 4 = 8$ 字节。  
-总容量（$L=1, B=1, S=2$）：$8 \times 2 = \mathbf{16 \text{ B}}（16 字节）$。
+- Key 向量大小： $H_{kv} \times d_h = 1 \times 2 = 2$ 个元素，占 $2 \times 2 = 4$ 字节；
+- Value 向量大小： $H_{kv} \times d_h = 1 \times 2 = 2$ 个元素，占 $2 \times 2 = 4$ 字节；
+- 单 Token 单层 KV 字节： $4 + 4 = 8$ 字节。  
+总容量（ $L=1, B=1, S=2$ ）： $8 \times 2 = \mathbf{16 \text{ B}}（16 字节）$。
 
 #### ④ Formal Model（标准公式与映射）
-对于一个 $L$ 层、隐藏层大小 $d$、Query 头数 $H_q$、KV 头数 $H_{kv}$ 的模型，在精度字节数为 $U$（FP16/BF16 时 $U=2$，FP8 时 $U=1$）下：
+对于一个 $L$ 层、隐藏层大小 $d$、Query 头数 $H_q$、KV 头数 $H_{kv}$ 的模型，在精度字节数为 $U$（FP16/BF16 时 $U=2$，FP8 时 $U=1$ ）下：
 单 Token 在全模型中产生的 KV Cache 显存为：
 
 $$
@@ -421,15 +421,15 @@ M_{\text{kv}} = 2 \times U \times B \times S \times L \times d \times \left( \fr
 $$
 
 #### ⑤ Sanity Check（数量级校验）
-以 **LLaMA-3-70B**（$L=80, d=8192, H_q=64, H_{kv}=8$，即 GQA 1:8 分组）为例：
-单 Token 全层 KV Cache 尺寸（BF16, $U=2$）：
+以 **LLaMA-3-70B**（ $L=80, d=8192, H_q=64, H_{kv}=8$，即 GQA 1:8 分组）为例：
+单 Token 全层 KV Cache 尺寸（BF16, $U=2$ ）：
 
 $$
 \text{Size}_{\text{token}} = 2 \times 2 \times 80 \times 8192 \times \frac{8}{64} = 327,680\text{ 字节} \approx \mathbf{320\text{ KB/token}}
 $$
 
 当部署在单机 8 卡 H100（TP=8）上时：
-- 单卡平摊每 Token 仅：$320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}$；
+- 单卡平摊每 Token 仅： $320\text{ KB} / 8 = \mathbf{40\text{ KB/token}}$；
 - 若并发 $B=32$，上下文平均长度 $S=8192$（8K）：
 
   $$
@@ -494,14 +494,14 @@ $$
 
 在上一讲中我们推导了单 Token 的基本算盘。在此我们建立面向分布式全集群的完整 FLOPs 计数模型：
 
-设非 Embedding 模型参数量为 $P$，全批次 Token 总数（$B \times S$）：
+设非 Embedding 模型参数量为 $P$，全批次 Token 总数（ $B \times S$ ）：
 - **前向传播（Forward Pass）**：
 
   $$
   \text{FLOPs}_{\text{fwd}} = 2 \times P \times B \times S
   $$
 
-- **反向传播（Backward Pass，激活求导 $2P$ + 权重求导 $2P$）**：
+- **反向传播（Backward Pass，激活求导 $2P$ + 权重求导 $2P$ ）**：
 
   $$
   \text{FLOPs}_{\text{bwd}} = 4 \times P \times B \times S
@@ -524,13 +524,13 @@ $$
 
 ### 4.2 Attention 二次项修正量：何时不能忽略 $4LS^2d$？
 
-在很多简化的参数计算中，大家往往习惯性使用 $6P$。但在超长上下文（$S \ge 8192$）训练中，**Attention 矩阵点乘带来的计算量绝对不容忽视**！
+在很多简化的参数计算中，大家往往习惯性使用 $6P$。但在超长上下文（ $S \ge 8192$ ）训练中，**Attention 矩阵点乘带来的计算量绝对不容忽视**！
 
 对于 $L$ 层 Transformer，每层包含两个与参数量无关的纯张量乘法：
-1. $Q \cdot K^T$：$[B, H_q, S, d_h] \times [B, H_q, d_h, S] \to [B, H_q, S, S]$，计算量为 $2 \times B \times H_q \times S \times d_h \times S = 2 B S^2 d$；
-2. $\text{Attn} \cdot V$：$[B, H_q, S, S] \times [B, H_q, S, d_h] \to [B, H_q, S, d_h]$，计算量同样为 $2 B S^2 d$。
+1. $Q \cdot K^T$： $[B, H_q, S, d_h] \times [B, H_q, d_h, S] \to [B, H_q, S, S]$，计算量为 $2 \times B \times H_q \times S \times d_h \times S = 2 B S^2 d$；
+2. $\text{Attn} \cdot V$： $[B, H_q, S, S] \times [B, H_q, S, d_h] \to [B, H_q, S, d_h]$，计算量同样为 $2 B S^2 d$。
 
-前向传播中每层产生 $4 B S^2 d$ FLOPs，反向传播约为前向的 2 倍（$8 B S^2 d$）。  
+前向传播中每层产生 $4 B S^2 d$ FLOPs，反向传播约为前向的 2 倍（ $8 B S^2 d$ ）。  
 因此，训练中 Attention 二次项的总计算量为：
 
 $$
@@ -538,13 +538,13 @@ $$
 $$
 
 #### 临界对比分析：
-以 LLaMA-3-8B（$L=32, d=4096, P \approx 7 \times 10^9$）为例：
+以 LLaMA-3-8B（ $L=32, d=4096, P \approx 7 \times 10^9$ ）为例：
 - 当 $S = 2048$ 时：
-  - 参数矩阵乘计算量：$6 \times 7 \times 10^9 \times S = 4.2 \times 10^{10} \times S$
-  - Attention 二次项计算量：$12 \times 32 \times S \times 4096 \times S \approx 1.57 \times 10^6 \times S^2$
-  - 二次项占比：$\frac{1.57 \times 10^6 \times 2048}{4.2 \times 10^{10}} \approx \mathbf{7.6\%}$（可作为扰动项修正）；
+  - 参数矩阵乘计算量： $6 \times 7 \times 10^9 \times S = 4.2 \times 10^{10} \times S$
+  - Attention 二次项计算量： $12 \times 32 \times S \times 4096 \times S \approx 1.57 \times 10^6 \times S^2$
+  - 二次项占比： $\frac{1.57 \times 10^6 \times 2048}{4.2 \times 10^{10}} \approx \mathbf{7.6\%}$（可作为扰动项修正）；
 - 当 $S = 32768$（32K 长文本）时：
-  - 二次项占比飙升至：$\frac{1.57 \times 10^6 \times 32768}{4.2 \times 10^{10}} \approx \mathbf{122.5\%}$！  
+  - 二次项占比飙升至： $\frac{1.57 \times 10^6 \times 32768}{4.2 \times 10^{10}} \approx \mathbf{122.5\%}$！  
   **惊人事实**：在 32K 长度下，Attention 二次项的计算量已经彻底压过了全模型权重矩阵乘！此时必须使用严格公式修正 FLOPs。
 
 ---
@@ -879,10 +879,10 @@ if __name__ == "__main__":
 ### 6.2 生产容量工程黄金 Checklist
 
 - [ ] 1. **【静态显存对账闭环】**：集群建站前，严格按 $16\Psi$ 校验单卡静态容量，若单卡静态显存超过物理容量的 60%，强制开启 ZeRO-2 或机内张量并行（TP）。
-- [ ] 2. **【长文本重算三档选型】**：序列长度 $S \le 2K$ 严禁开全重算；$2K < S \le 32K$ 强制开启基于 FlashAttention 的**选择性重算**；仅在 $S > 32K$ 且即将 OOM 时降级开启全重算。
+- [ ] 2. **【长文本重算三档选型】**：序列长度 $S \le 2K$ 严禁开全重算； $2K < S \le 32K$ 强制开启基于 FlashAttention 的**选择性重算**；仅在 $S > 32K$ 且即将 OOM 时降级开启全重算。
 - [ ] 3. **【PagedAttention 块大小调优】**：线上推理服务强制开启 PagedAttention，长文本问答场景推荐 Block Size 设置为 16 或 32，权衡页表检索开销与碎片利用率。
 - [ ] 4. **【FP8 KV Cache 渐进灰度】**：对于 16K 以上的长文本推理服务，推进部署 FP8（E4M3 或 E5M2）KV Cache 量化，直接释放 50% 动态显存并成倍提升 Decode 访存带宽吞吐。
-- [ ] 5. **【MFU 硬性验收红线】**：千卡分布式预训练集群上线前，单步 MFU 必须通过基准验收（A100 SXM 节点 MFU $\ge 42\%$，H100 SXM 节点 MFU $\ge 46\%$），未达标禁止开跑正式数据。
+- [ ] 5. **【MFU 硬性验收红线】**：千卡分布式预训练集群上线前，单步 MFU 必须通过基准验收（A100 SXM 节点 MFU $\ge 42\%$，H100 SXM 节点 MFU $\ge 46\%$ ），未达标禁止开跑正式数据。
 - [ ] 6. **【预留 15% 碎片安全护城河】**：任何容量规划模型中，计算得到的动态 KV Cache 上限必须强制乘以 0.85 的安全系数，坚决不把物理显存吃满到最后一兆字节。
 - [ ] 7. **【Padding 动态剔除】**：训练数据加载管线务必启用 `Packing / Sample Multiplexing`（将多条短样本拼接为固定长序列），彻底消灭无效 `<pad>` Token 对 FLOPs 的空耗。
 
@@ -964,7 +964,7 @@ if __name__ == "__main__":
 
    - 动态激活值（若使用选择性重算，设单卡 Batch=2, Seq=4096）：约占 **4.5 GB**；
    - 临时通信缓冲区与框架开销：约 **3.5 GB**；
-   - 单卡总显存开销：$1.09 + 4.5 + 3.5 = \mathbf{9.09\text{ GB}}$！
+   - 单卡总显存开销： $1.09 + 4.5 + 3.5 = \mathbf{9.09\text{ GB}}$！
    - **结论 1**：纯从显存容量来看，单卡仅需不足 10 GB，哪怕用 24GB 的老旧显卡都能塞下！
 2. **通信量暴涨分析（致命死局）**：
    - 在标准 DDP / ZeRO-1 中，通信仅在反向传播结束时发生 1 次权重梯度的 `All-Reduce`，总通信量为 $2\Psi$；
@@ -972,7 +972,7 @@ if __name__ == "__main__":
      1. 前向传播：每一层计算前，必须通过 `All-Gather` 动态从其他卡收集该层参数，前向完毕立刻释放，通信量为 $\Psi$；
      2. 反向传播：每一层反向求导前，必须再次通过 `All-Gather` 重新收集一次该层参数，通信量为 $\Psi$；
      3. 梯度同步：计算完梯度后，通过 `Reduce-Scatter` 将梯度分片规约并回写到对应的拥有卡，通信量为 $\Psi$；
-   - **ZeRO-3 总通信量**：$\Psi + \Psi + \Psi = \mathbf{3\Psi}$！
+   - **ZeRO-3 总通信量**： $\Psi + \Psi + \Psi = \mathbf{3\Psi}$！
    - **结论 2**：通信量从 $2\Psi$ 飙升到 $3\Psi$（净增加 **50%**）！更致命的是，在千卡规模下，原本可以在机内 NVLink 解决的通信被迫泛滥到跨机低速网络中，千卡同时频繁执行跨节点 AllGather，网络交换机瞬间发生严重拥塞与排队丢包，导致整机 MFU 出现断崖式暴跌（可能不足 15%）。这就是为什么生产环境必须强制机内 TP=8 + 机间 ZeRO 的根本原因！
 
 ---
@@ -991,8 +991,8 @@ if __name__ == "__main__":
 2. **数据量对比 hand-calculation**：
    以 70B 模型、并发 Batch=16、上下文平均 $S=32K$（32,768）为例：
    - **权重读取量（每次生成 1 个 Token 固定发生）**：
-     - BF16 权重：$70\text{ GB} \times 2 = 140\text{ GB}$；
-     - INT4 量化权重：$70\text{ GB} \times 0.5 = 35\text{ GB}$（节省了 105 GB 访存）；
+     - BF16 权重： $70\text{ GB} \times 2 = 140\text{ GB}$；
+     - INT4 量化权重： $70\text{ GB} \times 0.5 = 35\text{ GB}$（节省了 105 GB 访存）；
    - **KV Cache 读取量（随序列激增）**：
      - 单 Token GQA KV Cache 约 320 KB；
      - 并发 16 下，32K 长度的瞬时全量 KV Cache 为：
@@ -1015,7 +1015,7 @@ if __name__ == "__main__":
 
 ---
 
-### 面试真题 3：请白板手算在单台 8 卡 A100-80GB 服务器上，训练一个 13B 稠密模型（$L=40, d=5120, H_q=40$），在 Batch=16、SeqLen=2048 时，无重算与选择性重算下的激活值显存差值。
+### 面试真题 3：请白板手算在单台 8 卡 A100-80GB 服务器上，训练一个 13B 稠密模型（ $L=40, d=5120, H_q=40$ ），在 Batch=16、SeqLen=2048 时，无重算与选择性重算下的激活值显存差值。
 
 #### 考察维度：激活值精确推导、二次项敏感度评估、工程直觉。
 #### 标准推导路径：

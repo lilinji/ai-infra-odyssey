@@ -95,8 +95,8 @@ math: true
   - [4.3 显存占用与执行开销对比测试基准](#43-显存占用与执行开销对比测试基准)
 - [5. 显存救星：激活值重计算（Activation Checkpointing）](#5-显存救星激活值重计算activation-checkpointing)
   - [5.1 鱼与熊掌的抉择：空间复杂度 $O(L)$ 到 $O(1)$ 的惊人飞跃](#51-鱼与熊掌的抉择空间复杂度-ol-到-o1-的惊人飞跃)
-  - [5.2 数学推导：为什么重计算只增加 33.3% 的计算量？（$6P \to 8P$ 理论推导）](#52-数学推导为什么重计算只增加-333-的计算量6p-to-8p-理论推导)
-  - [5.3 全量重计算（Full Checkpointing） vs 亚线性重计算（$\sqrt{L}$ Checkpointing）](#53-全量重计算full-checkpointing-vs-亚线性重计算sqrtl-checkpointing)
+  - [5.2 数学推导：为什么重计算只增加 33.3% 的计算量？（ $6P \to 8P$ 理论推导）](#52-数学推导为什么重计算只增加-333-的计算量6p-to-8p-理论推导)
+  - [5.3 全量重计算（Full Checkpointing） vs 亚线性重计算（ $\sqrt{L}$ Checkpointing）](#53-全量重计算full-checkpointing-vs-亚线性重计算sqrtl-checkpointing)
   - [5.4 工业级前沿：选择性激活值重算（Selective Activation Checkpointing）](#54-工业级前沿选择性激活值重算selective-activation-checkpointing)
   - [5.5 为什么在大模型训练中，重计算反而能提高训练吞吐（Throughput）？](#55-为什么在大模型训练中重计算反而能提高训练吞吐throughput)
 - [6. Transformer 架构下的 Autograd 显存全景追踪](#6-transformer-架构下的-autograd-显存全景追踪)
@@ -131,7 +131,7 @@ math: true
 
 - **模型参数（Weights）**：7B 参数采用 BF16（每个参数 2 字节），显存占用为 $7 \times 10^9 \times 2 \approx 14\text{ GB}$；
 - **梯度（Gradients）**：与参数一一对应，同样为 BF16，显存占用也是 $14\text{ GB}$；
-- **优化器状态（Optimizer States）**：使用标准 AdamW，需要维护 1 份 FP32 的权重副本（$4\text{ B}$）、1 份一阶动量 Momentum（$4\text{ B}$）和 1 份二阶动量 Variance（$4\text{ B}$），每个参数需要 $12\text{ 字节}$，总共 $7 \times 10^9 \times 12 \approx 84\text{ GB}$。在开了 ZeRO-1/ZeRO-2 优化器状态切分后，分摊到 8 张卡上，单卡优化器显存仅为 $84 / 8 = 10.5\text{ GB}$；
+- **优化器状态（Optimizer States）**：使用标准 AdamW，需要维护 1 份 FP32 的权重副本（ $4\text{ B}$ ）、1 份一阶动量 Momentum（ $4\text{ B}$ ）和 1 份二阶动量 Variance（ $4\text{ B}$ ），每个参数需要 $12\text{ 字节}$，总共 $7 \times 10^9 \times 12 \approx 84\text{ GB}$。在开了 ZeRO-1/ZeRO-2 优化器状态切分后，分摊到 8 张卡上，单卡优化器显存仅为 $84 / 8 = 10.5\text{ GB}$；
 - **单卡显存总预算**：静态显存（模型 + 梯度 + 优化器）共计 $14 + 14 + 10.5 = 38.5\text{ GB}$。
 
 面对一张拥有 **80GB** 物理显存的 A100，还剩下了足足 **41.5GB** 的可用空间！
@@ -191,7 +191,7 @@ for step, (inputs, targets) in enumerate(train_dataloader):
 但在现代 AI Infrastructure 领域，这种黑盒思维是致命的。对于大模型基础设施架构师、性能调优专家与分布式系统开发者而言，**计算图与显存生命周期是一切核心技术的底座**：
 
 1. **分布式显存优化技术的基石（ZeRO、FSDP、Megatron）**：不论是 DeepSpeed ZeRO 还是 PyTorch FSDP，其核心本质都是在 Autograd 计算图前向和反向遍历的特定时间窗口内，动态地拉取权重（AllGather）并在算子计算完成后立即将多余权重或梯度就地释放（ReduceScatter）。如果不理解 Autograd 的节点调用时机，根本无法理解分布式通信与计算重叠（Overlap）的精髓；
-2. **长文本训练（Long Context）的救命稻草**：当上下文长度拓展到 32K、128K 甚至 1M 时，$O(S^2)$ 乃至 $O(S)$ 的 Activation 显存直接主导了整体硬件需求。**Activation Checkpointing（梯度检查点/重计算）** 是唯一能让长文本跑起来的手段，而重计算的本质就是对 Autograd 动态图进行外科手术式的剪枝与重播；
+2. **长文本训练（Long Context）的救命稻草**：当上下文长度拓展到 32K、128K 甚至 1M 时， $O(S^2)$ 乃至 $O(S)$ 的 Activation 显存直接主导了整体硬件需求。**Activation Checkpointing（梯度检查点/重计算）** 是唯一能让长文本跑起来的手段，而重计算的本质就是对 Autograd 动态图进行外科手术式的剪枝与重播；
 3. **编写自定义算子（Custom CUDA/Triton Kernel）的必备素养**：当你写了一个前向 Kernel，必须通过继承 `torch.autograd.Function` 并实现 `forward()` 与 `backward()` 把它挂载到计算图上。哪些中间输入必须调用 `ctx.save_for_backward()` 保留？哪些可以丢弃？如果保存了不该保存的大张量，你的 Kernel 就算算得比谁都快，也会因为爆显存而被系统抛弃；
 4. **编译与图优化（PyTorch 2.0 TorchDynamo / AOTAutograd）**：PyTorch 2.0 引入的 `torch.compile`，其核心子模块 **AOTAutograd** 的任务就是在模型执行前，提前捕获前向和反向图，将它们编译融合成更高效的 Triton Kernel。不懂 Autograd 动态图，你将彻底丧失理解现代深度学习编译器的能力。
 
@@ -265,13 +265,13 @@ loss.grad_fn: <SumBackward0 object at 0x7f88b2>
 
 ### 2. `is_leaf`（叶子节点判定）
 
-- **什么是叶子节点（Leaf Tensor）**？由用户显式创建的、不是由任何算子计算出来的张量（例如神经网络中通过 `nn.Parameter` 初始化的权重 $W$ 和偏置 $b$，或者手动创建的输入 $X$）；
-- 为什么必须区分叶子节点？**为了节约极其宝贵的内存和计算资源！** 在深度学习训练中，我们的终极目标是更新权重参数 $W$。因此，默认情况下，**PyTorch 的 Autograd 引擎只会在反向传播结束后为叶子节点保留梯度（存储在 `param.grad` 中）**！所有中间非叶子节点（如上述的 $y$）计算出的一阶导数 $\frac{\partial L}{\partial y}$，在反向传播流水线将其传递给前序节点后，**会被立刻就地销毁**，绝对不会存留到 Python 端（除非你显式调用 `y.retain_grad()`）。
+- **什么是叶子节点（Leaf Tensor）**？由用户显式创建的、不是由任何算子计算出来的张量（例如神经网络中通过 `nn.Parameter` 初始化的权重 $W$ 和偏置 $b$，或者手动创建的输入 $X$ ）；
+- 为什么必须区分叶子节点？**为了节约极其宝贵的内存和计算资源！** 在深度学习训练中，我们的终极目标是更新权重参数 $W$。因此，默认情况下，**PyTorch 的 Autograd 引擎只会在反向传播结束后为叶子节点保留梯度（存储在 `param.grad` 中）**！所有中间非叶子节点（如上述的 $y$ ）计算出的一阶导数 $\frac{\partial L}{\partial y}$，在反向传播流水线将其传递给前序节点后，**会被立刻就地销毁**，绝对不会存留到 Python 端（除非你显式调用 `y.retain_grad()`）。
 
 ### 3. `grad_fn`（反向求导节点指针）
 
-- 对于叶子节点，$x$ 是起点，它不是被算出来的，所以它的 `x.grad_fn = None`；
-- 对于非叶子节点，$y$ 是通过加法出来的，所以它的 `y.grad_fn` 指向了一个名为 `<AddBackward0>` 的 C++ 堆对象；$loss$ 是通过求和出来的，所以它的 `loss.grad_fn` 指向了 `<SumBackward0>`。
+- 对于叶子节点， $x$ 是起点，它不是被算出来的，所以它的 `x.grad_fn = None`；
+- 对于非叶子节点， $y$ 是通过加法出来的，所以它的 `y.grad_fn` 指向了一个名为 `<AddBackward0>` 的 C++ 堆对象； $loss$ 是通过求和出来的，所以它的 `loss.grad_fn` 指向了 `<SumBackward0>`。
 
 ---
 
@@ -322,7 +322,7 @@ struct Edge {
 
 这里的设计极其优雅：
 
-- 一个复杂的算子可能有多个输入（例如矩阵乘法 $Y = XW$ 有两个输入 $X$ 和 $W$）；
+- 一个复杂的算子可能有多个输入（例如矩阵乘法 $Y = XW$ 有两个输入 $X$ 和 $W$ ）；
 - 反向传播计算出 $\nabla Y$ 后，需要将导数分别回传给生成 $X$ 的节点和生成 $W$ 的节点；
 - `next_edges_` 数组精准记录了：**梯度应当送入哪个 `Node`（`function`）的哪一个输入参数槽位（`input_nr`）**！
 
@@ -594,12 +594,12 @@ class MyLinearFunction(torch.autograd.Function):
 
 让我们来逐个审视深度学习中最常见算子的反向求导数学公式与显存扣留账本：
 
-| 常用算子（Operator）                  | 前向计算公式                                                       | 反向梯度计算公式（已知 $\nabla_Y L$）                                                | 反向计算必须依赖的张量（Saved Tensors）                       | 显存扣留成本分析                                                |
+| 常用算子（Operator）                  | 前向计算公式                                                       | 反向梯度计算公式（已知 $\nabla_Y L$ ）                                                | 反向计算必须依赖的张量（Saved Tensors）                       | 显存扣留成本分析                                                |
 | :------------------------------------ | :----------------------------------------------------------------- | :----------------------------------------------------------------------------------- | :------------------------------------------------------------ | :-------------------------------------------------------------- |
 | **加法 Add ($Y = X_1 + X_2$)**        | $Y = X_1 + X_2$                                                    | $\nabla_{X_1} = \nabla_Y, \quad \nabla_{X_2} = \nabla_Y$                             | **完全不需要保存任何张量！** ($\emptyset$)                    | **0 字节！** 显存极度友好！                                     |
 | **乘法 Mul ($Y = X_1 \odot X_2$)**    | $Y = X_1 \odot X_2$                                                | $\nabla_{X_1} = \nabla_Y \odot X_2, \quad \nabla_{X_2} = \nabla_Y \odot X_1$         | 必须保存输入 $X_1$ 和 $X_2$                                   | 需暂存两份完整的输入显存                                        |
 | **全连接 GEMM ($Y = XW$)**            | $Y = XW$                                                           | $\nabla_X = \nabla_Y W^T, \quad \nabla_W = X^T \nabla_Y$                             | 必须保存前向输入 $X$ 与权重 $W$                               | 扣留 $X$（随 Batch/Seq 动态膨胀）                               |
-| **ReLU 激活 ($Y = \max(0, X)$)**      | $y_i = \begin{cases} x_i, & x_i > 0 \\ 0, & x_i \le 0 \end{cases}$ | $\nabla_{x_i} = \begin{cases} \nabla_{y_i}, & x_i > 0 \\ 0, & x_i \le 0 \end{cases}$ | 只需保存输出 $Y$（或布尔掩码 Mask $X > 0$）                   | 极致优化时可用 1-bit 掩码存储替代 16-bit 浮点数                 |
+| **ReLU 激活 ($Y = \max(0, X)$)**      | $y_i = \begin{cases} x_i, & x_i > 0 \\ 0, & x_i \le 0 \end{cases}$ | $\nabla_{x_i} = \begin{cases} \nabla_{y_i}, & x_i > 0 \\ 0, & x_i \le 0 \end{cases}$ | 只需保存输出 $Y$（或布尔掩码 Mask $X > 0$ ）                   | 极致优化时可用 1-bit 掩码存储替代 16-bit 浮点数                 |
 | **GELU / SiLU 激活**                  | $Y = X \cdot \Phi(X)$                                              | 复杂的非线性导数公式                                                                 | 必须保存输入 $X$                                              | 扣留完整的输入 $X$                                              |
 | **Softmax ($Y = \text{softmax}(X)$)** | $y_i = \frac{e^{x_i}}{\sum e^{x_j}}$                               | $\nabla_{x_i} = y_i \left( \nabla_{y_i} - \sum_j \nabla_{y_j} y_j \right)$           | **只需保存输出 $Y$！** 不需要保存输入 $X$！                   | 巧妙利用已算好的输出，节约输入存储                              |
 | **LayerNorm / RMSNorm**               | $Y = \frac{X - \mu}{\sqrt{\sigma^2 + \epsilon}} \gamma + \beta$    | 需均值 $\mu$、方差 $\sigma^2$ 以及归一化后的 $\hat{X}$                               | 必须保存输入 $X$、方差 $\sigma^2$、均值 $\mu$ 与权重 $\gamma$ | 中间统计量占用较小，但需保存前向输入                            |
@@ -740,7 +740,7 @@ sequenceDiagram
 ### 显存四账本在各阶段的微观状态：
 
 1. **起点（Zero Grad 之后）**：
-   - 静态显存：模型权重 $W$（BF16/FP16，占 $2\text{ Bytes/param}$）；
+   - 静态显存：模型权重 $W$（BF16/FP16，占 $2\text{ Bytes/param}$ ）；
    - 优化器状态：AdamW 占 $12\sim 16\text{ Bytes/param}$；
    - 激活值 Activation：**0 字节**；
    - 梯度 Gradient：如果设置了 `set_to_none=True`，梯度为 **0 字节**！
@@ -754,7 +754,7 @@ sequenceDiagram
    - **峰值 Corner Case**：在反向传播的前一两个算子执行时，旧的激活值大部分还没来得及释放，而最初几个算子的输出梯度又已经生成，此时常常会爆发出微秒级的**极限最大显存脉冲（True Peak）**！
 4. **终点（Optimizer Step 阶段）**：
    - 激活值显存彻底归零；
-   - 梯度显存全部就绪（占 $2\text{ Bytes/param}$）；
+   - 梯度显存全部就绪（占 $2\text{ Bytes/param}$ ）；
    - 优化器更新权重后，调用 `zero_grad()` 迎接下一个 Step。
 
 ---
@@ -1000,7 +1000,7 @@ struct TORCH_API GradMode {
 
 - 在常规的标准训练流程中，**前向传播必须把这 80 层所有产生的中间 Activation 全部死死保存在显存里**；
 - 只有当反向传播计算到第 $k$ 层时，第 $k$ 层的激活值才被释放；
-- 这意味着，**全网络前向激活值的显存占用，与层数 $L$ 成严格的线性正比关系：$O(L)$！**
+- 这意味着，**全网络前向激活值的显存占用，与层数 $L$ 成严格的线性正比关系： $O(L)$！**
 
 层数越深、序列越长，显存爆炸得越快。
 
@@ -1051,7 +1051,7 @@ flowchart TD
 
 ---
 
-## 5.2 数学推导：为什么重计算只增加 33.3% 的计算量？（$6P \to 8P$ 理论推导）
+## 5.2 数学推导：为什么重计算只增加 33.3% 的计算量？（ $6P \to 8P$ 理论推导）
 
 很多刚接触 AI Infra 的算法工程师一听到“把前向重新算一遍”，第一反应都是：“天啊！那岂不是把训练时间直接翻倍了？！”
 
@@ -1061,12 +1061,12 @@ flowchart TD
 
 对于一个拥有 $P$ 个参数（Parameters）的模型，处理一个 Token 时：
 
-- **前向传播（Forward Pass）**：每个参数只经历一次乘加运算（$y = x \cdot w$）。一次乘法加一次加法记为 $2\text{ FLOPs}$。  
-  因此，**全模型前向浮点计算量严格等于：$2P\text{ FLOPs/token}$**；
+- **前向传播（Forward Pass）**：每个参数只经历一次乘加运算（ $y = x \cdot w$ ）。一次乘法加一次加法记为 $2\text{ FLOPs}$。  
+  因此，**全模型前向浮点计算量严格等于： $2P\text{ FLOPs/token}$**；
 - **反向传播（Backward Pass）**：请回忆上文 2.1 节的矩阵求导，反向传播必须执行**两次独立的矩阵乘法（GEMM）**：
-  1. 计算对输入的梯度：$\nabla_X = \nabla_Y \cdot W^T$（计算量为 $2P\text{ FLOPs}$）；
-  2. 计算对权重的梯度：$\nabla_W = X^T \cdot \nabla_Y$（计算量为 $2P\text{ FLOPs}$）；  
-     因此，**全模型反向浮点计算量严格等于：$4P\text{ FLOPs/token}$**！
+  1. 计算对输入的梯度： $\nabla_X = \nabla_Y \cdot W^T$（计算量为 $2P\text{ FLOPs}$ ）；
+  2. 计算对权重的梯度： $\nabla_W = X^T \cdot \nabla_Y$（计算量为 $2P\text{ FLOPs}$ ）；  
+     因此，**全模型反向浮点计算量严格等于： $4P\text{ FLOPs/token}$**！
 
 ### 2. 标准训练 vs 重计算训练的总 FLOPs 对比
 
@@ -1077,9 +1077,9 @@ flowchart TD
   $$
 
 - **开启全量激活值重计算（Full Activation Checkpointing）总计算量**：
-  - 前向传播跑一遍：$2P$；
+  - 前向传播跑一遍： $2P$；
   - 反向传播时，每个 Block 的前向必须重新跑一遍：额外增加 **$2P$**；
-  - 反向求导计算本身保持不变：$4P$；
+  - 反向求导计算本身保持不变： $4P$；
 
     $$
     \text{FLOPs}_{\text{checkpointing}} = 2P + 2P + 4P = 8P\text{ FLOPs/token}
@@ -1097,7 +1097,7 @@ $$
 
 ---
 
-## 5.3 全量重计算（Full Checkpointing） vs 亚线性重计算（$\sqrt{L}$ Checkpointing）
+## 5.3 全量重计算（Full Checkpointing） vs 亚线性重计算（ $\sqrt{L}$ Checkpointing）
 
 在重计算的发展史上，有两套经典的切分算法策略：
 
@@ -1134,7 +1134,7 @@ $$
 在一个 Transformer Block 内部，不同算子的“显存/计算比”存在着极其极端的两极分化：
 
 1. **GEMM 算子（QKV 投影、FFN 升降维）**：
-   - 特点：FLOPs 极高，但显存占用相对平缓（$O(B \cdot S \cdot h)$）；
+   - 特点：FLOPs 极高，但显存占用相对平缓（ $O(B \cdot S \cdot h)$ ）；
    - 结论：**重算 GEMM 极其不划算！** 因为 GEMM 占了整个网络 90% 以上的 FLOPs，重算它就得付出巨大的时间代价；
 2. **Attention 核心算子与 Element-wise 算子（Softmax、Dropout、LayerNorm）**：
    - 特点：FLOPs 极低（几乎全是简单的逐元素运算与规约），但是**显存占用极其恐怖（尤其是 Softmax 的 Attention Score 矩阵，占用与序列长度的平方 $S^2$ 成正比！）**；
@@ -1173,26 +1173,26 @@ $$
 
 ## 6.1 LLaMA / Transformer Block 前向与反向张量生命周期追踪表
 
-假设输入张量形状为：$X \in \mathbb{R}^{B \times S \times h}$，其中：
+假设输入张量形状为： $X \in \mathbb{R}^{B \times S \times h}$，其中：
 
 - $B$: Batch Size（批大小）
 - $S$: Sequence Length（序列长度）
 - $h$: Hidden Size（隐层维度，如 4096）
 - $n$: Head 数量（如 32），单个 Head 维度 $d_k = h / n = 128$
-- 精度统一按 BF16 计算（每个元素占 $2\text{ 字节}$）。
+- 精度统一按 BF16 计算（每个元素占 $2\text{ 字节}$ ）。
 
 | 执行阶段与算子               | 输入 Tensor Shape                    | 输出 Tensor Shape               | `grad_fn` 反向节点 | 是否被 `save_for_backward`？                                 | 单层显存扣留大小（字节）                                              |
 | :--------------------------- | :----------------------------------- | :------------------------------ | :----------------- | :----------------------------------------------------------- | :-------------------------------------------------------------------- |
-| **1. Input RMSNorm**         | $[B, S, h]$                          | $[B, S, h]$                     | `RmsNormBackward0` | **是**（需存输入 $X$ 与方差 $\sigma$）                       | $2 \times B \cdot S \cdot h$                                          |
-| **2. QKV Projection (GEMM)** | $[B, S, h]$                          | $[B, S, 3h]$                    | `MmBackward0`      | **是**（需存输入 $X_{\text{norm}}$ 与权重 $W_{\text{qkv}}$） | $2 \times B \cdot S \cdot h$（权重已计入参数显存）                    |
-| **3. RoPE 旋转位置编码**     | $[B, S, n, d_k]$                     | $[B, S, n, d_k]$                | `RopeBackward0`    | **否/可重算**（只需存旋转频域因子 $\cos, \sin$）             | 极小（可忽略）                                                        |
-| **4. QK^T 矩阵乘法**         | $[B, n, S, d_k]$                     | $[B, n, S, S]$                  | `BmmBackward0`     | **是**（需存 $Q$ 和 $K$）                                    | $2 \times 2 \times B \cdot n \cdot S \cdot d_k = 4 B \cdot S \cdot h$ |
-| **5. Softmax 归一化**        | $[B, n, S, S]$                       | $[B, n, S, S]$                  | `SoftmaxBackward0` | **是**（需存注意力概率矩阵 $P$）                             | **$2 \times B \cdot n \cdot S^2$（💥 $O(S^2)$ 显存爆炸源！）**        |
+| **1. Input RMSNorm**         | $[B, S, h]$                          | $[B, S, h]$                     | `RmsNormBackward0` | **是**（需存输入 $X$ 与方差 $\sigma$ ）                       | $2 \times B \cdot S \cdot h$                                          |
+| **2. QKV Projection (GEMM)** | $[B, S, h]$                          | $[B, S, 3h]$                    | `MmBackward0`      | **是**（需存输入 $X_{\text{norm}}$ 与权重 $W_{\text{qkv}}$ ） | $2 \times B \cdot S \cdot h$（权重已计入参数显存）                    |
+| **3. RoPE 旋转位置编码**     | $[B, S, n, d_k]$                     | $[B, S, n, d_k]$                | `RopeBackward0`    | **否/可重算**（只需存旋转频域因子 $\cos, \sin$ ）             | 极小（可忽略）                                                        |
+| **4. QK^T 矩阵乘法**         | $[B, n, S, d_k]$                     | $[B, n, S, S]$                  | `BmmBackward0`     | **是**（需存 $Q$ 和 $K$ ）                                    | $2 \times 2 \times B \cdot n \cdot S \cdot d_k = 4 B \cdot S \cdot h$ |
+| **5. Softmax 归一化**        | $[B, n, S, S]$                       | $[B, n, S, S]$                  | `SoftmaxBackward0` | **是**（需存注意力概率矩阵 $P$ ）                             | **$2 \times B \cdot n \cdot S^2$（💥 $O(S^2)$ 显存爆炸源！）**        |
 | **6. Attention Dropout**     | $[B, n, S, S]$                       | $[B, n, S, S]$                  | `DropoutBackward0` | **是**（存 1-bit 掩码 Mask）                                 | $\frac{1}{8} B \cdot n \cdot S^2$                                     |
-| **7. Attention Over V**      | $[B, n, S, S] \times [B, n, S, d_k]$ | $[B, S, h]$                     | `BmmBackward0`     | **是**（需存 $P_{\text{drop}}$ 与 $V$）                      | $2 \times B \cdot n \cdot S \cdot d_k = 2 B \cdot S \cdot h$          |
-| **8. Out Projection (GEMM)** | $[B, S, h]$                          | $[B, S, h]$                     | `MmBackward0`      | **是**（需存 Attention 输出与 $W_{\text{out}}$）             | $2 \times B \cdot S \cdot h$                                          |
+| **7. Attention Over V**      | $[B, n, S, S] \times [B, n, S, d_k]$ | $[B, S, h]$                     | `BmmBackward0`     | **是**（需存 $P_{\text{drop}}$ 与 $V$ ）                      | $2 \times B \cdot n \cdot S \cdot d_k = 2 B \cdot S \cdot h$          |
+| **8. Out Projection (GEMM)** | $[B, S, h]$                          | $[B, S, h]$                     | `MmBackward0`      | **是**（需存 Attention 输出与 $W_{\text{out}}$ ）             | $2 \times B \cdot S \cdot h$                                          |
 | **9. Residual Add**          | $[B, S, h] + [B, S, h]$              | $[B, S, h]$                     | `AddBackward0`     | **否！完全不存任何张量！**                                   | **0 字节！**                                                          |
-| **10. Post RMSNorm**         | $[B, S, h]$                          | $[B, S, h]$                     | `RmsNormBackward0` | **是**（需存残差输出 $X_{\text{res}}$）                      | $2 \times B \cdot S \cdot h$                                          |
+| **10. Post RMSNorm**         | $[B, S, h]$                          | $[B, S, h]$                     | `RmsNormBackward0` | **是**（需存残差输出 $X_{\text{res}}$ ）                      | $2 \times B \cdot S \cdot h$                                          |
 | **11. FFN Gate & Up (GEMM)** | $[B, S, h]$                          | $[B, S, 2 \times \frac{8}{3}h]$ | `MmBackward0`      | **是**（需存输入与权重）                                     | $2 \times B \cdot S \cdot h$                                          |
 | **12. SwiGLU 激活函数**      | $[B, S, \frac{8}{3}h]$               | $[B, S, \frac{8}{3}h]$          | `MulBackward0` 等  | **是**（需存中间门控激活值）                                 | $2 \times \frac{8}{3} B \cdot S \cdot h$                              |
 | **13. FFN Down (GEMM)**      | $[B, S, \frac{8}{3}h]$               | $[B, S, h]$                     | `MmBackward0`      | **是**（需存激活值与权重）                                   | $2 \times \frac{8}{3} B \cdot S \cdot h$                              |
@@ -1235,7 +1235,7 @@ FlashAttention（Dao et al.）之所以是深度学习历史上最伟大的发�
 **FlashAttention 是怎么破局的？**
 
 1. **从计算图层面连根拔起**：FlashAttention 在外层直接封装成一个单独的 `torch.autograd.Function`，将整个 Attention 融合成单个 CUDA Kernel；
-2. **中间矩阵彻底从物理显存中蒸发**：利用片上 Shared Memory（SRAM）分块与 Online Softmax 递推算法，$QK^T$ 矩阵在片上寄存器里即算即用，**根本不落盘到 HBM，甚至连一毫秒都不在物理显存里停留！**
+2. **中间矩阵彻底从物理显存中蒸发**：利用片上 Shared Memory（SRAM）分块与 Online Softmax 递推算法， $QK^T$ 矩阵在片上寄存器里即算即用，**根本不落盘到 HBM，甚至连一毫秒都不在物理显存里停留！**
 3. **反向求导时完全依赖重算**：在反向传播时，FlashAttention 仅仅依赖最初保存在 HBM 中的轻量级 $Q, K, V$ 张量，**在片上以每秒数百 TFLOPS 的极速重新把局部 Softmax 算一遍！**
 
 通过这种方式，FlashAttention 彻底将 Activation 显存复杂度从 $O(S^2)$ 砸成了 $O(S)$，同时将整体访存量降低了一个数量级！
@@ -1666,7 +1666,7 @@ if __name__ == "__main__":
 | :---- | :----------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **1** | “模型训练 OOM 肯定是因为模型参数量太大了，必须减层数。”                  | **错！** 大模型训练中 Activation 显存往往远超模型参数（可达参数量的 3~5 倍）。长文本序列下优先开启 **Activation Checkpointing** 或 FlashAttention 才是正解。               |
 | **2** | “前向传播算出来的所有中间张量，都会被保存到显存中备用。”                 | **错！** 框架遵循最小化扣留原则。加法、矩阵转置、Dropout 等算子根本不存输入；Softmax 只存输出；只有 GEMM、Conv、Norm 等算子会保存不可替代的张量。                          |
-| **3** | “Activation Checkpointing 会导致训练时间直接翻倍（100% 开销）。”         | **错！** 数学上反向传播原本就需要执行 2 次 GEMM（$4P$ FLOPs）。重算前向仅仅多加了 1 次 GEMM（$2P$ FLOPs），**总计算量只增加 33.3%**，且增大 Batch 后往往能带来净吞吐提升。 |
+| **3** | “Activation Checkpointing 会导致训练时间直接翻倍（100% 开销）。”         | **错！** 数学上反向传播原本就需要执行 2 次 GEMM（ $4P$ FLOPs）。重算前向仅仅多加了 1 次 GEMM（ $2P$ FLOPs），**总计算量只增加 33.3%**，且增大 Batch 后往往能带来净吞吐提升。 |
 | **4** | “`torch.no_grad()` 和 `torch.inference_mode()` 只是别名，完全一样。”     | **错！** `inference_mode` 在 C++ 层面进一步彻底冻结了版本计数器自增和 View 追踪，执行路径短路，运行速度与推理吞吐比 `no_grad()` 明显高出 5%~15%。                          |
 | **5** | “调用 `optimizer.zero_grad()` 和 `zero_grad(set_to_none=True)` 没区别。” | **错！** 后者省去了发射大量 GPU 清零 Kernel 的开销，直接解绑引用，释放显存给 Forward 复用，反向传播时直接 `std::move` 梯度所有权，提升 3%~7% 吞吐。                        |
 | **6** | “反向传播算出的梯度，是在整个 `loss.backward()` 结束后统一落盘的。”      | **错！** 梯度由 `AccumulateGrad` 节点在反向拓扑遍历中**逐个算子实时累加**写入；中间激活值也是在节点求导完成后**立即就地调用 `release_saved_variables` 释放**。             |
@@ -1705,7 +1705,7 @@ if __name__ == "__main__":
 
 1. **FLOPs 精确推导**：
    - 设模型参数量为 $P$。处理一个 Token 时：
-     - **前向 GEMM**：$Y = XW$，计算量为 $2 \times M \times K \times N$。对于全网参数，前向浮点计算量为：
+     - **前向 GEMM**： $Y = XW$，计算量为 $2 \times M \times K \times N$。对于全网参数，前向浮点计算量为：
 
        $$
        \text{FLOPs}_{\text{fwd}} = 2P\text{ FLOPs/token}
@@ -1727,7 +1727,7 @@ if __name__ == "__main__":
        \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P\text{ FLOPs/token}
        $$
 
-     - **标准总计算量**：$\text{FLOPs}_{\text{std}} = 2P + 4P = 6P$；
+     - **标准总计算量**： $\text{FLOPs}_{\text{std}} = 2P + 4P = 6P$；
      - **重计算总计算量**：反向传播时将前向再次计算一次，多耗费 $2P$：
 
        $$
@@ -1741,8 +1741,8 @@ if __name__ == "__main__":
        $$
 
 2. **显存临界判定条件**：
-   - 显存四账本：$M_{\text{total}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{optimizer}} + M_{\text{activation}}$；
-   - 当不开启重计算时，$M_{\text{activation}} \propto O(L \cdot B \cdot S \cdot h)$；
+   - 显存四账本： $M_{\text{total}} = M_{\text{weights}} + M_{\text{grads}} + M_{\text{optimizer}} + M_{\text{activation}}$；
+   - 当不开启重计算时， $M_{\text{activation}} \propto O(L \cdot B \cdot S \cdot h)$；
    - 一旦 $M_{\text{total}} > \text{GPU 物理显存容量} - \text{显存池预留碎片 Headroom (通常 2~3GB)}$，系统必然 OOM；
    - 开启 Full Checkpointing 后，激活显存降为 $O(B \cdot S \cdot h)$（仅维持单个 Block 峰值），节约了约 $\frac{L - 1}{L} \approx 97\%$ 的激活显存，使得超大 Batch 或长上下文得以运行。
 

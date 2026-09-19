@@ -280,12 +280,12 @@ $$
 1. **`vllm:num_requests_waiting`（等待队列请求数）**：
    - 处于就绪状态但由于显存不足无法进入当前批次的请求总数。**只要此数值持续大于 0，说明当前算力池已处于饱和透支状态，必须立即触发扩容！**
 2. **`vllm:gpu_cache_usage_factor`（KV Cache 显存水线占用比）**：
-   - 当前已分配的物理显存块与总 KV Cache 池的比例（取值 $0.0 \sim 1.0$）；
+   - 当前已分配的物理显存块与总 KV Cache 池的比例（取值 $0.0 \sim 1.0$ ）；
    - **$0.0 \sim 0.7$（健康安全区）**：服务运行平稳，支持突发流量；
    - **$0.7 \sim 0.85$（扩容警戒区）**：触发自动扩缩容控制器（KEDA）拉起新副本；
    - **$> 0.95$（极度危险熔断区）**：随时可能发生换页抢占（Swapping），网关必须立即启动自适应背压拒绝新请求！
 3. **`Generation Throughput`（输出生成吞吐量）**：
-   - 集群每秒总共吐出的 Token 数量（$\text{Tokens/s}$）。这是向公司财务证明 GPU 资源投资回报率（ROI）的最硬核依据。
+   - 集群每秒总共吐出的 Token 数量（ $\text{Tokens/s}$ ）。这是向公司财务证明 GPU 资源投资回报率（ROI）的最硬核依据。
 
 ---
 
@@ -473,20 +473,20 @@ $$
 $$
 
 其中：
-1. **基于排队深度的伸缩分量（$R_{\text{queue}}$）**：
+1. **基于排队深度的伸缩分量（ $R_{\text{queue}}$ ）**：
 
    $$
    R_{\text{queue}} = \left\lceil \frac{\text{Total-Waiting-Requests}}{\text{Target-Queue-Depth-per-Pod}} \times \text{CurrentReplicas} \right\rceil
    $$
 
-   （在大模型服务中，我们通常设定单个 Pod 允许排队的健康深度 $\text{Target-Queue} = 5$）；
-2. **基于显存水线的伸缩分量（$R_{\text{cache}}$）**：
+   （在大模型服务中，我们通常设定单个 Pod 允许排队的健康深度 $\text{Target-Queue} = 5$ ）；
+2. **基于显存水线的伸缩分量（ $R_{\text{cache}}$ ）**：
 
    $$
    R_{\text{cache}} = \left\lceil \frac{\text{Avg}(\text{KV-Cache-Usage-Ratio})}{\text{Target-Watermark}} \times \text{CurrentReplicas} \right\rceil
    $$
 
-   （健康安全水线 $\text{Target-Watermark} = 0.75$）。
+   （健康安全水线 $\text{Target-Watermark} = 0.75$ ）。
 
 通过这个公式，无论是因为用户涌入导致排队暴增，还是因为输入上下文过长导致显存预警，系统都能在最早期阶段敏锐捕获并瞬间触发扩容。
 
@@ -531,7 +531,7 @@ $$
 
 ## 4.1 当 KV Cache 突破 95% 警戒线：抢占换入换出与重计算雪崩机理
 
-如果遭遇极端流量洪峰，扩容出来的物理 GPU 启动需要时间（冷启动拉镜像、加载 70GB 权重通常需要 1~2 分钟）。在这 2 分钟的真空期内，**存量 Pod 的 KV Cache 一旦被完全挤爆（达到 $100\%$），底层到底会发生什么？**
+如果遭遇极端流量洪峰，扩容出来的物理 GPU 启动需要时间（冷启动拉镜像、加载 70GB 权重通常需要 1~2 分钟）。在这 2 分钟的真空期内，**存量 Pod 的 KV Cache 一旦被完全挤爆（达到 $100\%$ ），底层到底会发生什么？**
 
 1. **显存物理耗尽**：连续批处理调度器在下一个 Step 尝试为请求申请物理 Block 时，发现空闲块链表为空；
 2. **被迫发起 Swapping（内存换出）**：

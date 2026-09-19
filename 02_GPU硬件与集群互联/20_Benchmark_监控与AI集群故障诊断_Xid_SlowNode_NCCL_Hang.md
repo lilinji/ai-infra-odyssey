@@ -72,7 +72,7 @@ math: true
   - [0.3 AI 集群故障分层与排障全景速查表](#03-ai-集群故障分层与排障全景速查表)
 - [1. 性能分析第一性原理：Step Time 三层分解金字塔（No Naked Formula 2.0）](#1-性能分析第一性原理step-time-三层分解金字塔no-naked-formula-20)
   - [1.1 为什么需要分解？盲目优化单点往往南辕北辙](#11-为什么需要分解盲目优化单点往往南辕北辙)
-  - [1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed-comm}}$）](#12-第一层计算时间t_textcompute-vs-暴露通信时间t_textexposed_comm)
+  - [1.2 第一层：计算时间（ $T_{\text{compute}}$ ） vs 暴露通信时间（ $T_{\text{exposed-comm}}$ ）](#12-第一层计算时间t_textcompute-vs-暴露通信时间t_textexposed_comm)
   - [1.3 第二层：计算内部细分——算力瓶颈（Compute-Bound） vs 访存瓶颈（Memory-Bound）](#13-第二层计算内部细分算力瓶颈compute-bound-vs-访存瓶颈memory-bound)
   - [1.4 第三层：通信内部细分——小包启动时延（Latency-Bound） vs 大包网络带宽（Bandwidth-Bound）](#14-第三层通信内部细分小包启动时延latency-bound-vs-大包网络带宽bandwidth-bound)
   - [1.5 Step Time 分解公式与 MFU / MBU 算盘校验](#15-step-time-分解公式与-mfu--mbu-算盘校验)
@@ -194,7 +194,7 @@ math: true
 
 ---
 
-## 1.2 第一层：计算时间（$T_{\text{compute}}$） vs 暴露通信时间（$T_{\text{exposed-comm}}$）
+## 1.2 第一层：计算时间（ $T_{\text{compute}}$ ） vs 暴露通信时间（ $T_{\text{exposed-comm}}$ ）
 
 单步训练迭代耗时（Step Time）由计算与未被重叠隐藏的通信共同组成：
 
@@ -225,10 +225,10 @@ $$
 
 ## 1.3 第二层：计算内部细分——算力瓶颈（Compute-Bound） vs 访存瓶颈（Memory-Bound）
 
-如果第一层判定瓶颈在计算（$T_{\text{compute}}$ 过长），必须沿 Roofline 模型将其拆解为两大算子阵营：
+如果第一层判定瓶颈在计算（ $T_{\text{compute}}$ 过长），必须沿 Roofline 模型将其拆解为两大算子阵营：
 
 1. **算力受限（Compute-Bound）**：
-   - 典型算子：高维 GEMM 矩阵乘法（$Q \cdot K^T$、FFN Linear）；
+   - 典型算子：高维 GEMM 矩阵乘法（ $Q \cdot K^T$、FFN Linear）；
    - 诊断指标：**Tensor Core 利用率** 是否达到理论峰值的 60%~75%？如果利用率极低，检查是否是 Batch Size 太小导致 SM 核心吃不饱，或者是 Tile 切分失配；
 2. **访存受限（Memory-Bound）**：
    - 典型算子：RMSNorm、LayerNorm、Softmax、RoPE 旋转位置编码；
@@ -245,10 +245,10 @@ T_{\text{comm}} = \alpha + \frac{M}{\beta}
 $$
 
 1. **时延受限（Latency-Bound）**：
-   - 特征：张量切片极小（$M < 1\,\text{MB}$），通信耗时被单步网络启动时延 $\alpha$ 和跨机跳步主导；
+   - 特征：张量切片极小（ $M < 1\,\text{MB}$ ），通信耗时被单步网络启动时延 $\alpha$ 和跨机跳步主导；
    - 药方：开启 **DDP 梯度分桶（Gradient Bucketing）**，强行把小包拼接为 25MB 以上的大桶，或开启 CUDA Graph；
 2. **带宽受限（Bandwidth-Bound）**：
-   - 特征：大包通信（$M > 100\,\text{MB}$），通信耗时完全由网络物理线速 $\beta$ 决定；
+   - 特征：大包通信（ $M > 100\,\text{MB}$ ），通信耗时完全由网络物理线速 $\beta$ 决定；
    - 药方：检查网卡速率协商、RoCE/IB 多轨对齐（Multi-Rail Affinity），排查交换机丢包与慢卡。
 
 ---
@@ -261,7 +261,7 @@ $$
 单纯看 `nvidia-smi` 的 GPU 利用率（GPU-Util）是巨大的骗局——GPU 空转轮询或者等待通信时，利用率依然显示 100%！**MFU 才是唯一不撒谎的工业黄金标准！**
 
 ### 2. 极简计算公式（No Naked Formula 2.0）：
-- 设模型单步理论计算量为 $\text{FLOPs}_{\text{step}}$（对于 Dense Transformer，前向约 $2PD$，反向约 $4PD$，单步总计约 $6PD$）；
+- 设模型单步理论计算量为 $\text{FLOPs}_{\text{step}}$（对于 Dense Transformer，前向约 $2PD$，反向约 $4PD$，单步总计约 $6PD$ ）；
 - 设集群总卡数为 $N$，单卡硬件理论峰值算力为 $P_{\text{peak}}$（如 H100 SXM 为 989 TFLOPS BF16）；
 - 实测单步迭代耗时为 $T_{\text{step}}$（秒）：
 

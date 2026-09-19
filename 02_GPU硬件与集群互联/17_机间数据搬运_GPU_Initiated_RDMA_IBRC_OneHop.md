@@ -238,17 +238,17 @@ sequenceDiagram
 
 让我们把时钟拉伸到纳秒级别，拆解传统 CPU 控制型 RDMA（IBRC）发起一笔传输所经历的底层硬件搬运成本：
 
-1. **SM ➔ Host CPU 通知延迟（$\sim 1.0\,\mu\text{s}$）**：
+1. **SM ➔ Host CPU 通知延迟（ $\sim 1.0\,\mu\text{s}$ ）**：
    - GPU 算子计算出结果后，必须在显存或 Host 内存中置位一个 Completion Flag，或者触发一个中断；
    - CPU 核心通过自旋轮询（Spinning）或操作系统信号唤醒感知到该事件，白白消耗总线带宽；
-2. **CPU 操作系统调度抖动（$\sim 2.0 \sim 5.0\,\mu\text{s}$）**：
+2. **CPU 操作系统调度抖动（ $\sim 2.0 \sim 5.0\,\mu\text{s}$ ）**：
    - 现代 Linux 服务器运行着成百上千个系统线程。即使设置了 CPU Affinity 亲和性绑定，内核的上下文切换、中断打断与电源管理节电状态（C-States），也会引入高达数微秒的不可控抖动（Jitter）；
-3. **Host 内存构造 WQE 描述符（$\sim 0.3\,\mu\text{s}$）**：
+3. **Host 内存构造 WQE 描述符（ $\sim 0.3\,\mu\text{s}$ ）**：
    - CPU 进程调用 `ibv_post_send()` 驱动接口，在 Host DDR 内存的发送队列（SQ）中写入一个 64 字节的 **WQE（Work Queue Element）**，详细记录远程虚拟地址、rkey、本地显存地址与数据长度；
-4. **跨 PCIe 总线敲击 Doorbell（$\sim 1.2\,\mu\text{s}$）**：
+4. **跨 PCIe 总线敲击 Doorbell（ $\sim 1.2\,\mu\text{s}$ ）**：
    - CPU 向网卡在 PCIe 配置空间映射的物理地址发起一次 **MMIO Write（内存映射 I/O 写）**；
    - 这是一个强行同步的 PCIe TLP 事务，CPU 必须等待总线确认，时延恒定在微秒级；
-5. **网卡反向抓取 WQE 并启动 DMA（$\sim 0.5\,\mu\text{s}$）**：
+5. **网卡反向抓取 WQE 并启动 DMA（ $\sim 0.5\,\mu\text{s}$ ）**：
    - 网卡收到 Doorbell 后，向 Host 内存发起一次 PCIe DMA Read，把刚才 CPU 写的 64 字节 WQE 抓取到网卡片上缓存（QP Cache）中，解析后才真正启动数据搬运！
 
 ```text
@@ -271,7 +271,7 @@ $$
 
 - **场景 A：传统 Dense 模型的 DDP / Megatron AllReduce**：
   - 张量并行或数据并行通常会进行梯度分桶（Bucket），每次触发通信的数据量高达 **$S = 32\,\text{MB} \sim 256\,\text{MB}$**；
-  - 在 400 Gbps（$\beta \approx 45\,\text{GB/s}$）的网卡上，传输 256 MB 数据所需的物理网卡串行耗时为：
+  - 在 400 Gbps（ $\beta \approx 45\,\text{GB/s}$ ）的网卡上，传输 256 MB 数据所需的物理网卡串行耗时为：
 
     $$
     T_{\text{data}} = \frac{256 \times 10^6}{45 \times 10^9} \approx 5.68\,\text{ms} = 5680\,\mu\text{s}
@@ -500,10 +500,10 @@ GDRCopy 解决的是另一个极其尖锐的工程痛点：**如果 CPU 确实�
 让我们按照 **No Naked Formula 2.0 原则**，把真实工业界顶流大模型——**DeepSeek-V3 风格 MoE（EP=64，8 台 × 8 卡 H100 服务器，共 64 个 Expert）** 的真实通信账本在白板上一步步手算清楚！
 
 ### 1. 业务场景基准参数设定：
-- **专家并行度**：$\text{EP} = 64$（每个 GPU 承载 1 个独立专家）；
+- **专家并行度**： $\text{EP} = 64$（每个 GPU 承载 1 个独立专家）；
 - **单卡处理 Token 数**：每个 GPU 每步分配 512 个 Token；
-- **模型隐藏层维度**：$\text{Hidden Size} = 7168$，采用 BF16 数据类型（每个元素 2 字节）；
-- **单 Token 数据体量**：$7168 \times 2\,\text{Bytes} = 14336\,\text{Bytes} \approx 14.34\,\text{KB}$；
+- **模型隐藏层维度**： $\text{Hidden Size} = 7168$，采用 BF16 数据类型（每个元素 2 字节）；
+- **单 Token 数据体量**： $7168 \times 2\,\text{Bytes} = 14336\,\text{Bytes} \approx 14.34\,\text{KB}$；
 - **单 GPU 产生的总通信量**：
 
   $$
@@ -512,9 +512,9 @@ GDRCopy 解决的是另一个极其尖锐的工程痛点：**如果 CPU 确实�
 
 ### 2. 真实流量分布推导：
 假设门控路由将 Token 均匀分配给全网 64 个专家：
-- 留在本 GPU 的 Token 比例：$1/64$；
-- 留在本机内（通过 NVLink 走同机其他 7 卡）的比例：$7/64$；
-- **必须跨物理机（走跨机 RDMA 网卡）的比例**：$\mathbf{56/64 = 87.5\%}$；
+- 留在本 GPU 的 Token 比例： $1/64$；
+- 留在本机内（通过 NVLink 走同机其他 7 卡）的比例： $7/64$；
+- **必须跨物理机（走跨机 RDMA 网卡）的比例**： $\mathbf{56/64 = 87.5\%}$；
 - **单 GPU 必须跨机外发的净数据量**：
 
   $$
@@ -689,7 +689,7 @@ $$
 
 在千卡甚至万卡规模下，哪怕控制面全用 IBGDA，网络底层依然会撞上一堵物理墙——**网卡片上 QP 缓存击穿（QP Cache Thrashing）**！
 
-### 1. QP 数量的平方级爆炸陷阱（$O(N^2)$ Scalability Crisis）：
+### 1. QP 数量的平方级爆炸陷阱（ $O(N^2)$ Scalability Crisis）：
 - 在标准 RC（Reliable Connection）模式下，两个 GPU 进程通信必须独占一对专属的 QP 队列；
 - 一个拥有 1024 张 GPU 的集群，若跑全互联 All-to-All，每张卡需要维持的 RC QP 数量为：
 
@@ -1147,7 +1147,7 @@ IBGDA 把发令转，SM 显存直通全。
 ### 白板推导过程：
 设单节点包含 $K$ 张 GPU，每张 GPU 拥有单向 NVLink 带宽 $B_{\text{nvl}}$；整机配置 $M$ 张跨机网卡，每张网卡单向物理带宽为 $B_{\text{nic}}$。  
 在 MoE Dispatch 阶段，设每张 GPU 产生的跨机外发数据量为 $D$。
-- **阶段 1：机内聚合**：$K$ 张卡的数据通过 NVLink 汇总到网关 GPU。总汇聚量为 $(K-1) \cdot D$。NVLink 聚合耗时为：
+- **阶段 1：机内聚合**： $K$ 张卡的数据通过 NVLink 汇总到网关 GPU。总汇聚量为 $(K-1) \cdot D$。NVLink 聚合耗时为：
 
   $$
   T_{\text{intranode}} = \frac{(K-1) \cdot D}{B_{\text{nvl}}}
@@ -1166,7 +1166,7 @@ IBGDA 把发令转，SM 显存直通全。
   \frac{(K-1) \cdot D}{B_{\text{nvl}}} \le \frac{K \cdot D}{M \cdot B_{\text{nic}}} \implies \frac{B_{\text{nvl}}}{M \cdot B_{\text{nic}}} \ge \frac{K-1}{K}
   $$
 
-在现代 HGX H100 架构中（$K=8$ 卡，$B_{\text{nvl}}=450\,\text{GB/s}$ 单向；$M=8$ 网卡，$B_{\text{nic}}=45\,\text{GB/s}$ 单向）：
+在现代 HGX H100 架构中（ $K=8$ 卡， $B_{\text{nvl}}=450\,\text{GB/s}$ 单向； $M=8$ 网卡， $B_{\text{nic}}=45\,\text{GB/s}$ 单向）：
 
 $$
 \frac{B_{\text{nvl}}}{M \cdot B_{\text{nic}}} = \frac{450}{8 \times 45} = \frac{450}{360} = 1.25 > \frac{7}{8} (0.875)
@@ -1182,7 +1182,7 @@ $$
 考察候选人对 RDMA 高阶单边原语的掌握深度，能否给出免除双边通信 RTT 惩罚的工程解法。
 
 ### 标准参考答案：
-1. **传统双边同步的痛点**：发送方发送数据后，必须等待接收方回复确认，导致流水线承受一次完整的跨机网络 RTT（约 8~10 $\mu\text{s}$）；
+1. **传统双边同步的痛点**：发送方发送数据后，必须等待接收方回复确认，导致流水线承受一次完整的跨机网络 RTT（约 8~10 $\mu\text{s}$ ）；
 2. **Write with Immediate 解法**：
    - 发送方使用 `IBV_WR_RDMA_WRITE_WITH_IMM`，将数据与一个 32 位的标志位打包在同一个网络报文中发出；
    - 接收端网卡硬件在完成显存 DMA 写入后，直接消耗预置的一个空接收请求（RR），并在远端生成一个 CQE 完成事件；

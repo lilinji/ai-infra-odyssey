@@ -156,7 +156,7 @@ math: true
 | 数据并行范式 | 进程架构 | 梯度聚合机制 | 通信与计算关系 | 显存扩展性限制 | 生产适用场景 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **朴素 DP (DataParallel)** | 单进程多线程（受 Python GIL 严重锁死） | 主卡（Rank 0）集中收集求和，再广播回各卡 | **完全串行**（先全算完反向，再停下来通信） | 极差（主卡显存单点爆炸） | **已被现代工业界全面废弃** |
-| **经典 DDP (DistributedDataParallel)** | **多进程对等模型（Multi-Process, 无 GIL 干扰）** | 去中心化 **Ring-AllReduce** | **异步深度重叠（Bucket Overlap）**，梯度边算边传 | 单卡必须能存下 $16\Psi$ 完整静态状态 | 稠密小模型（$\le 7B$）或 3D 并行中的 DP 维度底座 |
+| **经典 DDP (DistributedDataParallel)** | **多进程对等模型（Multi-Process, 无 GIL 干扰）** | 去中心化 **Ring-AllReduce** | **异步深度重叠（Bucket Overlap）**，梯度边算边传 | 单卡必须能存下 $16\Psi$ 完整静态状态 | 稠密小模型（ $\le 7B$ ）或 3D 并行中的 DP 维度底座 |
 | **ZeRO-1 / 2 (FSDP-Stage 1/2)** | 多进程对等 | 优化器状态/梯度切分，**ReduceScatter + AllGather** | 反向传播同时执行 ReduceScatter 重叠 | 单卡仅需存部分梯度与优化器 | 中大模型（7B~70B）的标准首选 |
 | **ZeRO-3 / 完整 FSDP** | 多进程对等 | 参数、梯度、优化器全切分，动态 AllGather 权重 | 前向预取（Prefetch）与反向通信全流水线重叠 | 理论上显存随卡数线性下降 | 超大模型（70B~万亿）与单机装不下的极限场景 |
 
@@ -260,7 +260,7 @@ $$
 \text{Comm}_{\text{Ring}} = 2 \times \left( \frac{N - 1}{N} \right) \times \Psi \quad (\text{Bytes})
 $$
 
-当集群规模 $N$ 逐渐变大（如 $N = 64, 512, 1024$）时：
+当集群规模 $N$ 逐渐变大（如 $N = 64, 512, 1024$ ）时：
 
 $$
 \lim_{N \to \infty} \left( \frac{N - 1}{N} \right) = 1
@@ -271,9 +271,9 @@ $$
 $$
 
 #### ⑤ Sanity Check（数量级校验与惊天结论）
-以一个 7B 模型（参数梯度量 $\Psi = 14\text{ GB}$）为例：
-- 在 8 卡集群上：$\text{Comm} = 2 \times \frac{7}{8} \times 14\text{ GB} = \mathbf{24.5\text{ GB}}$；
-- 在 1024 卡集群上：$\text{Comm} = 2 \times \frac{1023}{1024} \times 14\text{ GB} \approx \mathbf{27.97\text{ GB}}$！
+以一个 7B 模型（参数梯度量 $\Psi = 14\text{ GB}$ ）为例：
+- 在 8 卡集群上： $\text{Comm} = 2 \times \frac{7}{8} \times 14\text{ GB} = \mathbf{24.5\text{ GB}}$；
+- 在 1024 卡集群上： $\text{Comm} = 2 \times \frac{1023}{1024} \times 14\text{ GB} \approx \mathbf{27.97\text{ GB}}$！
 - **核心物理震撼**：**从 8 卡扩大到 1024 卡（规模暴增 128 倍），单张卡需要搬运的通信数据量仅仅从 24.5 GB 微升到 27.97 GB，几乎保持完全恒定！**  
 这就是为什么 Ring 拓扑是分布式训练领域最伟大的算法突破之一：它彻底摆脱了中心节点的带宽枷锁。
 
@@ -289,16 +289,16 @@ $$
 T_{\text{comm}} = \alpha \times (\text{传输步数}) + \beta \times (\text{每步传输量})
 $$
 
-其中 $\alpha$ 为网络握手与硬件发射延迟（Latency），$\beta = \frac{1}{\text{Bandwidth}}$ 为带宽倒数。
+其中 $\alpha$ 为网络握手与硬件发射延迟（Latency）， $\beta = \frac{1}{\text{Bandwidth}}$ 为带宽倒数。
 
 - **Ring-AllReduce**：
-  - 传输步数：$2 \times (N - 1)$ 步；
-  - 通信耗时：$T_{\text{ring}} = \mathbf{2(N - 1)\alpha} + 2\left(\frac{N-1}{N}\right)\beta \Psi$；
+  - 传输步数： $2 \times (N - 1)$ 步；
+  - 通信耗时： $T_{\text{ring}} = \mathbf{2(N - 1)\alpha} + 2\left(\frac{N-1}{N}\right)\beta \Psi$；
   - **致命弱点**：当卡数 $N$ 达到 1024 时，网络握手步数高达 $2046$ 步！如果传输的数据量很小（比如只有几兆字节），通信时间将被高昂的环路握手延迟 $\alpha$ 彻底吃光！
 - **Double Binary Tree AllReduce**：
   - 构造两棵交替覆盖的二叉树，数据在树上自底向上 Reduce，再自顶向下 Broadcast；
   - 传输步数：仅为 $2 \times \log_2(N)$ 步！在 1024 卡下只有 $2 \times 10 = \mathbf{20 \text{ steps}}（20 步）$！
-  - 通信耗时：$T_{\text{tree}} = \mathbf{2 \log_2(N)\alpha} + 2\beta \Psi$。
+  - 通信耗时： $T_{\text{tree}} = \mathbf{2 \log_2(N)\alpha} + 2\beta \Psi$。
 
 | 通信拓扑变体 | 延迟项复杂度（Step 开销） | 带宽项复杂度（数据量） | 最佳适用工况 | NCCL 自动选择策略 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -465,7 +465,7 @@ cudaStreamWaitEvent(compute_stream, all_nccl_done_event, 0);
 在第 1.2 节中我们推导过：Ring-AllReduce 的延迟项为 $2(N - 1)\alpha$。
 
 1. **机内 NVLink（单机 8 卡）**：
-   - 节点内 GPU 通过 NVLink 全互联，单向带宽高达 450~900 GB/s，且物理链路延迟 $\alpha$ 只有微秒级别（$< 1 \mu s$）；
+   - 节点内 GPU 通过 NVLink 全互联，单向带宽高达 450~900 GB/s，且物理链路延迟 $\alpha$ 只有微秒级别（ $< 1 \mu s$ ）；
    - 8 卡环境下 $2(8 - 1) = 14$ 步环路传递耗时在十几个微秒内完成，完全可以忽略；
 2. **跨机 InfiniBand / RoCE（跨交换机千卡集群）**：
    - 当扩展到 128 个节点（1024 卡）时，光纤穿透 Leaf 交换机和 Spine 交换机；
@@ -795,10 +795,10 @@ if __name__ == "__main__":
 #### 标准推导路径：
 1. **拓扑定义与切块**：
    - 设集群有 $N$ 张 GPU 逻辑连接成单向环；
-   - 模型参数总量为 $\Psi$ 字节，每个 GPU 将自身持有的张量等分为 $N$ 份切片：$S_0, S_1, \dots, S_{N-1}$，每个切片大小为 $\frac{\Psi}{N}$。
+   - 模型参数总量为 $\Psi$ 字节，每个 GPU 将自身持有的张量等分为 $N$ 份切片： $S_0, S_1, \dots, S_{N-1}$，每个切片大小为 $\frac{\Psi}{N}$。
 2. **第一阶段：ReduceScatter（规约散射）**：
    - 算法执行 $(N - 1)$ 轮迭代步；
-   - 在第 $k$ 步（$k = 0, \dots, N-2$），每个 GPU $i$ 同时将自己的切片 $S_{(i - k) \bmod N}$ 发送给右邻居 $i+1$，并从左邻居 $i-1$ 接收切片并执行累加；
+   - 在第 $k$ 步（ $k = 0, \dots, N-2$ ），每个 GPU $i$ 同时将自己的切片 $S_{(i - k) \bmod N}$ 发送给右邻居 $i+1$，并从左邻居 $i-1$ 接收切片并执行累加；
    - 每步传输的数据量为 $\frac{\Psi}{N}$；
    - $(N - 1)$ 步结束后，每张 GPU 恰好持有一份全局累加完成的切片：
 
@@ -822,7 +822,7 @@ if __name__ == "__main__":
    \text{Comm}_{\text{Total}} = \text{Comm}_{\text{RS}} + \text{Comm}_{\text{AG}} = 2 \times \left( \frac{N - 1}{N} \right) \Psi \quad (\text{Bytes})
    $$
 
-   当 $N$ 较大时，$\frac{N-1}{N} \to 1$，单卡通信总量严格收敛为 **$2\Psi$**。
+   当 $N$ 较大时， $\frac{N-1}{N} \to 1$，单卡通信总量严格收敛为 **$2\Psi$**。
 
 ---
 
@@ -837,7 +837,7 @@ if __name__ == "__main__":
    - 逆序装桶让靠后层的参数优先进入 `Bucket 0`，反向传播刚一启动，`Bucket 0` 即可光速填满并发射异步 AllReduce，最大化隐藏后续通信耗时。
 2. **权重共享（Weight Sharing，如 Embedding 与 LM Head 绑定）的 Corner Case**：
    - 如果参数 $W$ 在前向传播中被调用了两次（例如在输入层被查表，在最后一层被用作投影）；
-   - 在反向传播中，$W$ 会收到两次梯度回传：第一次在输出层（反向开始阶段），第二次在输入层（反向末尾阶段）；
+   - 在反向传播中， $W$ 会收到两次梯度回传：第一次在输出层（反向开始阶段），第二次在输入层（反向末尾阶段）；
    - DDP 的 `autograd hook` 默认在第一次接收到梯度时就会触发准备就绪计数；
    - **潜在问题**：如果不做特殊处理，DDP 可能在输出层求导完毕后误认为该参数已完全就绪，直接将其打包发射通信；而输入层的梯度尚未累加，导致丢失一半梯度！
    - **底层解决机制**：DDP 的 Reducer 针对共享参数维护了梯度累加计数器（Reference Count），明确追踪该参数在反向图中的总引用次数，直到最后一次梯度累加完成时才正式标记为 Ready。

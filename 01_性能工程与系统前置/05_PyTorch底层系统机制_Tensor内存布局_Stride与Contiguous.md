@@ -374,7 +374,7 @@ struct C10_API StorageImpl : public c10::intrusive_ptr_target {
 从上面的架构全景图中，我们可以得出两个极为关键的工程推论：
 
 1. **零内存分配（Zero Allocation）**：创建 `Tensor B` 和 `Tensor C` 的过程中，完全**没有调用任何 `cudaMalloc`**，显存总占用量 1 个字节都没有增加；
-2. **数据同步变更（In-place Mutation Risk）**：因为 $A$、$B$、$C$ 共享底层物理内存，如果在 Python 中对 $B$ 进行原地修改（如 `B.add_(10)`），$A$ 和 $C$ 对应位置的数值也会**瞬间同步发生改变**！
+2. **数据同步变更（In-place Mutation Risk）**：因为 $A$、 $B$、 $C$ 共享底层物理内存，如果在 Python 中对 $B$ 进行原地修改（如 `B.add_(10)`）， $A$ 和 $C$ 对应位置的数值也会**瞬间同步发生改变**！
 
 ---
 
@@ -398,13 +398,13 @@ struct C10_API StorageImpl : public c10::intrusive_ptr_target {
 ## 2.2 多维逻辑坐标到一维物理地址的映射公式推导
 
 假设我们有一个 $n$ 维张量 $T$，其元数据定义如下：
-- **逻辑形状（Shape / Sizes）**：$(d_0, d_1, d_2, \dots, d_{n-1})$
-- **步长数组（Strides）**：$(s_0, s_1, s_2, \dots, s_{n-1})$
-- **存储偏移量（Storage Offset）**：$\text{offset}$
-- **元素字节大小（Item Size）**：$S_{\text{byte}}$（例如 FP32 为 4 字节）
+- **逻辑形状（Shape / Sizes）**： $(d_0, d_1, d_2, \dots, d_{n-1})$
+- **步长数组（Strides）**： $(s_0, s_1, s_2, \dots, s_{n-1})$
+- **存储偏移量（Storage Offset）**： $\text{offset}$
+- **元素字节大小（Item Size）**： $S_{\text{byte}}$（例如 FP32 为 4 字节）
 - **物理内存起始指针**：`P_base = static_cast<char*>(Storage.data_ptr())`
 
-现在，我们在 Python 中访问多维张量的一个特定元素 $T[i_0, i_1, i_2, \dots, i_{n-1}]$（其中 $0 \le i_k < d_k$）。
+现在，我们在 Python 中访问多维张量的一个特定元素 $T[i_0, i_1, i_2, \dots, i_{n-1}]$（其中 $0 \le i_k < d_k$ ）。
 
 硬件和 PyTorch 究竟是如何计算出这个元素在物理内存中的**一维元素绝对索引（Linear Index）**与**物理字节地址（Memory Byte Address）**的？
 
@@ -685,7 +685,7 @@ PyTorch 是怎么做到的？答案就是：**将广播维度的 Stride 设为 0
 ```
 
 > 💡 **Ringi 工程师洞察**：  
-> 当一个维度的 $\text{Stride} = 0$ 时，无论你在该维度上索引走到几百万，$\text{index} \times 0 \equiv 0$！它在物理内存中永远定格在同一个位置。这就是用 $O(1)$ 的存储空间表达无穷大张量的**“空间奇迹”**。
+> 当一个维度的 $\text{Stride} = 0$ 时，无论你在该维度上索引走到几百万， $\text{index} \times 0 \equiv 0$！它在物理内存中永远定格在同一个位置。这就是用 $O(1)$ 的存储空间表达无穷大张量的**“空间奇迹”**。
 
 ---
 
@@ -715,7 +715,7 @@ PyTorch 是怎么做到的？答案就是：**将广播维度的 Stride 设为 0
 一个形状为 $(d_0, d_1, \dots, d_{n-1})$、步长为 $(s_0, s_1, \dots, s_{n-1})$ 的张量是 **C-连续（C-Contiguous）** 的，当且仅当满足以下两个条件之一：
 
 1. 张量中元素总数 $\le 1$（退化情况）；
-2. 对于所有大小大于 1 的维度 $k$（即 $d_k > 1$），其步长必须严格等于其右侧所有维度大小的乘积：
+2. 对于所有大小大于 1 的维度 $k$（即 $d_k > 1$ ），其步长必须严格等于其右侧所有维度大小的乘积：
 
    $$
    s_k = \prod_{j=k+1}^{n-1} d_j
@@ -954,7 +954,7 @@ __global__ void generic_strided_kernel(float* data, int64_t offset,
 
 ## 5.4 cuBLAS GEMM 如何利用 Leading Dimension（LDA/LDB/LDC）化解转置开销
 
-在矩阵乘法 $C = A \times B$ 中，我们经常需要对矩阵进行转置（例如 $A \times B^T$）。  
+在矩阵乘法 $C = A \times B$ 中，我们经常需要对矩阵进行转置（例如 $A \times B^T$ ）。  
 既然转置会导致张量非连续，为什么 PyTorch 的 `torch.matmul(a, b.t())` 不需要先调用 `.contiguous()` 也能跑得飞快？
 
 这是因为底层的 **cuBLAS / CUTLASS 矩阵乘法库原生支持主维度跨度（Leading Dimension，即 LDA、LDB、LDC）**！
@@ -1018,7 +1018,7 @@ cuBLAS 内部高度优化的 GEMM Kernel 会直接利用 GPU Shared Memory（片
   \text{Attention}(Q_h, K_h, V_h) = \text{Softmax}\left(\frac{Q_h K_h^T}{\sqrt{D}}\right) V_h \quad (Q_h, K_h \in \mathbb{R}^{S \times D})
   $$
 
-- 只有将 $H$ 移动到第 1 维，前两维 $[B, H]$ 才能合并成 Batch 维度（即 $\text{Batch Size} = B \times H$），底层的批处理矩阵乘法（Batched GEMM / BMM）才能将每个 Head 视为独立的矩阵进行并发加速！
+- 只有将 $H$ 移动到第 1 维，前两维 $[B, H]$ 才能合并成 Batch 维度（即 $\text{Batch Size} = B \times H$ ），底层的批处理矩阵乘法（Batched GEMM / BMM）才能将每个 Head 视为独立的矩阵进行并发加速！
 
 ---
 

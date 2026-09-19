@@ -69,9 +69,9 @@ math: true
   - [0.2 线上真实惨案：千卡集群训练 70B 模型，GPU 利用率为何从 60% 暴跌至 28%？](#02-线上真实惨案千卡集群训练-70b-模型gpu-利用率为何从-60-暴跌至-28)
   - [0.3 AI Infra 各层级分布式策略与通信原语映射全景表](#03-ai-infra-各层级分布式策略与通信原语映射全景表)
 - [1. 网络硬件基础与小白避坑第一课](#1-网络硬件基础与小白避坑第一课)
-  - [1.1 绝对严防的单位陷阱：$b$（bit 比特）vs $B$（Byte 字节）](#11-绝对严防的单位陷阱bbit-比特vs-bbyte-字节)
+  - [1.1 绝对严防的单位陷阱： $b$（bit 比特）vs $B$（Byte 字节）](#11-绝对严防的单位陷阱bbit-比特vs-bbyte-字节)
   - [1.2 物理互联层级金字塔：从片上 SRAM 到跨机架 InfiniBand](#12-物理互联层级金字塔从片上-sram-到跨机架-infiniband)
-  - [1.3 延迟（Latency）vs 带宽（Bandwidth）：$\alpha$-$\beta$ 经典通信模型人话拆解](#13-延迟latencyvs-带宽bandwidthalpha-beta-经典通信模型人话拆解)
+  - [1.3 延迟（Latency）vs 带宽（Bandwidth）： $\alpha$-$\beta$ 经典通信模型人话拆解](#13-延迟latencyvs-带宽bandwidthalpha-beta-经典通信模型人话拆解)
 - [2. 点对点通信（P2P）vs 集合通信（Collective）的第一性原理](#2-点对点通信p2pvs-集合通信collective的第一性原理)
   - [2.1 P2P：`Send` 与 `Recv` 的物理直觉](#21-p2psend-与-recv-的物理直觉)
   - [2.2 为什么大规模分布式训练不能简单写循环 P2P？Master 带宽瓶颈的数学证明](#22-为什么大规模分布式训练不能简单写循环-p2pmaster-带宽瓶颈的数学证明)
@@ -85,7 +85,7 @@ math: true
   - [3.6 原语 6：⚡ ReduceScatter（规约发散）—— ZeRO-2 / FSDP 梯度分片核心](#36-原语-6-reducescatter规约发散-zero-2--fsdp-梯度分片核心)
   - [3.7 原语 7：🧩 AllGather（全收集）—— ZeRO-3 / FSDP 权重重建核心](#37-原语-7-allgather全收集-zero-3--fsdp-权重重建核心)
   - [3.8 原语 8：🔀 AllToAll（全交换）—— MoE 专家并行与序列并行的核心](#38-原语-8-alltoall全交换-moe-专家并行与序列并行的核心)
-  - [3.9 八大原语代数等价关系：$\text{AllReduce} \equiv \text{ReduceScatter} + \text{AllGather}$ 的对称美学](#39-八大原语代数等价关系textallreduce-equiv-textreducescatter--textallgather-的对称美学)
+  - [3.9 八大原语代数等价关系： $\text{AllReduce} \equiv \text{ReduceScatter} + \text{AllGather}$ 的对称美学](#39-八大原语代数等价关系textallreduce-equiv-textreducescatter--textallgather-的对称美学)
 - [4. Ring-AllReduce 环形算法与通信量第一性原理手算](#4-ring-allreduce-环形算法与通信量第一性原理手算)
   - [4.1 朴素方案之死：为什么集中式 Master 汇总会引发网络灾难？](#41-朴素方案之死为什么集中式-master-汇总会引发网络灾难)
   - [4.2 Ring 环形拓扑的物理直觉：数据切分与同心圆流水线](#42-ring-环形拓扑的物理直觉数据切分与同心圆流水线)
@@ -162,7 +162,7 @@ math: true
 
 在进入复杂的算法前，我们先打牢物理层地基，扫清最容易让小白翻车的三大网络概念。
 
-## 1.1 绝对严防的单位陷阱：$b$（bit 比特）vs $B$（Byte 字节）
+## 1.1 绝对严防的单位陷阱： $b$（bit 比特）vs $B$（Byte 字节）
 
 在网络与存储领域，存在一个持续了几十年的“大小写混乱陷阱”：
 
@@ -185,7 +185,7 @@ math: true
 > $$
 >
 > 扣除协议包头开销与链路损耗（通常约 90% 有效利用率），**单向实际有效带宽仅有约 $45\text{ GB/s}$**！  
-> 传输一个 14 GB 的 7B 模型权重，理论上最快也需要：$14\text{ GB} \div 45\text{ GB/s} \approx \mathbf{0.31 \text{ s}}（约 0.31 秒）$。
+> 传输一个 14 GB 的 7B 模型权重，理论上最快也需要： $14\text{ GB} \div 45\text{ GB/s} \approx \mathbf{0.31 \text{ s}}（约 0.31 秒）$。
 
 ---
 
@@ -213,7 +213,7 @@ math: true
 
 ---
 
-## 1.3 延迟（Latency）vs 带宽（Bandwidth）：$\alpha$-$\beta$ 经典通信模型人话拆解
+## 1.3 延迟（Latency）vs 带宽（Bandwidth）： $\alpha$-$\beta$ 经典通信模型人话拆解
 
 任何一次跨网络的数据搬运，总耗时都可以用学术界最经典的 **$\alpha$-$\beta$ 模型（Hockney Model）** 精确刻画：
 
@@ -225,7 +225,7 @@ $$
 
 1. **$\alpha$（Latency，网络建立延迟/启动开销）**：
    - **人话解释**：不管你要寄一封 1 个字的明信片，还是一箱重 50 公斤的货物，快递员从接单、打包、开车上路所消耗的**固定起步时间**；
-   - 在 GPU 网络中，这包含 CPU 发起指令、驱动打包、网络硬件握手与光电信号在光纤中的物理飞行时间（通常为 $1 \sim 10\ \mu\text{s}$）。
+   - 在 GPU 网络中，这包含 CPU 发起指令、驱动打包、网络硬件握手与光电信号在光纤中的物理飞行时间（通常为 $1 \sim 10\ \mu\text{s}$ ）。
 2. **$M$（Message Size，传输数据量）**：以字节（Bytes）为单位的数据大小；
 3. **$\beta$（Bandwidth Reciprocal，传输带宽倒数）**：
    - $\beta = \frac{1}{\text{Bandwidth}}$，代表网卡每秒钟能够吞吐的字节数的倒数。
@@ -252,7 +252,7 @@ $$
 
 ## 2.2 为什么大规模分布式训练不能简单写循环 P2P？Master 带宽瓶颈的数学证明
 
-假设我们有 $P$ 张 GPU（比如 $P=8$），每张卡上计算出了大小为 $M$ 字节的梯度，现在需要把所有卡的梯度加在一起求平均值。
+假设我们有 $P$ 张 GPU（比如 $P=8$ ），每张卡上计算出了大小为 $M$ 字节的梯度，现在需要把所有卡的梯度加在一起求平均值。
 
 如果一个初学者用最笨的 Python 循环写 P2P：
 
@@ -423,7 +423,7 @@ $$
 
 ---
 
-## 3.9 八大原语代数等价关系：$\text{AllReduce} \equiv \text{ReduceScatter} + \text{AllGather}$ 的对称美学
+## 3.9 八大原语代数等价关系： $\text{AllReduce} \equiv \text{ReduceScatter} + \text{AllGather}$ 的对称美学
 
 集合通信原语之间存在着令人叹为观止的代数对称性：
 
@@ -461,9 +461,9 @@ $$
 
 Ring 算法的核心思想极其巧妙：
 
-1. **构建同心圆逻辑环**：将 $P$ 张 GPU 逻辑上连成一个单向环（$0 \to 1 \to 2 \dots \to P-1 \to 0$）；
+1. **构建同心圆逻辑环**：将 $P$ 张 GPU 逻辑上连成一个单向环（ $0 \to 1 \to 2 \dots \to P-1 \to 0$ ）；
 2. **数据等分分块**：将每张卡上大小为 $M$ 的张量，均匀切分成 **$P$ 个大小为 $M / P$ 的小分块（Chunks）**；
-3. **每个节点永远只和自己的右邻居通信**：在任意时刻，每张卡只需要向自己的右侧邻居发送一个分块（大小 $M/P$），同时接收来自左侧邻居的一个分块。没有任何一张卡是单点中心，全网链路带宽 100% 打满！
+3. **每个节点永远只和自己的右邻居通信**：在任意时刻，每张卡只需要向自己的右侧邻居发送一个分块（大小 $M/P$ ），同时接收来自左侧邻居的一个分块。没有任何一张卡是单点中心，全网链路带宽 100% 打满！
 
 ![Ringi 流程工坊：Ring-AllReduce 环形流水线传送带](assets/ringi_09_ring_allreduce_pipeline.png)
 
@@ -495,13 +495,13 @@ Ring 算法的核心思想极其巧妙：
 
 ### 1. 单卡传输数据量手算：
 
-- 在 **Scatter-Reduce 阶段**，共执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$）：
+- 在 **Scatter-Reduce 阶段**，共执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$ ）：
 
   $$
   \text{Transferred}_{\text{SR}} = (P - 1) \times \frac{M}{P} \text{ 字节}
   $$
 
-- 在 **AllGather 阶段**，同样执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$）：
+- 在 **AllGather 阶段**，同样执行 $P-1$ 步，每步传输一个分块（大小 $\frac{M}{P}$ ）：
 
   $$
   \text{Transferred}_{\text{AG}} = (P - 1) \times \frac{M}{P} \text{ 字节}
@@ -521,7 +521,7 @@ $$
 T_{\text{Ring}} = 2(P - 1)\alpha + 2 \times \left(\frac{P - 1}{P}\right) \frac{M}{B}
 $$
 
-当集群规模 $P$ 很大时（例如 $P=8, 64, 1024$）：
+当集群规模 $P$ 很大时（例如 $P=8, 64, 1024$ ）：
 
 $$
 \lim_{P \to \infty} \frac{P - 1}{P} = 1 \implies \mathbf{\text{Total Bytes Transferred}} \approx 2M
@@ -896,7 +896,7 @@ if __name__ == "__main__":
 ## 9.2 10 条白板自我检验清单
 
 - [ ] **Q1**：能不看资料，在白板上准确换算 800 Gbps 网卡的实际理论单向字节带宽吗？
-- [ ] **Q2**：能用自己的话说清 $\alpha$-$\beta$ 通信模型中，$\alpha$ 和 $\beta$ 分别代表什么物理含义吗？
+- [ ] **Q2**：能用自己的话说清 $\alpha$-$\beta$ 通信模型中， $\alpha$ 和 $\beta$ 分别代表什么物理含义吗？
 - [ ] **Q3**：为什么不能在大规模集群中用 Master 循环 P2P 的方式做求和？请写出其带宽瓶颈公式。
 - [ ] **Q4**：请画出 Broadcast、Scatter、Gather、Reduce 这 4 个基础原语的数据流转示意图。
 - [ ] **Q5**：为什么说 $\text{AllReduce} \equiv \text{ReduceScatter} + \text{AllGather}$？请用张量分片演示该过程。
@@ -919,7 +919,7 @@ if __name__ == "__main__":
 # 10. 📚 参考资料与核心源码/经典论文指引
 
 1. **奠基性论文与学术原著**：
-   - **Patarasuk & Yuan (2009)**: _"Bandwidth Optimal All-reduce Algorithms on Trees of Meshes"_. Journal of Parallel and Distributed Computing.（证明了 Ring 算法在长消息下的带宽最优性 $2 \frac{P-1}{P} M$）；
+   - **Patarasuk & Yuan (2009)**: _"Bandwidth Optimal All-reduce Algorithms on Trees of Meshes"_. Journal of Parallel and Distributed Computing.（证明了 Ring 算法在长消息下的带宽最优性 $2 \frac{P-1}{P} M$ ）；
    - **Gibiansky (2017)**: _"Bringing HPC Techniques to Deep Learning"_. Baidu Silicon Valley AI Lab.（首次将 Ring-AllReduce 算法成功引入现代深度学习多卡训练框架，引发分布式革命）；
    - **Sanders et al. (2019)**: _"Two-Tree Algorithms for Full-Bandwidth Collective Operations"_. IEEE TPDS.（NCCL 双二叉树 Double Binary Tree 算法数学奠基）；
    - **Shoeybi et al. (2019)**: _"Megatron-LM: Training Multi-Gigabyte Language Models Using Model Parallelism"_. arXiv:1909.08053.（确立张量并行中每层 2 次 AllReduce 的经典架构）；
@@ -943,7 +943,7 @@ if __name__ == "__main__":
 1. **数据切分定义**：设张量总大小为 $M$ 字节，参与通信的 GPU 数量为 $P$。Ring 算法将张量均匀切分为 $P$ 个大小为 $\frac{M}{P}$ 的分块（Chunk）；
 2. **Scatter-Reduce 阶段传输量**：
    - 环上有 $P$ 个节点，数据要流转到所有节点完成全局求和，必须执行 $P-1$ 个通信步；
-   - 在每一步中，每张卡向其右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$）；
+   - 在每一步中，每张卡向其右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$ ）；
    - 因此，该阶段单卡累计发送的数据量为：
 
      $$
@@ -952,7 +952,7 @@ if __name__ == "__main__":
 
 3. **AllGather 阶段传输量**：
    - 经过第一阶段后，每张卡只持有一块完整求和结果，需要再花费 $P-1$ 步将该完整分块广播覆盖到其余 $P-1$ 张卡上；
-   - 在每一步中，每张卡同样向右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$）；
+   - 在每一步中，每张卡同样向右邻居发送且仅发送 1 个分块（大小 $\frac{M}{P}$ ）；
    - 因此，该阶段单卡累计发送的数据量同样为：
 
      $$
@@ -966,7 +966,7 @@ if __name__ == "__main__":
    $$
 
 5. **渐近复杂度结论**：  
-   当卡数 $P \to \infty$ 时，$\lim_{P \to \infty} \frac{P-1}{P} = 1$。因此单卡总传输量严格渐近于 **$2M$**，与节点数 $P$ 完全解耦，复杂度为 $O(1)$！
+   当卡数 $P \to \infty$ 时， $\lim_{P \to \infty} \frac{P-1}{P} = 1$。因此单卡总传输量严格渐近于 **$2M$**，与节点数 $P$ 完全解耦，复杂度为 $O(1)$！
 
 ---
 
@@ -980,7 +980,7 @@ if __name__ == "__main__":
    - **AllReduce** 的目标是“全网数据求和，且全员拿到完整求和结果”；
    - **ReduceScatter** 先执行了全网数据求和，但将完整结果切成 $P$ 份，每张卡只保留属于自己的 $1/P$ 分片；
    - **AllGather** 随后将这 $P$ 份分散的 $1/P$ 分片重新全网广播拼装，恢复完整全集；
-   - 两者在数学与数据流动上严格等价：$\text{AllReduce}(X) \equiv \text{AllGather}(\text{ReduceScatter}(X))$。
+   - 两者在数学与数据流动上严格等价： $\text{AllReduce}(X) \equiv \text{AllGather}(\text{ReduceScatter}(X))$。
 2. **在 ZeRO / FSDP 中的革命性工程价值**：
    - **消灭内存冗余**：在标准 DDP 中，使用 AllReduce 会导致每张卡都必须保留 100% 的梯度与 100% 的优化器状态（16 字节/参数，70B 模型高达 1120GB，单卡直接 OOM）；
    - **时空解耦（ZeRO-2）**：反向传播结束后，**只调用 ReduceScatter**，每张卡只接收属于自己的 $1/P$ 梯度，并在本地只更新 $1/P$ 的优化器状态，**瞬间将优化器与梯度显存降低为原来的 $1/P$**；
@@ -1007,12 +1007,12 @@ if __name__ == "__main__":
      T_{\text{Tree}} = 2 \lceil \log_2 P \rceil \alpha + 2 \frac{M}{B_{\text{tree}}}
      $$
 
-2. **小包通信（$M \to 0$）分析**：  
+2. **小包通信（ $M \to 0$ ）分析**：  
    当传输的数据量 $M$ 极小时（如几百字节到几 KB），带宽传输项 $\frac{M}{B} \approx 0$，总耗时完全由网络启动与跳步延迟 $\alpha$ 主导：
    - Ring 算法的延迟为 $2(P - 1)\alpha$（随卡数线性增长，1024 卡需经历 2046 步）；
    - Tree 算法的延迟为 $2 \log_2 P \cdot \alpha$（1024 卡仅需经历 20 步！）；
    - **结论**：在小包场景下，Tree 算法的延迟比 Ring 快两个数量级，因此 NCCL 会自动切换为 Tree 拓扑。
-3. **大张量通信（$M \gg 0$）分析**：  
+3. **大张量通信（ $M \gg 0$ ）分析**：  
    当传输大模型几百 MB 到几 GB 的梯度张量时，带宽传输项 $\frac{M}{B}$ 占据 99% 以上的时间：
    - Ring 算法能够 100% 榨干每张网卡的上行与下行双向物理带宽（Full Bandwidth Utilization）；
    - Tree 算法在树状节点处容易发生链路争抢与带宽不均，实际有效带宽利用率不如 Ring；

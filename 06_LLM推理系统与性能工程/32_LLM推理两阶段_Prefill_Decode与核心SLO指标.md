@@ -188,7 +188,7 @@ Step 1027 [48 Decodes]                ---> 耗时: 24.8ms  (打字机恢复，�
 
 | 比较维度 | 分布式离线训练（Training） | 在线大模型推理服务（Inference Serving） | 核心工程本质差异 |
 | :--- | :--- | :--- | :--- |
-| **首要优化目标** | **极致吞吐量（Throughput）**，以天/周为周期追求 GPU MFU（模型算力利用率）最大化 | **在严苛 SLO 约束下的 Goodput**，追求 P99 延迟极小化与单位成本（$/Token）最低 | 训练是离线批处理；推理是硬实时在线交互系统 |
+| **首要优化目标** | **极致吞吐量（Throughput）**，以天/周为周期追求 GPU MFU（模型算力利用率）最大化 | **在严苛 SLO 约束下的 Goodput**，追求 P99 延迟极小化与单位成本（ $/Token）最低 | 训练是离线批处理；推理是硬实时在线交互系统 |
 | **计算模式** | 前向计算（Forward）+ 反向梯度（Backward），计算图固定且高度可预测 | **Prefill（静态整段）+ Decode（动态自回归自增循环）**，每步长度未知 | 推理多出了一个单 Token 逐字自回归循环 |
 | **硬件瓶颈属性** | 几乎全程为 **Compute-Bound（算力受限）**，大规模稠密矩阵乘法（GEMM）吃满 Tensor Core | **Prefill 为 Compute-Bound**；而 **Decode 为严重的 Memory-Bound（显存带宽受限）** | 相同的模型，在推理的不同阶段触发完全不同的硬件物理瓶颈 |
 | **显存主要开销** | 优化器状态（Optimizer States）、梯度（Gradients）、激活值（Activations） | **KV Cache（随会话长度与并发动态膨胀）** 与 模型静态权重 | 训练显存大头在优化器；推理显存大头在 KV Cache |
@@ -252,15 +252,15 @@ $$
 \mathbf{X}_{\text{prefill}} \in \mathbb{R}^{B \times S \times d_{\text{model}}}
 $$
 
-其中 $B$ 为 Batch Size（通常为 1 到数十），$S$ 为输入 Prompt 序列长度（数十到数万不等），$d_{\text{model}}$ 为模型隐层维度（如 LLaMA-3 70B 为 8192）。
+其中 $B$ 为 Batch Size（通常为 1 到数十）， $S$ 为输入 Prompt 序列长度（数十到数万不等）， $d_{\text{model}}$ 为模型隐层维度（如 LLaMA-3 70B 为 8192）。
 
 此时，模型内部的核心计算是**通用稠密矩阵乘法（GEMM - General Matrix Multiply）**：
 - **Q, K, V 投影**：将形状为 $(B \times S, d_{\text{model}})$ 的激活矩阵与形状为 $(d_{\text{model}}, 3 \times d_{\text{model}})$ 的模型静态权重矩阵相乘；
 - **MLP / SwiGLU 升降维**：将形状为 $(B \times S, d_{\text{model}})$ 的激活矩阵与形状为 $(d_{\text{model}}, d_{\text{ffn}})$ 的 Gate/Up 权重矩阵相乘；
-- **Self-Attention 矩阵乘**：$Q \times K^T$ 产生 $(B, H, S, S)$ 的注意力得分矩阵。
+- **Self-Attention 矩阵乘**： $Q \times K^T$ 产生 $(B, H, S, S)$ 的注意力得分矩阵。
 
 **硬件层面的物理映射**：
-因为 $M = B \times S$ 通常较大（例如 $1 \times 2048 = 2048$），矩阵乘法的维度是 $[2048 \times 8192] \times [8192 \times 8192]$。
+因为 $M = B \times S$ 通常较大（例如 $1 \times 2048 = 2048$ ），矩阵乘法的维度是 $[2048 \times 8192] \times [8192 \times 8192]$。
 - **权重搬运一次，计算成千上万次**：GPU 从高带宽显存（HBM）中读取一次权重矩阵（几百兆字节），放入片上高速缓存（SRAM / Shared Memory），可以让这 2048 个 Token 并行复用！
 - **Tensor Cores 极度饱食**：NVIDIA GPU（如 Hopper 架构）的 Tensor Core 阵列被完全喂饱，计算单元运转如飞，硬件利用率（MFU）通常可以达到 **50% ~ 65%**；
 - **物理归宿**：Prefill 是不折不扣的 **Compute-Bound（算力受限型）** 任务。限制其运行时间的最核心瓶颈，是 GPU 的峰值浮点算力（TFLOPS）。
@@ -284,7 +284,7 @@ $$
 - 权重矩阵的维度依然是庞大的 $[d_{\text{model}}, d_{\text{model}}]$ 或 $[d_{\text{model}}, d_{\text{ffn}}]$。
 
 **硬件层面的残酷现实**：
-假定并发数很小（例如 $B=1$）：
+假定并发数很小（例如 $B=1$ ）：
 1. GPU 为了计算这区区 **1 个 Token** 的前向传播，必须从显存（HBM）中把整个大模型**数十吉字节（GB）的静态权重完整读取一遍**到片上缓存！
 2. 每一个权重参数（2 字节）被辛苦地从 HBM 经过几毫米长的硅中介层搬运到 SM（流式多处理器）中，仅仅与这 1 个 Token 的输入分量做了一次乘加操作（2 FLOPs），随即就被丢弃！
 3. **计算单元的大规模空转**：Tensor Cores 拥有每秒吞吐数百甚至上千太次（Tera-FLOPs）浮点数的恐怖胃口，但 HBM 的供水管道（显存带宽）每秒最多只能泵出几太字节（TB/s）的数据。计算单元就像一台吞吐量惊人的工业粉碎机，上游却只拿一根极细的吸管一滴一滴地给它喂料。
@@ -297,10 +297,10 @@ $$
 | 特征维度 | Prefill 阶段（预填充） | Decode 阶段（自回归逐字解码） | 体系结构根因与工程映射 |
 | :--- | :--- | :--- | :--- |
 | **执行时序与次数** | 请求到达后仅执行 **1 次** | 随生成序列长度串行循环执行 **$S_{\text{out}} - 1$ 次** | Decode 构成了端到端时间的大头 |
-| **单步 Token 吞吐形态** | 整段 Prompt（$S_{\text{in}} \in [\text{几十}, \text{数万}]$）一次性输入 | 每步每个请求仅输入 **1 个 Token** | 一个是批处理吞吐模式，一个是逐点迭代模式 |
+| **单步 Token 吞吐形态** | 整段 Prompt（ $S_{\text{in}} \in [\text{几十}, \text{数万}]$ ）一次性输入 | 每步每个请求仅输入 **1 个 Token** | 一个是批处理吞吐模式，一个是逐点迭代模式 |
 | **底层代数算子形态** | **GEMM（矩阵 × 矩阵）**，高维度密集阵列乘 | **GEMV（矩阵 × 向量）** 或 小 Batch GEMM | 代数运算维度直接决定了片上数据复用度（Data Reuse） |
 | **片上数据复用率** | **极高**（同一个权重参数被 $S_{\text{in}}$ 个 Token 共享） | **极低**（单个权重参数仅被 $B$ 个 Token 共享，若 $B=1$ 则无复用） | 片上 SRAM 无法对跨 Step 的权重做长时间缓存 |
-| **算术强度（AI）** | 极高（通常在 $200 \sim 2000\text{ FLOP/Byte}$） | 极低（小 Batch 下仅为 $1 \sim 20\text{ FLOP/Byte}$） | 算术强度彻底跨越了 GPU Roofline 拐点两侧 |
+| **算术强度（AI）** | 极高（通常在 $200 \sim 2000\text{ FLOP/Byte}$ ） | 极低（小 Batch 下仅为 $1 \sim 20\text{ FLOP/Byte}$ ） | 算术强度彻底跨越了 GPU Roofline 拐点两侧 |
 | **硬件物理瓶颈** | **Compute-Bound（受限于 FP16/BF16/FP8 Tensor Core 算力）** | **Memory-Bound（受限于 HBM 显存物理读写带宽）** | 决定了后续优化是该“降计算”还是“压缩搬运量” |
 | **核心决定业务指标** | **首字延迟（TTFT - Time To First Token）** | **字间延迟（TPOT / ITL）** 与 用户端打字感 | 架构调优必须对这两个指标进行解耦权衡 |
 | **最有效的优化杠杆** | FlashAttention、算子融合（Kernel Fusion）、Chunked Prefill | **Continuous Batching、KV Cache 压缩/量化（FP8/INT4）、投机采样** | 对症下药：Prefill 需优化调度与并发，Decode 需拼命提 Batch 与减带宽 |
@@ -314,10 +314,10 @@ $$
 要定量解释为什么 Decode 阶段算力被极度闲置，必须引入计算机体系结构中最经典的分析工具——**Roofline 模型（屋顶线模型）**。
 
 Roofline 模型建立在两个最基础的物理现实之上：
-1. **处理器算力上限（Peak Compute Performance, $P_{\text{peak}}$）**：单位为 $\text{TFLOPS}$（每秒万亿次浮点运算）；
-2. **显存物理带宽上限（Peak Memory Bandwidth, $B_{\text{peak}}$）**：单位为 $\text{TB/s}$（每秒万亿字节数据搬运）。
+1. **处理器算力上限（Peak Compute Performance, $P_{\text{peak}}$ ）**：单位为 $\text{TFLOPS}$（每秒万亿次浮点运算）；
+2. **显存物理带宽上限（Peak Memory Bandwidth, $B_{\text{peak}}$ ）**：单位为 $\text{TB/s}$（每秒万亿字节数据搬运）。
 
-连接计算与搬运两个维度的桥梁，叫做 **算术强度（Arithmetic Intensity, $I$）**：
+连接计算与搬运两个维度的桥梁，叫做 **算术强度（Arithmetic Intensity, $I$ ）**：
 
 $$
 I = \frac{\text{任务总浮点运算量 (FLOPs)}}{\text{从底层显存搬运的总数据量 (Bytes)}} \quad \left[\frac{\text{FLOP}}{\text{Byte}}\right]
@@ -343,8 +343,8 @@ $$
 
 #### ③ Tiny Calculator（极简数字手算）
 以目前大厂推理集群最主流的 **NVIDIA H100 SXM (80GB HBM3)** 为例：
-- **稠密半精度（BF16/FP16）Tensor Core 算力**：$P_{\text{peak}} \approx 989\text{ TFLOPS} = 989 \times 10^{12}\text{ FLOP/s}$（注：官方宣传的 1979 TFLOPS 包含了 2:4 结构化稀疏，工业稠密基准按非稀疏计算）；
-- **HBM3 显存实测理论峰值带宽**：$B_{\text{peak}} \approx 3.35\text{ TB/s} = 3.35 \times 10^{12}\text{ Byte/s}$。
+- **稠密半精度（BF16/FP16）Tensor Core 算力**： $P_{\text{peak}} \approx 989\text{ TFLOPS} = 989 \times 10^{12}\text{ FLOP/s}$（注：官方宣传的 1979 TFLOPS 包含了 2:4 结构化稀疏，工业稠密基准按非稀疏计算）；
+- **HBM3 显存实测理论峰值带宽**： $B_{\text{peak}} \approx 3.35\text{ TB/s} = 3.35 \times 10^{12}\text{ Byte/s}$。
 
 带入手算：
 
@@ -353,8 +353,8 @@ I_{\text{balance}}^{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}
 $$
 
 再算一个老当益壮的 **NVIDIA A100 SXM (80GB HBM2e)**：
-- BF16 Tensor Core 算力：$P_{\text{peak}} = 312\text{ TFLOPS}$；
-- HBM2e 显存带宽：$B_{\text{peak}} \approx 2.039\text{ TB/s}$。
+- BF16 Tensor Core 算力： $P_{\text{peak}} = 312\text{ TFLOPS}$；
+- HBM2e 显存带宽： $B_{\text{peak}} \approx 2.039\text{ TB/s}$。
 
 $$
 I_{\text{balance}}^{\text{A100}} = \frac{312 \times 10^{12}}{2.039 \times 10^{12}} \approx \mathbf{153.0\text{ FLOP/Byte}}
@@ -407,9 +407,9 @@ $$
 
 现在，让我们把大模型前向传播的数学计算代入算术强度公式。
 
-考虑一个参数量为 $W$（以参数个数计）的模型，采用半精度（FP16/BF16，每个参数占 2 字节，模型总权重字节数为 $2W$）。
+考虑一个参数量为 $W$（以参数个数计）的模型，采用半精度（FP16/BF16，每个参数占 2 字节，模型总权重字节数为 $2W$ ）。
 
-#### 案例 A：单请求 Decode 阶段（$B=1, S=1$）
+#### 案例 A：单请求 Decode 阶段（ $B=1, S=1$ ）
 - **计算量（FLOPs）**：根据 Transformer 的前向计算公式，每个参数对 1 个输入 Token 贡献一次乘法和一次加法（1 MAC = 2 FLOPs），因此总计算量为：
 
   $$
@@ -446,8 +446,8 @@ $$
 
 **硬件上超过 99.6% 的计算晶体管在彻底闲置！**
 
-#### 案例 B：Prefill 阶段（$B=1, S=1024$）
-- **计算量**：$S=1024$ 个 Token 同时进网络，每个参数被 1024 个 Token 共同复用：
+#### 案例 B：Prefill 阶段（ $B=1, S=1024$ ）
+- **计算量**： $S=1024$ 个 Token 同时进网络，每个参数被 1024 个 Token 共同复用：
 
   $$
   \text{FLOPs} = 2 \times W \times 1024 = 2048W\text{ FLOPs}
@@ -471,7 +471,7 @@ $$
 既然 Decode 卡在 1 FLOP/Byte 的深渊里，怎么救？
 
 审视 Decode 的算术强度公式：如果我们把并发请求打包成一个大小为 $B$ 的 Batch，输入维度变为 $[B, 1, d_{\text{model}}]$：
-- **计算量**：$B$ 个 Token 同时计算，总运算量线性增加为：
+- **计算量**： $B$ 个 Token 同时计算，总运算量线性增加为：
 
   $$
   \text{FLOPs} = 2 \times W \times B
@@ -485,10 +485,10 @@ $$
   $$
 
 **这一推导揭示了为什么整个大模型推理工程都在拼了命做 Batching：**
-- 当 $B=1$ 时，$I = 1\text{ FLOP/Byte}$，利用率 0.3%；
-- 当 $B=32$ 时，$I = 32\text{ FLOP/Byte}$，利用率攀升到约 10%；
-- 当 $B=128$ 时，$I = 128\text{ FLOP/Byte}$，利用率攀升到约 43%；
-- 当 $B \ge 300$ 时，$I \ge 300\text{ FLOP/Byte}$，Decode 终于第一次跨过平衡点，把 H100 的算力彻底吃满！
+- 当 $B=1$ 时， $I = 1\text{ FLOP/Byte}$，利用率 0.3%；
+- 当 $B=32$ 时， $I = 32\text{ FLOP/Byte}$，利用率攀升到约 10%；
+- 当 $B=128$ 时， $I = 128\text{ FLOP/Byte}$，利用率攀升到约 43%；
+- 当 $B \ge 300$ 时， $I \ge 300\text{ FLOP/Byte}$，Decode 终于第一次跨过平衡点，把 H100 的算力彻底吃满！
 
 > 💡 **Ringi 工程师大实话**：
 > “把 Batch Size 搞大，单位 Token 的边际显存搬运成本就会被平摊。权重只搬一次，服务 100 个用户，吞吐量就能暴增 100 倍，而每一步的硬件执行耗时几乎没变！**这就是 Continuous Batching 能够在降低单位 Token 算力成本上封神的物理根基。**”
@@ -553,7 +553,7 @@ $$
 - 层数 $L = 32$；
 - KV 头数 $H_{\text{kv}} = 8$（注意：Query 头数是 32，但因为是 GQA，KV 头只有 8 个！）；
 - 头的维度 $d_{\text{head}} = 128$；
-- 存储精度：半精度 FP16 / BF16，每个元素占 2 字节（$\text{Precision} = 2$）；
+- 存储精度：半精度 FP16 / BF16，每个元素占 2 字节（ $\text{Precision} = 2$ ）；
 - 乘数 2：分别存储 Key 和 Value。
 
 带入小算盘：
@@ -618,7 +618,7 @@ $$
 
 因为 PyTorch 原生算子要求张量在物理内存中必须是连续地址，而系统在请求到达那一刻，**根本不可能预知这个用户到底会输出多少个字**（可能只回答一个“好”字，也可能滔滔不绝写一篇论文）。
 
-传统的做法只能按最大可能长度（如 $S_{\text{max}} = 2048$）为每个请求预留一块连续的显存空间。这就引发了极其恐怖的**内存碎片黑洞**：
+传统的做法只能按最大可能长度（如 $S_{\text{max}} = 2048$ ）为每个请求预留一块连续的显存空间。这就引发了极其恐怖的**内存碎片黑洞**：
 
 ```text
 传统连续内存分配黑洞 (显存有效利用率 < 40%):
@@ -655,17 +655,17 @@ $$
 - **唯一的线性缩减暴击点，就是 $H_{\text{kv}}$（KV 头的数量）！**
 
 在最经典的 **MHA（Multi-Head Attention，多头注意力）** 架构中（如原始 Transformer、GPT-3）：
-- Query、Key、Value 的头数完全一致：$H_{\text{q}} = H_{\text{kv}} = H$；
+- Query、Key、Value 的头数完全一致： $H_{\text{q}} = H_{\text{kv}} = H$；
 - 每一个 Query 都有自己专属的一对 Key/Value 头。
 
 **MQA（Multi-Query Attention）的激进压缩**（2019 年 Shazeer 提出）：
-- 让所有的 Query 头（如 32 个）**全量共享仅仅 1 组 Key/Value 头**（$H_{\text{kv}} = 1$）；
+- 让所有的 Query 头（如 32 个）**全量共享仅仅 1 组 Key/Value 头**（ $H_{\text{kv}} = 1$ ）；
 - 显存暴降：KV Cache 体积直接断崖式缩减为 MHA 的 **$\frac{1}{H}$（如 $\frac{1}{32}$，缩减 97%）**！
 - 代价：注意力表达能力受到明显损伤，在某些复杂关联推理任务上泛化能力下降。
 
 **GQA（Grouped-Query Attention）的黄金折中**（2023 年 LLaMA-2/3、Qwen、Mistral 普遍采纳）：
 - 将 $H_{\text{q}}$ 个查询头分成 $G$ 组（例如 32 个 Query 头分成 8 组，每组 4 个 Query 头）；
-- 每一组共享 1 对 Key/Value 头（$H_{\text{kv}} = 8$）；
+- 每一组共享 1 对 Key/Value 头（ $H_{\text{kv}} = 8$ ）；
 - 显存收益：KV Cache 直接缩减为 MHA 的 **$\frac{8}{32} = \frac{1}{4}$（节省 75% 显存）**！
 - 精度表现：大厂实验证明，GQA 在几乎完全保持 MHA 语言理解与复杂推理能力的同时，让在线推理系统的最大并发度直接翻了 4 倍！
 
@@ -732,7 +732,7 @@ MHA vs GQA vs MQA 头结构拓扑对比:
   $$
 
 - **用户心智阈值**：
-  - 人类的正常默读速度约为每秒 5~10 个汉字/单词（对应 TPOT 为 $100 \sim 200\text{ ms}$）；
+  - 人类的正常默读速度约为每秒 5~10 个汉字/单词（对应 TPOT 为 $100 \sim 200\text{ ms}$ ）；
   - 极佳的打字机视觉流速应维持在每秒 20~40 个 Token，即 **$\text{TPOT} \le 25 \sim 50\text{ ms}$**；
   - 一旦 TPOT 恶化到超过 **$100\text{ ms}$**（即出字速度低于 10 字/秒），人眼就能明显察觉到字符蹦出时的“阻滞感”。
 
@@ -744,11 +744,11 @@ MHA vs GQA vs MQA 头结构拓扑对比:
   $$
 
 > ⚠️ **生产架构决策暗礁：你的场景被谁主导？**
-> - **短输出场景（如搜索引擎摘要、分类标注、$S_{\text{out}} = 20$）**：
+> - **短输出场景（如搜索引擎摘要、分类标注、 $S_{\text{out}} = 20$ ）**：
 >   设 $\text{TTFT} = 500\text{ ms}, \text{TPOT} = 40\text{ ms}$。
 >   $\text{E2E} = 500 + 40 \times 19 = 1260\text{ ms}$。
 >   **TTFT 占据了总耗时的 40%！** 此时花大精力去把 TPOT 从 40ms 优化到 30ms 收益甚微，必须主攻 TTFT；
-> - **长输出场景（如代码生成、长篇写作、$S_{\text{out}} = 1000$）**：
+> - **长输出场景（如代码生成、长篇写作、 $S_{\text{out}} = 1000$ ）**：
 >   $\text{E2E} = 500 + 40 \times 999 \approx 40460\text{ ms}$。
 >   **TPOT 占据了总耗时的 98.8%！** 此时即使把 TTFT 优化到 100ms 也毫无存在感，必须不惜一切代价优化 TPOT。
 
@@ -766,7 +766,7 @@ MHA vs GQA vs MQA 头结构拓扑对比:
 
 **残酷的零和博弈**：
 **系统总吞吐（System Throughput）与单用户感知流速（User-perceived Speed）往往是互斥的！**
-- 为了提高系统总吞吐，调度器倾向于凑一个更大的 Batch（如从 $B=16$ 提到 $B=128$）；
+- 为了提高系统总吞吐，调度器倾向于凑一个更大的 Batch（如从 $B=16$ 提到 $B=128$ ）；
 - 硬件虽然打满了，但由于显存带宽被更多 KV Cache 读取挤占，单步 Decode 耗时从 25ms 拖慢到 50ms；
 - 结果是：**系统总产出翻倍了，但每个独立用户看到的打字机流速直接腰斩跌了一半！**
 
@@ -848,7 +848,7 @@ P99 TPOT (ms)
 ### 5.1 静态批处理（Static Batching）的短板效应：被最长序列锁死的“木桶”
 
 在深度学习推理的最早期，系统沿袭了训练时代的 **Static Batching（静态批处理）**：
-1. 调度器在内存队列中积攒 $N$ 个请求（比如 $N=4$）；
+1. 调度器在内存队列中积攒 $N$ 个请求（比如 $N=4$ ）；
 2. 找到这 4 个请求中最长的那一个（假设是 1000 Token），把其余 3 个较短的请求用大量无意义的 `<PAD>` 占位符强制填充到 1000 Token；
 3. 将整个 $[4 \times 1000]$ 的静态张量打包推给 GPU，进行前向计算。
 
@@ -914,7 +914,7 @@ gantt
 #### 核心思想
 **凭什么规定一段 4000 Token 的长 Prompt 必须在单步内一口气吃完？**
 现实中高速公路上绝不允许超重集装箱横冲直撞堵死车道，而是必须将大宗货物拆装运输。
-- 我们给 Prefill 设定一个固定的 **Chunk 大小（例如 $\text{Chunk Size} = 512$）**；
+- 我们给 Prefill 设定一个固定的 **Chunk 大小（例如 $\text{Chunk Size} = 512$ ）**；
 - 当一个 4000 Token 的长请求到达时，系统将其强制切割为 8 个独立的 Chunk；
 - **每一步只执行一个 512 Token 的 Chunk，并与正常的 Decode 请求混合批处理**；
 - 剩下的 7 个 Chunk 顺延至后续 Step 逐个消化！
@@ -948,7 +948,7 @@ Step t+7: [████ 512 Chunk 8][■ Decode x 16] -> 耗时 35ms (Prefill �
 而在 **vLLM V1 核心调度引擎** 中，实现了一个极其优雅的抽象跃迁——**统一 Token 预算调度器（Token Budget Scheduler）**。
 
 #### 核心哲学：在 GPU 眼里，天下没有任何阶段之分，只有“这一步要算几个 Token”！
-调度器在每一步开始前，只持有唯独一个硬指标：**当前 Step 的全局 Token 预算上限（$\text{max-batched-tokens}$，如 2048）**。
+调度器在每一步开始前，只持有唯独一个硬指标：**当前 Step 的全局 Token 预算上限（ $\text{max-batched-tokens}$，如 2048）**。
 
 调度决策被高度抽象为一个纯粹的装箱字典映射：
 
@@ -967,7 +967,7 @@ scheduled_step_plan = {
 
 #### 优先级准则：先保存量 Decode，余量给 Prefill
 1. **第一优先级（保流速）**：正在运行的所有存量 Decode 请求绝对优先分配预算（每个扣减 1 个 Token 额度），确保老用户的打字机绝不断流；
-2. **第二优先级（削峰填谷）**：计算剩余的可用 Token 预算（$\text{Budget}_{\text{remain}} = \text{Budget}_{\text{total}} - B_{\text{decode}}$）；
+2. **第二优先级（削峰填谷）**：计算剩余的可用 Token 预算（ $\text{Budget}_{\text{remain}} = \text{Budget}_{\text{total}} - B_{\text{decode}}$ ）；
 3. **第三优先级（分块裁决）**：新请求的 Prefill 按照 $\text{min}(\text{Request Remaining Tokens}, \text{Budget}_{\text{remain}})$ 进行自然截断，自动切成 Chunk！
 
 通过这套数学框架，**Chunked Prefill、Prefix Caching（前缀复用）以及 Speculative Decoding（投机验证）被极其惊艳地统一进了同一套算力装箱模型中**。
@@ -1032,7 +1032,7 @@ graph TD
   \text{KV Size} = 32,768 \times 320\text{ KB} \approx \mathbf{10.48\text{ GB}}
   $$
 
-- 假设集群配备了工业顶级的 **400 Gbps InfiniBand / RoCE 网卡**（单向理论有效带宽约为 $45\sim 48\text{ GB/s}$）；
+- 假设集群配备了工业顶级的 **400 Gbps InfiniBand / RoCE 网卡**（单向理论有效带宽约为 $45\sim 48\text{ GB/s}$ ）；
 - 纯网络硬件传输这一份 KV Cache 的理论物理耗时下限为：
 
   $$
@@ -1375,7 +1375,7 @@ if __name__ == "__main__":
   - 推荐基线配置：`max_num_batched_tokens` 设为 **512 ~ 2048**（针对 H100 建议 2048，A100 建议 512），在保障算力利用率的同时严控单步最大时延。
 - [ ] **4. 严苛定义业务 SLO 与 Goodput 观测大盘**：
   - 严禁单纯监控 QPS 与 GPU 利用率；
-  - 告警大盘核心关注：**P99 TTFT（建议 $\le 1000\text{ ms}$）** 与 **P99 TPOT / ITL（建议 $\le 35\text{ ms}$）**；
+  - 告警大盘核心关注：**P99 TTFT（建议 $\le 1000\text{ ms}$ ）** 与 **P99 TPOT / ITL（建议 $\le 35\text{ ms}$ ）**；
   - 设置自动熔断机制：当长尾超时率超过 2% 时，网关主动启动排队限流降级。
 - [ ] **5. 全面推行注意力架构 GQA / MQA**：
   - 严禁在长文本生产线上部署未经注意力头压缩的纯 MHA 稠密大模型；
@@ -1406,7 +1406,7 @@ if __name__ == "__main__":
 ### 9.2 10 条白板自我检验清单
 
 1. **能否在白板上徒手画出 Roofline 模型，并标注出算术强度、硬件平衡点与水平/倾斜屋顶线？**
-2. **为什么单请求（$B=1$）Decode 阶段的算术强度近似等于 $1.0\text{ FLOP/Byte}$？写出推导过程。**
+2. **为什么单请求（ $B=1$ ）Decode 阶段的算术强度近似等于 $1.0\text{ FLOP/Byte}$？写出推导过程。**
 3. **计算 H100 SXM（989 TFLOPS, 3.35 TB/s）的平衡点是多少？为什么低于这个值的算子称为访存受限？**
 4. **如果不使用 KV Cache，自回归生成 $S$ 个 Token 的全流程浮点计算量是多大？使用后降为多少？**
 5. **手算 LLaMA-3 70B（80 层, 8 对 KV 头, FP16）单 Token 的 KV Cache 显存容量是多少？**
@@ -1449,10 +1449,10 @@ if __name__ == "__main__":
 - 是否能跳出纯算法框架，从硬件物理限制与系统工程两个维度定位根本瓶颈并给出破局解法。
 
 #### 💡 解题思考路径
-1. **点明物理矛盾**：Decode 阶段单步输入的向量极短（$S=1$），矩阵乘法退化为矩阵-向量乘法（GEMV），导致其算术强度极低（仅约 1 FLOP/Byte），远远低于现代 GPU（如 H100 的 295 FLOP/Byte）的平衡点，系统死死受制于 HBM 显存物理带宽墙；
-2. **给出数学证据**：$B=1$ 时单步计算量为 $2W$，搬运量为 $2W$，利用率理论上不足 0.5%；
+1. **点明物理矛盾**：Decode 阶段单步输入的向量极短（ $S=1$ ），矩阵乘法退化为矩阵-向量乘法（GEMV），导致其算术强度极低（仅约 1 FLOP/Byte），远远低于现代 GPU（如 H100 的 295 FLOP/Byte）的平衡点，系统死死受制于 HBM 显存物理带宽墙；
+2. **给出数学证据**： $B=1$ 时单步计算量为 $2W$，搬运量为 $2W$，利用率理论上不足 0.5%；
 3. **推导破局路径（如何拉升算术强度与硬件利用率）**：
-   - **路径一：增大 Batch Size（Continuous Batching）**：$I \approx B\text{ FLOP/Byte}$。将 Batch Size 拉升至 128~256，让模型静态权重搬运一次能服务更多 Token，直接将利用率拉入 Compute-Bound 区域；
+   - **路径一：增大 Batch Size（Continuous Batching）**： $I \approx B\text{ FLOP/Byte}$。将 Batch Size 拉升至 128~256，让模型静态权重搬运一次能服务更多 Token，直接将利用率拉入 Compute-Bound 区域；
    - **路径二：压缩权重访存量（Weight-Only 量化，如 W4A16 / W8A16）**：如果将 FP16（2 字节）压到 INT4（0.5 字节），模型权重搬运量锐减 75%，算术强度瞬间提升 4 倍，单步耗时直接砍掉一半以上；
    - **路径三：改写计算范式（投机采样 Speculative Decoding）**：小模型跑 Memory-Bound 的生成，大模型一次性并行验证 $K$ 个 Token（转变为短 Prefill 的 GEMM 算子），利用大算术强度把 Tensor Core 算力榨干。
 
@@ -1479,7 +1479,7 @@ if __name__ == "__main__":
   $$
 
 **步骤二：手算动态 KV Cache 总显存**
-- LLaMA-3 70B 架构参数：层数 $L = 80$，$H_{\text{kv}} = 8$，$d_{\text{head}} = 128$，$\text{Precision} = 2$ 字节；
+- LLaMA-3 70B 架构参数：层数 $L = 80$， $H_{\text{kv}} = 8$， $d_{\text{head}} = 128$， $\text{Precision} = 2$ 字节；
 - 单 Token 全局 KV 增量：
 
   $$
@@ -1514,7 +1514,7 @@ if __name__ == "__main__":
   $$
 
 - 单张 H100 SXM5 的物理理论显存带宽为 $B_{\text{peak}} = 3.35\text{ TB/s} = 3350\text{ GB/s}$；
-- 假定显存总线带宽利用率为极高水平的 80%（有效带宽 $3350 \times 0.8 = 2680\text{ GB/s}$）；
+- 假定显存总线带宽利用率为极高水平的 80%（有效带宽 $3350 \times 0.8 = 2680\text{ GB/s}$ ）；
 - 单步仅搬运数据所需的物理耗时下限为：
 
   $$
@@ -1568,7 +1568,7 @@ if __name__ == "__main__":
 
 1. **第一道防线：网关层的高性能 Prefix Cache（前缀复用）**：
    - 突发热点新闻通常伴随着高度相似的上下文（如同一段长新闻报道或同一套 Prompt 模板）；
-   - 在网关层部署 RadixTree / LMCache 全局前缀缓存。一旦命中热点前缀，Prefill 计算量瞬间清零（$T_{\text{prefill}} \to 0$），将原本需要耗费大量 GPU 算力的大块计算直接退化为内存/网络零拷贝，洪峰直接被化解 70%！
+   - 在网关层部署 RadixTree / LMCache 全局前缀缓存。一旦命中热点前缀，Prefill 计算量瞬间清零（ $T_{\text{prefill}} \to 0$ ），将原本需要耗费大量 GPU 算力的大块计算直接退化为内存/网络零拷贝，洪峰直接被化解 70%！
 2. **第二道防线：调度层的 Token Budget 刚性硬顶与 Chunked Prefill**：
    - 调度器严禁放行无限制的大 Prefill，严格执行 $\sum \text{Tokens} \le \text{Budget}$；
    - 即使 10x 请求涌入，每单步 GPU 耗时被死死锚定在 30ms 左右，保证存量存活用户的打字感绝对平稳；

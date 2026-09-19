@@ -219,7 +219,7 @@ torch.distributed.init_process_group(backend="nccl", rank=my_rank, world_size=8)
 
 我们在第 0.1 节中看到了抢跑死锁的现象，现在我们用 **Ringi 工程师五问** 从因果关系彻底穿透其本质：
 
-1. **📐 Shape 与物理连接**：在张量并行（TP）或数据并行（DDP）中，每一个 Rank 负责处理全局 Batch 的一个分片（$\text{MicroBatch}$）。通信拓扑必须在物理上构成一个完整的环（Ring AllReduce）或一棵完整的树（Tree AllReduce）；
+1. **📐 Shape 与物理连接**：在张量并行（TP）或数据并行（DDP）中，每一个 Rank 负责处理全局 Batch 的一个分片（ $\text{MicroBatch}$ ）。通信拓扑必须在物理上构成一个完整的环（Ring AllReduce）或一棵完整的树（Tree AllReduce）；
 2. **⚙️ Machine 怎么跑**：NCCL 构筑环网时，Rank 0 必须向 Rank 1 发送握手信号，Rank 1 发送给 Rank 2……直到 Rank $N-1$ 回环连到 Rank 0。**环网中任何一个节点缺失，整个环路的拓扑初始化就无法收敛，状态机停滞在握手阶段**；
 3. **💰 Cost 花在哪里**：当进程阻塞在 `init_process_group` 时，虽然没有执行 GEMM 矩阵乘法算子，但 CUDA 上下文已经建立，显卡已经被占用，其他任务无法获取该设备。
 
@@ -627,7 +627,7 @@ GPU 驱动在时钟中断触发下，按时间片（毫秒级）在不同的 CUD
 
 HAMi 采用了一种精妙的 **基于时间窗口的令牌桶限流算法（Token Bucket Rate Limiter）**：
 1. 拦截 `cuLaunchKernel`（每一个 CUDA 核函数的发射入口）；
-2. 根据用户的配额设定一个调度时间窗口（例如 $T_{\text{window}} = 100\text{ms}$），若算力限额为 $40\%$，则该容器在一个窗口内最多能获得 $40\text{ms}$ 的 GPU 执行时间；
+2. 根据用户的配额设定一个调度时间窗口（例如 $T_{\text{window}} = 100\text{ms}$ ），若算力限额为 $40\%$，则该容器在一个窗口内最多能获得 $40\text{ms}$ 的 GPU 执行时间；
 3. 在每次发射 Kernel 之前，利用 CUDA Event（`cudaEventRecord` 与 `cudaEventElapsedTime`）测量前置 Kernel 在 GPU 上的实际耗时；
 4. **如果累计耗时超标**：Hook 程序在 CPU 端通过微秒级 `usleep()` 挂起当前线程，延迟向 GPU 命令队列发射新的 Kernel；
 5. GPU 硬件由于命令队列暂时被挂起，流水线自然让渡给同一张卡上的另一个容器执行！
@@ -726,8 +726,8 @@ M_{\text{allocatable}} = M_{\text{physical}} - M_{\text{driver-overhead}} - M_{\
 $$
 
 对于一张 80GB（实际约 81,920 MB）的 H100 显卡：
-1. **驱动与 CUDA 上下文保留（$M_{\text{driver-overhead}}$）**：固定预留 **1,500 MB**；
-2. **防波堤安全缓冲（$M_{\text{safety-buffer}}$）**：预留 **10%（约 8,000 MB）** 作为防御 PyTorch 显存碎片（Fragmentation）与临时通信缓存的绝对隔离带；
+1. **驱动与 CUDA 上下文保留（ $M_{\text{driver-overhead}}$ ）**：固定预留 **1,500 MB**；
+2. **防波堤安全缓冲（ $M_{\text{safety-buffer}}$ ）**：预留 **10%（约 8,000 MB）** 作为防御 PyTorch 显存碎片（Fragmentation）与临时通信缓存的绝对隔离带；
 3. **真实最大可切分额度**：控制在 **$72,000 \text{ MB}$** 以内，严禁突破红线！
 
 ---

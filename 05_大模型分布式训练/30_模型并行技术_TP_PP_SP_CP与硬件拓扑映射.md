@@ -98,7 +98,7 @@ math: true
   - [4.2 流水线调度演进与气泡率推导（Naive ➔ GPipe ➔ 1F1B ➔ Interleaved）](#42-流水线调度演进与气泡率推导naive--gpipe--1f1b--interleaved)
   - [4.3 显存峰值控制：1F1B 如何把激活显存从 $M$ 份压至 $P$ 份](#43-显存峰值控制1f1b-如何把激活显存从-m-份压至-p-份)
 - [5. 3D 混合并行与硬件拓扑对齐（Hardware Topology Mapping）](#5-3d-混合并行与硬件拓扑对齐hardware-topology-mapping)
-  - [5.1 维度正交律与世界规模方程：$\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$](#51-维度正交律与世界规模方程textworld-size--textdp-times-textpp-times-texttp-times-textcp)
+  - [5.1 维度正交律与世界规模方程： $\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$](#51-维度正交律与世界规模方程textworld-size--textdp-times-textpp-times-texttp-times-textcp)
   - [5.2 硬件拓扑映射的黄金四原则（带宽阶梯法则）](#52-硬件拓扑映射的黄金四原则带宽阶梯法则)
   - [5.3 Megatron-LM 内部笛卡尔积 Rank 编排与通信组构建](#53-megatron-lm-内部笛卡尔积-rank-编排与通信组构建)
   - [5.4 工业级生产案例：千卡集群训练 70B / 530B 的黄金参数矩阵](#54-工业级生产案例千卡集群训练-70b--530b-的黄金参数矩阵)
@@ -148,7 +148,7 @@ math: true
 2024 年，国内某智算中心在 64 台 8 卡 H800（共 512 张 GPU）集群上预训练一个 175B 规模的稠密模型。
 
 初始启动时，架构团队分配了如下配置：
-- 全局 Batch Size 较大，配置了 $\text{TP} = 16, \text{PP} = 4, \text{DP} = 8$（$16 \times 4 \times 8 = 512$）。
+- 全局 Batch Size 较大，配置了 $\text{TP} = 16, \text{PP} = 4, \text{DP} = 8$（ $16 \times 4 \times 8 = 512$ ）。
 - 由于单机只有 8 张 GPU，配置 $\text{TP} = 16$ 意味着**张量并行组强行跨越了物理机界限**：每 2 台机器的 16 张卡组成一个 TP 组。
 
 任务上线跑出第一个 Step，监控告警全线飘红：
@@ -170,8 +170,8 @@ math: true
 - 架构师错误地把高频通信的 TP 推到了机间慢速网络（400G IB 单向带宽仅 50 GB/s，且延迟高达数微秒）；而节点内部单向带宽高达 400 GB/s、延迟仅几百纳秒的 **NVLink 却被严重闲置**！
 
 **终极抢救方案**：
-- 严格遵循**硬件物理拓扑映射阶梯法则**：强制把 TP 限制在单机 8 卡内部（$\text{TP} = 8$），锁死在 NVLink 高速公路；
-- 将跨机切分交给流水线并行（$\text{PP} = 8$）与数据并行（$\text{DP} = 8$）；
+- 严格遵循**硬件物理拓扑映射阶梯法则**：强制把 TP 限制在单机 8 卡内部（ $\text{TP} = 8$ ），锁死在 NVLink 高速公路；
+- 将跨机切分交给流水线并行（ $\text{PP} = 8$ ）与数据并行（ $\text{DP} = 8$ ）；
 - 重构后，单步步时从 28.6 秒骤降到 **4.1 秒**，吞吐暴增近 **7 倍**，MFU 强势跃升至 **54.2%**！
 
 ---
@@ -204,10 +204,10 @@ $$
 
 其中：
 - $X$ 是输入激活张量，Shape 为 $[b, s, h]$（Batch Size $\times$ 序列长度 $\times$ 隐藏层维度）；
-- $W$ 是线性层权重矩阵，Shape 为 $[h, h_{\text{out}}]$（或 MLP 中的 $[h, 4h]$）；
+- $W$ 是线性层权重矩阵，Shape 为 $[h, h_{\text{out}}]$（或 MLP 中的 $[h, 4h]$ ）；
 - $Y$ 是输出激活张量，Shape 为 $[b, s, h_{\text{out}}]$。
 
-当参数量达到千亿级别时，$h$ 往往高达 $8192$ 甚至 $12288$。单张卡不仅放不下如此庞大的矩阵，而且单卡 Tensor Core 的算力也无法满足实时低延迟计算的需求。
+当参数量达到千亿级别时， $h$ 往往高达 $8192$ 甚至 $12288$。单张卡不仅放不下如此庞大的矩阵，而且单卡 Tensor Core 的算力也无法满足实时低延迟计算的需求。
 
 Megatron-LM 论文（Shoeybi et al., 2019）提出了开创性的解决方案：**将矩阵 $W$ 按列切分（Column Parallel）或按行切分（Row Parallel），并在适当时机插入集合通信原语，确保全网计算结果与单卡串行计算在数学上严格等价。**
 
@@ -216,7 +216,7 @@ Megatron-LM 论文（Shoeybi et al., 2019）提出了开创性的解决方案：
 ### 1.2 Column Parallel Linear（列切分）数学证明
 
 #### ① 切分方式
-将权重矩阵 $W \in \mathbb{R}^{h \times h_{\text{out}}}$ 沿**列方向（输出特征维度）**均匀切分成 $N$ 份（$N$ 为 TP 度，通常为 8）：
+将权重矩阵 $W \in \mathbb{R}^{h \times h_{\text{out}}}$ 沿**列方向（输出特征维度）**均匀切分成 $N$ 份（ $N$ 为 TP 度，通常为 8）：
 
 $$
 W = \begin{bmatrix} W_1 & W_2 & \cdots & W_N \end{bmatrix}, \quad W_i \in \mathbb{R}^{h \times \frac{h_{\text{out}}}{N}}
@@ -295,7 +295,7 @@ Megatron-LM 最天才的工程发明，就是将 **Column Parallel 与 Row Paral
 
 **数学闭环的震撼美感**：
 1. **MLP 模块**：第一层 FC1 按列切，输出自然分成 $N$ 份；直接送入逐元素的激活函数；第二层 FC2 恰好需要按行切的输入，两者无缝咬合！仅在 FC2 输出时做 **1 次 AllReduce**；
-2. **Attention 模块**：$Q, K, V$ 投影按列切，由于多头注意力各个 Head 本身就是互相独立的，每张卡只需负责 $\frac{\text{Heads}}{N}$ 个头；算完注意力矩阵后，输出投影矩阵按行切，仅在最终投影结束时做 **1 次 AllReduce**！
+2. **Attention 模块**： $Q, K, V$ 投影按列切，由于多头注意力各个 Head 本身就是互相独立的，每张卡只需负责 $\frac{\text{Heads}}{N}$ 个头；算完注意力矩阵后，输出投影矩阵按行切，仅在最终投影结束时做 **1 次 AllReduce**！
 3. **整层总结**：一个包含 Attention 和 MLP 的标准 Transformer Block，在前向传播中**总共只需要执行 2 次 AllReduce**！
 
 ---
@@ -329,7 +329,7 @@ $$
 1. **前向传播（Forward）**：
    - Attention 输出投影后 1 次 AllReduce：数据大小为 $b \times s \times h$；
    - MLP 输出投影后 1 次 AllReduce：数据大小为 $b \times s \times h$；
-   - 单卡前向通信总量（基于 Ring-AllReduce 发送量 $2 \frac{N-1}{N} \text{Size}$，当 $N=8$ 时 $\frac{N-1}{N} \approx 1$）：
+   - 单卡前向通信总量（基于 Ring-AllReduce 发送量 $2 \frac{N-1}{N} \text{Size}$，当 $N=8$ 时 $\frac{N-1}{N} \approx 1$ ）：
 
      $$
      \text{Comm}_{\text{fwd}} = 2 \times \left(2 \times \frac{N-1}{N} \times b s h \times 2\text{ Bytes}\right) \approx \mathbf{4 b s h} \quad (\text{Words}) = \mathbf{8 b s h} \quad (\text{Bytes})
@@ -346,9 +346,9 @@ $$
    $$
 
 #### ⑤ Sanity Check（数量级校验）
-以 **LLaMA-3-70B**（$h = 8192$, 层数 $L = 80$）在 $b=2, s=4096$ 下单卡每步通信量为例：
-- 单层通信量：$16 \times 2 \times 4096 \times 8192 \times 2\text{ Bytes} \approx \mathbf{2.15\text{ GB}}$；
-- 全模型 80 层单步通信量：$80 \times 2.15\text{ GB} \approx \mathbf{172\text{ GB}}$！
+以 **LLaMA-3-70B**（ $h = 8192$, 层数 $L = 80$ ）在 $b=2, s=4096$ 下单卡每步通信量为例：
+- 单层通信量： $16 \times 2 \times 4096 \times 8192 \times 2\text{ Bytes} \approx \mathbf{2.15\text{ GB}}$；
+- 全模型 80 层单步通信量： $80 \times 2.15\text{ GB} \approx \mathbf{172\text{ GB}}$！
 - **震撼结论**：单步迭代哪怕只需 2 秒，单卡每秒必须吞吐 **$86\text{ GB/s}$** 的通信流！
 - **硬件审判**：跨机 InfiniBand 400G 网卡的有效吞吐仅约 45 GB/s（瞬间被撑死，步时拉长数倍）；而机内 NVLink（450~900 GB/s）吞吐轻松承载这 86 GB/s，通信占比被压缩至 10% 以内！**TP 严禁出机是铁一般的物理法则！**
 
@@ -412,7 +412,7 @@ Megatron-SP 巧妙地把这两个原本紧紧黏在一起的原语**拉开了距
 ### 2.3 零额外通信代价下的激活显存线性暴降
 
 **这笔账极其震撼**：
-1. **通信量守恒**：经典 TP 在 Row Parallel 后做一次 AllReduce（传输量为 $2 \frac{N-1}{N} bsh$）；而在 SP 中，变成了“一次 ReduceScatter（$\frac{N-1}{N} bsh$）+ 一次 AllGather（$\frac{N-1}{N} bsh$）”，**总通信量完全守恒，没有增加任何一个字节！**
+1. **通信量守恒**：经典 TP 在 Row Parallel 后做一次 AllReduce（传输量为 $2 \frac{N-1}{N} bsh$ ）；而在 SP 中，变成了“一次 ReduceScatter（ $\frac{N-1}{N} bsh$ ）+ 一次 AllGather（ $\frac{N-1}{N} bsh$ ）”，**总通信量完全守恒，没有增加任何一个字节！**
 2. **显存收益巨大**：整层 Transformer Block 中，不仅 GEMM 区域是 $1/N$ 显存，连 LayerNorm、Dropout 和残差连接也全变成了 $1/N$ 显存；
 3. **结论**：**Sequence Parallelism 是免费的午餐（Free Lunch）**。在工业界生产中，只要启用了 TP，**必须无条件同步开启 SP**！
 
@@ -423,7 +423,7 @@ Megatron-SP 巧妙地把这两个原本紧紧黏在一起的原语**拉开了距
 ### 3.1 为什么长文本下 TP+SP 依然 OOM：Attention 计算的 $O(s^2)$ 极限
 
 当我们将上下文长度推进到 **128K、256K 乃至 1M** 时，又遭遇了新的生死劫：
-- TP+SP 仅仅将序列切分到了单机 8 卡（$\text{TP}=8$），序列长度从 $128\text{K}$ 降到了 $16\text{K}$；
+- TP+SP 仅仅将序列切分到了单机 8 卡（ $\text{TP}=8$ ），序列长度从 $128\text{K}$ 降到了 $16\text{K}$；
 - 然而，在 Self-Attention 的核心区域，每个 Query Token 依然需要与全序列的所有 Key Token 进行点积，计算复杂度与中间 Softmax 显存依然是 **$O(s^2)$**；
 - 哪怕单卡 Batch Size 压低到 1，仅 $128\text{K}$ 的 KV 激活和 Attention Score 也会直接在单卡爆掉。
 
@@ -505,7 +505,7 @@ Step 3: 循环 N 步后，所有 Query 完成与全网所有 Key/Value 的注意
 **流水线并行（Pipeline Parallelism, PP）** 沿着神经网络的深度方向进行纵向切分：
 - 设模型总层数为 $L$，流水线并行度为 $P$（Stage 数量）；
 - 每个 Stage 分配连续的 $\frac{L}{P}$ 层（例如 Stage 0 持有 1~20 层，Stage 1 持有 21~40 层……）；
-- **通信特征极其优越**：只有相邻的两个 Stage 之间存在数据传输，且传输的仅仅是层间激活张量（Shape 为 $[b, s, h]$）。**通信完全是点对点（P2P），通信量与模型参数量完全解耦！**
+- **通信特征极其优越**：只有相邻的两个 Stage 之间存在数据传输，且传输的仅仅是层间激活张量（Shape 为 $[b, s, h]$ ）。**通信完全是点对点（P2P），通信量与模型参数量完全解耦！**
 
 这使得流水线并行成为了**跨越物理机柜、跨越低带宽机间网络的最完美屏障**。
 
@@ -547,12 +547,12 @@ GPU 0: [F0][F1][F2][F3][B0][F4][B1][F5][B2][F6][B3][F7][B4]...
 
 #### 气泡率量化推导对比表：
 
-| 调度策略 | 气泡率理论公式（Bubble Ratio） | 极简数字手算（$P=4, M=16$） | 峰值激活显存占用 | 通信频率与开销 |
+| 调度策略 | 气泡率理论公式（Bubble Ratio） | 极简数字手算（ $P=4, M=16$ ） | 峰值激活显存占用 | 通信频率与开销 |
 | :--- | :--- | :--- | :--- | :--- |
 | **朴素串行 (Naive PP)** | $\frac{P-1}{P}$ | $\frac{3}{4} = \mathbf{75.0\%}$ (空转致死) | $1$ 份激活 | 极低 |
 | **GPipe 调度** | $\frac{P-1}{M + P - 1}$ | $\frac{3}{16 + 3} = \mathbf{15.8\%}$ | **$M$ 份激活（显存极易爆炸）** | 低 |
 | **1F1B 调度** | $\frac{P-1}{M + P - 1}$ | $\frac{3}{16 + 3} = \mathbf{15.8\%}$ | **$P$ 份激活（与 $M$ 解耦，安全！）**| 低 |
-| **Interleaved 1F1B** | $\mathbf{\frac{P-1}{v \cdot M + P - 1}}$ | 当 $v=2$ 时：$\frac{3}{32 + 3} = \mathbf{8.5\%}$ | $P$ 份激活 | 增加 $v$ 倍跨卡激活传输 |
+| **Interleaved 1F1B** | $\mathbf{\frac{P-1}{v \cdot M + P - 1}}$ | 当 $v=2$ 时： $\frac{3}{32 + 3} = \mathbf{8.5\%}$ | $P$ 份激活 | 增加 $v$ 倍跨卡激活传输 |
 
 ---
 
@@ -570,7 +570,7 @@ GPU 0: [F0][F1][F2][F3][B0][F4][B1][F5][B2][F6][B3][F7][B4]...
 
 # 5. 3D 混合并行与硬件拓扑对齐（Hardware Topology Mapping）
 
-### 5.1 维度正交律与世界规模方程：$\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$
+### 5.1 维度正交律与世界规模方程： $\text{World Size} = \text{DP} \times \text{PP} \times \text{TP} \times \text{CP}$
 
 在超大规模集群中，单一的并行策略都存在致命缺陷：
 - 纯 DP：单卡显存装不下超大模型；
@@ -595,7 +595,7 @@ $$
 ### 5.2 硬件拓扑映射的黄金四原则（带宽阶梯法则）
 
 集群网络存在残酷的带宽金字塔：
-- **第一层**：单机内 NVLink 4.0（双向 900 GB/s，延迟 $< 1\mu s$）；
+- **第一层**：单机内 NVLink 4.0（双向 900 GB/s，延迟 $< 1\mu s$ ）；
 - **第二层**：同机架机间 InfiniBand NDR 400G（双向 50 GB/s，延迟数微秒）；
 - **第三层**：跨核心交换机网络（拥塞与跳步增加）。
 
@@ -648,7 +648,7 @@ rank = (pp_rank * TP * DP) + (dp_rank * TP) + tp_rank
 
 ### 6.1 实验一：纯 Python 原生实现的 TP 列切与行切矩阵数学对齐实战
 
-本实验通过纯 Python 与 PyTorch 原生矩阵算子，**从零模拟张量并行 Column Parallel 与 Row Parallel 的切分、独立计算与 AllReduce 聚合**，并严格验证其数值与单卡全局 GEMM 误差达到机器精度（$10^{-7}$）：
+本实验通过纯 Python 与 PyTorch 原生矩阵算子，**从零模拟张量并行 Column Parallel 与 Row Parallel 的切分、独立计算与 AllReduce 聚合**，并严格验证其数值与单卡全局 GEMM 误差达到机器精度（ $10^{-7}$ ）：
 
 ```python
 """
@@ -899,10 +899,10 @@ if __name__ == "__main__":
 
 | 序号 | ❌ 常见小白错误理解 | ✅ 大厂 AI Infra 正确物理认知 | 体系结构本质与底层机理解析 |
 | :--- | :--- | :--- | :--- |
-| **01** | “TP 越大越好，既然有 64 张卡，直接开 TP=64 加速比最高。” | **TP 必须严格锁死在单机 8 卡内部（$\text{TP} \le 8$），绝对不能跨机！** | TP 每层都在触发 AllReduce，跨机延迟比 NVLink 高一个数量级，跨机 TP 会让网络瞬间沦为全系统绝对瓶颈。 |
-| **02** | “序列并行（SP）多了一次 AllGather 和 ReduceScatter，所以比普通 TP 慢。” | **SP 与普通 TP 的通信总量完全守恒（均为 $2bsh$），通信耗时几乎完全相同！** | $\text{AllReduce} = \text{ReduceScatter} + \text{AllGather}$，SP 只是把通信原语拆开重排，零额外开销省下数倍显存。 |
+| **01** | “TP 越大越好，既然有 64 张卡，直接开 TP=64 加速比最高。” | **TP 必须严格锁死在单机 8 卡内部（ $\text{TP} \le 8$ ），绝对不能跨机！** | TP 每层都在触发 AllReduce，跨机延迟比 NVLink 高一个数量级，跨机 TP 会让网络瞬间沦为全系统绝对瓶颈。 |
+| **02** | “序列并行（SP）多了一次 AllGather 和 ReduceScatter，所以比普通 TP 慢。” | **SP 与普通 TP 的通信总量完全守恒（均为 $2bsh$ ），通信耗时几乎完全相同！** | $\text{AllReduce} = \text{ReduceScatter} + \text{AllGather}$，SP 只是把通信原语拆开重排，零额外开销省下数倍显存。 |
 | **03** | “流水线并行（PP）不管切多少个 Stage，算力利用率都是一样的。” | **PP 存在固有的流水线气泡，Stage 数 $P$ 越多，必须配置更多的微批次 $M$ 才能冲淡气泡。** | 气泡率严格正比于 $\frac{P-1}{M+P-1}$，盲目拉大 $P$ 而没有足够的 Batch 注入会导致一半以上的 GPU 白白空转。 |
-| **04** | “长序列训练只要开 FlashAttention 就能跑 128K，不需要搞上下文并行（CP）。” | **FlashAttention 只能把显存从 $O(s^2)$ 降到 $O(s)$，当 $s=128\text{K}$ 时，$O(s)$ 的 KV 激活依然会打穿单卡 80GB！** | 突破 64K~1M 超长序列必须配合 CP（Ring Attention 或 Ulysses），把序列本身跨卡切碎。 |
+| **04** | “长序列训练只要开 FlashAttention 就能跑 128K，不需要搞上下文并行（CP）。” | **FlashAttention 只能把显存从 $O(s^2)$ 降到 $O(s)$，当 $s=128\text{K}$ 时， $O(s)$ 的 KV 激活依然会打穿单卡 80GB！** | 突破 64K~1M 超长序列必须配合 CP（Ring Attention 或 Ulysses），把序列本身跨卡切碎。 |
 | **05** | “1F1B 调度比 GPipe 跑得更快，气泡率更小。” | **1F1B 与 GPipe 的稳态气泡率在数学上完全相同，1F1B 的核心革命在于大幅压缩峰值激活显存！** | 1F1B 及时用反向释放了前向激活，把存活微批次从 $M$ 压低到了 $P$，避免了显存爆仓。 |
 | **06** | “GQA 架构（如 8 个 KV Head）下，张量并行度 TP 可以随意设为 16。” | **在标准 Megatron-TP 下，TP 必须能被注意力头数整除；当 KV Head < TP 时，必须显式复制或分组共享 KV！** | 否则单个 GPU 连一个完整的 KV Head 都分不到，矩阵乘法在维度对齐上直接崩盘。 |
 | **07** | “3D 并行配好后，只要看整体 Step Time 就能判断网络有没有问题。” | **必须深入 NCCL Profiler 查看不同通信组的耗时分布，防止出现‘慢卡拖垮全流水线’的 Straggler 效应。** | PP 的前向和反向存在级联依赖，只要其中一个 Stage 稍有抖动，气泡就会沿整条流水线成倍扩散放大。 |
@@ -911,7 +911,7 @@ if __name__ == "__main__":
 
 ### 7.2 生产模型并行工程黄金 Checklist
 
-- [ ] 1. **【TP 单机闭环铁律】**：张量并行度必须满足 $\text{TP} \le N_{\text{gpu/node}}$（通常 $\text{TP} \le 8$），严禁分配超出物理节点的高频 TP。
+- [ ] 1. **【TP 单机闭环铁律】**：张量并行度必须满足 $\text{TP} \le N_{\text{gpu/node}}$（通常 $\text{TP} \le 8$ ），严禁分配超出物理节点的高频 TP。
 - [ ] 2. **【SP 无条件协同】**：只要在 Megatron-LM 或框架中开启了 `--tensor-model-parallel-size > 1`，必须显式加上 `--sequence-parallel`，享受免费的激活显存压降。
 - [ ] 3. **【微批次倍数约束】**：在配置流水线并行时，微批次数量 $M$ 必须至少满足 $M \ge 4 \times P$，确保流水线气泡率严格控制在 20% 以下。
 - [ ] 4. **【Interleaved 虚拟 Stage 权衡】**：仅在机间 InfiniBand 带宽极其充裕（如 8x400G IB）时才开启 `v_virtual_stages >= 2`，防止激活值跨机传输翻倍抵消算力收益。
@@ -989,14 +989,14 @@ if __name__ == "__main__":
 #### 考察维度：张量并行微观通信机理、矩阵分块相乘法则、算力与网络延迟边界。
 #### 标准推导路径：
 1. **前向传播（Forward Pass）分析**：
-   - **Self-Attention 模块**：$Q, K, V$ 投影按列切分，无通信；输出投影矩阵按行切分，根据分块矩阵乘法 $Y = \sum X_i W_i$，必须在各卡之间对大小为 $[b, s, h]$ 的局部求和张量执行一次 **AllReduce**；
+   - **Self-Attention 模块**： $Q, K, V$ 投影按列切分，无通信；输出投影矩阵按行切分，根据分块矩阵乘法 $Y = \sum X_i W_i$，必须在各卡之间对大小为 $[b, s, h]$ 的局部求和张量执行一次 **AllReduce**；
    - **MLP 模块**：FC1 矩阵按列切分，逐元素激活函数无通信；FC2 矩阵按行切分，再次对大小为 $[b, s, h]$ 的局部张量执行一次 **AllReduce**；
    - **单卡发送量**：每次 Ring-AllReduce 单卡发送数据量为 $2 \frac{N-1}{N} \times \text{Size} \approx 2 bsh$（Words）；
-   - **前向总发送量**：$2 \text{ 次 AllReduce} \times 2 bsh = \mathbf{4 bsh} \quad (\text{Words})$。
+   - **前向总发送量**： $2 \text{ 次 AllReduce} \times 2 bsh = \mathbf{4 bsh} \quad (\text{Words})$。
 2. **反向传播（Backward Pass）对称性分析**：
    - 对行切分层求输入梯度时，依据伴随转置，反向计算变为按列切分；
    - 对列切分层求输入梯度时，反向计算变为按行切分，必须再次插入一次 **AllReduce**；
-   - 因此反向传播同样需要精确触发 2 次 AllReduce，单卡发送量严格等于：$\mathbf{4 bsh} \quad (\text{Words})$。
+   - 因此反向传播同样需要精确触发 2 次 AllReduce，单卡发送量严格等于： $\mathbf{4 bsh} \quad (\text{Words})$。
 3. **单层单步总通信量累加**：
 
    $$
@@ -1005,8 +1005,8 @@ if __name__ == "__main__":
 
 4. **为什么严禁出机**：
    - 设单层前向 GEMM 耗时仅 1~2 毫秒；
-   - 若在机内 NVLink（900 GB/s，延迟 $< 1\mu s$），传输几十兆数据仅需数十微秒，完全被计算掩盖；
-   - 若跨机走 InfiniBand（50 GB/s，跨交换机延迟 $3\sim 5\mu s$），小包排队与协议栈延迟直接飙升到数毫秒，网络耗时反超计算耗时数倍，全集群 MFU 当场跌破 15%！
+   - 若在机内 NVLink（900 GB/s，延迟 $< 1\mu s$ ），传输几十兆数据仅需数十微秒，完全被计算掩盖；
+   - 若跨机走 InfiniBand（50 GB/s，跨交换机延迟 $3\sim 5\mu s$ ），小包排队与协议栈延迟直接飙升到数毫秒，网络耗时反超计算耗时数倍，全集群 MFU 当场跌破 15%！
 
 ---
 
@@ -1016,14 +1016,14 @@ if __name__ == "__main__":
 #### 标准参考答案：
 1. **1F1B 稳态气泡率数学推导**：
    - 设流水线包含 $P$ 个 Stage，全局批次被切分成 $M$ 个微批次（Micro-batches）；
-   - 设单个 Micro-batch 在单个 Stage 上的前向耗时为 $t_f$，反向耗时为 $t_b$（通常 $t_b \approx 2 t_f$），此处为简化推导设理想均匀时间片为 $t_{\text{step}}$；
+   - 设单个 Micro-batch 在单个 Stage 上的前向耗时为 $t_f$，反向耗时为 $t_b$（通常 $t_b \approx 2 t_f$ ），此处为简化推导设理想均匀时间片为 $t_{\text{step}}$；
    - **充能与排空空转时间（Bubble Time）**：
      - 在第 0 个微批次从 Stage 0 到达 Stage $P-1$ 的过程中，后序节点处于空等，共有 $P - 1$ 个时间步的空转；
      - 在反向传播全部结束排空时，前序节点在等待后序节点反向，又有 $P - 1$ 个时间步的空转；
-     - 全流水线单个物理周期的总空转时间为：$t_{\text{bubble}} = (P - 1) \times t_{\text{step}}$；
+     - 全流水线单个物理周期的总空转时间为： $t_{\text{bubble}} = (P - 1) \times t_{\text{step}}$；
    - **全流程有效计算时间**：
      - 每个微批次必须完整跑完前向与反向，总有效微批次步数为 $M \times t_{\text{step}}$；
-   - **端到端总执行时间**：$T_{\text{total}} = (M + P - 1) \times t_{\text{step}}$；
+   - **端到端总执行时间**： $T_{\text{total}} = (M + P - 1) \times t_{\text{step}}$；
    - **稳态气泡率公式**：
 
      $$

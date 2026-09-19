@@ -287,7 +287,7 @@ $$
 其中均值 $\mu = \frac{1}{d} \sum_{i=1}^d x_i$，方差 $\sigma^2 = \frac{1}{d} \sum_{i=1}^d (x_i - \mu)^2$。
 
 #### 为什么必须演进为 RMSNorm？
-2019 年，Zhang 等人在论文中证明：**LayerNorm 的平移不变性（减去均值 $\mu$）对模型的神经元激活分布和表达能力几乎没有贡献，真正起决定性稳定作用的是缩放不变性（方差缩放）！**
+2019 年，Zhang 等人在论文中证明：**LayerNorm 的平移不变性（减去均值 $\mu$ ）对模型的神经元激活分布和表达能力几乎没有贡献，真正起决定性稳定作用的是缩放不变性（方差缩放）！**
 
 因此，**RMSNorm（Root Mean Square Normalization）**直接砍掉了均值项：
 
@@ -303,7 +303,7 @@ $$
 
 #### 硬件级性能穿透（Machine View）：
 在 GPU 上执行 LayerNorm，是一个典型的 **Memory-Bound（访存受限）** 算子。
-- **LayerNorm**：需要先遍历一次张量计算 $\mu$（Warp 内规约 Reduction），再遍历一次计算 $\sigma^2$（依赖 $\mu$），然后再遍历第三次执行减均值、除方差与线性变换。哪怕做 Kernel 融合，也需要在寄存器和 Shared Memory 之间进行两次屏障同步（Warp Barrier）；
+- **LayerNorm**：需要先遍历一次张量计算 $\mu$（Warp 内规约 Reduction），再遍历一次计算 $\sigma^2$（依赖 $\mu$ ），然后再遍历第三次执行减均值、除方差与线性变换。哪怕做 Kernel 融合，也需要在寄存器和 Shared Memory 之间进行两次屏障同步（Warp Barrier）；
 - **RMSNorm**：只需要累加平方和 $\sum x_i^2$，通过一次规约计算出标量 $\text{RMS}(x)$，然后单次循环直接完成缩放输出！
 - **实测收益**：在 8192 维度下，单层 RMSNorm Kernel 执行耗时比完整 LayerNorm 下降约 **32%**，显存读写流量减少约 **28%**。
 
@@ -330,10 +330,10 @@ $$
 - 隐藏维度 $d = 4$，Head 数量 $H_q = 2$，每个 Head 维度 $d_h = 2$
 - 数据类型：FP16（每个数值 2 字节）
 
-在标准 MHA 下，$H_{kv} = H_q = 2$。对于单个 Token，存下它的 K 和 V 矩阵：
-- 单个 Token 的 Key 元素数：$H_{kv} \times d_h = 2 \times 2 = 4$
-- 单个 Token 的 Value 元素数：$H_{kv} \times d_h = 2 \times 2 = 4$
-- 单个 Token 的 KV 字节数：$(4 + 4) \times 2\text{ Bytes} = 16\text{ 字节}$。
+在标准 MHA 下， $H_{kv} = H_q = 2$。对于单个 Token，存下它的 K 和 V 矩阵：
+- 单个 Token 的 Key 元素数： $H_{kv} \times d_h = 2 \times 2 = 4$
+- 单个 Token 的 Value 元素数： $H_{kv} \times d_h = 2 \times 2 = 4$
+- 单个 Token 的 KV 字节数： $(4 + 4) \times 2\text{ Bytes} = 16\text{ 字节}$。
 
 当生成到长度 2 时，该 Token 产生新缓存 16 字节，历史缓存累积 $16 \times 2 = 32\text{ 字节}$。
 
@@ -366,7 +366,7 @@ $$
 - Query 头数 $H_q = 64$
 - 上下文长度 $S = 8192$（8K），并发 $B = 16$
 
-如果采用传统 **MHA**（$H_{kv} = 64$，比例为 1）：
+如果采用传统 **MHA**（ $H_{kv} = 64$，比例为 1）：
 
 $$
 M_{\text{kv-MHA}} = 4 \times 16 \times 8192 \times 80 \times 8192 \times 1 = 343,597,383,680\text{ 字节} \approx \mathbf{320\text{ GB}}!
@@ -374,7 +374,7 @@ $$
 
 四张 80GB 的 A100/H100 显卡连权重都不存，光塞这 16 个并发的 KV Cache 就直接爆仓熔断！
 
-而采用现代标准的 **GQA**（$H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$）：
+而采用现代标准的 **GQA**（ $H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$ ）：
 
 $$
 M_{\text{kv-GQA}} = \frac{320\text{ GB}}{8} = \mathbf{40\text{ GB}}!
@@ -412,7 +412,7 @@ KV Groups (4)   :   [KV0]         [KV1]         [KV2]         [KV3]
 ```
 
 #### Roofline 算术强度质变分析：
-在自回归生成（Decode）阶段，每次只输入 1 个 Token（即 $S_{\text{new}} = 1$）。
+在自回归生成（Decode）阶段，每次只输入 1 个 Token（即 $S_{\text{new}} = 1$ ）。
 此时注意力算子退化为**矩阵-向量乘法（GEMV）**：
 - **计算量（FLOPs）**：每个 Query Head 都要与历史所有 $S$ 个 Key 计算点积，计算量为 $2 \times H_q \times S \times d_h$；
 - **访存量（Memory Access）**：必须从 HBM 完整加载所有的历史 Key 和 Value。
@@ -427,9 +427,9 @@ $$
 \text{算术强度 (Arithmetic Intensity)} = \frac{\text{FLOPs}}{\text{Bytes}} = \frac{2 \cdot H_q \cdot S \cdot d_h}{4 \cdot H_q \cdot S \cdot d_h} = \mathbf{0.5\text{ FLOP/Byte}}
 $$
 
-**惊天结论**：在 A100 GPU（算力 312 TFLOPS，带宽 2.0 TB/s，平衡拐点约为 $156\text{ FLOP/Byte}$）上，MHA 的 Decode 算术强度只有可怜的 **0.5**！这意味着 GPU 算力利用率不足 **0.5%**，硬件 99.5% 的时间都在空等内存搬运！
+**惊天结论**：在 A100 GPU（算力 312 TFLOPS，带宽 2.0 TB/s，平衡拐点约为 $156\text{ FLOP/Byte}$ ）上，MHA 的 Decode 算术强度只有可怜的 **0.5**！这意味着 GPU 算力利用率不足 **0.5%**，硬件 99.5% 的时间都在空等内存搬运！
 
-在 **GQA**（假设分组比 $G = \frac{H_q}{H_{kv}} = 8$）模式下：
+在 **GQA**（假设分组比 $G = \frac{H_q}{H_{kv}} = 8$ ）模式下：
 由于多个 Query Head 可以复用同一份从 HBM 加载到 SM 共享内存/寄存器中的 Key/Value 向量：
 
 $$
@@ -442,7 +442,7 @@ $$
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **MHA** | $1.0$ (1:1) | 基线 ($1.0\times$) | 极高（全载入） | $1.0\times$（陷入访存冰窖） | 无（理论天花板） |
 | **GQA** | $0.125$ (1:8，如 LLaMA-3) | 缩减至 **$12.5\%$** | 降低 **$87.5\%$** | **$8.0\times$（显著摆脱内存墙）** | 几乎零感知（<0.5%） |
-| **MQA** | $1 / H_q$ (全共享 1 个) | 缩减至 **$1/H_q$** | 达到理论极低极限 | 最高（$H_q \times$） | 精度显著退化（尤其代码与逻辑题） |
+| **MQA** | $1 / H_q$ (全共享 1 个) | 缩减至 **$1/H_q$** | 达到理论极低极限 | 最高（ $H_q \times$ ） | 精度显著退化（尤其代码与逻辑题） |
 
 ---
 
@@ -450,17 +450,17 @@ $$
 
 ### 3.1 为什么必须抛弃绝对位置编码与 ALiBi？
 
-在注意力机制中，$Q$ 与 $K$ 的内积决定了注意力权重。理想的位置编码必须满足一个核心物理直觉：
+在注意力机制中， $Q$ 与 $K$ 的内积决定了注意力权重。理想的位置编码必须满足一个核心物理直觉：
 **两个 Token 之间的关联度，应当取决于它们之间的“相对距离”，而不是它们所处的“绝对下标”。**
 
-- **绝对位置编码（Absolute Position Embedding, 如 GPT-2）**：将位置向量 $p_m, p_n$ 直接加到词嵌入上：$\tilde{q}_m = q_m + p_m$。展开内积后：
+- **绝对位置编码（Absolute Position Embedding, 如 GPT-2）**：将位置向量 $p_m, p_n$ 直接加到词嵌入上： $\tilde{q}_m = q_m + p_m$。展开内积后：
 
   $$
   \tilde{q}_m^T \tilde{k}_n = q_m^T k_n + q_m^T p_n + p_m^T k_n + p_m^T p_n
   $$
 
   其中包含了大量绝对位置与内容的杂质交叉项，且一旦推理长度超过训练时的最大预设长度 $S_{\text{train}}$，未见过的位置 Embedding 根本不存在，外推性彻底归零；
-- **ALiBi（Attention with Linear Biases, Press et al. 2021）**：直接在注意力矩阵上施加绝对距离惩罚项：$-m \cdot |i - j|$。虽然具备一定的外推能力，但它强行施加单调线性衰减，破坏了神经网络自主学习复杂周期性与长程引用的能力，在现代超大规模稠密模型中已被淘汰。
+- **ALiBi（Attention with Linear Biases, Press et al. 2021）**：直接在注意力矩阵上施加绝对距离惩罚项： $-m \cdot |i - j|$。虽然具备一定的外推能力，但它强行施加单调线性衰减，破坏了神经网络自主学习复杂周期性与长程引用的能力，在现代超大规模稠密模型中已被淘汰。
 
 ---
 
@@ -565,11 +565,11 @@ $$
 
 #### 物理直觉：高频震荡与低频失真
 随着位置下标 $m$ 突破最大训练长度 $S_{\text{train}}$：
-- **高频分量（$i$ 较小，周期很短）**：旋转速度极快，模型关注微观邻近 Token 的相对语法结构；
-- **低频分量（$i$ 较大，周期极长）**：旋转极慢，负责感知长程逻辑关联。当 $m > S_{\text{train}}$ 时，低频分量在训练中根本没有转过完整的半周（$m\theta_i < \pi$），网络从未在这些极端角度上学习过特征，导致注意力权重彻底崩塌。
+- **高频分量（ $i$ 较小，周期很短）**：旋转速度极快，模型关注微观邻近 Token 的相对语法结构；
+- **低频分量（ $i$ 较大，周期极长）**：旋转极慢，负责感知长程逻辑关联。当 $m > S_{\text{train}}$ 时，低频分量在训练中根本没有转过完整的半周（ $m\theta_i < \pi$ ），网络从未在这些极端角度上学习过特征，导致注意力权重彻底崩塌。
 
 #### 解决方案谱系演进：
-1. **线性内插（Linear Position Interpolation, PI）**：将位置直接压缩 $\alpha$ 倍：$m' = m / \alpha$。虽然保证了所有角度不超标，但将高频局部特征强行挤压，严重损害了短文本检索的微观精度；
+1. **线性内插（Linear Position Interpolation, PI）**：将位置直接压缩 $\alpha$ 倍： $m' = m / \alpha$。虽然保证了所有角度不超标，但将高频局部特征强行挤压，严重损害了短文本检索的微观精度；
 2. **NTK-Aware 缩放**：根据神经常微分方程与神经正切核（NTK）理论，高频应该少缩放（保持局部空间分辨率），低频应该大幅缩放（拓展长程容量）。其核心是将 Base 底数进行非线性放大：
 
    $$
@@ -613,15 +613,15 @@ $$
 
 #### 白板数学推导：
 在标准 FFN 中，通常隐藏维度取 $d_{\text{ffn}} = 4d$。包含两个权重矩阵：
-- $W_1 \in \mathbb{R}^{d \times 4d}$（参数量 $4d^2$）
-- $W_2 \in \mathbb{R}^{4d \times d}$（参数量 $4d^2$）
-- **标准 FFN 总参数量**：$4d^2 + 4d^2 = \mathbf{8d^2}$。
+- $W_1 \in \mathbb{R}^{d \times 4d}$（参数量 $4d^2$ ）
+- $W_2 \in \mathbb{R}^{4d \times d}$（参数量 $4d^2$ ）
+- **标准 FFN 总参数量**： $4d^2 + 4d^2 = \mathbf{8d^2}$。
 
 在 SwiGLU 中，由于引入了独立的门控分支，前向过程变成了**三个矩阵乘法**：
 - $W_{\text{gate}} \in \mathbb{R}^{d \times d_{\text{ffn}}}$
 - $W_{\text{up}} \in \mathbb{R}^{d \times d_{\text{ffn}}}$
 - $W_{\text{down}} \in \mathbb{R}^{d_{\text{ffn}} \times d}$
-- **SwiGLU 总参数量**：$3 \times d \times d_{\text{ffn}}$。
+- **SwiGLU 总参数量**： $3 \times d \times d_{\text{ffn}}$。
 
 **设计准则（First Principle）**：在重构 FFN 架构时，我们希望在**保持模型总参数量和计算量完全不变**的前提下，评估门控机制带来的纯粹算法增益。
 
@@ -638,17 +638,17 @@ $$
 #### 工业生产对齐规约（Hardware Alignment）：
 在实际 GPU 体系结构中，Tensor Core 对矩阵乘法的维度有严格的字节对齐约束（如 128 字节 / 256 字节对齐）。如果 $d_{\text{ffn}}$ 随意取非整倍数，在底层 CUDA 内核执行时会破坏合并访存（Memory Coalescing），甚至退化到低效的通用排队指令。
 
-因此，工业级标准实现（如 LLaMA）规定：$d_{\text{ffn}}$ 必须取 $\frac{8}{3}d$ 后向下或向上对齐到 **256 的倍数**：
+因此，工业级标准实现（如 LLaMA）规定： $d_{\text{ffn}}$ 必须取 $\frac{8}{3}d$ 后向下或向上对齐到 **256 的倍数**：
 
 ```python
 d_ffn = int(2 * (4 * d / 3))  # 8/3 * d
 d_ffn = 256 * ((d_ffn + 256 - 1) // 256)  # 强制 256 对齐
 ```
 
-例如在 LLaMA-3-8B 中，$d = 4096$：
-- 理论值：$\frac{8}{3} \times 4096 = 10922.67$
-- 256 对齐后：$14336$（由于 LLaMA-3 增加了容量，设定为 $14336 = 3.5d$）；
-- 而在 LLaMA-2-7B 中，$d = 4096$，对齐后 $d_{\text{ffn}} = 11008$（正好是 $256 \times 43$）。
+例如在 LLaMA-3-8B 中， $d = 4096$：
+- 理论值： $\frac{8}{3} \times 4096 = 10922.67$
+- 256 对齐后： $14336$（由于 LLaMA-3 增加了容量，设定为 $14336 = 3.5d$ ）；
+- 而在 LLaMA-2-7B 中， $d = 4096$，对齐后 $d_{\text{ffn}} = 11008$（正好是 $256 \times 43$ ）。
 
 ---
 
@@ -663,13 +663,13 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 
 在朴素 PyTorch 实现中，这三个步骤分别触发三次独立 Kernel Launch，需要将数以 GB 计的张量写入 HBM，再读取回 SM 进行逐元素乘法，严重拖慢训练步时。
 
-**工业级解决方案**：必须采用 **Fused SwiGLU 算子**（在 Triton 或 CUDA 中融合）。在单个 Kernel 内部完成 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 的双矩阵合并乘法（通过将两矩阵拼为一个大权重 $W_{\text{gate-up}} \in \mathbb{R}^{d \times 2d_{\text{ffn}}}$），在寄存器内直接完成 SiLU 与乘法，将中间激活值写出量压缩至原先的 **1/3**！
+**工业级解决方案**：必须采用 **Fused SwiGLU 算子**（在 Triton 或 CUDA 中融合）。在单个 Kernel 内部完成 $W_{\text{gate}}$ 与 $W_{\text{up}}$ 的双矩阵合并乘法（通过将两矩阵拼为一个大权重 $W_{\text{gate-up}} \in \mathbb{R}^{d \times 2d_{\text{ffn}}}$ ），在寄存器内直接完成 SiLU 与乘法，将中间激活值写出量压缩至原先的 **1/3**！
 
 ---
 
 # 5. 全流程张量 Shape 流动表（Tensor Shape Ledger）
 
-我们以标准的现代 Decoder-only 单层 Block 为基准，输入 Batch Size 为 $B$，输入序列长度为 $S$，隐藏主干维度为 $d$，Query 头数 $H_q$，KV 头数 $H_{kv}$，单头维度 $d_h$（满足 $H_q \times d_h = d$），FFN 隐藏层维度 $d_{\text{ffn}}$。
+我们以标准的现代 Decoder-only 单层 Block 为基准，输入 Batch Size 为 $B$，输入序列长度为 $S$，隐藏主干维度为 $d$，Query 头数 $H_q$，KV 头数 $H_{kv}$，单头维度 $d_h$（满足 $H_q \times d_h = d$ ），FFN 隐藏层维度 $d_{\text{ffn}}$。
 
 全流程逐算子张量形态追踪表如下（GFM 标准表格）：
 
@@ -703,30 +703,30 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
 ### 6.1 单层 Decoder Block 与全模型参数量精确推导
 
 设模型参数如下：
-- 层数：$L$
-- 词表大小：$V$
-- 隐藏层主干维度：$d$
-- GQA 分组中：Query 维度 $d$（头数 $H_q$），Key/Value 维度 $d_{kv} = H_{kv} \times d_h = d \times \frac{H_{kv}}{H_q}$
-- FFN 隐藏层维度：$d_{\text{ffn}}$
+- 层数： $L$
+- 词表大小： $V$
+- 隐藏层主干维度： $d$
+- GQA 分组中：Query 维度 $d$（头数 $H_q$ ），Key/Value 维度 $d_{kv} = H_{kv} \times d_h = d \times \frac{H_{kv}}{H_q}$
+- FFN 隐藏层维度： $d_{\text{ffn}}$
 
 #### 1. Attention 层参数量手算：
-- $W_q$ 权重：$d \times d$
-- $W_k$ 权重：$d \times d_{kv}$
-- $W_v$ 权重：$d \times d_{kv}$
-- $W_o$ 权重：$d \times d$
+- $W_q$ 权重： $d \times d$
+- $W_k$ 权重： $d \times d_{kv}$
+- $W_v$ 权重： $d \times d_{kv}$
+- $W_o$ 权重： $d \times d$
 - **单层 Attention 总参数量**：
 
   $$
   P_{\text{attn}} = 2d^2 + 2d \cdot d_{kv} = 2d^2 \left( 1 + \frac{H_{kv}}{H_q} \right)
   $$
 
-  - 若为传统 MHA（$H_{kv} = H_q$）：$P_{\text{attn}} = 4d^2$；
-  - 若为 1:8 GQA（$H_{kv} = \frac{1}{8} H_q$）：$P_{\text{attn}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
+  - 若为传统 MHA（ $H_{kv} = H_q$ ）： $P_{\text{attn}} = 4d^2$；
+  - 若为 1:8 GQA（ $H_{kv} = \frac{1}{8} H_q$ ）： $P_{\text{attn}} = 2d^2 (1 + 0.125) = \mathbf{2.25d^2}$！仅 Attention 投影层参数就节省了近 **44%**！
 
 #### 2. SwiGLU FFN 层参数量手算：
-- $W_{\text{gate}}$ 权重：$d \times d_{\text{ffn}}$
-- $W_{\text{up}}$ 权重：$d \times d_{\text{ffn}}$
-- $W_{\text{down}}$ 权重：$d_{\text{ffn}} \times d$
+- $W_{\text{gate}}$ 权重： $d \times d_{\text{ffn}}$
+- $W_{\text{up}}$ 权重： $d \times d_{\text{ffn}}$
+- $W_{\text{down}}$ 权重： $d_{\text{ffn}} \times d$
 - **单层 FFN 总参数量**：
 
   $$
@@ -740,7 +740,7 @@ SwiGLU 带来了卓越的性能，但在底层却多出了一个致命隐患：*
   $$
 
 #### 3. 其他非重要参数（Norm 等）：
-- 两个 RMSNorm 的可学习缩放向量 $\gamma$：$2 \times d$（与矩阵参数相比完全可忽略不计）。
+- 两个 RMSNorm 的可学习缩放向量 $\gamma$： $2 \times d$（与矩阵参数相比完全可忽略不计）。
 
 #### 4. 单层 Block 总参数量：
 $$
@@ -758,10 +758,10 @@ $$
 $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
 - $P_{\text{attn}} = 2 \times 4096^2 \times (1 + 8/32) = 2 \times 16777216 \times 1.25 = 41,943,040$
 - $P_{\text{ffn}} = 3 \times 4096 \times 14336 = 176,160,768$
-- 单层 Block 参数量：$41.94\text{M} + 176.16\text{M} = 218.10\text{M}$
-- 32 层 Block 总和：$32 \times 218.10\text{M} = \mathbf{6.98\text{ B}}$
-- Embedding 与 LM Head：$2 \times 128256 \times 4096 \approx \mathbf{1.05\text{ B}}$
-- **全模型精确总参数量**：$6.98\text{B} + 1.05\text{B} = \mathbf{8.03\text{ B}}$！与官方 8B 标称完全严丝合缝！
+- 单层 Block 参数量： $41.94\text{M} + 176.16\text{M} = 218.10\text{M}$
+- 32 层 Block 总和： $32 \times 218.10\text{M} = \mathbf{6.98\text{ B}}$
+- Embedding 与 LM Head： $2 \times 128256 \times 4096 \approx \mathbf{1.05\text{ B}}$
+- **全模型精确总参数量**： $6.98\text{B} + 1.05\text{B} = \mathbf{8.03\text{ B}}$！与官方 8B 标称完全严丝合缝！
 
 ---
 
@@ -772,14 +772,14 @@ $L = 32, d = 4096, H_q = 32, H_{kv} = 8, d_{\text{ffn}} = 14336, V = 128256$：
 #### 物理基底定理：GEMM 的浮点计算计数
 对于一个大小为 $M \times K$ 的矩阵乘以 $K \times N$ 的矩阵：
 产出矩阵的每一个元素，都是一个长度为 $K$ 的向量点积。
-每个点积包含：$K$ 次浮点乘法 + $K$ 次浮点加法 = **$2K$ 次 FLOPs**。
+每个点积包含： $K$ 次浮点乘法 + $K$ 次浮点加法 = **$2K$ 次 FLOPs**。
 因此，整个矩阵乘法的总计算量为：
 
 $$
 \text{FLOPs} = 2 \times M \times K \times N
 $$
 
-#### 1. 前向传播（Forward Pass）：$2P$ FLOPs/token
+#### 1. 前向传播（Forward Pass）： $2P$ FLOPs/token
 在前向传播中，输入每个 Token 经过模型权重参数。设模型非 Embedding 参数量为 $P$。
 每一个权重参数 $W_{ij}$，在与输入向量点积时，都参与了且仅参与了 **1 次乘法** 与 **1 次累加**。
 因此，对于每个 Token：
@@ -788,11 +788,11 @@ $$
 \text{FLOPs}_{\text{forward}} = 2 \times P \quad (\text{FLOPs/token})
 $$
 
-（注：Attention 中的 $QK^T$ 和 $\text{Attn} \cdot V$ 带来的计算量为 $4 \cdot L \cdot S \cdot d$。当序列长度 $S$ 远小于模型维度膨胀规模时，矩阵乘参数占绝对统治地位；严格计算下前向为 $2P + 4LSd$）。
+（注：Attention 中的 $QK^T$ 和 $\text{Attn} \cdot V$ 带来的计算量为 $4 \cdot L \cdot S \cdot d$。当序列长度 $S$ 远小于模型维度膨胀规模时，矩阵乘参数占绝对统治地位；严格计算下前向为 $2P + 4LSd$ ）。
 
-#### 2. 反向传播（Backward Pass）：$4P$ FLOPs/token
+#### 2. 反向传播（Backward Pass）： $4P$ FLOPs/token
 反向传播本质上由**两个独立的矩阵乘法**组成：
-考虑前向线性层：$Y = X W$（其中输入 $X \in \mathbb{R}^{B \times d_{\text{in}}}$，权重 $W \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}}$，输出 $Y \in \mathbb{R}^{B \times d_{\text{out}}}$）。
+考虑前向线性层： $Y = X W$（其中输入 $X \in \mathbb{R}^{B \times d_{\text{in}}}$，权重 $W \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}}$，输出 $Y \in \mathbb{R}^{B \times d_{\text{out}}}$ ）。
 
 在反向传播时，上一层传回的损失梯度为 $\frac{\partial \mathcal{L}}{\partial Y}$：
 1. **第一步：计算对输入激活值的梯度（激活反传，用于传给前一层）**：
@@ -801,7 +801,7 @@ $$
    \frac{\partial \mathcal{L}}{\partial X} = \frac{\partial \mathcal{L}}{\partial Y} \cdot W^T
    $$
 
-   维度：$[B \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [B \times d_{\text{in}}]$。
+   维度： $[B \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [B \times d_{\text{in}}]$。
    计算量等价于一次完整的前向矩阵乘：**$2P$ FLOPs**！
 2. **第二步：计算对权重的梯度（权重求导，用于更新参数）**：
 
@@ -809,7 +809,7 @@ $$
    \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \frac{\partial \mathcal{L}}{\partial Y}
    $$
 
-   维度：$[d_{\text{in}} \times B] \times [B \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}]$。
+   维度： $[d_{\text{in}} \times B] \times [B \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}]$。
    计算量同样是一次完整的同尺寸矩阵乘：**$2P$ FLOPs**！
 
 两个矩阵乘法合计：
@@ -859,10 +859,10 @@ $$
 
 3. **优化器状态（Optimizer States - AdamW）**：
    - 工业界训练大模型标配 AdamW 优化器，为了保证数值更新稳定性，状态必须全部保留为 **FP32（4 字节/元素）**：
-     - **FP32 权重主副本（Master Weights）**：$4\Psi$ 字节；
-     - **FP32 一阶动量（First Moment, $\beta_1$）**：$4\Psi$ 字节；
-     - **FP32 二阶动量（Second Moment, $\beta_2$）**：$4\Psi$ 字节；
-   - 优化器状态总计：$4 + 4 + 4 = \mathbf{12\Psi}$ 字节！
+     - **FP32 权重主副本（Master Weights）**： $4\Psi$ 字节；
+     - **FP32 一阶动量（First Moment, $\beta_1$ ）**： $4\Psi$ 字节；
+     - **FP32 二阶动量（Second Moment, $\beta_2$ ）**： $4\Psi$ 字节；
+   - 优化器状态总计： $4 + 4 + 4 = \mathbf{12\Psi}$ 字节！
 
 #### 静态显存大一统公式：
 $$
@@ -871,7 +871,7 @@ $$
 
 > **注**：在部分早期实现或特定混合精度框架中，若将梯度保留在 FP32 中累加，则为 $2\Psi + 4\Psi + 12\Psi = \mathbf{18\Psi}$。通常基线按 **$16\Psi$** 严格手算。
 
-这意味着：**对于一个 70B 模型（$\Psi = 70 \times 10^9$），单张卡根本不可承受，仅静态显存就需要：**
+这意味着：**对于一个 70B 模型（ $\Psi = 70 \times 10^9$ ），单张卡根本不可承受，仅静态显存就需要：**
 
 $$
 70 \times 10^9 \times 16\text{ Bytes} \approx \mathbf{1120\text{ GB}}!
@@ -893,7 +893,7 @@ $$
 #### 1. 训练动态显存：激活值（Activation Memory）
 前向传播计算出的中间张量，必须保留在显存中供反向求导使用。
 - **无重算（No Recomputation）**：单层激活值约为 $34BSd + 5BS^2 H_q$ 字节。长文本下 $S^2$ 导致显存瞬时爆炸；
-- **全重算（Full Activation Checkpointing）**：每一层只存输入边界张量（$2BSd$），反向求导时当场重新跑一遍前向。显存从 $O(L \cdot S)$ 骤降到 $O(S)$，代价是多消耗 33% 算力；
+- **全重算（Full Activation Checkpointing）**：每一层只存输入边界张量（ $2BSd$ ），反向求导时当场重新跑一遍前向。显存从 $O(L \cdot S)$ 骤降到 $O(S)$，代价是多消耗 33% 算力；
 - **选择性重算（Selective Recomputation / FlashAttention 融合反向）**：保留 Attention 外部的大 GEMM 激活值，只丢弃重算 Attention 内部由 Softmax 产生的非线性 $O(S^2)$ 激活值。几乎**零额外算力代价**，同时将峰值显存压减 **70% 以上**。
 
 #### 2. 推理动态显存：KV Cache 黄金底账
@@ -1200,12 +1200,12 @@ if __name__ == "__main__":
 | 序号 | ❌ 常见小白错误理解 | ✅ 大厂 AI Infra 正确物理认知 | 体系结构本质与底层机理解析 |
 | :--- | :--- | :--- | :--- |
 | **01** | “大模型推理时卡顿，肯定是因为 GPU 算力太弱算不过来。” | **自回归 Decode 阶段是绝对的 Memory-Bound，算力利用率通常不足 5%，瓶颈纯粹在 HBM 显存带宽搬运。** | 每次生成 1 个 Token 都要全量把历史 KV Cache 从 HBM 搬进 SRAM，硬件 95% 时间在空等数据到达。 |
-| **02** | “GQA 会压缩 Key 和 Value 的维度，损害模型长文本表征精度。” | **GQA 绝不压缩单个 Head 的维度（$d_h$ 依然是 128），它只减少 KV Head 的数量，在 Query 侧分组共享。** | 局部语义相似的多个 Query 头关注同一片物理上下文，精度损失 <0.5%，但显存和访存直接压缩数倍。 |
+| **02** | “GQA 会压缩 Key 和 Value 的维度，损害模型长文本表征精度。” | **GQA 绝不压缩单个 Head 的维度（ $d_h$ 依然是 128），它只减少 KV Head 的数量，在 Query 侧分组共享。** | 局部语义相似的多个 Query 头关注同一片物理上下文，精度损失 <0.5%，但显存和访存直接压缩数倍。 |
 | **03** | “RoPE 是在 Embedding 层把位置向量直接加在词向量上。” | **RoPE 绝不改动词 Embedding，它是在经过 $W_q, W_k$ 投影后，直接在注意力矩阵乘之前对 Q 和 K 做 2D 正交旋转变换。** | 避免了绝对位置与词语义的非线性杂质纠缠，且 Value 向量完全不需要施加任何 RoPE 旋转！ |
-| **04** | “SwiGLU 的隐藏层取 $\frac{8}{3}d$ 是实验调出来的玄学经验常数。” | **这是为了在三矩阵门控架构下，精确保持与标准双矩阵 FFN 参数量（$8d^2$）与 FLOPs 100% 守恒的数学推导解。** | $3 \times d \times (\frac{8}{3}d) = 8d^2$，同时强制对齐到 256 整数倍以满足 Tensor Core 访存合并。 |
+| **04** | “SwiGLU 的隐藏层取 $\frac{8}{3}d$ 是实验调出来的玄学经验常数。” | **这是为了在三矩阵门控架构下，精确保持与标准双矩阵 FFN 参数量（ $8d^2$ ）与 FLOPs 100% 守恒的数学推导解。** | $3 \times d \times (\frac{8}{3}d) = 8d^2$，同时强制对齐到 256 整数倍以满足 Tensor Core 访存合并。 |
 | **05** | “训练时显存不够，把 Batch Size 减小到 1 就能彻底解决。” | **Batch Size 只能缩小动态激活值，对模型静态显存（权重+梯度+优化器状态占 $16\Psi$ 字节）毫无作用。** | 70B 模型仅静态账本就占 1120 GB，哪怕 Batch=0 也会瞬间 OOM，必须上 ZeRO/TP 并行切分。 |
 | **06** | “LayerNorm 和 RMSNorm 性能差不多，换了也没多大提升。” | **RMSNorm 砍掉了均值项规约，将二次访存与两次 Warp 同步压缩为一次，Kernel 耗时与显存带宽直降约 30%。** | 在 80 层深层网络中，Norm 位于每个 Block 的核心瓶颈节点，省去的全局同步对时延至关重要。 |
-| **07** | “模型前向是 $2P$ 计算量，反向传导因为是对称的所以也是 $2P$。” | **反向传播包含‘激活反求梯度’（$2P$）与‘权重更新求导’（$2P$）两个独立矩阵乘，真实计算量严格为 $4P$！** | 全流程不开启重算时总算力为 $6P$ FLOPs/token，开启全激活重算后总算力为 $8P$ FLOPs/token。 |
+| **07** | “模型前向是 $2P$ 计算量，反向传导因为是对称的所以也是 $2P$。” | **反向传播包含‘激活反求梯度’（ $2P$ ）与‘权重更新求导’（ $2P$ ）两个独立矩阵乘，真实计算量严格为 $4P$！** | 全流程不开启重算时总算力为 $6P$ FLOPs/token，开启全激活重算后总算力为 $8P$ FLOPs/token。 |
 
 ---
 
@@ -1301,27 +1301,27 @@ if __name__ == "__main__":
    $$
 
 3. **计算不同方案**：
-   - **MHA 方案**（$H_{kv} = 64$，比例为 1）：
+   - **MHA 方案**（ $H_{kv} = 64$，比例为 1）：
 
      $$
      \text{Size}_{\text{token}} = 4 \times 80 \times 8192 \times 1 = 2,621,440\text{ 字节} = 2.5\text{ MB/token}
      $$
 
-     总显存（全集群）：$2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}$！
-     8 卡 TP 并行下，单卡平摊：$640 / 8 = \mathbf{80\text{ GB}}$！
+     总显存（全集群）： $2.5\text{ MB} \times 16 \times 16384 \approx 655,360\text{ MB} = \mathbf{640\text{ GB}}$！
+     8 卡 TP 并行下，单卡平摊： $640 / 8 = \mathbf{80\text{ GB}}$！
      **结论**：光是存 KV Cache 就直接把 80GB 单卡吃干抹净，连权重都塞不下，立刻 OOM 熔断！
-   - **GQA 方案**（LLaMA-3 真实方案，$H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$）：
+   - **GQA 方案**（LLaMA-3 真实方案， $H_{kv} = 8$，比例为 $\frac{8}{64} = \frac{1}{8}$ ）：
 
      $$
      \text{Size}_{\text{token}} = \frac{2.5\text{ MB}}{8} = 0.3125\text{ MB/token}
      $$
 
-     总显存（全集群）：$640\text{ GB} / 8 = \mathbf{80\text{ GB}}$。
-     8 卡 TP 并行下，单卡平摊：$80 / 8 = \mathbf{10\text{ GB}}$！
+     总显存（全集群）： $640\text{ GB} / 8 = \mathbf{80\text{ GB}}$。
+     8 卡 TP 并行下，单卡平摊： $80 / 8 = \mathbf{10\text{ GB}}$！
      **结论**：单卡仅占 10 GB 显存，留出超过 52 GB 裕量给静态权重与其他请求，稳如泰山！
-   - **MQA 方案**（$H_{kv} = 1$，比例为 $\frac{1}{64}$）：
-     总显存（全集群）：$640\text{ GB} / 64 = \mathbf{10\text{ GB}}$。
-     8 卡 TP 并行下，单卡平摊：$10 / 8 = \mathbf{1.25\text{ GB}}$。
+   - **MQA 方案**（ $H_{kv} = 1$，比例为 $\frac{1}{64}$ ）：
+     总显存（全集群）： $640\text{ GB} / 64 = \mathbf{10\text{ GB}}$。
+     8 卡 TP 并行下，单卡平摊： $10 / 8 = \mathbf{1.25\text{ GB}}$。
      **结论**：显存达到极致，但代码与严谨逻辑推理能力会有较明显下滑。
 
 ---
@@ -1332,7 +1332,7 @@ if __name__ == "__main__":
 #### 标准推导路径：
 1. **基础 GEMM 计数**：两个大小分别为 $M \times K$ 和 $K \times N$ 的矩阵相乘，总 FLOPs 为 $2MKN$。
 2. **前向过程**：
-   考虑单层线性投射：$Y = X W$，输入 $X \in \mathbb{R}^{1 \times d_{\text{in}}}$，权重 $W \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}}$。
+   考虑单层线性投射： $Y = X W$，输入 $X \in \mathbb{R}^{1 \times d_{\text{in}}}$，权重 $W \in \mathbb{R}^{d_{\text{in}} \times d_{\text{out}}}$。
    计算量为 $2 \times 1 \times d_{\text{in}} \times d_{\text{out}} = 2 \times \text{Params}$。
    累加所有参数后，每个 Token 前向计算量为：
 
@@ -1348,21 +1348,21 @@ if __name__ == "__main__":
      \frac{\partial \mathcal{L}}{\partial X} = \delta \cdot W^T \quad ([1 \times d_{\text{out}}] \times [d_{\text{out}} \times d_{\text{in}}] \to [1 \times d_{\text{in}}])
      $$
 
-     计算量：$2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P$ FLOPs。此项必须传给前驱层；
+     计算量： $2 \times 1 \times d_{\text{out}} \times d_{\text{in}} = 2P$ FLOPs。此项必须传给前驱层；
    - **第二步：求参数更新梯度（Weight Gradient）**：
 
      $$
      \frac{\partial \mathcal{L}}{\partial W} = X^T \cdot \delta \quad ([d_{\text{in}} \times 1] \times [1 \times d_{\text{out}}] \to [d_{\text{in}} \times d_{\text{out}}])
      $$
 
-     计算量：$2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P$ FLOPs。此项用于 AdamW 参数更新；
+     计算量： $2 \times d_{\text{in}} \times 1 \times d_{\text{out}} = 2P$ FLOPs。此项用于 AdamW 参数更新；
 4. **两项相加**：
 
    $$
    \text{FLOPs}_{\text{bwd}} = 2P + 2P = 4P
    $$
 
-   全流程训练合计：$2P + 4P = \mathbf{6P}$ FLOPs/token。
+   全流程训练合计： $2P + 4P = \mathbf{6P}$ FLOPs/token。
 
 ---
 
@@ -1373,7 +1373,7 @@ if __name__ == "__main__":
 1. **本质原因剖析**：
    - 在自回归生成（Decode）阶段，计算复杂度不是 $O(S^2)$ 而是 $O(S)$，因为每次只算 1 个 Token 与历史 $S$ 个 Token 的点积；
    - 但**HBM 访存数据量严格与 $S$ 成正比线性增长**！当 $S$ 从 8K 放大到 64K，每个 Token 解码必须从显存搬运的数据量暴涨了整整 **8 倍**；
-   - Decode 阶段的算术强度本身就处于极度饥饿的 Memory-Bound 区域（通常 $<2\text{ FLOP/Byte}$）。显存带宽（如 A100 的 2.0 TB/s）被瞬间打满跑满，导致每个 Token 的访存耗时严格放大 8 倍，直接拖垮 TPOT。
+   - Decode 阶段的算术强度本身就处于极度饥饿的 Memory-Bound 区域（通常 $<2\text{ FLOP/Byte}$ ）。显存带宽（如 A100 的 2.0 TB/s）被瞬间打满跑满，导致每个 Token 的访存耗时严格放大 8 倍，直接拖垮 TPOT。
 2. **工业级优化手段**：
    - **采用 GQA**：若模型训练阶段已采用 GQA，可直接缓解 87.5% 的访存带宽压力；
    - **KV Cache 量化**：采用 FP8（E4M3 或 E5M2）甚至 INT4 对 KV Cache 进行量化，将每个元素的显存搬运量从 2 字节压缩到 1 字节甚至 0.5 字节，访存延迟直接减半；

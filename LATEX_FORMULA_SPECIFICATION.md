@@ -1,7 +1,7 @@
 # AI-Infra Odyssey 生产级 LaTeX 数学公式排版与 GitHub 原生渲染规范指南
 
-> 🔔 **权威文档**：本规范已全面升级为 **[LATEX_FORMULA_SPECIFICATION.md](./LATEX_FORMULA_SPECIFICATION.md)**。  
-> 本专栏全书的所有数学公式统一采用 **100% 标准 LaTeX 数学语法**，并在底层完全适配 **GitHub 原生 MathJax**、**KaTeX**、**VS Code**、**Obsidian** 与 **VitePress**。
+> **关于 LaTeX、KaTeX 与 GitHub 原生渲染的关系说明**：  
+> 本专栏全书（从基础篇到 Capstone 实战）的所有数学公式统一采用 **100% 标准 LaTeX 数学语法**。KaTeX 本身是 LaTeX 数学语法的轻量级高效渲染子集，而 GitHub 原生数学公式采用 **MathJax (LaTeX Engine)**。本规范旨在保证全库公式在 **GitHub Web**、**VS Code**、**Obsidian**、**VitePress** 及各类静态站点中实现 **100% 零语法报错** 与 **顶级系统架构学术出版物级别的一致性美感**。
 
 ---
 
