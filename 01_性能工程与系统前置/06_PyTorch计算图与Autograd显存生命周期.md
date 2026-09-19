@@ -1778,11 +1778,12 @@ $$
 M_{\text{activation-ckpt}} \propto O(B \cdot S \cdot h)
 $$
 
-     全网络激活显存理论节约比例可达：
+   - 全网络激活显存理论节约比例可达：
 
 $$
 \text{Savings} = \frac{L - 1}{L} \approx 97\%
 $$
+
 
 
 
