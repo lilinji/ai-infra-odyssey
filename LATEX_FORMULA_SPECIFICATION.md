@@ -83,6 +83,20 @@ GitHub 网页端采用 **GFM (GitHub Flavored Markdown) + MathJax** 管道：
     ```
     ````
 
+### 准则 6：星号上标与复数共轭严格使用 `^{\ast}`（Asterisk Superscript）
+- **致命反模式**：
+  ```latex
+  \tilde{k}_n^*, \quad (q k^*), \quad \text{AI}^*, \quad S^*
+  ```
+- **技术原理**：
+  GFM 解析器中星号 `*` 属于 Markdown 斜体/粗体原生定界符。当公式中存在多个裸 `*`（如复数内积展开式），Markdown 解析引擎会先于 MathJax 将两个 `*` 之间的字符吞为 `<em>` 斜体标签，剥离掉原本的上标操作数，导致 KaTeX 报出 `Missing open brace for superscript` 语法红框。
+- **治理标准**：
+  - ❌ 禁止裸写 `^*` 或 `^{*}`
+  - ✅ 一律使用标准 LaTeX 转义指令 `^{\ast}`：
+    ```latex
+    \tilde{k}_n^{\ast}, \quad (q k^{\ast}), \quad \text{AI}^{\ast}, \quad S^{\ast}
+    ```
+
 ---
 
 ## 2. 全体系结构核心量纲与符号对照表

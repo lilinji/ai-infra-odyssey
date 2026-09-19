@@ -71,6 +71,10 @@ def scan_markdown_file(file_path):
         if re.match(r"^\s+\$\$", line):
             violations.append((lno, "Rule 6: Indented $$ block detected (must be flush-left column 0)", line.strip()))
             
+        # 7. Rule 7: Raw ^* in LaTeX formulas (must use ^{\ast} to prevent CommonMark italics collision)
+        if re.search(r"\^\*|\^\{\*\}", line):
+            violations.append((lno, "Rule 7: Raw ^* in LaTeX formula (must use ^{\\ast} to prevent GFM markdown collision)", line.strip()))
+            
     return rel_path, violations
 
 def main():

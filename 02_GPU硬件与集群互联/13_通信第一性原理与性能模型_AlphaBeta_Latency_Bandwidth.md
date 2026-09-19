@@ -368,14 +368,14 @@ $$
          [ 小消息: Latency-Bound ]      [ 大消息: Bandwidth-Bound ]
 ```
 
-根据两条渐近线的几何交点，我们定义 **通信性能临界转折点（Critical Message Size $S^*$ ）**：
+根据两条渐近线的几何交点，我们定义 **通信性能临界转折点（Critical Message Size $S^{\ast}$ ）**：
 
 $$
-S^* = \alpha \times \beta
+S^{\ast} = \alpha \times \beta
 $$
 
-- **当 $S < S^*$ 时**：固定延迟项 $\alpha$ 占据绝对统治地位，系统处于 **Latency-Bound（延迟受限）** 状态；
-- **当 $S \ge S^*$ 时**：传输带宽项 $S/\beta$ 占据绝对统治地位，系统处于 **Bandwidth-Bound（带宽受限）** 状态。
+- **当 $S < S^{\ast}$ 时**：固定延迟项 $\alpha$ 占据绝对统治地位，系统处于 **Latency-Bound（延迟受限）** 状态；
+- **当 $S \ge S^{\ast}$ 时**：传输带宽项 $S/\beta$ 占据绝对统治地位，系统处于 **Bandwidth-Bound（带宽受限）** 状态。
 
 ### Step 5: Sanity Check（真实物理介质转折点自检）
 我们代入大厂 AI 集群最核心的两种物理链路计算它们的临界点：
@@ -386,7 +386,7 @@ $$
   - **NVLink 临界拐点**：
 
 $$
-S^*_{\text{NVLink}} = 0.8 \times 10^{-6}\text{ s} \times 450 \times 10^9\text{ B/s} = \mathbf{360\text{ KB}}
+S^{\ast}_{\text{NVLink}} = 0.8 \times 10^{-6}\text{ s} \times 450 \times 10^9\text{ B/s} = \mathbf{360\text{ KB}}
 $$
 
   - **意义**：在 NVLink 域内，只要单次通信的消息体量大于 **360KB**，就能迅速跨过延迟惩罚，打满 450 GB/s 的高速带宽！
@@ -397,7 +397,7 @@ $$
   - **跨机 RDMA 临界拐点**：
 
 $$
-S^*_{\text{RDMA}} = 12.0 \times 10^{-6}\text{ s} \times 45 \times 10^9\text{ B/s} = \mathbf{540\text{ KB}}
+S^{\ast}_{\text{RDMA}} = 12.0 \times 10^{-6}\text{ s} \times 45 \times 10^9\text{ B/s} = \mathbf{540\text{ KB}}
 $$
 
   - **意义**：跨机通信时，消息尺寸必须达到 **540KB 以上**，才配让 400G 网卡开始发挥出它真正的带宽实力！如果你的代码充满了十几 KB 的碎包，网卡物理上就是在打瞌睡！
@@ -436,7 +436,7 @@ $$
 S = 4 \times 1 \times 4096 \times 2 = 32768\text{ 字节} = \mathbf{32\text{ KB}}
 $$
 
-- **对比临界点**： $32\text{ KB} \ll S^*_{\text{RDMA}} (540\text{ KB})$！
+- **对比临界点**： $32\text{ KB} \ll S^{\ast}_{\text{RDMA}} (540\text{ KB})$！
 - 此时单次通信处于极深度的 **Latency-Bound** 区域！总耗时里 90% 以上是在等待操作系统协议栈、PCIe 穿越以及光纤握手；
 - 把 200G 网卡升级到 800G，只是把原本只占 5% 耗时的带宽传输项微幅缩短了一丁点，而占 95% 耗时的 $\alpha$ 纹丝未动，端到端延迟自然如同焊死一般！
 
@@ -639,7 +639,7 @@ T_{\text{Ring}}(S, N) = 2(N - 1) \times \alpha + 2 \times \frac{N - 1}{N} \times
 $$
 
 > 💡 **惊人的数学美感与工程结论**：
-> 当集群规模很大（例如千卡集群 $N = 1024$ ）且传输的消息属于大张量时（ $S \gg S^*$ ）：
+> 当集群规模很大（例如千卡集群 $N = 1024$ ）且传输的消息属于大张量时（ $S \gg S^{\ast}$ ）：
 >
 > $$
 > \lim_{N \to \infty} \frac{N - 1}{N} = 1
@@ -804,7 +804,7 @@ $$
 
 ## 7.1 实验 1：Alpha-Beta 通信耗时模型实测与临界转折点拟合脚本
 
-本实验通过测试不同消息大小下的传输耗时，通过最小二乘法精确拟合出本地环境的 $\alpha$（启动延迟）与 $\beta$（有效带宽），并自动计算出临界转折点 $S^*$：
+本实验通过测试不同消息大小下的传输耗时，通过最小二乘法精确拟合出本地环境的 $\alpha$（启动延迟）与 $\beta$（有效带宽），并自动计算出临界转折点 $S^{\ast}$：
 
 ```python
 #!/usr/bin/env python3
@@ -1193,7 +1193,7 @@ if __name__ == "__main__":
 
 > 📋 **生产环境集群通信性能优化黄金 Checklist (Ringi 审稿器)**
 
-- [ ] 1. **【瓶颈类型定性】**：在优化前必须计算 $S^* = \alpha \cdot \beta$，明确当前通信处于 Latency-Bound 还是 Bandwidth-Bound。
+- [ ] 1. **【瓶颈类型定性】**：在优化前必须计算 $S^{\ast} = \alpha \cdot \beta$，明确当前通信处于 Latency-Bound 还是 Bandwidth-Bound。
 - [ ] 2. **【拓扑边界死守】**：严格将张量并行（TP）与序列并行（SP）限制在单机 8 卡 NVLink 域内， 坚决禁止 TP 跨机。
 - [ ] 3. **【机间小包绝杀】**：严禁在跨机 RDMA 网络上直接发送 <64KB 的碎包，小包必须在机内聚合 为大包后再走机间传输。
 - [ ] 4. **【分层集合通信】**：万卡集群必须显式启用 NCCL 的 Hierarchical Tree/Ring 分层通信算法， 化解全网扁平跳步灾难。
@@ -1229,7 +1229,7 @@ if __name__ == "__main__":
 - [ ] 1. 为什么说分布式并行的本质是“用通信换算力与容量”？写出通信税的物理成因。
 - [ ] 2. 阐述通信的“不可能三角”，为什么高带宽、低延迟与零 SM 占用无法同时兼得？
 - [ ] 3. 解释“纯搬运（Movement）”与“含加法归约（Reduction）”的二分法对硬件选型的决定性影响。
-- [ ] 4. 默写 Alpha-Beta 通信耗时公式 $T(S) = \alpha + S/\beta$，并推导临界转折点 $S^*$ 的计算公式与物理意义。
+- [ ] 4. 默写 Alpha-Beta 通信耗时公式 $T(S) = \alpha + S/\beta$，并推导临界转折点 $S^{\ast}$ 的计算公式与物理意义。
 - [ ] 5. 为什么在大模型推理生成（Decode）阶段，将网卡带宽升级 4 倍却无法带来延迟的明显改善？
 - [ ] 6. 默写单机 HBM3、机内 NVLink 4.0、PCIe 5.0 与跨机 400G RDMA 的单向物理有效带宽数值，指出其断崖幅度。
 - [ ] 7. 详细阐释在 GPUDirect RDMA 中，IBRC（基于 CPU）与 IBGDA（基于 SM）的控制面区别。
@@ -1316,8 +1316,8 @@ if __name__ == "__main__":
 >    - 跨卡张量并行（TP）在每层 Attention 和 MLP 之后都需要同步一次，单次传输的消息体积极小（通常在几 KB 到几十 KB 之间）；
 > 2. **Alpha-Beta 临界分析**：
 >    - 400G/800G 网络环境下，固定启动时延 $\alpha \approx 10\text{ }\mu\text{s}$，有效带宽 $\beta \approx 45 \sim 90\text{ GB/s}$；
->    - 网络的固有临界转折点 $S^* = \alpha \cdot \beta \approx 500\text{ KB}$；
->    - 由于真实传输的 $S \approx 32\text{ KB} \ll S^*$，通信处于**绝对的 Latency-Bound（延迟受限）** 区域；
+>    - 网络的固有临界转折点 $S^{\ast} = \alpha \cdot \beta \approx 500\text{ KB}$；
+>    - 由于真实传输的 $S \approx 32\text{ KB} \ll S^{\ast}$，通信处于**绝对的 Latency-Bound（延迟受限）** 区域；
 >    - 此时总耗时公式中： $T = \alpha + S/\beta$，启动时延 $\alpha$ 占据了 **90% 以上的耗时**；单纯将带宽 $\beta$ 放大 4 倍，只能微幅缩短那微不足道的 $S/\beta$ 尾巴，整体延迟几乎毫无感知。
 > 3. **工业级真正破局方案**：
 >    - **方案 A（增大 Batch Size / 连续批处理）**：通过 Continuous Batching 将多个并发请求合并，强行放大消息体量 $S$，将算子推过转折点进入带宽受限区；

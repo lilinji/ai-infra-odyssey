@@ -634,10 +634,10 @@ $$
 这是 RoPE 最惊艳的数学之美！将 2D 向量视为复数： $q = q_0 + i q_1 = r_q e^{i \phi_q}$。  
 在位置 $m$ 旋转后变为： $\tilde{q}_m = q \cdot e^{i m \theta}$；同样在位置 $n$ 处的 Key 旋转后变为： $\tilde{k}_n = k \cdot e^{i n \theta}$。
 
-当它们计算注意力打分点积时（对应复数共轭内积 $\text{Re}(\tilde{q}_m \tilde{k}_n^*)$ ）：
+当它们计算注意力打分点积时（对应复数共轭内积 $\text{Re}(\tilde{q}_m \tilde{k}_n^{\ast})$ ）：
 
 $$
-\langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( (q e^{i m \theta}) (k e^{i n \theta})^* \right) = \text{Re}\left( q k^* e^{i (m - n) \theta} \right)
+\langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( (q e^{i m \theta}) (k e^{i n \theta})^{\ast} \right) = \text{Re}\left( q k^{\ast} e^{i (m - n) \theta} \right)
 $$
 
 看到了吗？！**绝对位置坐标 $m$ 和 $n$ 在相乘的瞬间彻底消失了，留下的相位角严格等于两者的相对距离 $(m - n)$！**
@@ -1287,13 +1287,13 @@ $$
    两个 2D 实向量的点积，严格等于其对应复数与其共轭复数相乘的实部：
 
 $$
-\langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( \tilde{q}_m \cdot \tilde{k}_n^* \right)
+\langle \tilde{q}_m, \tilde{k}_n \rangle = \text{Re}\left( \tilde{q}_m \cdot \tilde{k}_n^{\ast} \right)
 $$
 
    代入复数指数式：
 
 $$
-\tilde{q}_m \cdot \tilde{k}_n^* = \left( q e^{i m \theta} \right) \left( k e^{i n \theta} \right)^* = (q k^*) \cdot e^{i m \theta} \cdot e^{-i n \theta} = (q k^*) \cdot e^{i (m - n) \theta}
+\tilde{q}_m \cdot \tilde{k}_n^{\ast} = \left( q e^{i m \theta} \right) \left( k e^{i n \theta} \right)^{\ast} = (q k^{\ast}) \cdot e^{i m \theta} \cdot e^{-i n \theta} = (q k^{\ast}) \cdot e^{i (m - n) \theta}
 $$
 
    展开其实部：

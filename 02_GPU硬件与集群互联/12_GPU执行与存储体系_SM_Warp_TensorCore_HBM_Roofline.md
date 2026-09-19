@@ -887,14 +887,14 @@ P_peak │───────────────────────�
                                   物理转折点 AI* = P_peak / BW_HBM
 ```
 
-由几何关系显然可知，斜线与平顶的交汇点被定义为 **硬件固有物理转折点（Turning Point $\text{AI}^*$ ）**：
+由几何关系显然可知，斜线与平顶的交汇点被定义为 **硬件固有物理转折点（Turning Point $\text{AI}^{\ast}$ ）**：
 
 $$
-\text{AI}^* = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}
+\text{AI}^{\ast} = \frac{P_{\text{peak}}}{\text{BW}_{\text{HBM}}}
 $$
 
-- **当 $\text{AI} < \text{AI}^*$ 时**：算子落在左侧斜坡区，属于 **Memory-Bound（访存受限）**。此时就算你把计算指令优化上天，性能也纹丝不动；唯一的破局手段是**减少 HBM 访存字节数（提高 AI 值）**！
-- **当 $\text{AI} \ge \text{AI}^*$ 时**：算子落在右侧平顶区，属于 **Compute-Bound（算力受限）**。此时显存带宽已经不再是瓶颈，限制性能的是硬件 Tensor Core 的算力供给能力。
+- **当 $\text{AI} < \text{AI}^{\ast}$ 时**：算子落在左侧斜坡区，属于 **Memory-Bound（访存受限）**。此时就算你把计算指令优化上天，性能也纹丝不动；唯一的破局手段是**减少 HBM 访存字节数（提高 AI 值）**！
+- **当 $\text{AI} \ge \text{AI}^{\ast}$ 时**：算子落在右侧平顶区，属于 **Compute-Bound（算力受限）**。此时显存带宽已经不再是瓶颈，限制性能的是硬件 Tensor Core 的算力供给能力。
 
 ### Step 5: Sanity Check（数量级自检）
 
@@ -914,7 +914,7 @@ $$
   - **A100 硬件固有转折点**：
 
 $$
-\text{AI}^*_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}
+\text{AI}^{\ast}_{\text{A100}} = \frac{312 \times 10^{12}}{2.0 \times 10^{12}} = \mathbf{156\text{ FLOPs/Byte}}
 $$
 
 - **NVIDIA H100-SXM5-80GB (Hopper 架构)**：
@@ -931,7 +931,7 @@ $$
   - **H100 硬件固有转折点**：
 
 $$
-\text{AI}^*_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}
+\text{AI}^{\ast}_{\text{H100}} = \frac{989 \times 10^{12}}{3.35 \times 10^{12}} = \mathbf{295.2\text{ FLOPs/Byte}}
 $$
 
 > 💡 **惊心动魄的工程事实**：
@@ -971,7 +971,7 @@ $$
 在 Roofline 坐标系中，性能工程优化的核心本质只有两件事：
 
 1. **纵向向上推（Vertical Push）**：在算术强度不变的前提下，通过指令级并行、消除 Warp Divergence、消除 Bank Conflict，让实际性能逼近当前的理论屋顶；
-2. **横向向右移（Horizontal Shift）**：**这是更高阶的架构级优化！** 通过算法数学重构、算子融合、SRAM Tiling、重计算，彻底消除冗余的 HBM 读写字节，将算子的算术强度 $\text{AI}$ 强行向右推过转折点 $\text{AI}^*$，实现性能从量变到质变的飞跃！
+2. **横向向右移（Horizontal Shift）**：**这是更高阶的架构级优化！** 通过算法数学重构、算子融合、SRAM Tiling、重计算，彻底消除冗余的 HBM 读写字节，将算子的算术强度 $\text{AI}$ 强行向右推过转折点 $\text{AI}^{\ast}$，实现性能从量变到质变的飞跃！
 
 ---
 
@@ -1027,7 +1027,7 @@ $$
 ### 4. Roofline 判决：
 
 $$
-\text{AI}_{\text{GEMM}} = 1365 \gg \text{AI}^*_{\text{H100}} (295.2)
+\text{AI}_{\text{GEMM}} = 1365 \gg \text{AI}^{\ast}_{\text{H100}} (295.2)
 $$
 
 - **结论**：**大矩阵 GEMM 是毫无争议的纯 Compute-Bound（算力受限）算子！**
@@ -1573,7 +1573,7 @@ if __name__ == "__main__":
 >      $$
 >
 > 2. **在 Roofline 上判定瓶颈**：
->    - H100 的转折点 $\text{AI}^* = \frac{989}{3.35} \approx 295.2\text{ FLOPs/Byte}$；
+>    - H100 的转折点 $\text{AI}^{\ast} = \frac{989}{3.35} \approx 295.2\text{ FLOPs/Byte}$；
 >    - 因为 $\text{AI} = 1.0 \ll 295.2$，系统处于**绝对的 Memory-Bound（显存带宽受限）极限斜坡**上。
 > 3. **计算单 Token 物理时延极限与吞吐上限**：
 >    - 生成 1 个 Token 所需搬运权重的理论最短物理时间：

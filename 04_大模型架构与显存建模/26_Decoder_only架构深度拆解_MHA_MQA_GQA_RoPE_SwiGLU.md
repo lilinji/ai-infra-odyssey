@@ -515,14 +515,14 @@ $$
 $$
 
 #### 相对位置不变性严格证明：
-利用复数内积性质 $\langle \mathbf{z}_1, \mathbf{z}_2 \rangle = \text{Re}(\mathbf{z}_1 \mathbf{z}_2^*)$（其中 $*$ 表示共轭复数）：
+利用复数内积性质 $\langle \mathbf{z}_1, \mathbf{z}_2 \rangle = \text{Re}(\mathbf{z}_1 \mathbf{z}_2^{\ast})$（其中 $*$ 表示共轭复数）：
 
 $$
-\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = \text{Re} \left[ (\mathbf{q} e^{i m \theta}) \cdot (\mathbf{k} e^{i n \theta})^* \right]
+\langle \mathcal{R}(q, m), \mathcal{R}(k, n) \rangle = \text{Re} \left[ (\mathbf{q} e^{i m \theta}) \cdot (\mathbf{k} e^{i n \theta})^{\ast} \right]
 $$
 
 $$
-= \text{Re} \left[ \mathbf{q} e^{i m \theta} \cdot \mathbf{k}^* e^{-i n \theta} \right] = \text{Re} \left[ \mathbf{q} \mathbf{k}^* \cdot e^{i (m - n)\theta} \right]
+= \text{Re} \left[ \mathbf{q} e^{i m \theta} \cdot \mathbf{k}^{\ast} e^{-i n \theta} \right] = \text{Re} \left[ \mathbf{q} \mathbf{k}^{\ast} \cdot e^{i (m - n)\theta} \right]
 $$
 
 **证毕！**  
