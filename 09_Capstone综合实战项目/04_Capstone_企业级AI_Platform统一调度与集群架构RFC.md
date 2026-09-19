@@ -237,7 +237,7 @@ graph TD
 ```
 
 #### 动态借用数学规则（Lending & Borrowing Policy）：
-设一个 ClusterQueue 的保底配额为 $Q_{\text{nominal}}$，当前借出上限为 $Q_{\text{borrowing\\_limit}}$：
+设一个 ClusterQueue 的保底配额为 $Q_{\text{nominal}}$，当前借出上限为 $Q_{\text{borrow-limit}}$：
 1. **优先满足保底（Nominal Capacity）**：每个租户在其保底额度内提交的任务，享有**最高调度优先级**，立即可被准入调度；
 2. **闲置借用（Borrowing from Cohort）**：若搜索组白天只用了 500 卡，剩余的 1,548 卡自动借给预训练组跑大规模任务；
 3. **主人归还与优雅抢占（Reclaim & Preemption）**：当搜索组突然发起高优任务时，Kueue 立即触发 **Workload Reclaim**：
@@ -794,7 +794,7 @@ if __name__ == "__main__":
 本章所有架构设计、调度状态机与自愈规程均严格溯源于以下权威文献与本地实测证据库：
 
 1. **云原生 AI 平台与调度体系**：
-   - 参考 [AI_BOOK/AI-fundamentals/03_ai_cluster_ops/](file:///d:/GeneTind/Interview/AI_BOOK/AI-fundamentals/03_ai_cluster_ops/) 与 [AI_BOOK/AI-fundamentals/04_cloud_native_ai_platform/](file:///d:/GeneTind/Interview/AI_BOOK/AI-fundamentals/04_cloud_native_ai_platform/)：核对生产级集群运维与调度体系。
+   - 参考 **AI_BOOK/AI-fundamentals/03_ai_cluster_ops/** 与 **AI_BOOK/AI-fundamentals/04_cloud_native_ai_platform/**：核对生产级集群运维与调度体系。
 2. **Kueue 官方架构原著与源码规范**：
    - Kubernetes SIGs: *Kueue: Kubernetes-native Job Queueing System Architecture RFC*。
 3. **GPU 虚拟化与 HAMi 架构**：

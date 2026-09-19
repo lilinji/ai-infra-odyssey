@@ -1,4 +1,4 @@
-# 🚀 Module 09: Capstone 综合实战项目库 (Production Capstone Projects & Architecture RFCs)
+# 🚀 第九篇：生产级 Capstone 综合实战项目库 (Production Capstone Projects & Architecture RFCs)
 
 > **讲师 / 作者**：👓 **Ringi**（大厂 AI Infrastructure 工程师）  
 > **模块定位**：综合实战 ｜ **建议时长**：综合考评  

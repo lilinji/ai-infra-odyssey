@@ -905,9 +905,9 @@ if __name__ == "__main__":
 本章所有公式推导、微架构分块逻辑与寄存器归约技术均严格溯源于以下权威文献与本地实测证据库：
 
 1. **LeetCUDA 核心算子与 FlashAttention 源码**：
-   - 参考 [AI_BOOK/LeetCUDA/kernels/](file:///d:/GeneTind/Interview/AI_BOOK/LeetCUDA/kernels/)：深入研读真实工业级 Softmax 与 FlashAttention CUDA 源码实现。
+   - 参考 **AI_BOOK/LeetCUDA/kernels/**：深入研读真实工业级 Softmax 与 FlashAttention CUDA 源码实现。
 2. **GPU 硬件微架构与 Roofline 模型**：
-   - 参考 [AI_BOOK/AISystem/02Hardware/03GPUBase/](file:///d:/GeneTind/Interview/AI_BOOK/AISystem/02Hardware/03GPUBase/) 与 [AI_BOOK/AISystem/02Hardware/04NVIDIA/](file:///d:/GeneTind/Interview/AI_BOOK/AISystem/02Hardware/04NVIDIA/)：详加核对 SM、SRAM 缓存与 Tensor Core 执行模型。
+   - 参考 **AI_BOOK/AISystem/02Hardware/03GPUBase/** 与 **AI_BOOK/AISystem/02Hardware/04NVIDIA/**：详加核对 SM、SRAM 缓存与 Tensor Core 执行模型。
 3. **经典学术论文与开源里程碑**：
    - *FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness* (Tri Dao et al., NeurIPS 2022)；
    - *FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning* (Tri Dao, 2023)；

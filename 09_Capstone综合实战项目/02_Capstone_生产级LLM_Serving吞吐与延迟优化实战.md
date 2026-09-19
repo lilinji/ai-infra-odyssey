@@ -368,7 +368,7 @@ $$
 - 单个 Token 占用的 KV Cache 显存（FP16，2 字节）：
 
   $$
-  \text{Mem}_{\text{token}} = 2 \times 2 \times (\text{num\\_layers} \times \text{num\\_kv\\_heads} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}
+  \text{Mem}_{\text{token}} = 2 \times 2 \times (n_{\text{layers}} \times n_{\text{kv-heads}} \times d) = 4 \times (32 \times 4 \times 128) = 65,536 \text{ Bytes} = 64 \text{ KB}
   $$
 
 - 单个请求全生命周期峰值占用（$1024 + 256 = 1280 \text{ Tokens}$）：
@@ -380,7 +380,7 @@ $$
 - 680 个并发请求所需的纯 KV Cache 显存总容量：
 
   $$
-  \text{Mem}_{\text{KV\\_total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}
+  \text{Mem}_{\text{KV-total}} = 680 \times 80 \text{ MB} = 54.4 \text{ GB}
   $$
 
 #### 步骤 4：所需 GPU 数量反推
@@ -390,7 +390,7 @@ $$
 - 单卡可分配给 KV Cache 的安全显存空间：
 
   $$
-  \text{Mem}_{\text{KV\\_per\\_gpu}} = 80 - 14 - 16 = 50 \text{ GB}
+  \text{Mem}_{\text{KV-per-gpu}} = 80 - 14 - 16 = 50 \text{ GB}
   $$
 
 - 所需 GPU 数量（显存视角）：
@@ -831,7 +831,7 @@ if __name__ == "__main__":
 本章所有公式推导、显存分页逻辑与容量规划方程均严格溯源于以下权威文献与本地实测证据库：
 
 1. **vLLM 与 PagedAttention 官方原著与源码**：
-   - 参考 [AI_BOOK/AIInfra/05Infer/](file:///d:/GeneTind/Interview/AI_BOOK/AIInfra/05Infer/) 与 [AI_BOOK/llm_interview_note/06.推理/](file:///d:/GeneTind/Interview/AI_BOOK/llm_interview_note/06.推理/)：深入求证 PagedAttention 核心 Block 管理逻辑。
+   - 参考 **AI_BOOK/AIInfra/05Infer/** 与 **AI_BOOK/llm_interview_note/06.推理/**：深入求证 PagedAttention 核心 Block 管理逻辑。
 2. **Chunked Prefill 与连续批处理论文**：
    - *Efficiently Scaling Transformer Inference on Modern GPUs with PagedAttention* (Kwon et al., SOSP 2023)；
    - *Orca: A Distributed Serving System for Transformer-Based Generative Models* (OSDI 2022)；

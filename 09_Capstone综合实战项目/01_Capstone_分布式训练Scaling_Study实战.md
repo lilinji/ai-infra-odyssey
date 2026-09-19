@@ -307,7 +307,7 @@ $$
   若满足：
 
   $$
-  T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first\\_bucket\\_wait}}
+  T_{\text{comm}} \le T_{\text{bwd}} - T_{\text{first-bucket-wait}}
   $$
 
   通信被反向计算完全掩盖在阴影之下，对外表现出来的通信损耗**几乎为零**！
@@ -876,9 +876,9 @@ if __name__ == "__main__":
 本章所有公式推导、硬件带宽基准与系统时序均严格溯源于以下权威文献与本地实测证据库：
 
 1. **分布式通信底层与拓扑**：
-   - 参考 [AI_BOOK/GPU通信/01.GPU通信基础.md](file:///d:/GeneTind/Interview/AI_BOOK/GPU通信/01.GPU通信基础.md) 与 [AI_BOOK/GPU通信/04.NCCL通信库.md](file:///d:/GeneTind/Interview/AI_BOOK/GPU通信/04.NCCL通信库.md)：详细求证 Ring 与 Tree AllReduce 算法实现。
+   - 参考 **AI_BOOK/GPU通信/01.GPU通信基础.md** 与 **AI_BOOK/GPU通信/04.NCCL通信库.md**：详细求证 Ring 与 Tree AllReduce 算法实现。
 2. **大模型分布式训练机制与 Megatron-DeepSpeed**：
-   - 参考 [AI_BOOK/llm-action/llm-train/megatron-deepspeed/microsoft/llama-note.md](file:///d:/GeneTind/Interview/AI_BOOK/llm-action/llm-train/megatron-deepspeed/microsoft/llama-note.md)：对照生产环境 `reduce_bucket_size` 配置基线与 ZeRO 切分参数。
+   - 参考 **AI_BOOK/llm-action/llm-train/megatron-deepspeed/microsoft/llama-note.md**：对照生产环境 `reduce_bucket_size` 配置基线与 ZeRO 切分参数。
 3. **经典论文与工业基准**：
    - *PyTorch Distributed: Experiences on Accelerating Data Parallel Training* (VLDB 2020, DDP 官方原著论文)；
    - *ZeRO: Memory Optimizations Toward Training Trillion Parameter Models* (Rajbhandari et al., SC 2020)；

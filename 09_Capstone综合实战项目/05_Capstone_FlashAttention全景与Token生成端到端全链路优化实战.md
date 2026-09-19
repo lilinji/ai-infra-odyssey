@@ -944,10 +944,10 @@ if __name__ == "__main__":
    - *FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness* (Tri Dao et al., NeurIPS 2022)；
    - *FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning* (Tri Dao, 2023)；
    - *FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision* (Jay Shah, Tri Dao et al., 2024)；
-   - 参考本地知识库：[AI_BOOK/LeetCUDA/kernels/](file:///d:/GeneTind/Interview/AI_BOOK/LeetCUDA/kernels/)。
+   - 参考本地知识库：**AI_BOOK/LeetCUDA/kernels/**。
 2. **vLLM 生产级推理引擎与调度系统**：
    - *Efficient Memory Management for Large Language Model Serving with PagedAttention* (Woosuk Kwon et al., SOSP 2023)；
-   - 参考本地知识库：[AI_BOOK/AI-fundamentals/09_inference_system/](file:///d:/GeneTind/Interview/AI_BOOK/AI-fundamentals/09_inference_system/) 与 [AI_BOOK/AIInfraGuide/docs/guides/模块四-推理优化/](file:///d:/GeneTind/Interview/AI_BOOK/AIInfraGuide/docs/guides/)。
+   - 参考本地知识库：**AI_BOOK/AI-fundamentals/09_inference_system/** 与 **AI_BOOK/AIInfraGuide/docs/guides/模块四-推理优化/**。
 3. **投机采样与长上下文前沿突破**：
    - *Fast Inference from Transformers via Speculative Decoding* (Leviathan et al., ICML 2023)；
    - *DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model* (DeepSeek-AI, 2024)。
