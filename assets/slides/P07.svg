@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">06 / BENCHMARK &amp; PRODUCTION METRICS</text>
+    <text x="320" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="335" y="35" font-size="11" font-weight="700" fill="#0B0D12">生产环境性能实测对比</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">NATIVE EDITABLE DATA CHART</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">生产基准评测：集群 MFU 与端到端延迟对比</text>
+    <text x="60" y="112" font-size="14" fill="#495057">万卡集群训练 MFU 提升至 62.8%，在线推理 P99 延迟降低 77.4%，全链路性能达标世界级工业标准</text>
+  </g>
+
+  <!-- Left: Native Editable Chart Area (w: 730, h: 525) -->
+  <g id="column_chart" data-pptx-bounds="60 135 730 525" data-pptx-replace-with="chart" data-pptx-native-authority="json">
+    <metadata type="application/json">
+      {
+        "name": "benchmark_chart",
+        "x": 60,
+        "y": 135,
+        "width": 730,
+        "height": 525,
+        "type": "column",
+        "categories": ["万卡 MFU 算力 (%)", "推理吞吐 (k tok/s)", "显存利用率 (%)", "自愈加速比 (倍)"],
+        "series": [
+          {"name": "传统开源基线 (Baseline)", "values": [38.5, 4.2, 31.8, 1.0]},
+          {"name": "平台交付达标 (Optimized)", "values": [62.8, 12.6, 96.2, 27.5]}
+        ],
+        "style": {"colors": ["#495057", "#0038FF"]}
+      }
+    </metadata>
+
+    <!-- Fallback Visual SVG Elements -->
+    <rect x="60" y="135" width="730" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="730" height="4" fill="#0038FF"/>
+
+    <text x="85" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">NATIVE DRAWINGML CHART · SIDE-BY-SIDE BENCHMARK</text>
+    <text x="85" y="200" font-size="20" font-weight="900" fill="#0B0D12">生产集群核心性能指标基准测试对比</text>
+    <line x1="85" y1="218" x2="760" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Legend -->
+    <rect x="520" y="190" width="12" height="12" fill="#495057"/>
+    <text x="540" y="201" font-size="12" fill="#495057">开源传统基线</text>
+    <rect x="640" y="190" width="12" height="12" fill="#0038FF"/>
+    <text x="660" y="201" font-size="12" font-weight="700" fill="#0038FF">平台交付优化</text>
+
+    <!-- Grid lines -->
+    <line x1="110" y1="580" x2="750" y2="580" stroke="#DEE2E6" stroke-width="1"/>
+    <line x1="110" y1="500" x2="750" y2="500" stroke="#E9ECEF" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="110" y1="420" x2="750" y2="420" stroke="#E9ECEF" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="110" y1="340" x2="750" y2="340" stroke="#E9ECEF" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="110" y1="260" x2="750" y2="260" stroke="#E9ECEF" stroke-width="1" stroke-dasharray="4,4"/>
+
+    <!-- Y-axis values -->
+    <text x="100" y="585" font-size="11" fill="#6C757D" text-anchor="end">0</text>
+    <text x="100" y="505" font-size="11" fill="#6C757D" text-anchor="end">25</text>
+    <text x="100" y="425" font-size="11" fill="#6C757D" text-anchor="end">50</text>
+    <text x="100" y="345" font-size="11" fill="#6C757D" text-anchor="end">75</text>
+    <text x="100" y="265" font-size="11" fill="#6C757D" text-anchor="end">100</text>
+
+    <!-- Category 1: MFU -->
+    <rect x="150" y="457" width="40" height="123" fill="#495057"/>
+    <text x="170" y="447" font-size="12" fill="#495057" text-anchor="middle">38.5%</text>
+    <rect x="195" y="379" width="40" height="201" fill="#0038FF"/>
+    <text x="215" y="369" font-size="13" font-weight="700" fill="#0038FF" text-anchor="middle">62.8%</text>
+    <text x="192" y="605" font-size="13" font-weight="700" fill="#0B0D12" text-anchor="middle">万卡 MFU 算力</text>
+
+    <!-- Category 2: Throughput -->
+    <rect x="295" y="530" width="40" height="50" fill="#495057"/>
+    <text x="315" y="520" font-size="12" fill="#495057" text-anchor="middle">4.2k</text>
+    <rect x="340" y="430" width="40" height="150" fill="#0038FF"/>
+    <text x="360" y="420" font-size="13" font-weight="700" fill="#0038FF" text-anchor="middle">12.6k</text>
+    <text x="337" y="605" font-size="13" font-weight="700" fill="#0B0D12" text-anchor="middle">推理并发吞吐</text>
+
+    <!-- Category 3: Memory Efficiency -->
+    <rect x="440" y="478" width="40" height="102" fill="#495057"/>
+    <text x="460" y="468" font-size="12" fill="#495057" text-anchor="middle">31.8%</text>
+    <rect x="485" y="272" width="40" height="308" fill="#0038FF"/>
+    <text x="505" y="262" font-size="13" font-weight="700" fill="#0038FF" text-anchor="middle">96.2%</text>
+    <text x="482" y="605" font-size="13" font-weight="700" fill="#0B0D12" text-anchor="middle">显存有效利用率</text>
+
+    <!-- Category 4: Self-Healing Speedup -->
+    <rect x="585" y="567" width="40" height="13" fill="#495057"/>
+    <text x="605" y="557" font-size="12" fill="#495057" text-anchor="middle">1.0x</text>
+    <rect x="630" y="405" width="40" height="175" fill="#0038FF"/>
+    <text x="650" y="395" font-size="13" font-weight="700" fill="#0038FF" text-anchor="middle">27.5x</text>
+    <text x="627" y="605" font-size="13" font-weight="700" fill="#0B0D12" text-anchor="middle">自愈恢复提速比</text>
+
+    <text x="85" y="640" font-size="11" fill="#6C757D">注：测试基准基于万卡真实业务负载仿真，包含 70B/405B 全量参数混合并行与动态批推理压测。</text>
+  </g>
+
+  <!-- Right: 3 Key Callout Metric Cards (w: 390, h: 525) -->
+  <g id="right-metric-cards" data-pptx-bounds="810 135 410 525">
+    <rect x="810" y="135" width="410" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="810" y="135" width="410" height="4" fill="#0B0D12"/>
+
+    <text x="835" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">QUANTIFIED BUSINESS VALUE</text>
+    <text x="835" y="200" font-size="20" font-weight="900" fill="#0B0D12">工程交付量化突破与收益</text>
+    <line x1="835" y1="218" x2="1195" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Callout 1 -->
+    <rect x="835" y="235" width="360" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="855" y="260" font-size="11" font-weight="700" fill="#6C757D">万卡有效算力提升 (MFU)</text>
+    <text x="855" y="295" font-size="28" font-weight="900" fill="#0038FF">+63.1%</text>
+    <text x="980" y="295" font-size="12" fill="#0B0D12">从 38.5% 飙升至 62.8%</text>
+    <text x="855" y="310" font-size="11" fill="#495057">等效为企业节省 38% 以上总算力集群机时成本</text>
+
+    <!-- Callout 2 -->
+    <rect x="835" y="335" width="360" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="855" y="360" font-size="11" font-weight="700" fill="#6C757D">推理长尾延迟压制 (P99)</text>
+    <text x="855" y="395" font-size="28" font-weight="900" fill="#0B0D12">-77.4%</text>
+    <text x="980" y="395" font-size="12" fill="#0B0D12">由 1240ms 降至 280ms</text>
+    <text x="855" y="410" font-size="11" fill="#495057">彻底消除高并发长文本下 Decode 被抢占毛刺</text>
+
+    <!-- Callout 3 -->
+    <rect x="835" y="435" width="360" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="855" y="460" font-size="11" font-weight="700" fill="#6C757D">单点故障恢复时长 (MTTR)</text>
+    <text x="855" y="495" font-size="28" font-weight="900" fill="#0038FF">27.5x</text>
+    <text x="965" y="495" font-size="12" fill="#0B0D12">由 45min 压缩至 98s</text>
+    <text x="855" y="510" font-size="11" fill="#495057">万卡集群全年有效训练可用性维持在 99.8% 以上</text>
+
+    <rect x="835" y="535" width="360" height="100" fill="#FFFFFF" stroke="#0038FF" stroke-width="1.5"/>
+    <text x="855" y="565" font-size="13" font-weight="900" fill="#0038FF">验收专家组综合评价：</text>
+    <text x="855" y="590" font-size="12" fill="#0B0D12">“平台在超大规模并行度与在线高可用之间取得了<tspan x="855" dy="22">完美工程平衡，各项指标均已达到世界一线标准。”</tspan></text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">07 / 09</text>
+  </g>
+</svg>

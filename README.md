@@ -136,19 +136,61 @@ flowchart TD
 
 </div>
 
+### 🎯 核心生产实测数据基准评测 (P07 Benchmark & Metrics)
+
+> 💡 **实测结论**：在万卡超算集群（10,000+ GPUs）与真实混合业务负载下，通过片上 SRAM 分块、TMA 硬件流水重叠、3D+MoE 拓扑感知编排与在线推理 Prefill/Decode 物理资源解耦，有效算力利用率（MFU）从传统开源基线 38.5% 跃升至 **`62.8%`**，在线推理 P99 长尾延迟降低 **`77.4%`**（压缩至 280ms），单点故障全自动自愈恢复（MTTR）大幅缩短至 **`98s`**。
+
+[![P07 生产基准评测实测数据对比](./assets/slides/P07.svg)](./assets/slides/P07.svg)
+
+> 📥 **汇报底稿下载**：支持 [下载原生可编辑 PowerPoint 幻灯片源文件 (Enterprise_LLM_Platform_Delivery.pptx)](./assets/slides/Enterprise_LLM_Platform_Delivery.pptx)（内置 DrawingML 原生柱状图表与全量矢量图元，可在 Office / WPS / Keynote 中二次编辑）。
+
 ### 🏛️ 交付汇报 9 大核心技术板块速览 (Executive Architecture Deck)
 
-| 序号 | 汇报板块 | 对应核心技术体系与第一性原理 | 关键交付产出与工程突破 |
-| :---: | :--- | :--- | :--- |
-| **P01** | **交付总览与验收状态** | 全栈技术体系建设、高可用调度中枢与生产级性能调优闭环 | 万卡超算集群（10,000+ GPUs），九大分篇技术指标 100% 达标通过 |
-| **P02** | **物理微架构与集群互联** | SM/Tensor Core、HBM3e (3.35TB/s)、机内 NVLink 4.0 与机间 Clos 网络 | 机内 900GB/s 无阻塞互联，8×800G OSFP 轨道优化 (Rail-Optimized) 双轨拓扑 |
-| **P03** | **算力显存通信三账本基线** | 算力 $6\Phi \cdot \text{FLOPs}$ 定律、显存 $16\Phi$ 静态底座（四账本拆解）与 Ring 拓扑 | 训练周期天级精确推演模型，通信时间独立于节点数 $N$，通信计算完美 Overlap |
-| **P04** | **算子熔炉与 SRAM Tiling** | 传统 Attention 访存墙 $O(N^2)$ 瓶颈 $\to$ 片上 SRAM 分块与 Online Softmax 融合 | 消除 HBM 频繁往返，FA-3 Warp 角色特化与 TMA 搬运，Tensor Core 利用率达 72%+ |
-| **P05** | **分布式训练 3D+MoE 编排** | ZeRO-1/2/3、FSDP-2 异步预取、TP/PP/DP 拓扑映射、SP/CP 序列并行 | 显存占用直降至 $16\Phi/N$；支撑 128k 全参数长文本与 MoE 拓扑感知 All-to-All 优化 |
-| **P06** | **在线推理 PagedAttention & PD** | 虚拟内存块表分页映射治理显存碎片；Prefill 与 Decode 物理集群解耦 | 显存碎片率由 68.2% 压缩至 3.8%；跨机 RDMA 毫秒级流转 KV Cache，长尾波动根除 |
-| **P07** | **生产基准评测实测数据** | 万卡集群全量参数真实业务混合负载仿真与并发压测对比 | 训练 MFU 达到 62.8%，推理并发吞吐提升 3 倍，各项性能指标达标世界级工业标准 |
-| **P08** | **云原生调度与百秒自愈** | K8s DRA 拓扑感知、Gang 调度防死锁、HAMi 显存硬隔离、3FS 极速检查点 | XID 48/63/79 秒级探测，不良卡无感隔离与温备热换，全自动自愈平均仅需 98 秒 |
-| **P09** | **SLA 验收矩阵与演进路线** | 6 项核心考核项 100% 通过；异构芯片算力网格与 1M+ 极长上下文路线规划 | 全套 49 篇工程资产全部完结归档；准予全量投产运行 |
+| 序号 | 汇报板块 | 对应核心技术体系与第一性原理 | 关键交付产出与工程突破 | 矢量图示 |
+| :---: | :--- | :--- | :--- | :---: |
+| **P01** | **交付总览与验收状态** | 全栈技术体系建设、高可用调度中枢与生产级性能调优闭环 | 万卡超算集群（10,000+ GPUs），九大分篇技术指标 100% 达标通过 | [查看 P01](./assets/slides/P01.svg) |
+| **P02** | **物理微架构与集群互联** | SM/Tensor Core、HBM3e (3.35TB/s)、机内 NVLink 4.0 与机间 Clos 网络 | 机内 900GB/s 无阻塞互联，8×800G OSFP 轨道优化 (Rail-Optimized) 双轨拓扑 | [查看 P02](./assets/slides/P02.svg) |
+| **P03** | **算力显存通信三账本基线** | 算力 $6\Phi \cdot \text{FLOPs}$ 定律、显存 $16\Phi$ 静态底座（四账本拆解）与 Ring 拓扑 | 训练周期天级精确推演模型，通信时间独立于节点数 $N$，通信计算完美 Overlap | [查看 P03](./assets/slides/P03.svg) |
+| **P04** | **算子熔炉与 SRAM Tiling** | 传统 Attention 访存墙 $O(N^2)$ 瓶颈 $\to$ 片上 SRAM 分块与 Online Softmax 融合 | 消除 HBM 频繁往返，FA-3 Warp 角色特化与 TMA 搬运，Tensor Core 利用率达 72%+ | [查看 P04](./assets/slides/P04.svg) |
+| **P05** | **分布式训练 3D+MoE 编排** | ZeRO-1/2/3、FSDP-2 异步预取、TP/PP/DP 拓扑映射、SP/CP 序列并行 | 显存占用直降至 $16\Phi/N$；支撑 128k 全参数长文本与 MoE 拓扑感知 All-to-All 优化 | [查看 P05](./assets/slides/P05.svg) |
+| **P06** | **在线推理 PagedAttention & PD** | 虚拟内存块表分页映射治理显存碎片；Prefill 与 Decode 物理集群解耦 | 显存碎片率由 68.2% 压缩至 3.8%；跨机 RDMA 毫秒级流转 KV Cache，长尾波动根除 | [查看 P06](./assets/slides/P06.svg) |
+| **P07** | **生产基准评测实测数据** | 万卡集群全量参数真实业务混合负载仿真与并发压测对比 | 训练 MFU 达到 62.8%，推理并发吞吐提升 3 倍，各项性能指标达标世界级工业标准 | [查看 P07](./assets/slides/P07.svg) |
+| **P08** | **云原生调度与百秒自愈** | K8s DRA 拓扑感知、Gang 调度防死锁、HAMi 显存硬隔离、3FS 极速检查点 | XID 48/63/79 秒级探测，不良卡无感隔离与温备热换，全自动自愈平均仅需 98 秒 | [查看 P08](./assets/slides/P08.svg) |
+| **P09** | **SLA 验收矩阵与演进路线** | 6 项核心考核项 100% 通过；异构芯片算力网格与 1M+ 极长上下文路线规划 | 全套 49 篇工程资产全部完结归档；准予全量投产运行 | [查看 P09](./assets/slides/P09.svg) |
+
+<details>
+<summary><b>🖼️ 点击展开查看全套 9 页企业级交付汇报幻灯片 (P01 ~ P09 全画幅高清矢量图)</b></summary>
+<br/>
+
+#### P01 / 交付总览与验收状态 (Executive Overview)
+[![P01 交付总览与验收状态](./assets/slides/P01.svg)](./assets/slides/P01.svg)
+
+#### P02 / 物理微架构与集群互联 (Physical Microarchitecture & Network)
+[![P02 物理微架构与集群互联](./assets/slides/P02.svg)](./assets/slides/P02.svg)
+
+#### P03 / 算力显存通信三账本基线 (The Three Ledgers Baseline)
+[![P03 算力显存通信三账本基线](./assets/slides/P03.svg)](./assets/slides/P03.svg)
+
+#### P04 / 算子熔炉与片上 SRAM Tiling (Kernel Foundry & SRAM Tiling)
+[![P04 算子熔炉与片上 SRAM Tiling](./assets/slides/P04.svg)](./assets/slides/P04.svg)
+
+#### P05 / 分布式训练 3D+MoE 编排 (Distributed Training 3D+MoE)
+[![P05 分布式训练 3D+MoE 编排](./assets/slides/P05.svg)](./assets/slides/P05.svg)
+
+#### P06 / 在线推理 PagedAttention 与 PD 分离 (Inference Engine & PD Disaggregation)
+[![P06 在线推理 PagedAttention 与 PD 分离](./assets/slides/P06.svg)](./assets/slides/P06.svg)
+
+#### P07 / 生产基准评测实测数据 (Production Benchmark & Metrics)
+[![P07 生产基准评测实测数据](./assets/slides/P07.svg)](./assets/slides/P07.svg)
+
+#### P08 / 云原生调度与百秒故障自愈 (Cloud-Native Orchestration & MTTR)
+[![P08 云原生调度与百秒故障自愈](./assets/slides/P08.svg)](./assets/slides/P08.svg)
+
+#### P09 / SLA 验收矩阵与演进路线 (SLA Compliance Matrix & Roadmap)
+[![P09 SLA 验收矩阵与演进路线](./assets/slides/P09.svg)](./assets/slides/P09.svg)
+
+---
+</details>
 
 ### 📋 平台交付 SLA 验收达标对比矩阵 (SLA Compliance Matrix)
 
@@ -348,7 +390,10 @@ $$
 ai-infra-odyssey/
 ├── assets/                           # 🌐 全局矢量与高保真插图库
 │   ├── ai_infra_master_architecture.svg    # 🗺️ 全景知识体系总架构图 (超清矢量图)
-│   └── book_cover.png                # 专栏官方封面
+│   ├── book_cover.png                # 专栏官方封面
+│   └── slides/                       # 📊 企业级交付汇报全套高清矢量幻灯片与 PPTX 底稿
+│       ├── P01.svg ~ P09.svg         # 9 大核心汇报板块超清矢量幻灯片
+│       └── Enterprise_LLM_Platform_Delivery.pptx # 原生 DrawingML 可编辑 PPTX 汇报文件
 ├── scripts/                          # 🛠️ 工业级自动化质检工具链
 │   ├── verify_latex_formulas.py      # 一键 LaTeX 公式与 GitHub 原生渲染合规性校验脚本
 │   ├── fix_github_latex_spacing.py   # 全库标点空格自动化规范化脚本

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">07 / CLOUD-NATIVE ORCHESTRATION</text>
+    <text x="315" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="330" y="35" font-size="11" font-weight="700" fill="#0B0D12">云原生调度与高可用自愈</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">GANG SCHEDULING &amp; 100S RECOVERY</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">云原生调度中枢：动态配额与百秒自愈体系</text>
+    <text x="60" y="112" font-size="14" fill="#495057">以 Gang 调度防死锁与 HAMi 硬隔离保障多租户公平，结合 3FS 高性能存储实现 100s 级 XID 故障全自动无感自愈</text>
+  </g>
+
+  <!-- 4-Quadrant Swiss Modular Grid (w: 565, h: 250 each) -->
+  <g id="four-quadrants" data-pptx-bounds="60 135 1160 525">
+    <!-- Q1: DRA & Gang Scheduling -->
+    <rect x="60" y="135" width="565" height="250" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="565" height="4" fill="#0038FF"/>
+    
+    <text x="85" y="165" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">SCHEDULING 01 · DEADLOCK PREVENTION</text>
+    <text x="85" y="195" font-size="18" font-weight="900" fill="#0B0D12">拓扑感知与 Gang 防死锁调度中枢</text>
+    <line x1="85" y1="210" x2="600" y2="210" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="85" y="235" font-size="13" fill="#495057">• K8s DRA 硬件拓扑感知：精确对齐 NVLink 域与 Rail 交换机平面；<tspan x="85" dy="21">• Gang 调度原语 (All-or-Nothing)：作业全量就绪才触发分配，彻底根除死锁；</tspan><tspan x="85" dy="21">• Kueue 弹性配额借还：多租户空闲资源动态超分流转，提升 35% 集群总周转率。</tspan></text>
+    <text x="85" y="320" font-size="12" font-weight="700" fill="#0038FF">✓ 万卡作业排队零阻塞，分布式训练 Pod 启停一致性 100%</text>
+
+    <!-- Q2: HAMi Hard Isolation -->
+    <rect x="655" y="135" width="565" height="250" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="655" y="135" width="565" height="4" fill="#0B0D12"/>
+    
+    <text x="680" y="165" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">ISOLATION 02 · HARDWARE SLICING</text>
+    <text x="680" y="195" font-size="18" font-weight="900" fill="#0B0D12">HAMi 显存硬隔离与双优先级 QoS</text>
+    <line x1="680" y1="210" x2="1195" y2="210" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="680" y="235" font-size="13" fill="#495057">• 驱动级显存硬隔离：彻底杜绝多租户容器间显存 OOM 相互穿透雪崩；<tspan x="680" dy="21">• 动态微算力切分：轻量评估任务与主干训练弹性混部，算力复用率达 88%；</tspan><tspan x="680" dy="21">• 双优先级保障体系：核心基座模型训练任务享有毫秒级抢占与资源保活特权。</tspan></text>
+    <text x="680" y="320" font-size="12" font-weight="700" fill="#0B0D12">✓ 消除“邻居干扰 (Noisy Neighbor)”，生产 SLA 严格锁定</text>
+
+    <!-- Q3: 3FS Storage -->
+    <rect x="60" y="410" width="565" height="250" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="410" width="565" height="4" fill="#0B0D12"/>
+    
+    <text x="85" y="440" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">STORAGE 03 · DISTRIBUTED CHECKPOINTING</text>
+    <text x="85" y="470" font-size="18" font-weight="900" fill="#0B0D12">3FS 极速分布式检查点存储底座</text>
+    <line x1="85" y1="485" x2="600" y2="485" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="85" y="510" font-size="13" fill="#495057">• 瞬时百 GB 写入：支持 70B/405B 模型权重与优化器状态秒级无阻塞落盘；<tspan x="85" dy="21">• 零元数据瓶颈架构：万卡节点并行并发读取 Checkpoint，无 I/O 排队阻塞；</tspan><tspan x="85" dy="21">• 存储与计算彻底解耦：算力节点故障不丢失任何状态，为秒级自愈筑牢防线。</tspan></text>
+    <text x="85" y="595" font-size="12" font-weight="700" fill="#0B0D12">✓ Checkpoint 保存耗时从数十分钟压缩至 65 秒以内</text>
+
+    <!-- Q4: 100s Self-Healing -->
+    <rect x="655" y="410" width="565" height="250" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="655" y="410" width="565" height="4" fill="#0038FF"/>
+    
+    <text x="680" y="440" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">HIGH AVAILABILITY 04 · FULLY AUTOMATED</text>
+    <text x="680" y="470" font-size="18" font-weight="900" fill="#0B0D12">百秒级 XID 故障全自动无感自愈</text>
+    <line x1="680" y1="485" x2="1195" y2="485" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="680" y="510" font-size="13" fill="#495057">• 秒级异常探测：内核实时捕获 XID 48/63/79 掉卡与落后卡 (3s)；<tspan x="680" dy="21">• 智能隔离与替换：自动隔离不良卡并从温备节点池无感热换 (15s)；</tspan><tspan x="680" dy="21">• 3FS 热加载断点续训：重组通信环并快速加载最新 Checkpoint (65s + 15s)。</tspan></text>
+    <text x="680" y="595" font-size="12" font-weight="700" fill="#0038FF">✓ 全流程平均耗时 98 秒，告别 45 分钟人工半夜起夜运维历史</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">08 / 09</text>
+  </g>
+</svg>

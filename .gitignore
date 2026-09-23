@@ -23,6 +23,8 @@ AGENTS.md
 /assets/*
 !/assets/ai_infra_master_architecture.svg
 !/assets/book_cover.png
+!/assets/slides/
+!/assets/slides/**
 
 # Python & Temporary files
 *.pyc

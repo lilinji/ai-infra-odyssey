@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">04 / DISTRIBUTED TRAINING ARCHITECTURE</text>
+    <text x="325" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="340" y="35" font-size="11" font-weight="700" fill="#0B0D12">万卡分布式并行拓扑</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">3D PARALLELISM &amp; MOE ORCHESTRATION</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">大规模分布式训练：3D 并行与 MoE 编排</text>
+    <text x="60" y="112" font-size="14" fill="#495057">融合 FSDP-2 通信重叠与 TP/PP/SP 混合切分，结合 MoE 拓扑感知 All-to-All，彻底击破万卡扩展性悬崖</text>
+  </g>
+
+  <!-- Top Ribbon: ZeRO / FSDP-2 Memory Sharding (w: 1160, h: 140) -->
+  <g id="top-sharding-ribbon" data-pptx-bounds="60 135 1160 135">
+    <rect x="60" y="135" width="1160" height="135" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="1160" height="4" fill="#0038FF"/>
+
+    <text x="85" y="165" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">MEMORY SCALING ENGINE · ZERO &amp; FSDP-2</text>
+    <text x="85" y="195" font-size="18" font-weight="900" fill="#0B0D12">显存打散与参数按需预取：从 16Φ 到 16Φ/N 极致收敛</text>
+
+    <!-- 4 Sub-blocks -->
+    <rect x="85" y="210" width="260" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="95" y="230" font-size="12" font-weight="700" fill="#0B0D12">ZeRO-1：优化器状态切分</text>
+    <text x="95" y="246" font-size="11" fill="#495057">显存占用：4Φ + 12Φ / N (降 75%)</text>
+
+    <rect x="365" y="210" width="260" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="375" y="230" font-size="12" font-weight="700" fill="#0B0D12">ZeRO-2：梯度 + 优化器切分</text>
+    <text x="375" y="246" font-size="11" fill="#495057">显存占用：2Φ + 14Φ / N (降 87%)</text>
+
+    <rect x="645" y="210" width="260" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="655" y="230" font-size="12" font-weight="700" fill="#0B0D12">ZeRO-3：模型参数全切分</text>
+    <text x="655" y="246" font-size="11" fill="#495057">显存占用：16Φ / N (按节点线性递减)</text>
+
+    <rect x="925" y="210" width="275" height="45" fill="#FFFFFF" stroke="#0038FF" stroke-width="1.5"/>
+    <text x="935" y="230" font-size="12" font-weight="900" fill="#0038FF">PyTorch FSDP-2：零气泡异步预取</text>
+    <text x="935" y="246" font-size="11" fill="#0B0D12">AllGather 与计算重叠，无显存冗余</text>
+  </g>
+
+  <!-- Bottom 3 Columns (w: 365, 365, 370, h: 375) -->
+  <g id="bottom-3-columns" data-pptx-bounds="60 285 1160 375">
+    <!-- Col 1: 3D Hybrid Parallelism -->
+    <rect x="60" y="285" width="365" height="375" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="285" width="365" height="4" fill="#0B0D12"/>
+
+    <text x="85" y="320" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">DIMENSION 01 · 3D HYBRID</text>
+    <text x="85" y="348" font-size="18" font-weight="900" fill="#0B0D12">TP + PP + DP 硬件协同拓扑</text>
+    <line x1="85" y1="365" x2="400" y2="365" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="85" y="395" font-size="14" font-weight="700" fill="#0B0D12">• TP 张量并行 (机内闭环)</text>
+    <text x="85" y="418" font-size="13" fill="#495057">限定在单机 8 卡 NVLink 域 (TP=8)，<tspan x="85" dy="20">列切分与行切分互锁，严禁跨物理机通信。</tspan></text>
+
+    <text x="85" y="475" font-size="14" font-weight="700" fill="#0B0D12">• PP 流水线并行 (1F1B 调度)</text>
+    <text x="85" y="498" font-size="13" fill="#495057">跨机组网 (PP=8~16)，引入 1F1B 双向交错调度，<tspan x="85" dy="20">将流水线等待气泡降至 10% 以下。</tspan></text>
+
+    <text x="85" y="555" font-size="14" font-weight="700" fill="#0B0D12">• DP 数据并行 / FSDP 跨机扩展</text>
+    <text x="85" y="578" font-size="13" fill="#495057">在万卡集群外层扩展，通信与反向计算完全隐藏。</text>
+
+    <rect x="85" y="610" width="315" height="35" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="100" y="632" font-size="11" font-weight="700" fill="#0038FF">✓ 软硬件拓扑完全对齐，避免跨交换平面拥塞</text>
+
+    <!-- Col 2: Context Parallelism -->
+    <rect x="455" y="285" width="365" height="375" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="455" y="285" width="365" height="4" fill="#0038FF"/>
+
+    <text x="480" y="320" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">DIMENSION 02 · LONG CONTEXT</text>
+    <text x="480" y="348" font-size="18" font-weight="900" fill="#0B0D12">SP / CP 序列并行超长文本</text>
+    <line x1="480" y1="365" x2="795" y2="365" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="480" y="395" font-size="14" font-weight="700" fill="#0B0D12">• Sequence Parallelism (SP)</text>
+    <text x="480" y="418" font-size="13" fill="#495057">将 LayerNorm 和 Dropout 沿序列维切分，<tspan x="480" dy="20">消除 TP 过程中的激活值冗余复制。</tspan></text>
+
+    <text x="480" y="475" font-size="14" font-weight="700" fill="#0B0D12">• Context Parallelism (Ring CP)</text>
+    <text x="480" y="498" font-size="13" fill="#495057">针对 128k~1M 极致长序列训练，<tspan x="480" dy="20">在 GPU 间环形异步轮转 Key/Value 缓存块，</tspan><tspan x="480" dy="20">突破单卡显存承载长文本的物理上限。</tspan></text>
+
+    <text x="480" y="575" font-size="14" font-weight="700" fill="#0B0D12">• 计算与环形通信无缝 Overlap</text>
+    <text x="480" y="595" font-size="13" fill="#495057">算力效率随上下文长度扩展维持近线性。</text>
+
+    <rect x="480" y="610" width="315" height="35" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="495" y="632" font-size="11" font-weight="700" fill="#0038FF">✓ 支撑 128k 全参数长文本模型稳定训完</text>
+
+    <!-- Col 3: MoE Top-2 & All-to-All -->
+    <rect x="850" y="285" width="370" height="375" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="850" y="285" width="370" height="4" fill="#0B0D12"/>
+
+    <text x="875" y="320" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">DIMENSION 03 · SPARSE MOE</text>
+    <text x="875" y="348" font-size="18" font-weight="900" fill="#0B0D12">MoE 专家混合与 All-to-All 优化</text>
+    <line x1="875" y1="365" x2="1195" y2="365" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="875" y="395" font-size="14" font-weight="700" fill="#0B0D12">• Top-2 动态门控与负载均衡</text>
+    <text x="875" y="418" font-size="13" fill="#495057">门控网络精准路由，动态分发至 2 个最佳专家；<tspan x="875" dy="20">加入 Auxiliary Loss 严格约束，彻底根绝专家负载倾斜。</tspan></text>
+
+    <text x="875" y="475" font-size="14" font-weight="700" fill="#0B0D12">• 拓扑感知分块 All-to-All</text>
+    <text x="875" y="498" font-size="13" fill="#495057">Dispatch/Combine 过程将跨机通信切细粒度 Chunk，<tspan x="875" dy="20">结合 Rail-Optimized 网络做到通信完全隐藏。</tspan></text>
+
+    <text x="875" y="555" font-size="14" font-weight="700" fill="#0B0D12">• EP 专家并行与 TP 混合编排</text>
+    <text x="875" y="578" font-size="13" fill="#495057">支撑百亿激活/千亿参数稀疏大模型万卡极速收敛。</text>
+
+    <rect x="875" y="610" width="320" height="35" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="890" y="632" font-size="11" font-weight="700" fill="#0038FF">✓ 稀疏大模型训练吞吐较未调优版本提升 2.4 倍</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">05 / 09</text>
+  </g>
+</svg>

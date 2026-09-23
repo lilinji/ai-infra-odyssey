@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">03 / KERNEL ENGINEERING</text>
+    <text x="250" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="265" y="35" font-size="11" font-weight="700" fill="#0B0D12">算子极致熔炉</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">SRAM TILING &amp; WARP-SPECIALIZATION</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">算子熔炉调优：FlashAttention-2/3 与 SRAM Tiling</text>
+    <text x="60" y="112" font-size="14" fill="#495057">突破 HBM 访存墙瓶颈，利用片上 SRAM Tiling 与 Warp-Specialization 实现 72%+ 的 Tensor Core 极限吞吐</text>
+  </g>
+
+  <!-- Left: Memory Wall Breakdown (w: 520) -->
+  <g id="left-memory-wall" data-pptx-bounds="60 135 520 525">
+    <rect x="60" y="135" width="520" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="520" height="4" fill="#0B0D12"/>
+
+    <text x="90" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">IO COMPLEXITY PARADIGM</text>
+    <text x="90" y="200" font-size="20" font-weight="900" fill="#0B0D12">标准 Attention 访存墙 vs 片上 SRAM 融合</text>
+    <line x1="90" y1="218" x2="550" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Comparison 1: Standard Attention -->
+    <rect x="90" y="235" width="460" height="150" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="110" y="265" font-size="14" font-weight="700" fill="#E53935">传统标准 Attention 访存瓶颈 (Memory-Bound)</text>
+    <text x="110" y="290" font-size="13" fill="#495057">计算流：S = Q·K^T → P = softmax(S) → O = P·V</text>
+    <text x="110" y="315" font-size="13" fill="#495057">• 中间矩阵 S, P 尺寸为 N×N，必须频繁往返读写 HBM 显存<tspan x="110" dy="23">• 显存读写复杂度为 O(N^2)，导致长序列下显存迅速爆仓</tspan></text>
+    <text x="110" y="365" font-size="12" font-weight="700" fill="#E53935">❌ 算力空转：Tensor Core 计算利用率不足理论峰值的 20%</text>
+
+    <!-- Comparison 2: FlashAttention SRAM Tiling -->
+    <rect x="90" y="405" width="460" height="160" fill="#FFFFFF" stroke="#0038FF" stroke-width="1.5"/>
+    <text x="110" y="435" font-size="14" font-weight="700" fill="#0038FF">FlashAttention 片上 Tiling 破局 (Compute-Bound)</text>
+    <text x="110" y="460" font-size="13" fill="#0B0D12">核心机制：基于 SRAM 块大小 (B_c, B_r) 对 Q/K/V 严格分块</text>
+    <text x="110" y="485" font-size="13" fill="#495057">• Online Softmax：动态局部更新最大值 m 与归一化和 l<tspan x="110" dy="23">• N×N 分数矩阵永不落盘 HBM，全局显存 IO 直降至 O(N)</tspan></text>
+    <text x="110" y="540" font-size="12" font-weight="700" fill="#0038FF">✓ 硬件利用率跃迁：Tensor Core 实际效能飙升至 72%+</text>
+
+    <rect x="90" y="585" width="460" height="50" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="110" y="615" font-size="12" font-weight="700" fill="#0038FF">首创手撕 CUDA 原生算子，全面适配各种异构硬件与超长序列</text>
+  </g>
+
+  <!-- Right: FA-1 -> FA-2 -> FA-3 Evolution (w: 620) -->
+  <g id="right-evolution-steps" data-pptx-bounds="600 135 620 525">
+    <rect x="600" y="135" width="620" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="600" y="135" width="620" height="4" fill="#0038FF"/>
+
+    <text x="630" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">ARCHITECTURAL EVOLUTION</text>
+    <text x="630" y="200" font-size="20" font-weight="900" fill="#0B0D12">FlashAttention 1 → 2 → 3 演进与硬件特化</text>
+    <line x1="630" y1="218" x2="1190" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Step 1: FA-1 -->
+    <rect x="630" y="235" width="560" height="90" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="630" y="235" width="4" height="90" fill="#6C757D"/>
+    <text x="650" y="262" font-size="15" font-weight="900" fill="#0B0D12">FlashAttention-1：分块 Tiling 与重计算范式创立</text>
+    <text x="650" y="287" font-size="13" fill="#495057">引入片上 SRAM 分块加载与 Online Softmax 动态累积算法；<tspan x="650" dy="21">反向传播舍弃保存 N×N 矩阵，通过重计算以 30% 算力换取显存降低 80%。</tspan></text>
+
+    <!-- Step 2: FA-2 -->
+    <rect x="630" y="345" width="560" height="110" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="630" y="345" width="4" height="110" fill="#0038FF"/>
+    <text x="650" y="372" font-size="15" font-weight="900" fill="#0038FF">FlashAttention-2：循环逆序优化与并行度最大化</text>
+    <text x="650" y="397" font-size="13" fill="#495057">外层遍历 Q 矩阵、内层遍历 KV 矩阵，避免频繁中间缩放与原子写回；<tspan x="650" dy="21">在 Sequence 维度与 Batch 维度跨 ThreadBlock 全并行切分；</tspan><tspan x="650" dy="21">消除非必要同步指令，硬件 MFU 提升至 55%~65%。</tspan></text>
+
+    <!-- Step 3: FA-3 -->
+    <rect x="630" y="475" width="560" height="160" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="630" y="475" width="4" height="160" fill="#0B0D12"/>
+    <text x="650" y="502" font-size="15" font-weight="900" fill="#0B0D12">FlashAttention-3：Warp-Specialization 与 TMA 硬件流水</text>
+    <text x="650" y="527" font-size="13" fill="#495057">深度融合 Hopper 微架构新特性：<tspan x="650" dy="23">• 生产者 Warp 专注 TMA 异步多维张量搬运，消费者 Warp 持续计算</tspan><tspan x="650" dy="22">• Ping-Pong 双缓冲异步流水线，消除指令等待与访存气泡</tspan><tspan x="650" dy="23">• FP8 低精度 Tensor Core 原生支持，吞吐达到恐怖的 72%+ 极限效能</tspan></text>
+    <text x="650" y="620" font-size="12" font-weight="700" fill="#0038FF">✓ 算子层面完全榨干片上 SRAM 与 Tensor Core 极限潜能</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">04 / 09</text>
+  </g>
+</svg>
