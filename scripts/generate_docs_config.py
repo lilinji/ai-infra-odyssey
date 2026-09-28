@@ -42,54 +42,40 @@ MODULE_ICONS = {
 }
 
 # Define 3 major tabs
-TAB_MODULES = [
+SECTIONS = [
     {
-        "tab": "硬件微架构与算子 (卷一~三)",
-        "modules": ["01_性能工程与系统前置", "02_GPU硬件与集群互联", "03_CUDA与算子性能优化"],
-        "include_overview": True
+        "group": "全书导读与全景总览",
+        "pages": ["index", "style-guide", "content-types"]
     },
     {
-        "tab": "大模型与分布式系统 (卷四~六)",
-        "modules": ["04_大模型架构与显存建模", "05_大模型分布式训练", "06_LLM推理系统与性能工程"],
-        "include_overview": False
+        "group": "硬件微架构与算子 (卷一~三)",
+        "modules": ["01_性能工程与系统前置", "02_GPU硬件与集群互联", "03_CUDA与算子性能优化"]
     },
     {
-        "tab": "平台治理与顶石战役 (卷七~九)",
-        "modules": ["07_云原生AI平台与生产工程", "08_Post-Training与相邻Infra", "09_Capstone综合实战项目"],
-        "include_overview": False
+        "group": "大模型与分布式系统 (卷四~六)",
+        "modules": ["04_大模型架构与显存建模", "05_大模型分布式训练", "06_LLM推理系统与性能工程"]
+    },
+    {
+        "group": "平台治理与顶石战役 (卷七~九)",
+        "modules": ["07_云原生AI平台与生产工程", "08_Post-Training与相邻Infra", "09_Capstone综合实战项目"]
     }
 ]
 
-tabs_config = []
-
+groups_config = [SECTIONS[0]]
 all_modules_info = []
 
-for tab_info in TAB_MODULES:
-    groups = []
-    
-    if tab_info["include_overview"]:
-        groups.append({
-            "group": "全书导读与全景总览",
-            "pages": ["index"]
-        })
-        
-    for mod in tab_info["modules"]:
+for sec in SECTIONS[1:]:
+    sec_pages = []
+    for mod in sec["modules"]:
         mod_dir = os.path.join(DOCS_DIR, mod)
         mdx_files = sorted([f for f in os.listdir(mod_dir) if f.endswith(".mdx") and f != "README.mdx"])
-        
-        pages = []
-        for f in mdx_files:
-            rel_page = f"{mod}/{f.replace('.mdx', '')}"
-            pages.append(rel_page)
-            
-        group_entry = {
+        pages = [f"{mod}/{f.replace('.mdx', '')}" for f in mdx_files]
+        sec_pages.append({
             "group": MODULE_TITLES[mod],
             "root": f"{mod}/README",
             "expanded": False,
             "pages": pages
-        }
-        groups.append(group_entry)
-        
+        })
         all_modules_info.append({
             "dir": mod,
             "title": MODULE_TITLES[mod],
@@ -99,10 +85,9 @@ for tab_info in TAB_MODULES:
             "pages_count": len(pages),
             "pages": pages
         })
-        
-    tabs_config.append({
-        "tab": tab_info["tab"],
-        "groups": groups
+    groups_config.append({
+        "group": sec["group"],
+        "pages": sec_pages
     })
 
 docs_json = {
@@ -135,14 +120,14 @@ docs_json = {
     },
     "favicon": "/favicon.svg",
     "navigation": {
-        "tabs": tabs_config
+        "groups": groups_config
     }
 }
 
 with open(os.path.join(DOCS_DIR, "docs.json"), "w", encoding="utf-8") as f:
     json.dump(docs_json, f, ensure_ascii=False, indent=2)
 
-print("Generated docs/docs.json successfully!")
+print("Generated docs/docs.json successfully with full sidebar groups!")
 
 # Now build docs/index.mdx
 card_group_items = ""

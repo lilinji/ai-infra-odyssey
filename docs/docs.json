@@ -28,16 +28,18 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "硬件微架构与算子 (卷一~三)",
-        "groups": [
-          {
-            "group": "全书导读与全景总览",
-            "pages": [
-              "index"
-            ]
-          },
+        "group": "全书导读与全景总览",
+        "pages": [
+          "index",
+          "style-guide",
+          "content-types"
+        ]
+      },
+      {
+        "group": "硬件微架构与算子 (卷一~三)",
+        "pages": [
           {
             "group": "第一卷：性能工程与系统前置",
             "root": "01_性能工程与系统前置/README",
@@ -88,8 +90,8 @@
         ]
       },
       {
-        "tab": "大模型与分布式系统 (卷四~六)",
-        "groups": [
+        "group": "大模型与分布式系统 (卷四~六)",
+        "pages": [
           {
             "group": "第四卷：大模型架构与显存精确建模",
             "root": "04_大模型架构与显存建模/README",
@@ -125,8 +127,8 @@
         ]
       },
       {
-        "tab": "平台治理与顶石战役 (卷七~九)",
-        "groups": [
+        "group": "平台治理与顶石战役 (卷七~九)",
+        "pages": [
           {
             "group": "第七卷：云原生AI算力平台与调度治理",
             "root": "07_云原生AI平台与生产工程/README",
