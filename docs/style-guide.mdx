@@ -1,0 +1,57 @@
+---
+title: "Documentation Style Guide"
+description: "This document is the editorial source of truth for all documentation prose, headings, and structure."
+---
+
+# Documentation Style Guide
+
+This document is the editorial source of truth for all documentation prose, headings, and structure.
+
+## 1. Audience & Voice
+
+- **Audience**: Software engineers, systems architects, and technical operators.
+- **Voice**: Calm, precise, direct, technically grounded, and respectful of the reader's time.
+- **Perspective**: Second person ("you"), active voice, present tense.
+- **Procedures**: Use imperative verbs ("Configure the key", "Send the request").
+
+## 2. Heading Guidelines
+
+- **Always use sentence case**:
+  - ✅ `## Configure authentication`
+  - ❌ `## Configure Authentication`
+  - ❌ `## CONFIGURE AUTHENTICATION`
+- **Use verbs for procedures** (`## Deploy your application`)
+- **Use nouns for reference** (`## Parameters`, `## Response fields`)
+
+## 3. The Diátaxis Framework
+
+Every page must belong to exactly one primary type:
+1. **Tutorial**: A learning journey for beginners with step-by-step guidance and immediate feedback.
+2. **How-to Guide**: Problem-oriented steps to complete a specific task for users who know the basics.
+3. **Reference**: Technical descriptions, parameter tables, schemas, and exact values.
+4. **Explanation**: Clarification of architectural mental models, system boundaries, and trade-offs.
+
+## 4. Prohibited Phrases & Anti-Patterns
+
+Never use:
+- Marketing hype: "seamless", "powerful", "revolutionary", "best-in-class", "effortless"
+- Condescending adverbs: "simply", "just", "obviously", "easily"
+- Meta-introductions: "In this section, we will explore...", "Let's dive in!"
+- Vague link text: "click here", "read more"
+
+## 5. Frontmatter Requirements
+
+Every page must begin with valid YAML frontmatter:
+
+```yaml
+---
+title: Sentence-case title
+description: Single clear sentence stating what the reader will achieve.
+---
+```
+
+## 6. Code Blocks
+
+- Specify the language fence (`bash`, `json`, `python`, `http`, etc.).
+- Never expose production credentials or API keys. Use placeholders like `$API_KEY` or `"sk_test_..."`.
+- Provide complete, minimal, copyable examples.

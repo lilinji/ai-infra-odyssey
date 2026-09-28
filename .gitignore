@@ -26,12 +26,9 @@ AGENTS.md
 !/assets/slides/
 !/assets/slides/**
 
-# Python & Temporary files
-*.pyc
-__pycache__/
-scratch/
-.DS_Store
-Thumbs.db
+# Mintlify local preview cache & dependencies
+.mintlify/
+node_modules/
 
 
 # Unreferenced draft / intermediate images

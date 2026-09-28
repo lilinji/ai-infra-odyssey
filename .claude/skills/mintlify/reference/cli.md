@@ -1,0 +1,101 @@
+# CLI reference
+
+Condensed reference for common `mint` CLI commands and their key flags.
+
+Install with `npm i -g mint`. The npm package is `mint`; do not install the legacy `mintlify` package.
+
+## Global flags
+
+Available on all commands.
+
+| Flag | Description |
+|------|-------------|
+| `--telemetry`, `-t` | Enable or disable usage telemetry. |
+| `--help`, `-h` | Display help for the command. |
+| `--version`, `-v` | Display the CLI version. Alias for `mint version`. |
+
+## Local development
+
+- `mint dev` — Start local preview at localhost:3000. `--port` sets the port. `--no-open` skips browser launch. `--groups` mocks user groups (space-separated, e.g. `--groups admin user`). `--disable-openapi` skips OpenAPI processing. `--disable-prefetch` disables navigation prefetching. `--local-schema` allows locally-hosted OpenAPI files over HTTP.
+- `mint validate` — Strict build validation; exits non-zero on warnings or errors. `--groups` mocks user groups (space-separated). `--disable-openapi` skips OpenAPI processing. `--local-schema` allows local OpenAPI files.
+- `mint export` — Export a static site zip for air-gapped deployment. `--output <file>` sets the output path (default: `export.zip`). `--groups` includes restricted pages (space-separated). `--disable-openapi` skips OpenAPI processing.
+
+## Content quality
+
+- `mint broken-links` — Check for broken internal links. `--files <paths...>` limits the check to specific files or globs. `--check-anchors` validates `#` anchors. `--check-external` checks external URLs. `--check-redirects` checks that redirect destinations in `docs.json` resolve. `--check-snippets` checks links inside `<Snippet>` components.
+- `mint a11y` — Accessibility checks (alt text, color contrast). `--skip-contrast` or `--skip-alt-text` to narrow scope.
+- `mint test` — Scan content for code blocks and generate unit tests that validate them. Requires `mint login`. Interactive; only pages in the `docs.json` navigation appear for selection. Writes generated test projects to `tests/mint-test/<run-id>/` and run reports/history to `.mintlify/test/`. Add both paths to `.gitignore` to avoid committing test artifacts. When a previous run report exists, the next interactive run offers **Update tests** (rerun the same pages with the same agent and model), **Review last test run** (browse saved results without running anything), or **Start a brand new test** (pick an agent and pages from scratch).
+- `mint score [url]` — Score a docs site's AI/agent readiness. Checks llms.txt, MCP discoverability, robots.txt, sitemap, structured data, response latency, and more. Requires `mint login`. Defaults to your configured subdomain. `--format` accepts `table` (default), `plain`, or `json`.
+- `mint format` — Format every `.mdx` file in the current directory and its subdirectories in place. Respects `.gitignore` and Mintlify ignore rules. Commit or stash changes first so you can review the rewrite.
+
+## Authentication
+
+- `mint login` — Authenticate your Mintlify account.
+- `mint logout` — Log out of your account.
+- `mint status` — Show current authentication status (CLI version, email, org, subdomain).
+- `mint signup [flags]` — Create a new Mintlify account from the terminal. Flags: `--firstName`, `--lastName`, `--company`, `--email`; omit any to enter it interactively. Waits until you click the emailed verification link before it logs you in — run as a background process in scripts.
+- `mint add-domain <domain> [--basePath <path>]` — Add a custom domain to the current deployment. Requires `mint login`. Pass `--basePath` to serve the documentation from a subpath such as `/docs`.
+
+## Analytics
+
+Query documentation analytics from the terminal. Requires `mint login`. All `mint analytics` subcommands share these flags: `--subdomain`, `--from <YYYY-MM-DD>` (default: seven days ago, or `mint config set dateFrom`), `--to <YYYY-MM-DD>` (default: today, or `mint config set dateTo`), `--format` (`table`, `plain`, `json`, or `graph`; default: `plain`, or `json` in AI/CI environments).
+
+- `mint analytics stats` — Top-line KPIs for a date range: views, visitors, searches, feedback, assistant usage. Human and agent traffic reported separately. `--page` filters to a page path.
+- `mint analytics search` — Search queries with hit counts, click-through rates, top clicked page, and last searched date. `--query` filters by substring; `--page` filters to queries where the given page was the top clicked result.
+- `mint analytics feedback` — User feedback entries. `--type page` aggregates by page path; `--type code` limits to code snippet feedback; `--page` filters to a page path.
+- `mint analytics conversation list` — Recent assistant conversations. `--page` filters to conversations whose sources reference the page path.
+- `mint analytics conversation view <id>` — Full message thread for one conversation.
+- `mint analytics conversation buckets list` — Conversation clusters grouped by topic.
+- `mint analytics conversation buckets view <id>` — Threads in a bucket. `--limit` (1-100), `--cursor` for pagination.
+
+## Configuration
+
+- `mint config set <key> <value>` — Persist a config value. Valid keys: `subdomain`, plus `dateFrom` and `dateTo` (defaults for `mint analytics`).
+- `mint config get <key>` — Read a stored config value.
+- `mint config clear <key>` — Remove a stored config value.
+
+## Project setup
+
+- `mint new [directory]` — Scaffold a new Mintlify docs site. `--name` and `--theme` set initial config. `--template` selects a pre-defined template. `--force` overwrites an existing directory.
+
+## MCP setup
+
+- `mint index [options]` — Install the hosted Mintlify Index MCP server (`https://index.mintlify.com/mcp`) in supported coding agents. The server exposes a `context` tool for researching libraries, frameworks, SDKs, APIs, and CLI tools across all public Mintlify sites. Separate from the [Mintlify Docs MCP server](/ai/model-context-protocol), which searches a single site.
+
+  Client flags (pass one or more to skip the interactive picker): `--claude`, `--cursor`, `--vscode`, `--codex`, `--opencode`, `--windsurf`, `--zed`. Other flags: `--project` writes project-level configuration where the client supports it (Windsurf always writes MCP config globally); `--yes`, `-y` configures every detected client without prompts.
+
+  The command adds a `mintlify-index` server entry plus a usage rule (for every client except Zed) that tells the agent to prefer the `context` tool over web search for documentation research. Reruns update the existing entry and rule and leave unrelated configuration intact. If a JSON/JSONC config file is invalid, the command reports an error and does not write to it.
+
+  Standard configuration paths per client:
+
+  | Client | Global | Project |
+  |--------|--------|---------|
+  | Claude Code | `~/.claude.json` | `.mcp.json` |
+  | Cursor | `~/.cursor/mcp.json` | `.cursor/mcp.json` |
+  | VS Code | User `mcp.json` | `.vscode/mcp.json` |
+  | Codex | `~/.codex/config.toml` | `.codex/config.toml` |
+  | OpenCode | `~/.config/opencode/opencode.json` | `opencode.json` |
+  | Windsurf | `~/.codeium/windsurf/mcp_config.json` | Global only |
+  | Zed | User `settings.json` | `.zed/settings.json` |
+
+## Automations
+
+All `mint automations` subcommands share these flags: `--subdomain`, `--format` (table/json; default: table). `mint workflow` and `mint workflows` continue to work as aliases.
+
+- `mint automations create` — Create an automation. Requires exactly one trigger: `--cron <expr>` for scheduled or `--push-repo <owner/repo>` (repeatable) for push-triggered. Key flags: `--name`, `--type` (one of `changelog`, `source-code-agent`, `translations`, `writing-style`, `typo-check`, `broken-link-detection`, `seo-metadata-audit`, `assistant-docs-updates`, `contextual-feedback-docs-updates`; omit for custom), `--prompt`, `--context-repo` (repeatable, up to 10), `--automerge`, `--file <path>` (JSON/YAML file overrides inline flags).
+- `mint automations list` — List automations for the current deployment.
+- `mint automations delete <id>` — Delete an automation by ID. Use `mint automations list` to get the ID.
+
+## Maintenance
+
+- `mint update` — Update the CLI to the latest version.
+- `mint version` — Show installed CLI and client versions.
+
+## Telemetry
+
+The CLI collects usage telemetry by default (command name, CLI version, OS, architecture). When you are logged in, telemetry events also include your account email; logged-out usage stays anonymous. Opt out with `--telemetry false` or by setting either environment variable:
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `MINTLIFY_TELEMETRY_DISABLED` | `1` | Disable Mintlify CLI telemetry. |
+| `DO_NOT_TRACK` | `1` | Disable telemetry using the Console Do Not Track standard. |

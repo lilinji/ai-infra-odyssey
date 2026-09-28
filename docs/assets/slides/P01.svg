@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="cover"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">AI INFRASTRUCTURE ODYSSEY</text>
+    <text x="245" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="260" y="35" font-size="11" font-weight="700" fill="#0B0D12">ENTERPRISE DELIVERY REPORT</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#0038FF" text-anchor="end">PRODUCTION GRADE · 100% VERIFIED</text>
+  </g>
+
+  <!-- Left Hero Presentation Block -->
+  <g id="hero-section" data-pptx-bounds="60 75 490 585">
+    <rect x="60" y="75" width="490" height="585" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    
+    <!-- Accent Line -->
+    <rect x="60" y="75" width="6" height="585" fill="#0038FF"/>
+
+    <text x="95" y="125" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1.5">CAPSTONE DELIVERY · FINAL STAGE</text>
+    
+    <text x="95" y="175" font-size="36" font-weight="900" fill="#0B0D12">企业级大模型<tspan x="95" dy="48">算力平台交付汇报</tspan></text>
+    
+    <text x="95" y="270" font-size="18" font-weight="700" fill="#0038FF">全栈工程体系建设与生产级验收闭环</text>
+
+    <line x1="95" y1="295" x2="510" y2="295" stroke="#DEE2E6" stroke-width="1"/>
+
+    <text x="95" y="330" font-size="14" fill="#495057">基于第一性原理，贯穿物理微架构、算子极致熔炉、<tspan x="95" dy="25">分布式训练 3D+MoE 并行与在线推理 PD 解耦架构，</tspan><tspan x="95" dy="25">提供百秒级自愈与万卡 62.8% MFU 的高可用算力底座。</tspan></text>
+
+    <!-- Meta Details Grid -->
+    <rect x="95" y="420" width="415" height="205" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    
+    <text x="120" y="455" font-size="12" font-weight="700" fill="#6C757D">交付规格</text>
+    <text x="120" y="480" font-size="15" font-weight="700" fill="#0B0D12">万卡超算集群 (10,000+ GPUs)</text>
+    
+    <line x1="120" y1="500" x2="485" y2="500" stroke="#E9ECEF" stroke-width="1"/>
+
+    <text x="120" y="530" font-size="12" font-weight="700" fill="#6C757D">技术覆盖</text>
+    <text x="120" y="555" font-size="15" font-weight="700" fill="#0B0D12">9 大系统分篇 · 44 篇讲义 + 5 大 Capstone</text>
+
+    <line x1="120" y1="575" x2="485" y2="575" stroke="#E9ECEF" stroke-width="1"/>
+
+    <text x="120" y="605" font-size="12" font-weight="700" fill="#6C757D">验收结论</text>
+    <text x="485" y="605" font-size="14" font-weight="900" fill="#0038FF" text-anchor="end">全部 KPI 100% 达标通过</text>
+  </g>
+
+  <!-- Right Four Key Metric Matrix Cards -->
+  <g id="metrics-grid" data-pptx-bounds="580 75 640 585">
+    <!-- Card 1: MFU -->
+    <rect x="580" y="75" width="310" height="280" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="580" y="75" width="310" height="4" fill="#0038FF"/>
+    <text x="610" y="115" font-size="12" font-weight="700" fill="#6C757D" letter-spacing="1">01 / CLUSTER EFFICIENCY</text>
+    <text x="610" y="175" font-size="52" font-weight="900" fill="#0038FF">62.8%</text>
+    <text x="610" y="215" font-size="16" font-weight="700" fill="#0B0D12">万卡集群有效算力 (MFU)</text>
+    <line x1="610" y1="235" x2="860" y2="235" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="610" y="265" font-size="13" fill="#495057">突破万卡规模扩展性悬崖<tspan x="610" dy="25">较业内基线 38.5% 大幅跃升 +63.1%</tspan></text>
+    <text x="610" y="325" font-size="12" font-weight="700" fill="#0038FF">✓ 达到全球顶级超算利用率基线</text>
+
+    <!-- Card 2: Serving Latency -->
+    <rect x="910" y="75" width="310" height="280" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="910" y="75" width="310" height="4" fill="#0B0D12"/>
+    <text x="940" y="115" font-size="12" font-weight="700" fill="#6C757D" letter-spacing="1">02 / SERVING LATENCY</text>
+    <text x="940" y="175" font-size="52" font-weight="900" fill="#0B0D12">280ms</text>
+    <text x="940" y="215" font-size="16" font-weight="700" fill="#0B0D12">在线推理 P99 尾部延迟</text>
+    <line x1="940" y1="235" x2="1190" y2="235" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="940" y="265" font-size="13" fill="#495057">PagedAttention 治理显存碎片<tspan x="940" dy="25">PD 节点物理解耦，尾部延迟降 77.4%</tspan></text>
+    <text x="940" y="325" font-size="12" font-weight="700" fill="#0B0D12">✓ 严苛长尾业务 SLO 100% 履约</text>
+
+    <!-- Card 3: Self-Healing MTTR -->
+    <rect x="580" y="380" width="310" height="280" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="580" y="380" width="310" height="4" fill="#0B0D12"/>
+    <text x="610" y="420" font-size="12" font-weight="700" fill="#6C757D" letter-spacing="1">03 / HIGH AVAILABILITY</text>
+    <text x="610" y="480" font-size="52" font-weight="900" fill="#0B0D12">98s</text>
+    <text x="610" y="520" font-size="16" font-weight="700" fill="#0B0D12">节点故障全自动自愈 (MTTR)</text>
+    <line x1="610" y1="540" x2="860" y2="540" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="610" y="570" font-size="13" fill="#495057">XID 异常秒级捕获 + 不良卡隔离<tspan x="610" dy="25">3FS 百 GB Checkpoint 瞬时热加载</tspan></text>
+    <text x="610" y="630" font-size="12" font-weight="700" fill="#0B0D12">✓ 告别 45min 传统人工停机介入</text>
+
+    <!-- Card 4: Architecture Completeness -->
+    <rect x="910" y="380" width="310" height="280" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="910" y="380" width="310" height="4" fill="#0038FF"/>
+    <text x="940" y="420" font-size="12" font-weight="700" fill="#6C757D" letter-spacing="1">04 / ASSETS DELIVERED</text>
+    <text x="940" y="480" font-size="52" font-weight="900" fill="#0038FF">44+5</text>
+    <text x="940" y="520" font-size="16" font-weight="700" fill="#0B0D12">万字核心讲义 + 生产 Capstone</text>
+    <line x1="940" y1="540" x2="1190" y2="540" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="940" y="570" font-size="13" fill="#495057">从单卡算子到调度 RFC 生产级验证<tspan x="940" dy="25">形成万卡 AI Infra 完整工业资产库</tspan></text>
+    <text x="940" y="630" font-size="12" font-weight="700" fill="#0038FF">✓ 工业级全套知识与代码全部结项</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">01 / 09</text>
+  </g>
+</svg>

@@ -1,0 +1,209 @@
+---
+title: "AI Infra 大话西游之水滴石穿"
+description: "从基础设施到智能未来的工程哲学与实战指南：涵盖从底层物理硅基、编译算子到万卡超算调度中枢的完整 8 层工业级 AI Infra 技术栈。"
+---
+
+# 🌊 《AI Infra 大话西游之水滴石穿》
+### —— 从基础设施到智能未来的工程哲学与实战指南
+
+> **主讲人 / IP 定位**：👓 **Ringi**（大厂 AI Infrastructure 架构师）  
+> **核心宗旨**：*“我是 Ringi，我也在系统学习 AI Infra。这是我把一个原本很难、很理论的底层知识真正搞懂之后，重新用工程师视角讲给你的实战版本。”*  
+> **课程定位**：面向准备进入大厂 AI Infra、GPU 计算、大模型分布式训练/在线推理优化与云原生平台的研发工程师与架构师。  
+> **内容规模**：**全书九大分卷 · 44 篇万字核心系统讲义 + 5 大生产级 Capstone 顶石项目（全套 49 篇已 100% 全部完结交付！）**  
+> **学习时长**：**80 小时核心必修 + 12 小时选修扩展 + 5 大企业级实战战役**
+
+---
+
+<p align="center">
+  <img src="/assets/book_cover.png" alt="AI Infra 大话西游之水滴石穿 官方封面" width="480" />
+</p>
+
+---
+
+## 🗺️ 全景技术体系总架构图 (Master Architecture)
+
+本专栏历时沉淀，构建了从底层物理硅基、编译算子到万卡超算调度中枢的完整 8 层工业级技术栈：
+
+<Accordion title="点击展开查看超清技术全景总架构大图 (ai_infra_master_architecture.svg)" defaultOpen>
+
+![AI Infra 大话西游之水滴石穿 全景技术体系总架构图](/assets/ai_infra_master_architecture.svg)
+
+</Accordion>
+
+---
+
+## 🏛️ 全书九大分卷速览与核心入口
+
+<CardGroup cols={3}>
+  <Card title="第一卷：性能工程与系统前置" icon="microchip" href="/01_性能工程与系统前置/README">
+    C++17/Python 底层模型、NUMA、Linux 性能分析、PyTorch 内存布局与算子图。 (12 篇核心讲义)
+  </Card>
+  <Card title="第二卷：GPU硬件微架构与集群互联" icon="network-wired" href="/02_GPU硬件与集群互联/README">
+    SM 调度、Tensor Core、Roofline 模型、RDMA、NVLink 与 NCCL 算法机理。 (10 篇核心讲义)
+  </Card>
+  <Card title="第三卷：CUDA与算子性能优化实战" icon="bolt" href="/03_CUDA与算子性能优化/README">
+    CUDA 编程模型、Memory Coalescing、Online Softmax、GEMM 分块与 FlashAttention 实战。 (4 篇核心讲义)
+  </Card>
+  <Card title="第四卷：大模型架构与显存精确建模" icon="calculator" href="/04_大模型架构与显存建模/README">
+    Decoder-only 架构、MHA/GQA、RoPE、SwiGLU 与训练/推理显存全景账本推导。 (2 篇核心讲义)
+  </Card>
+  <Card title="第五卷：大模型分布式并行训练" icon="cubes" href="/05_大模型分布式训练/README">
+    DDP 分桶重叠、ZeRO-1/2/3、FSDP、TP/PP/SP 混合并行与大规模故障排查。 (4 篇核心讲义)
+  </Card>
+  <Card title="第六卷：LLM高并发推理系统与性能工程" icon="gauge-high" href="/06_LLM推理系统与性能工程/README">
+    Prefill/Decode 特性、PagedAttention、vLLM 架构源码、PD 分离架构与 SLO 治理。 (5 篇核心讲义)
+  </Card>
+  <Card title="第七卷：云原生AI算力平台与调度治理" icon="server" href="/07_云原生AI平台与生产工程/README">
+    K8s Device Plugin/DRA、Gang 调度/Kueue、HAMi 虚拟化、DeepSeek 3FS 与多级缓存。 (4 篇核心讲义)
+  </Card>
+  <Card title="第八卷：Post-Training强化学习与相邻Infra" icon="brain" href="/08_Post-Training与相邻Infra/README">
+    SFT/LoRA/PPO 显存负载、RAG 向量检索沙箱、异构加速芯片抽象与系统设计题库。 (4 篇核心讲义)
+  </Card>
+  <Card title="第九卷：5 大企业级 Capstone 综合实战" icon="trophy" href="/09_Capstone综合实战项目/README">
+    5 大工业级顶石项目实战：Scaling Study、Serving 极限调优、CUDA 算子与全链路优化。 (5 篇核心讲义)
+  </Card>
+</CardGroup>
+
+---
+
+## 📊 企业级大模型算力平台交付汇报 (Enterprise Delivery Report)
+
+面向万卡大模型算力平台的生产级交付与验收体系，全套 9 页瑞士极简风超清矢量图示：
+
+<CardGroup cols={3}>
+  <Card title="01 交付总览与验收" icon="clipboard-check" href="/assets/slides/P01.svg">
+    全栈验收标准、指标基线与交付里程碑规划。
+  </Card>
+  <Card title="02 物理微架构与集群互联" icon="microchip" href="/assets/slides/P02.svg">
+    GPU 节点拓扑、RoCE/IB 双轨无损算网与 Clos 架构。
+  </Card>
+  <Card title="03 算力显存通信三账本" icon="calculator" href="/assets/slides/P03.svg">
+    FLOPs 利用率、参数/梯度/激活显存与集合通信拓扑。
+  </Card>
+  <Card title="04 算子熔炉与片上 SRAM" icon="bolt" href="/assets/slides/P04.svg">
+    Memory Coalescing、Online Softmax 与 FlashAttention Tiling。
+  </Card>
+  <Card title="05 分布式 3D+MoE 编排" icon="cubes" href="/assets/slides/P05.svg">
+    TP/PP/DP/SP 混合切分、ZeRO 分片与负载均衡调度。
+  </Card>
+  <Card title="06 在线推理与 PD 分离" icon="gauge-high" href="/assets/slides/P06.svg">
+    PagedAttention、连续批处理与 Prefill-Decode 分离架构。
+  </Card>
+  <Card title="07 智算调度与资源虚拟化" icon="server" href="/assets/slides/P07.svg">
+    K8s Device Plugin、Kueue 队列与 HAMi 多租户隔离。
+  </Card>
+  <Card title="08 分布式存储与容灾救援" icon="hard-drive" href="/assets/slides/P08.svg">
+    DeepSeek 3FS、异步快照与多级 KV Cache 缓存体系。
+  </Card>
+  <Card title="09 故障图谱与根因决策树" icon="shield-halved" href="/assets/slides/P09.svg">
+    NCCL Hang、慢节点定位、Xid 告警与毫秒级自愈。
+  </Card>
+</CardGroup>
+
+---
+
+<Accordion title="展开查看全书 9 大分卷 49 篇核心讲义完整目录明细">
+
+### [第一卷：性能工程与系统前置](/01_性能工程与系统前置/README)
+
+- [01_AI_Infra工程师的C++与Python底层必修课](/01_性能工程与系统前置/01_AI_Infra工程师的C++与Python底层必修课)
+- [02_AI_Infra数学基础](/01_性能工程与系统前置/02_AI_Infra数学基础)
+- [03_计算机体系结构前置_CPU存储层次_CacheLine与NUMA架构](/01_性能工程与系统前置/03_计算机体系结构前置_CPU存储层次_CacheLine与NUMA架构)
+- [04_Linux系统基线与性能分析核心工具箱](/01_性能工程与系统前置/04_Linux系统基线与性能分析核心工具箱)
+- [05_PyTorch底层系统机制_Tensor内存布局_Stride与Contiguous](/01_性能工程与系统前置/05_PyTorch底层系统机制_Tensor内存布局_Stride与Contiguous)
+- [06_PyTorch计算图与Autograd显存生命周期](/01_性能工程与系统前置/06_PyTorch计算图与Autograd显存生命周期)
+- [07_PyTorch异步执行流_CUDA_Stream与CUDA_Graph原理](/01_性能工程与系统前置/07_PyTorch异步执行流_CUDA_Stream与CUDA_Graph原理)
+- [08_Transformer系统全景与算子执行图深度拆解](/01_性能工程与系统前置/08_Transformer系统全景与算子执行图深度拆解)
+- [09_网络通信基础与集合通信Collective原语直觉](/01_性能工程与系统前置/09_网络通信基础与集合通信Collective原语直觉)
+- [10_AI_Infra性能工程方法论与三账本_FLOPs_显存_通信](/01_性能工程与系统前置/10_AI_Infra性能工程方法论与三账本_FLOPs_显存_通信)
+- [11_PyTorch_Profiler实战_手把手带你做一次性能体检](/01_性能工程与系统前置/11_PyTorch_Profiler实战_手把手带你做一次性能体检)
+- [AI Infra 大话西游实战之Transformer小白学习笔记（一）](/01_性能工程与系统前置/AI Infra 大话西游实战之Transformer小白学习笔记（一）)
+
+### [第二卷：GPU硬件微架构与集群互联](/02_GPU硬件与集群互联/README)
+
+- [12_GPU执行与存储体系_SM_Warp_TensorCore_HBM_Roofline](/02_GPU硬件与集群互联/12_GPU执行与存储体系_SM_Warp_TensorCore_HBM_Roofline)
+- [13_通信第一性原理与性能模型_AlphaBeta_Latency_Bandwidth](/02_GPU硬件与集群互联/13_通信第一性原理与性能模型_AlphaBeta_Latency_Bandwidth)
+- [14_GPU节点与集群硬件拓扑_PCIe_NVLink_NVSwitch_Clos_Rail](/02_GPU硬件与集群互联/14_GPU节点与集群硬件拓扑_PCIe_NVLink_NVSwitch_Clos_Rail)
+- [15_RDMA与GPUDirect_RDMA_QP_WQE_CQ_MR_ZeroCopy](/02_GPU硬件与集群互联/15_RDMA与GPUDirect_RDMA_QP_WQE_CQ_MR_ZeroCopy)
+- [16_机内数据搬运_LSU_TMA_CopyEngine_mbarrier_IPC](/02_GPU硬件与集群互联/16_机内数据搬运_LSU_TMA_CopyEngine_mbarrier_IPC)
+- [17_机间数据搬运_GPU_Initiated_RDMA_IBRC_OneHop](/02_GPU硬件与集群互联/17_机间数据搬运_GPU_Initiated_RDMA_IBRC_OneHop)
+- [18_NCCL通信库与Collective算子_Ring_Tree_NVLS_NVSHMEM](/02_GPU硬件与集群互联/18_NCCL通信库与Collective算子_Ring_Tree_NVLS_NVSHMEM)
+- [19_Compute_Communication_Overlap_Stream_Bucket_Chunk_WarpSpec](/02_GPU硬件与集群互联/19_Compute_Communication_Overlap_Stream_Bucket_Chunk_WarpSpec)
+- [20_Benchmark_监控与AI集群故障诊断_Xid_SlowNode_NCCL_Hang](/02_GPU硬件与集群互联/20_Benchmark_监控与AI集群故障诊断_Xid_SlowNode_NCCL_Hang)
+- [21_GPU硬件全景与多元异构算力_NVIDIA代际演进_国产芯片与生态选型](/02_GPU硬件与集群互联/21_GPU硬件全景与多元异构算力_NVIDIA代际演进_国产芯片与生态选型)
+
+### [第三卷：CUDA与算子性能优化实战](/03_CUDA与算子性能优化/README)
+
+- [22_CUDA编程模型与内存层次_Thread_Block_Coalescing](/03_CUDA与算子性能优化/22_CUDA编程模型与内存层次_Thread_Block_Coalescing)
+- [23_经典算子优化_Reduce与Softmax_OnlineSoftmax_Fused](/03_CUDA与算子性能优化/23_经典算子优化_Reduce与Softmax_OnlineSoftmax_Fused)
+- [24_矩阵乘法核心_GEMM优化与TensorCore思维](/03_CUDA与算子性能优化/24_矩阵乘法核心_GEMM优化与TensorCore思维)
+- [25_注意力算子深度优化_TiledAttention_FlashAttention_Triton](/03_CUDA与算子性能优化/25_注意力算子深度优化_TiledAttention_FlashAttention_Triton)
+
+### [第四卷：大模型架构与显存精确建模](/04_大模型架构与显存建模/README)
+
+- [26_Decoder_only架构深度拆解_MHA_MQA_GQA_RoPE_SwiGLU](/04_大模型架构与显存建模/26_Decoder_only架构深度拆解_MHA_MQA_GQA_RoPE_SwiGLU)
+- [27_训练与推理显存账本_FLOPs推导与KV_Cache容量规划](/04_大模型架构与显存建模/27_训练与推理显存账本_FLOPs推导与KV_Cache容量规划)
+
+### [第五卷：大模型分布式并行训练](/05_大模型分布式训练/README)
+
+- [28_DDP分布式数据并行与通信计算重叠](/05_大模型分布式训练/28_DDP分布式数据并行与通信计算重叠)
+- [29_显存分片技术_ZeRO_1_2_3与PyTorch_FSDP深度剖析](/05_大模型分布式训练/29_显存分片技术_ZeRO_1_2_3与PyTorch_FSDP深度剖析)
+- [30_模型并行技术_TP_PP_SP_CP与硬件拓扑映射](/05_大模型分布式训练/30_模型并行技术_TP_PP_SP_CP与硬件拓扑映射)
+- [31_3D混合并行_MoE专家并行与大规模训练故障排查](/05_大模型分布式训练/31_3D混合并行_MoE专家并行与大规模训练故障排查)
+
+### [第六卷：LLM高并发推理系统与性能工程](/06_LLM推理系统与性能工程/README)
+
+- [32_LLM推理两阶段_Prefill_Decode与核心SLO指标](/06_LLM推理系统与性能工程/32_LLM推理两阶段_Prefill_Decode与核心SLO指标)
+- [33_KV_Cache管理演进_PagedAttention与ContinuousBatching](/06_LLM推理系统与性能工程/33_KV_Cache管理演进_PagedAttention与ContinuousBatching)
+- [34_vLLM系统架构剖析与高阶加速技术](/06_LLM推理系统与性能工程/34_vLLM系统架构剖析与高阶加速技术)
+- [35_分布式推理与PD分离架构_Prefill_Decode_Disaggregation](/06_LLM推理系统与性能工程/35_分布式推理与PD分离架构_Prefill_Decode_Disaggregation)
+- [36_在线推理容量规划_SLO治理与生产故障诊断](/06_LLM推理系统与性能工程/36_在线推理容量规划_SLO治理与生产故障诊断)
+
+### [第七卷：云原生AI算力平台与调度治理](/07_云原生AI平台与生产工程/README)
+
+- [37_GPU容器化与Kubernetes_Device_Plugin_DRA](/07_云原生AI平台与生产工程/37_GPU容器化与Kubernetes_Device_Plugin_DRA)
+- [38_AI任务调度与多租户隔离_Gang_Kueue_HAMi_GPUSharing](/07_云原生AI平台与生产工程/38_AI任务调度与多租户隔离_Gang_Kueue_HAMi_GPUSharing)
+- [39_生产级AI_Serving高可用_可观测与SLO治理](/07_云原生AI平台与生产工程/39_生产级AI_Serving高可用_可观测与SLO治理)
+- [40_大模型分布式存储_Checkpoint与缓存体系架构](/07_云原生AI平台与生产工程/40_大模型分布式存储_Checkpoint与缓存体系架构)
+
+### [第八卷：Post-Training强化学习与相邻Infra](/08_Post-Training与相邻Infra/README)
+
+- [41_SFT_LoRA与RLHF系统负载与资源评估](/08_Post-Training与相邻Infra/41_SFT_LoRA与RLHF系统负载与资源评估)
+- [42_RAG与Agent基础设施_VectorDB_Context_Sandbox](/08_Post-Training与相邻Infra/42_RAG与Agent基础设施_VectorDB_Context_Sandbox)
+- [43_NPU_DPU与异构加速器硬件抽象](/08_Post-Training与相邻Infra/43_NPU_DPU与异构加速器硬件抽象)
+- [44_AI_Infra大厂全真面试演练与系统设计题库](/08_Post-Training与相邻Infra/44_AI_Infra大厂全真面试演练与系统设计题库)
+
+### [第九卷：5 大企业级 Capstone 综合实战](/09_Capstone综合实战项目/README)
+
+- [01_Capstone_分布式训练Scaling_Study实战](/09_Capstone综合实战项目/01_Capstone_分布式训练Scaling_Study实战)
+- [02_Capstone_生产级LLM_Serving吞吐与延迟优化实战](/09_Capstone综合实战项目/02_Capstone_生产级LLM_Serving吞吐与延迟优化实战)
+- [03_Capstone_CUDA_Attention算子极致性能优化实战](/09_Capstone综合实战项目/03_Capstone_CUDA_Attention算子极致性能优化实战)
+- [04_Capstone_企业级AI_Platform统一调度与集群架构RFC](/09_Capstone综合实战项目/04_Capstone_企业级AI_Platform统一调度与集群架构RFC)
+- [05_Capstone_FlashAttention全景与Token生成端到端全链路优化实战](/09_Capstone综合实战项目/05_Capstone_FlashAttention全景与Token生成端到端全链路优化实战)
+
+
+</Accordion>
+
+---
+
+## 🛠️ 本地交互式阅读与开发指令
+
+<CodeGroup>
+```bash 启动本地实时热重载预览
+npm run dev
+# 或直接执行
+npx mintlify dev --dir docs
+```
+
+```bash 执行 MDX 语法与 AST 编译校验
+npm run validate
+# 或直接执行
+npx mintlify validate --dir docs
+```
+
+```bash 检查全站内部链接与死链
+npm run broken-links
+# 或直接执行
+npx mintlify broken-links --dir docs
+```
+</CodeGroup>

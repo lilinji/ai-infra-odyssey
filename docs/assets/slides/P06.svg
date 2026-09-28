@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">05 / ONLINE SERVING &amp; INFERENCE</text>
+    <text x="290" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="305" y="35" font-size="11" font-weight="700" fill="#0B0D12">在线推理引擎架构</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">PAGEDATTENTION &amp; PD DISAGGREGATION</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">在线推理系统：PagedAttention 与 PD 分离架构</text>
+    <text x="60" y="112" font-size="14" fill="#495057">引入类操作系统虚拟分页机制根除 60% 显存碎片，通过 PD 节点物理分离彻底解耦计算密集与访存密集负载</text>
+  </g>
+
+  <!-- 2 Large Swiss Architectural Panels -->
+  <g id="two-panels" data-pptx-bounds="60 135 1160 525">
+    <!-- Left: PagedAttention Mechanism (w: 565) -->
+    <rect x="60" y="135" width="565" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="565" height="4" fill="#0B0D12"/>
+
+    <text x="90" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">MEMORY GOVERNANCE · PAGEDATTENTION</text>
+    <text x="90" y="200" font-size="20" font-weight="900" fill="#0B0D12">虚拟内存分页：根除 60%+ KV 碎片</text>
+    <line x1="90" y1="218" x2="595" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Key Spec Callout -->
+    <rect x="90" y="235" width="505" height="75" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="110" y="265" font-size="11" font-weight="700" fill="#6C757D">MEMORY FRAGMENTATION RATE</text>
+    <text x="110" y="295" font-size="28" font-weight="900" fill="#0038FF">68.2% → 3.8%</text>
+    <text x="320" y="295" font-size="12" fill="#0038FF" font-weight="700">· 接近理论零碎片极限</text>
+
+    <!-- Point 1 -->
+    <text x="90" y="340" font-size="15" font-weight="700" fill="#0B0D12">1. 传统连续分配的核心痛点</text>
+    <text x="90" y="365" font-size="13" fill="#495057">传统 Serving 必须按请求最大输出长度提前静态预留显存，<tspan x="90" dy="22">导致巨额内部空洞碎片；请求提前结束时浪费显存高达 60%~80%。</tspan></text>
+
+    <!-- Point 2 -->
+    <text x="90" y="420" font-size="15" font-weight="700" fill="#0B0D12">2. PagedAttention 块表动态射</text>
+    <text x="90" y="445" font-size="13" fill="#495057">借鉴操作系统虚拟内存机制，将 KV Cache 划分为固定大小物理块；<tspan x="90" dy="22">逻辑连续的 Token 物理上打散分布在离散页面中，按需申请与回收。</tspan></text>
+
+    <!-- Point 3 -->
+    <text x="90" y="500" font-size="15" font-weight="700" fill="#0B0D12">3. 动态连续批处理 (Continuous Batching)</text>
+    <text x="90" y="525" font-size="13" fill="#495057">请求级别迭代调度，新请求即时加入运行 Batch，已完结请求实时释放，<tspan x="90" dy="22">单卡有效并发容量提升 2.5~4 倍。</tspan></text>
+
+    <rect x="90" y="590" width="505" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="105" y="618" font-size="12" font-weight="700" fill="#0038FF">✓ 显存利用率由 30% 跃升至 96%，大模型服务吞吐全面翻倍</text>
+
+    <!-- Right: PD Disaggregation (w: 575) -->
+    <rect x="645" y="135" width="575" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="645" y="135" width="575" height="4" fill="#0038FF"/>
+
+    <text x="675" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">SERVICING DISAGGREGATION · PREFILL &amp; DECODE</text>
+    <text x="675" y="200" font-size="20" font-weight="900" fill="#0B0D12">PD 物理分离架构：解耦计算与访存冲突</text>
+    <line x1="675" y1="218" x2="1190" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Key Spec Callout -->
+    <rect x="675" y="235" width="515" height="75" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="695" y="265" font-size="11" font-weight="700" fill="#6C757D">SERVING P99 TAIL LATENCY REDUCTION</text>
+    <text x="695" y="295" font-size="28" font-weight="900" fill="#0B0D12">1240ms → 280ms</text>
+    <text x="965" y="295" font-size="12" fill="#0038FF" font-weight="700">· 降幅高达 -77.4%</text>
+
+    <!-- Point 1 -->
+    <text x="675" y="340" font-size="15" font-weight="700" fill="#0B0D12">1. Prefill 与 Decode 本质冲突</text>
+    <text x="675" y="365" font-size="13" fill="#495057">Prefill 为计算密集型（大 GEMM、压满 Tensor Core，耗时数十毫秒）；<tspan x="675" dy="22">Decode 为访存密集型（逐 Token 自回归生成，极度敏感延时与带宽）。</tspan><tspan x="675" dy="22">混跑导致 Decode 持续被 Prefill 抢占，产生严重长尾毛刺。</tspan></text>
+
+    <!-- Point 2 -->
+    <text x="675" y="440" font-size="15" font-weight="700" fill="#0B0D12">2. 物理资源池化隔离架构</text>
+    <text x="675" y="465" font-size="13" fill="#495057">构建独立的 Prefill 集群专攻高并行吞吐，Decode 集群专攻毫秒级响应；<tspan x="675" dy="22">通过 Chunked Prefill 消除长时间占用，实现微秒级颗粒度交错。</tspan></text>
+
+    <!-- Point 3 -->
+    <text x="675" y="520" font-size="15" font-weight="700" fill="#0B0D12">3. 跨机 RDMA KV Cache 零拷贝流转</text>
+    <text x="675" y="545" font-size="13" fill="#495057">Prefill 节点完成首字生成后，通过 RDMA 直接将 KV Cache 推送至<tspan x="675" dy="22">Decode 节点显存，传输耗时小于 2ms，完全无感切分。</tspan></text>
+
+    <rect x="675" y="590" width="515" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="690" y="618" font-size="12" font-weight="700" fill="#0038FF">✓ 彻底攻克长文本高并发高长尾痛点，生产环境 SLO 稳固履约</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">06 / 09</text>
+  </g>
+</svg>

@@ -1,0 +1,175 @@
+/* ============================================================
+   huashu-report 机构级出版物与研究报告排版基座 (Lustre Book Theme)
+   基于 alchaincyf/huashu-report 规范构建
+   ============================================================ */
+
+:root {
+  --ink:        #231f20;   /* 机构级暖黑正文 */
+  --mute:       #6b6b6b;   /* 图注、数据源、元信息、页眉页脚 */
+  --rule:       #d8d8d8;   /* 结构分隔线 */
+  --rule-soft:  #e8ecee;   /* 柔性单元格线 */
+  --brand:      #14505e;   /* 机构品牌色：冷杉绿/深度石油蓝，用于章标题与核心图表标记 */
+  --accent:     #a4551f;   /* 第二强调/警示对比色 */
+  --paper:      #ffffff;   /* 纸面纯白色 */
+
+  /* 中文字号与行距基线 (A4 竖版出版级标准) */
+  --fs-body:    10pt;
+  --lh-body:    1.72;
+  --fs-table:   8.8pt;
+  --lh-table:   1.55;
+  --fs-caption: 7.8pt;
+  --lh-caption: 1.5;
+  --fs-h1:      24pt;
+  --fs-h2:      18pt;
+  --fs-h3:      13.5pt;
+  --fs-h4:      11pt;
+
+  /* 字体栈：专业西文前置 + 中文高质量无衬线屏显 */
+  --font-sans:  'Helvetica Neue', 'PingFang SC', 'Source Han Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-mono:  'JetBrains Mono', 'SF Mono', 'Cascadia Code', Menlo, monospace;
+}
+
+/* ── 基础阅读流优化 ── */
+body, .content main {
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  background-color: var(--paper);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+p {
+  margin: 0 0 0.75em;
+  orphans: 2;
+  widows: 2;
+  overflow-wrap: anywhere;
+}
+
+/* ── 标题与防孤行隔离 ── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--brand);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.28;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h1 { font-size: var(--fs-h1); border-bottom: 1.5pt solid var(--brand); padding-bottom: 4mm; margin-top: 6mm; }
+h2 { font-size: var(--fs-h2); border-bottom: 0.8pt solid var(--rule-soft); padding-bottom: 2mm; margin-top: 8mm; }
+h3 { font-size: var(--fs-h3); margin-top: 5mm; }
+h4 { font-size: var(--fs-h4); margin-top: 3mm; }
+
+/* ── 机构级表格排版防粘连四件套 ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  page-break-inside: auto;
+  font-size: var(--fs-table);
+  line-height: var(--lh-table);
+  font-variant-numeric: tabular-nums;
+  margin: 3.5mm 0 6mm;
+}
+
+table thead {
+  display: table-header-group;
+}
+
+table tr {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+table th, table td {
+  overflow-wrap: anywhere;
+  text-align: left;
+  vertical-align: top;
+  padding: 2.2mm 3.5mm;
+  border-bottom: 0.5pt solid var(--rule-soft);
+}
+
+table th {
+  background-color: #f8fafc;
+  color: var(--ink);
+  font-weight: 700;
+  border-top: 1pt solid var(--ink);
+  border-bottom: 1pt solid var(--ink);
+}
+
+table td + td, table th + th {
+  border-left: 0.4pt solid var(--rule-soft);
+}
+
+/* ── 引用块与报告结论框 ── */
+blockquote {
+  margin: 4mm 0 6mm;
+  padding: 3mm 5mm;
+  background-color: #f8fafc;
+  border-left: 3pt solid var(--brand);
+  color: var(--ink);
+  font-size: 9.5pt;
+  page-break-inside: avoid;
+}
+
+/* ── 代码块与长字符串防截断 ── */
+pre {
+  background-color: #0f172a !important;
+  border-radius: 4px;
+  padding: 3.5mm 4.5mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin: 3mm 0 5mm;
+  border: 0.5pt solid #334155;
+}
+
+code {
+  font-family: var(--font-mono) !important;
+  font-size: 8.8pt;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 图片与架构图容器 ── */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 4mm auto;
+  page-break-inside: avoid;
+  border-radius: 4px;
+}
+
+/* ── 打印与无头渲染输出调优 (A4 机构报告标准) ── */
+@media print {
+  body {
+    background: #ffffff !important;
+    font-size: 9.6pt;
+    line-height: 1.68;
+  }
+
+  .sidebar, .nav-chapters, .menu-bar, .sidetoc {
+    display: none !important;
+  }
+
+  .page-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .content {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  table, pre, blockquote, img {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

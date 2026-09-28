@@ -1,0 +1,15 @@
+{
+  "name": "ai-infra-odyssey",
+  "version": "1.0.0",
+  "description": "《AI Infra 大话西游之水滴石穿》—— 从基础设施到智能未来的工程哲学与实战指南",
+  "author": "Ringi",
+  "license": "CC-BY-NC-ND-4.0",
+  "scripts": {
+    "dev": "mintlify dev --dir docs",
+    "validate": "mintlify validate --dir docs",
+    "broken-links": "mintlify broken-links --dir docs"
+  },
+  "devDependencies": {
+    "mintlify": "latest"
+  }
+}

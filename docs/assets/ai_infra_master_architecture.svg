@@ -1,0 +1,496 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1260" width="1680" height="1260" style="background:#090d16; font-family:'JetBrains Mono', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;">
+  <defs>
+    <!-- Background Grid Pattern -->
+    <pattern id="master-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.7" stroke-opacity="0.65"/>
+    </pattern>
+
+    <!-- Card Background Linear Gradients -->
+    <linearGradient id="grad-card-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141e33" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0b1120" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="grad-capstone-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0c0a09" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <!-- Glowing Header Gradients -->
+    <linearGradient id="grad-title" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="35%" stop-color="#818cf8"/>
+      <stop offset="70%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arr-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arr-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arr-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#fb923c"/>
+    </marker>
+  </defs>
+
+  <!-- Base Grid Background -->
+  <rect width="1680" height="1260" fill="#090d16"/>
+  <rect width="1680" height="1260" fill="url(#master-grid)"/>
+
+  <!-- ========================================================================================= -->
+  <!-- 1. TOP HEADER & KPI COCKPIT                                                               -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 36)">
+    <!-- Brand Badge -->
+    <rect x="0" y="0" width="340" height="24" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="12" cy="12" r="4.5" fill="#38bdf8"/>
+    <text x="24" y="16.5" fill="#94a3b8" font-size="11" font-weight="700" letter-spacing="1">AI INFRASTRUCTURE KNOWLEDGE SYSTEM</text>
+
+    <!-- Main Title -->
+    <text x="0" y="60" fill="url(#grad-title)" font-size="28" font-weight="900" letter-spacing="-0.5">
+      🌊 《AI Infra 大话西游之水滴石穿》全景技术体系总架构图
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="86" fill="#94a3b8" font-size="13" font-weight="400">
+      从底层物理硅基、编译算子到万卡集群调度中枢：8 大递进模块 · 44 篇万字重构长文 · 4 大企业级 Capstone 顶石实战 · 100% 生产级闭环
+    </text>
+
+    <!-- Top-Right KPI Cockpit Badges -->
+    <g transform="translate(940, 2)">
+      <!-- Badge 1: Articles -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="145" height="52" rx="8" fill="#1e293b" fill-opacity="0.8" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="14" y="20" fill="#94a3b8" font-size="10" font-weight="600">全篇长文规模</text>
+        <text x="14" y="42" fill="#38bdf8" font-size="18" font-weight="800">44 讲 + 4 项目</text>
+      </g>
+      <!-- Badge 2: Status -->
+      <g transform="translate(160, 0)">
+        <rect x="0" y="0" width="135" height="52" rx="8" fill="#1e293b" fill-opacity="0.8" stroke="#34d399" stroke-width="1.2"/>
+        <text x="14" y="20" fill="#94a3b8" font-size="10" font-weight="600">知识库工程状态</text>
+        <text x="14" y="42" fill="#34d399" font-size="18" font-weight="800">100% 完结</text>
+      </g>
+      <!-- Badge 3: Code & Lab -->
+      <g transform="translate(310, 0)">
+        <rect x="0" y="0" width="145" height="52" rx="8" fill="#1e293b" fill-opacity="0.8" stroke="#c084fc" stroke-width="1.2"/>
+        <text x="14" y="20" fill="#94a3b8" font-size="10" font-weight="600">生产级代码实现</text>
+        <text x="14" y="42" fill="#c084fc" font-size="18" font-weight="800">100% 可运行</text>
+      </g>
+      <!-- Badge 4: Core Curriculum -->
+      <g transform="translate(470, 0)">
+        <rect x="0" y="0" width="150" height="52" rx="8" fill="#1e293b" fill-opacity="0.8" stroke="#fbbf24" stroke-width="1.2"/>
+        <text x="14" y="20" fill="#94a3b8" font-size="10" font-weight="600">体系化学习时长</text>
+        <text x="14" y="42" fill="#fbbf24" font-size="18" font-weight="800">80h + 12h 拓展</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="60" y1="140" x2="1620" y2="140" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- ========================================================================================= -->
+  <!-- 2. LAYER 5 (TOP): 生产实战与前沿应用层 (CAPSTONE MASTERY & FRONTIER INFRA)                  -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 155)">
+    <!-- Container Box -->
+    <rect x="0" y="0" width="1560" height="175" rx="10" fill="url(#grad-capstone-bg)" stroke="#f97316" stroke-width="1.4" stroke-opacity="0.85"/>
+    
+    <!-- Layer Header Tag -->
+    <rect x="16" y="12" width="220" height="24" rx="4" fill="#431407" stroke="#ea580c" stroke-width="1"/>
+    <text x="24" y="28" fill="#fdba74" font-size="11" font-weight="800">🏆 LAYER 5 · 生产综合顶石项目与前沿演进</text>
+    <text x="250" y="29" fill="#94a3b8" font-size="11">从理论到万卡大厂生产战场：涵盖 4 大顶石项目与 Post-Training / 异构 / 面试突破</text>
+
+    <!-- 4 Capstone Cards + M7 Card Grid (5 Columns) -->
+    <!-- Card 1: Capstone 01 -->
+    <g transform="translate(16, 46)">
+      <rect x="0" y="0" width="295" height="115" rx="8" fill="#0c0a09" stroke="#ea580c" stroke-width="1.2" stroke-opacity="0.9"/>
+      <rect x="10" y="10" width="100" height="18" rx="3" fill="#292524"/>
+      <text x="16" y="23" fill="#f97316" font-size="9.5" font-weight="700">CAPSTONE 01</text>
+      <text x="10" y="46" fill="#f8fafc" font-size="12" font-weight="700">分布式训练 Scaling Study</text>
+      <text x="10" y="66" fill="#94a3b8" font-size="9.5">· DDP 梯度分桶与反向重叠天花板</text>
+      <text x="10" y="82" fill="#94a3b8" font-size="9.5">· FSDP 显存节省与 1.5x 通信代价</text>
+      <text x="10" y="98" fill="#fdba74" font-size="9.5" font-weight="600">· 64卡跨机 18倍网络断崖量化归因</text>
+    </g>
+
+    <!-- Card 2: Capstone 02 -->
+    <g transform="translate(325, 46)">
+      <rect x="0" y="0" width="295" height="115" rx="8" fill="#0c0a09" stroke="#ea580c" stroke-width="1.2" stroke-opacity="0.9"/>
+      <rect x="10" y="10" width="100" height="18" rx="3" fill="#292524"/>
+      <text x="16" y="23" fill="#f97316" font-size="9.5" font-weight="700">CAPSTONE 02</text>
+      <text x="10" y="46" fill="#f8fafc" font-size="12" font-weight="700">生产级 LLM Serving 优化</text>
+      <text x="10" y="66" fill="#94a3b8" font-size="9.5">· Prefill / Decode 阶段冲突与 SLO</text>
+      <text x="10" y="82" fill="#94a3b8" font-size="9.5">· Chunked Prefill 算子计算重叠</text>
+      <text x="10" y="98" fill="#fdba74" font-size="9.5" font-weight="600">· 吞吐翻倍与 P99 延迟暴降 65%</text>
+    </g>
+
+    <!-- Card 3: Capstone 03 -->
+    <g transform="translate(634, 46)">
+      <rect x="0" y="0" width="295" height="115" rx="8" fill="#0c0a09" stroke="#ea580c" stroke-width="1.2" stroke-opacity="0.9"/>
+      <rect x="10" y="10" width="100" height="18" rx="3" fill="#292524"/>
+      <text x="16" y="23" fill="#f97316" font-size="9.5" font-weight="700">CAPSTONE 03</text>
+      <text x="10" y="46" fill="#f8fafc" font-size="12" font-weight="700">CUDA Attention 算子极致调优</text>
+      <text x="10" y="66" fill="#94a3b8" font-size="9.5">· HBM 中间矩阵读写瓶颈手撕</text>
+      <text x="10" y="82" fill="#94a3b8" font-size="9.5">· Online Softmax 单趟流式递推证明</text>
+      <text x="10" y="98" fill="#fdba74" font-size="9.5" font-weight="600">· SRAM 分块、Bank Conflict 与 FlashAttn</text>
+    </g>
+
+    <!-- Card 4: Capstone 04 -->
+    <g transform="translate(943, 46)">
+      <rect x="0" y="0" width="295" height="115" rx="8" fill="#0c0a09" stroke="#ea580c" stroke-width="1.2" stroke-opacity="0.9"/>
+      <rect x="10" y="10" width="100" height="18" rx="3" fill="#292524"/>
+      <text x="16" y="23" fill="#f97316" font-size="9.5" font-weight="700">CAPSTONE 04</text>
+      <text x="10" y="46" fill="#f8fafc" font-size="12" font-weight="700">企业级 AI Platform 架构 RFC</text>
+      <text x="10" y="66" fill="#94a3b8" font-size="9.5">· Gang 调度防死锁与 Kueue 弹性借用</text>
+      <text x="10" y="82" fill="#94a3b8" font-size="9.5">· HAMi 动态劫持显存硬隔离</text>
+      <text x="10" y="98" fill="#fdba74" font-size="9.5" font-weight="600">· 双轨导轨网与百秒级 XID 容灾自愈</text>
+    </g>
+
+    <!-- Card 5: Module 07 (Post-Training & Interview) -->
+    <g transform="translate(1252, 46)">
+      <rect x="0" y="0" width="292" height="115" rx="8" fill="#18181b" stroke="#a1a1aa" stroke-width="1.2" stroke-dasharray="5,3"/>
+      <rect x="10" y="10" width="100" height="18" rx="3" fill="#27272a"/>
+      <text x="16" y="23" fill="#e4e4e7" font-size="9.5" font-weight="700">M7 · 选修与前沿</text>
+      <text x="10" y="46" fill="#fafafa" font-size="12" font-weight="700">Post-Training &amp; 面试演练</text>
+      <text x="10" y="66" fill="#a1a1aa" font-size="9.5">· SFT / LoRA / RLHF 系统负载</text>
+      <text x="10" y="82" fill="#a1a1aa" font-size="9.5">· RAG 检索、Agent 与 NPU/DPU 异构</text>
+      <text x="10" y="98" fill="#e4e4e7" font-size="9.5" font-weight="600">· 44讲 大厂全真白板面试与设计题库</text>
+    </g>
+  </g>
+
+  <!-- Vertical Connectors from Layer 5 to Layer 4 -->
+  <path d="M 215 330 L 215 355" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+  <path d="M 525 330 L 525 355" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+  <path d="M 835 330 L 835 355" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+  <path d="M 1145 330 L 1145 355" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+
+  <!-- ========================================================================================= -->
+  <!-- 3. LAYER 4: 运行时系统与生产引擎 (DISTRIBUTED TRAINING, SERVING & PLATFORM)                -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 360)">
+    <!-- Container Box -->
+    <rect x="0" y="0" width="1560" height="210" rx="10" fill="url(#grad-card-bg)" stroke="#a855f7" stroke-width="1.4" stroke-opacity="0.85"/>
+
+    <!-- Layer Header Tag -->
+    <rect x="16" y="12" width="240" height="24" rx="4" fill="#3b0764" stroke="#9333ea" stroke-width="1"/>
+    <text x="24" y="28" fill="#e9d5ff" font-size="11" font-weight="800">⚡ LAYER 4 · 分布式训练、推理引擎与云原生平台</text>
+    <text x="270" y="29" fill="#94a3b8" font-size="11">大模型工业级生命周期运行时：并行切分策略、KV Cache 调度引擎与企业级算力中枢</text>
+
+    <!-- 3 Core Module Cards (Columns) -->
+    <!-- Column 1: M4 分布式训练系统 -->
+    <g transform="translate(16, 46)">
+      <rect x="0" y="0" width="500" height="150" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.2"/>
+      <rect x="12" y="10" width="190" height="20" rx="4" fill="#3b0764"/>
+      <text x="18" y="24" fill="#d8b4fe" font-size="10" font-weight="700">M4 · 大模型分布式训练 (16h)</text>
+      <text x="12" y="50" fill="#f8fafc" font-size="13" font-weight="700">大规模并行计算范式与通讯重叠</text>
+
+      <!-- Sub-items in grid -->
+      <g transform="translate(12, 62)">
+        <rect x="0" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="16" fill="#e2e8f0" font-size="10" font-weight="600">28 讲 · DDP 数据并行</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="9">梯度分桶机制与反向传播通信重叠</text>
+
+        <rect x="245" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="16" fill="#e2e8f0" font-size="10" font-weight="600">29 讲 · 显存分片技术</text>
+        <text x="253" y="30" fill="#94a3b8" font-size="9">ZeRO-1/2/3 状态切分与 PyTorch FSDP</text>
+
+        <rect x="0" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="60" fill="#e2e8f0" font-size="10" font-weight="600">30 讲 · 模型并行体系</text>
+        <text x="8" y="74" fill="#94a3b8" font-size="9">TP/PP/SP/CP 混合张量与序列切分</text>
+
+        <rect x="245" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="60" fill="#e2e8f0" font-size="10" font-weight="600">31 讲 · 3D混合与MoE专家并行</text>
+        <text x="253" y="74" fill="#94a3b8" font-size="9">TopK路由通信、负载均衡与故障排查</text>
+      </g>
+    </g>
+
+    <!-- Column 2: M5 在线推理系统与性能工程 -->
+    <g transform="translate(530, 46)">
+      <rect x="0" y="0" width="500" height="150" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect x="12" y="10" width="190" height="20" rx="4" fill="#0c4a6e"/>
+      <text x="18" y="24" fill="#7dd3fc" font-size="10" font-weight="700">M5 · LLM 在线推理工程 (18h)</text>
+      <text x="12" y="50" fill="#f8fafc" font-size="13" font-weight="700">高吞吐低延迟 Serving 与调度体系</text>
+
+      <!-- Sub-items in grid -->
+      <g transform="translate(12, 62)">
+        <rect x="0" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="16" fill="#e2e8f0" font-size="10" font-weight="600">32 讲 · 推理两阶段与 SLO 指标</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="9">Prefill (算力受限) vs Decode (访存受限)</text>
+
+        <rect x="245" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="16" fill="#e2e8f0" font-size="10" font-weight="600">33 讲 · KV Cache 演进机制</text>
+        <text x="253" y="30" fill="#94a3b8" font-size="9">PagedAttention 虚拟分页与动态 Batching</text>
+
+        <rect x="0" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="60" fill="#e2e8f0" font-size="10" font-weight="600">34 讲 · vLLM 系统架构深剖</text>
+        <text x="8" y="74" fill="#94a3b8" font-size="9">Chunked Prefill、投机采样与内核优化</text>
+
+        <rect x="245" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="60" fill="#e2e8f0" font-size="10" font-weight="600">35~36 讲 · PD分离与容量治理</text>
+        <text x="253" y="74" fill="#94a3b8" font-size="9">分布式解耦架构、长尾治理与容灾实战</text>
+      </g>
+    </g>
+
+    <!-- Column 3: M6 云原生 AI 平台与生产工程 -->
+    <g transform="translate(1044, 46)">
+      <rect x="0" y="0" width="500" height="150" rx="8" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+      <rect x="12" y="10" width="190" height="20" rx="4" fill="#78350f"/>
+      <text x="18" y="24" fill="#fde68a" font-size="10" font-weight="700">M6 · 云原生 AI 平台 (10h)</text>
+      <text x="12" y="50" fill="#f8fafc" font-size="13" font-weight="700">万卡集群调度中枢与多租户切分</text>
+
+      <!-- Sub-items in grid -->
+      <g transform="translate(12, 62)">
+        <rect x="0" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="16" fill="#e2e8f0" font-size="10" font-weight="600">37 讲 · GPU 容器化基石</text>
+        <text x="8" y="30" fill="#94a3b8" font-size="9">K8s Device Plugin / DRA 拓扑感知</text>
+
+        <rect x="245" y="0" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="16" fill="#e2e8f0" font-size="10" font-weight="600">38 讲 · 统一调度与隔离</text>
+        <text x="253" y="30" fill="#94a3b8" font-size="9">Gang 调度防死锁、Kueue 与 HAMi 拦截</text>
+
+        <rect x="0" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="8" y="60" fill="#e2e8f0" font-size="10" font-weight="600">39 讲 · 生产 Serving 高可用</text>
+        <text x="8" y="74" fill="#94a3b8" font-size="9">可观测性、排队背压与 P99 刚性保障</text>
+
+        <rect x="245" y="44" width="230" height="36" rx="4" fill="#1e293b" fill-opacity="0.7"/>
+        <text x="253" y="60" fill="#e2e8f0" font-size="10" font-weight="600">40 讲 · 分布式存储与自愈</text>
+        <text x="253" y="74" fill="#94a3b8" font-size="9">四级金字塔、DCP 闪存与秒级 XID 愈合</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Vertical Connectors from Layer 4 to Layer 3 -->
+  <path d="M 310 570 L 310 595" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+  <path d="M 780 570 L 780 595" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+  <path d="M 1290 570 L 1290 595" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arr-amber)"/>
+
+  <!-- ========================================================================================= -->
+  <!-- 4. LAYER 3: 算子极致优化与大模型显存建模 (KERNEL OPTIMIZATION & MEMORY ECONOMICS)          -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 600)">
+    <!-- Container Box -->
+    <rect x="0" y="0" width="1560" height="195" rx="10" fill="url(#grad-card-bg)" stroke="#10b981" stroke-width="1.4" stroke-opacity="0.85"/>
+
+    <!-- Layer Header Tag -->
+    <rect x="16" y="12" width="230" height="24" rx="4" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+    <text x="24" y="28" fill="#a7f3d0" font-size="11" font-weight="800">⚙️ LAYER 3 · 算子极致工程与显存经济学</text>
+    <text x="260" y="29" fill="#94a3b8" font-size="11">微架构算力变现：CUDA 线程束规约、Tensor Core 分块与长上下文显存账本精确手算</text>
+
+    <!-- Left: M2 CUDA 编程与高性能算子优化 (Width: 940) -->
+    <g transform="translate(16, 46)">
+      <rect x="0" y="0" width="940" height="135" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.2"/>
+      <rect x="12" y="10" width="220" height="20" rx="4" fill="#064e3b"/>
+      <text x="18" y="24" fill="#6ee7b7" font-size="10" font-weight="700">M2 · CUDA 编程与算子优化 (16h)</text>
+      <text x="245" y="25" fill="#94a3b8" font-size="11">从 Naive 实现跨越到 Tiling 分块、Warp Shuffle 与 Triton JIT</text>
+
+      <!-- 4 Kernel Sub-Cards (Clean Local Coordinates) -->
+      <!-- Card 1 -->
+      <g transform="translate(12, 40)">
+        <rect x="0" y="0" width="218" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">22 讲 · 线程层次与访存</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· Thread/Block 硬件映射</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· 128B 合并访问 (Coalescing)</text>
+        <text x="10" y="70" fill="#34d399" font-size="9.5" font-weight="600">· 对齐访存与防分支发散</text>
+      </g>
+
+      <!-- Card 2 -->
+      <g transform="translate(242, 40)">
+        <rect x="0" y="0" width="218" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">23 讲 · 经典算子与融合</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· Reduce 树状折半与洗牌规约</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· Online Softmax 单趟递推</text>
+        <text x="10" y="70" fill="#34d399" font-size="9.5" font-weight="600">· RMSNorm 算子极致融合</text>
+      </g>
+
+      <!-- Card 3 -->
+      <g transform="translate(472, 40)">
+        <rect x="0" y="0" width="225" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">24 讲 · GEMM 矩阵乘巅峰</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· 经典 6 级优化演进流水线</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· SRAM 共享内存 Tiling 分块</text>
+        <text x="10" y="70" fill="#34d399" font-size="9.5" font-weight="600">· Tensor Core WMMA 加速</text>
+      </g>
+
+      <!-- Card 4 -->
+      <g transform="translate(709, 40)">
+        <rect x="0" y="0" width="219" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">25 讲 · FlashAttention &amp; Triton</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· 消灭 O(N^2) HBM 中间读写</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· FA-1/2 外层循环重排因果律</text>
+        <text x="10" y="70" fill="#34d399" font-size="9.5" font-weight="600">· Triton Pythonic 算子开发</text>
+      </g>
+    </g>
+
+    <!-- Right: M3 大模型架构与显存建模 (Width: 570) -->
+    <g transform="translate(974, 46)">
+      <rect x="0" y="0" width="570" height="135" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+      <rect x="12" y="10" width="220" height="20" rx="4" fill="#075985"/>
+      <text x="18" y="24" fill="#7dd3fc" font-size="10" font-weight="700">M3 · LLM 架构与显存精细账本 (6h)</text>
+      <text x="245" y="25" fill="#94a3b8" font-size="11">参数量、FLOPs 与显存四账本物理推演</text>
+
+      <!-- 2 Sub-Cards (Clean Local Coordinates) -->
+      <g transform="translate(12, 40)">
+        <rect x="0" y="0" width="265" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">26 讲 · Decoder-only 结构拆解</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· MHA / MQA / GQA 演进因果律</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· RoPE 旋转位置编码长文本外推</text>
+        <text x="10" y="70" fill="#38bdf8" font-size="9.5" font-weight="600">· SwiGLU / MoE 门控稀疏激活</text>
+      </g>
+
+      <g transform="translate(289, 40)">
+        <rect x="0" y="0" width="269" height="82" rx="6" fill="#1e293b" fill-opacity="0.8"/>
+        <text x="10" y="20" fill="#f8fafc" font-size="11" font-weight="700">27 讲 · 显存账本与容量规划</text>
+        <text x="10" y="38" fill="#94a3b8" font-size="9.5">· 四大显存账本 (权重/梯度/优化器/激活)</text>
+        <text x="10" y="54" fill="#94a3b8" font-size="9.5">· 7B / 70B 静态动态显存手算</text>
+        <text x="10" y="70" fill="#38bdf8" font-size="9.5" font-weight="600">· KV Cache 随 Context 防爆模型</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Vertical Connectors from Layer 3 to Layer 2 & 1 -->
+  <path d="M 480 795 L 480 820" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr-emerald)"/>
+  <path d="M 1260 795 L 1260 820" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+  <!-- ========================================================================================= -->
+  <!-- 5. LAYER 2 & 1 (BOTTOM): 硬件微架构、集群互联与系统前置 (HARDWARE & SYSTEM FOUNDATIONS)     -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 825)">
+    <!-- Container Box -->
+    <rect x="0" y="0" width="1560" height="340" rx="10" fill="url(#grad-card-bg)" stroke="#0284c7" stroke-width="1.4" stroke-opacity="0.85"/>
+
+    <!-- Layer Header Tag -->
+    <rect x="16" y="12" width="260" height="24" rx="4" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="24" y="28" fill="#bae6fd" font-size="11" font-weight="800">🧱 LAYER 1 &amp; 0 · 物理硬件、数据搬运与底层系统基石</text>
+    <text x="290" y="29" fill="#94a3b8" font-size="11">超算中心物理现实：SM 芯片微架构、RDMA 高速网络、通信第一性原理与系统底层必修课</text>
+
+    <!-- Left: M1 GPU 硬件微架构与集群互联 (940px) -->
+    <g transform="translate(16, 46)">
+      <rect x="0" y="0" width="940" height="275" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+      <rect x="12" y="10" width="270" height="20" rx="4" fill="#0c4a6e"/>
+      <text x="18" y="24" fill="#7dd3fc" font-size="10" font-weight="700">M1 · GPU 硬件架构、数据搬运与网络 (16~20h)</text>
+      <text x="295" y="25" fill="#94a3b8" font-size="11">从 SM 微架构、TMA 搬运到 8x400G 无损导轨网与 NCCL 通信库</text>
+
+      <!-- 6 Grid Sub-Cards inside M1 (Clean Local Coordinates) -->
+      <!-- Row 1 Card 1 -->
+      <g transform="translate(12, 38)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">12 讲 · GPU 执行与存储体系</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· SM、Warp 调度器与 Tensor Core 模型</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· HBM3e 带宽与 Roofline 天花板模型</text>
+      </g>
+
+      <!-- Row 1 Card 2 -->
+      <g transform="translate(322, 38)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">13~14 讲 · 通信原理与物理拓扑</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· Alpha-Beta 延迟带宽模型第一性推导</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· PCIe Gen5、NVLink 4.0 与 Rail 导轨网</text>
+      </g>
+
+      <!-- Row 1 Card 3 -->
+      <g transform="translate(632, 38)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">15 讲 · RDMA 与 GPUDirect 机制</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· QP / WQE / CQ / MR 核心原理解析</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· GPUDirect RDMA 跨机零拷贝直达</text>
+      </g>
+
+      <!-- Row 2 Card 1 -->
+      <g transform="translate(12, 112)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">16~17 讲 · 机内与机间数据搬运</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· LSU、TMA 硬件异步搬运与 mbarrier</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· GPU-Initiated RDMA / IBRC 单跳通信</text>
+      </g>
+
+      <!-- Row 2 Card 2 -->
+      <g transform="translate(322, 112)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">18 讲 · NCCL 通信库与算子</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· Ring / Tree / NVLS 双算法拓扑切换</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· AllReduce / AllGather 算法深度拆解</text>
+      </g>
+
+      <!-- Row 2 Card 3 -->
+      <g transform="translate(632, 112)">
+        <rect x="0" y="0" width="295" height="66" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">19 讲 · 通信计算重叠实战 (Overlap)</text>
+        <text x="10" y="34" fill="#94a3b8" font-size="9">· 多 CUDA Stream 异步并发流水线</text>
+        <text x="10" y="50" fill="#38bdf8" font-size="9" font-weight="600">· Chunked Pipeline 与 Warp 角色特化</text>
+      </g>
+
+      <!-- Row 3: Full Width Banner inside M1 -->
+      <g transform="translate(12, 186)">
+        <rect x="0" y="0" width="915" height="76" rx="6" fill="#1e293b" fill-opacity="0.9"/>
+        <text x="14" y="22" fill="#f8fafc" font-size="11" font-weight="700">20~21 讲 · 集群监控、Benchmark、XID 排障与硬件生态全景</text>
+        <text x="14" y="42" fill="#94a3b8" font-size="9.5">· 集群故障嗅探：XID 31/48/79/92 硬件掉卡、慢节点 (Straggler) 阻滞与 NCCL Hang 死锁定位排查</text>
+        <text x="14" y="62" fill="#38bdf8" font-size="9.5" font-weight="600">· 硬件全景图：NVIDIA (Volta ➔ Ampere ➔ Hopper ➔ Blackwell) 代际架构演进与国产芯片生态选型指南</text>
+      </g>
+    </g>
+
+    <!-- Right: M0 性能工程与系统前置基石 (570px) -->
+    <g transform="translate(974, 46)">
+      <rect x="0" y="0" width="570" height="275" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1.2"/>
+      <rect x="12" y="10" width="260" height="20" rx="4" fill="#0c4a6e"/>
+      <text x="18" y="24" fill="#7dd3fc" font-size="10" font-weight="700">M0 · 性能工程与底层系统必修课 (10~12h)</text>
+      <text x="285" y="25" fill="#94a3b8" font-size="11">C++ / 数学 / 体系结构 / PyTorch 机制 / Profiler</text>
+
+      <!-- 4 Wide Cards inside M0 (Clean Local Coordinates) -->
+      <g transform="translate(12, 38)">
+        <rect x="0" y="0" width="545" height="52" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">01~02 讲 · C++ 底层修炼与数学第一性原理</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="9">指针与物理内存、RAII 显存安全、PyBind11、张量物理寻址、反向求导链式法则与数值防爆</text>
+      </g>
+
+      <g transform="translate(12, 98)">
+        <rect x="0" y="0" width="545" height="52" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">03~04 讲 · 计算机体系结构与 Linux 排障工具箱</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="9">CPU 缓存行、伪共享、NUMA 亲和性、perf / eBPF / sar / numactl 生产级系统排障</text>
+      </g>
+
+      <g transform="translate(12, 158)">
+        <rect x="0" y="0" width="545" height="52" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">05~07 讲 · PyTorch 底层机制与异步执行流</text>
+        <text x="10" y="36" fill="#94a3b8" font-size="9">Tensor Stride 步长机制、Autograd 动态图生命周期、CUDA Stream 与 CUDA Graph 录制重放</text>
+      </g>
+
+      <g transform="translate(12, 218)">
+        <rect x="0" y="0" width="545" height="48" rx="6" fill="#1e293b" fill-opacity="0.75"/>
+        <text x="10" y="18" fill="#f8fafc" font-size="10.5" font-weight="700">08~11 讲 · Transformer 执行图、三账本分析法与 Profiler 实战</text>
+        <text x="10" y="36" fill="#38bdf8" font-size="9" font-weight="600">算子图拆解、集合通信直觉、FLOPs/显存/通信三账本建模，PyTorch Profiler 性能体检</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ========================================================================================= -->
+  <!-- 6. BOTTOM FOOTER & PHILOSOPHY BAR                                                         -->
+  <!-- ========================================================================================= -->
+  <g transform="translate(60, 1185)">
+    <!-- Background Pill -->
+    <rect x="0" y="0" width="1560" height="48" rx="8" fill="#111827" stroke="#1f2937" stroke-width="1"/>
+    
+    <!-- Philosophy Text -->
+    <text x="20" y="28" fill="#64748b" font-size="11" font-weight="600">
+      🏛️ RINGI 教学铁律：
+    </text>
+    <text x="145" y="28" fill="#cbd5e1" font-size="11">
+      <tspan fill="#38bdf8" font-weight="700">1. Shape 是什么？</tspan> (追踪 Tensor 维度变化) · 
+      <tspan fill="#34d399" font-weight="700">2. 钱花在哪里？</tspan> (算力/显存/通信三账本手算) · 
+      <tspan fill="#c084fc" font-weight="700">3. 机器上怎么跑？</tspan> (物理芯片/微架构执行) · 
+      <tspan fill="#fbbf24" font-weight="700">4. 生产级权衡？</tspan> (工程 Trade-off 与实战避坑)
+    </text>
+
+    <!-- Right Brand Badge -->
+    <text x="1390" y="29" fill="#94a3b8" font-size="11" font-weight="700">
+      AI INFRA · 水滴石穿 · 终身学习
+    </text>
+  </g>
+</svg>

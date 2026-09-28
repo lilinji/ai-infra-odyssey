@@ -1,0 +1,600 @@
+# Components reference
+
+Full syntax and props for all Mintlify components.
+
+## Styling with className
+
+All built-in components accept a `className` prop (string) except Banner, MDX, and Visibility. Mintlify merges your classes with the component's own styles. Use Tailwind CSS v3 classes, including arbitrary values such as `w-[350px]`, or class names defined in a custom CSS file. Write class names out in full. Mintlify generates CSS only for class names found in the page source, so runtime-assembled names like `` bg-${color}-500 `` produce no CSS. On `<Tab>`, `className` styles the tab's content panel, not its label in the tab bar.
+
+Component `title` props (for example on Accordion, Step, and Tab) support inline Markdown formatting such as `**bold**`, `_italic_`, and `` `code` ``.
+
+## Callouts
+
+Styled alert boxes for important information.
+
+```mdx
+<Note>Supplementary information, safe to skip.</Note>
+<Info>Helpful context such as permissions or prerequisites.</Info>
+<Tip>Recommendations or best practices.</Tip>
+<Warning>Potentially destructive actions or important caveats.</Warning>
+<Check>Success confirmation or completed status.</Check>
+<Danger>Critical warnings about data loss or breaking changes.</Danger>
+```
+
+Custom callout with icon and color:
+
+```mdx
+<Callout icon="key" color="#FFC107" iconType="regular">
+  Custom callout with specific icon and color.
+</Callout>
+```
+
+## Banner
+
+Not an MDX component. A site-wide announcement banner configured via the `banner` field in `docs.json`. See `./configuration.md`.
+
+## Accordions
+
+Expandable/collapsible content sections.
+
+```mdx
+<Accordion title="Click to expand" icon="star" defaultOpen={false}>
+  Hidden content revealed on click.
+</Accordion>
+```
+
+Group multiple accordions:
+
+```mdx
+<AccordionGroup>
+  <Accordion title="First section">Content one.</Accordion>
+  <Accordion title="Second section">Content two.</Accordion>
+</AccordionGroup>
+```
+
+Props:
+- `title` (string, required): Header text.
+- `description` (string): Detail text below title.
+- `defaultOpen` (boolean, default: false): Initially expanded.
+- `icon` (string): Icon name.
+- `iconType` (string): Font Awesome style.
+
+## Cards
+
+Visual containers with titles, icons, and optional links.
+
+```mdx
+<Card title="Card title" icon="rocket" href="/quickstart">
+  Card description text.
+</Card>
+```
+
+```mdx
+<Card
+  title="With image"
+  img="/images/example.png"
+  href="/guide"
+  cta="Read guide"
+  horizontal
+>
+  Card with image and custom CTA.
+</Card>
+```
+
+Props:
+- `title` (string, required): Card title.
+- `icon` (string): Icon name.
+- `iconType` (string): Font Awesome style.
+- `color` (string): Hex color for icon.
+- `href` (string): Link destination.
+- `horizontal` (boolean): Compact horizontal layout.
+- `img` (string): Image URL or path for top of card.
+- `cta` (string): Custom action button text.
+- `arrow` (boolean): Show link arrow.
+
+## Columns
+
+Multi-column responsive grid layout. Use with Cards or other content.
+
+```mdx
+<Columns cols={3}>
+  <Card title="First" icon="one">Content</Card>
+  <Card title="Second" icon="two">Content</Card>
+  <Card title="Third" icon="three">Content</Card>
+</Columns>
+```
+
+Props:
+- `cols` (number, default: 2): Number of columns, 1-4.
+
+## Steps
+
+Numbered step-by-step procedures.
+
+```mdx
+<Steps>
+  <Step title="Install the CLI">
+    ```bash
+    npm i -g mint
+    ```
+  </Step>
+  <Step title="Create your project">
+    ```bash
+    mint new my-docs
+    ```
+  </Step>
+  <Step title="Start development server">
+    ```bash
+    mint dev
+    ```
+  </Step>
+</Steps>
+```
+
+Step props:
+- `title` (string): Step title.
+- `icon` (string): Icon name.
+- `iconType` (string): Font Awesome style.
+- `stepNumber` (number): Override automatic numbering.
+- `titleSize` (string, default: "p"): `"p"`, `"h2"`, or `"h3"`.
+
+## Tabs
+
+Switchable tabbed content sections.
+
+```mdx
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install package-name
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add package-name
+    ```
+  </Tab>
+</Tabs>
+```
+
+Tabs props:
+- `sync` (boolean, default: true): Sync tab selection with other tabs and code groups with matching titles.
+- `borderBottom` (boolean): Add bottom border and padding.
+
+Tab props:
+- `title` (string, required): Tab name.
+- `icon` (string): Icon name.
+- `iconType` (string): Font Awesome style.
+
+## Code groups
+
+Tabbed code examples in multiple languages. Tabs sync with `<Tabs>` components that have matching titles.
+
+````mdx
+<CodeGroup>
+
+```javascript example.js
+const greeting = "Hello, world!";
+console.log(greeting);
+```
+
+```python example.py
+greeting = "Hello, world!"
+print(greeting)
+```
+
+</CodeGroup>
+````
+
+For dropdown style instead of tabs:
+
+```mdx
+<CodeGroup dropdown>
+  ...code blocks...
+</CodeGroup>
+```
+
+## Expandables
+
+Show/hide nested properties. Primarily used in API documentation.
+
+```mdx
+<Expandable title="properties" defaultOpen={false}>
+  <ResponseField name="id" type="string">Unique identifier.</ResponseField>
+  <ResponseField name="name" type="string">Display name.</ResponseField>
+</Expandable>
+```
+
+Props:
+- `title` (string): Toggle label.
+- `defaultOpen` (boolean, default: false): Initially expanded.
+
+## Fields
+
+Document API parameters and response structures.
+
+### ParamField
+
+```mdx
+<ParamField query="limit" type="number" required default="10" placeholder="1-100">
+  Maximum number of results to return.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  User email address.
+</ParamField>
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token for authentication.
+</ParamField>
+```
+
+Props:
+- Location prop: `query`, `path`, `body`, or `header`. The prop name is the parameter location, and its value is the parameter name.
+- `type` (string): `number`, `string`, `boolean`, `object`. Append `[]` for arrays.
+- `required` (boolean): Mark as required.
+- `deprecated` (boolean): Mark as deprecated.
+- `default` (any): Default value.
+- `placeholder` (string): Playground input placeholder.
+
+### ResponseField
+
+```mdx
+<ResponseField name="user_id" type="string" required>
+  Unique user identifier.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">Record ID.</ResponseField>
+    <ResponseField name="status" type="string">Current status.</ResponseField>
+  </Expandable>
+</ResponseField>
+```
+
+Props:
+- `name` (string, required): Field name.
+- `type` (string, required): Field type.
+- `required` (boolean): Required indicator.
+- `deprecated` (boolean): Deprecation flag.
+- `default` (string): Default value.
+- `pre` (string[]): Labels rendered before the field name.
+- `post` (string[]): Labels rendered after the field name.
+
+## Request and response examples
+
+Display code examples in the right sidebar on API pages.
+
+````mdx
+<RequestExample>
+
+```bash cURL
+curl --request POST \
+  --url https://api.example.com/users \
+  --header 'Authorization: Bearer TOKEN'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://api.example.com/users",
+    headers={"Authorization": "Bearer TOKEN"}
+)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 200
+{
+  "id": "usr_123",
+  "status": "active"
+}
+```
+
+</ResponseExample>
+````
+
+The sidebar example panel has a fixed width that you cannot configure. For a code example that spans the full content width, use a regular code block or `<CodeGroup>` in the main content instead.
+
+## Frames
+
+Styled container for images with optional captions.
+
+```mdx
+<Frame caption="Dashboard overview">
+  <img src="/images/dashboard.png" alt="Dashboard showing analytics overview" />
+</Frame>
+```
+
+Props:
+- `caption` (string): Text below image. Supports Markdown.
+- `hint` (string): Text above image.
+
+## Icons
+
+Display icons inline.
+
+```mdx
+<Icon icon="rocket" size={24} color="#3B82F6" />
+
+Text with <Icon icon="check" iconType="solid" /> inline icon.
+```
+
+Props:
+- `icon` (string, required): Font Awesome, Lucide, or Tabler icon name, a single emoji, a URL, or a file path.
+- `iconType` (string): Font Awesome style.
+- `size` (number): Pixel size.
+- `color` (string): Hex color. Not applied to emoji icons.
+
+## Tooltips
+
+Hover-triggered contextual help.
+
+```mdx
+<Tooltip tip="Application Programming Interface" headline="API" cta="Read API guide" href="/api">
+  API
+</Tooltip> requests are sent over HTTPS.
+```
+
+Props:
+- `tip` (string, required): Tooltip text.
+- `headline` (string): Text above tip.
+- `cta` (string): Call-to-action link text.
+- `href` (string): Link URL (required if using `cta`).
+
+## Badge
+
+Inline labels and status indicators.
+
+```mdx
+<Badge color="green" size="md" shape="pill" icon="check">
+  Active
+</Badge>
+```
+
+Props:
+- `color` (string, default: "gray"): `gray`, `blue`, `green`, `yellow`, `orange`, `red`, `purple`, `white`, `surface`.
+- `size` (string, default: "md"): `xs`, `sm`, `md`, `lg`.
+- `shape` (string, default: "rounded"): `rounded`, `pill`.
+- `icon` (string): Icon name.
+- `stroke` (boolean): Outline style instead of filled.
+- `disabled` (boolean): Reduced opacity.
+
+## Tree
+
+Display hierarchical file/folder structures.
+
+```mdx
+<Tree>
+  <Tree.Folder name="src" defaultOpen>
+    <Tree.File name="index.ts" />
+    <Tree.Folder name="components" defaultOpen>
+      <Tree.File name="Button.tsx" />
+      <Tree.File name="Input.tsx" />
+    </Tree.Folder>
+  </Tree.Folder>
+  <Tree.File name="package.json" />
+</Tree>
+```
+
+Tree.Folder props:
+- `name` (string, required): Folder name.
+- `defaultOpen` (boolean, default: false): Expanded by default.
+- `openable` (boolean, default: true): Can expand/collapse.
+
+Tree.File props:
+- `name` (string, required): File name.
+
+## Mermaid diagrams
+
+Use mermaid code blocks for flowcharts, sequence diagrams, and more.
+
+````mdx
+```mermaid
+flowchart LR
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Action]
+    B -->|No| D[Other action]
+```
+````
+
+## MDX
+
+Render content between `<MDX>` tags as MDX so headings, code fences, tables, and components compile like the rest of the page. Use it to put Markdown inside JSX expressions and conditionals.
+
+````mdx
+export const platform = "ios";
+
+{platform === "ios" ? (
+  <MDX>
+    ## Install on iOS
+
+    ```bash
+    pod install
+    ```
+  </MDX>
+) : (
+  <MDX>
+    ## Install on Android
+
+    Add the SDK to your Gradle dependencies.
+  </MDX>
+)}
+````
+
+Only the active branch renders on the page.
+
+Notes:
+- Block form at the top level of a page: leave a blank line after the opening tag so content parses as block-level Markdown.
+- Inside expressions, `<MDX>` strips the common leading indentation from its content.
+- Headings inside `<MDX>` appear in the page's table of contents, including headings in branches that never render (such as the inactive side of a conditional).
+- Code fences and inline code inside `<MDX>` compile like code at the page root. Raw `<`, `>`, `{`, and `}` need no escaping. Character references decode to their characters (`&lt;` renders as `<`; write `&amp;lt;` for a literal `&lt;`).
+- Limits: nest `<MDX>` up to 8 levels deep; a page can expand up to 500 `<MDX>` fragments inside expressions. Exceeding either limit fails the build.
+
+## Panel
+
+Customize right sidebar content, replacing the table of contents.
+
+```mdx
+<Panel>
+  <Info>Custom sidebar content goes here.</Info>
+</Panel>
+```
+
+## Prompt
+
+Display copyable AI prompts.
+
+```mdx
+<Prompt description="Generate a README" actions={["copy", "cursor"]}>
+You are a technical writer. Generate a README for a Node.js project
+that includes installation, usage, and contributing sections.
+</Prompt>
+```
+
+Props:
+- `description` (string, required): Card header. Supports Markdown.
+- `actions` (array, default: ["copy"]): `"copy"`, `"cursor"`.
+- `icon` (string): Icon name.
+
+## Color
+
+Display color palettes with click-to-copy.
+
+```mdx
+<Color variant="compact">
+  <Color.Item name="primary" value="#3B82F6" />
+  <Color.Item name="success" value="#22C55E" />
+  <Color.Item name="theme-aware" value={{ light: "#000", dark: "#FFF" }} />
+</Color>
+```
+
+Table variant with rows:
+
+```mdx
+<Color variant="table">
+  <Color.Row title="Brand">
+    <Color.Item name="primary" value="#3B82F6" />
+    <Color.Item name="secondary" value="#8B5CF6" />
+  </Color.Row>
+</Color>
+```
+
+## Tiles
+
+Visual preview cards, typically used in grid layouts.
+
+```mdx
+<Columns cols={3}>
+  <Tile href="/components/accordions" title="Accordion" description="Expandable content">
+    <img src="/images/tiles/accordion.svg" alt="Accordion component preview" />
+  </Tile>
+</Columns>
+```
+
+Props:
+- `href` (string, required): Link destination.
+- `title` (string): Tile title.
+- `description` (string): Short description.
+
+## Update
+
+Display changelog entries and release notes.
+
+```mdx
+<Update label="2024-10-11" description="v2.0.0" tags={["Feature", "Release"]}>
+  ## What's new
+
+  - Added dark mode support
+  - Improved search performance
+</Update>
+```
+
+Props:
+- `label` (string, required): Date or version identifier.
+- `description` (string): Version or release name.
+- `tags` (string[]): Filterable tags.
+- `rss` (object): Custom RSS entry with `title` and `description`.
+
+## Visibility
+
+Show different content to humans (web UI) versus AI agents (Markdown output). Content marked `for="humans"` renders on the site but is excluded from `.md` URLs; content marked `for="agents"` is hidden on the site but included in Markdown output.
+
+```mdx
+<Visibility for="humans">
+  Click the **Get started** button in the top-right corner.
+</Visibility>
+
+<Visibility for="agents">
+  To create an account, call `POST /v1/accounts` with a valid email.
+</Visibility>
+```
+
+Props:
+- `for` (string, required): `"humans"` or `"agents"`.
+
+## View
+
+Language/framework-specific content sections that switch with a multi-view dropdown.
+
+````mdx
+<View title="JavaScript" icon="js">
+  ```javascript
+  console.log("Hello from JavaScript!");
+  ```
+</View>
+
+<View title="Python" icon="python">
+  ```python
+  print("Hello from Python!")
+  ```
+</View>
+````
+
+Props:
+- `title` (string, required): View selector label.
+- `icon` (string): Icon name.
+
+## GitHub
+
+Embed a card that links to a public GitHub repository. The card fetches the repository's description, star count, and fork count from the public GitHub API when the page loads.
+
+```mdx
+<GitHub.Repo repo="mintlify/docs" />
+<GitHub.Repo repo="mintlify/docs" variant="flat" />
+```
+
+`GitHub.Repo` props:
+- `repo` (string, required): `owner/name` slug (for example, `mintlify/docs`) or a full GitHub URL.
+- `variant` (string, default: `"inset"`): Card layout. Options: `inset`, `flat`.
+- `className` (string): Additional CSS classes applied to the card.
+
+## Table column widths
+
+Markdown tables size columns automatically based on content. To control column widths, write the table in HTML and add a `<colgroup>` element that sets a width on every `<col>` (through the `width` attribute or an inline style). If any `<col>` is missing a width, Mintlify ignores the declared widths and sizes columns based on content. Tables too wide for the page scroll horizontally.
+
+```html
+<table>
+  <colgroup>
+    <col width="25%" />
+    <col width="15%" />
+    <col width="60%" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>string</td>
+      <td>Full name of the user</td>
+    </tr>
+  </tbody>
+</table>
+```

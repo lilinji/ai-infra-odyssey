@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720"
+     data-pptx-page-role="content"
+     font-family="Arial, 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- Top System Header Bar -->
+  <g id="system-header" data-pptx-bounds="60 20 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="45" x2="1220" y2="45" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="35" font-size="11" font-weight="700" fill="#0038FF" letter-spacing="1">02 / MATHEMATICAL MODELING</text>
+    <text x="270" y="35" font-size="11" fill="#6C757D">|</text>
+    <text x="285" y="35" font-size="11" font-weight="700" fill="#0B0D12">第一性原理物理建模</text>
+    <text x="1220" y="35" font-size="11" font-weight="700" fill="#6C757D" text-anchor="end">FIRST-PRINCIPLES CAPACITY FORMULAS</text>
+  </g>
+
+  <!-- Title & Core Message -->
+  <g id="title-block" data-pptx-bounds="60 55 1160 70">
+    <text x="60" y="85" font-size="28" font-weight="900" fill="#0B0D12">算力、显存与通信三账本物理基线</text>
+    <text x="60" y="112" font-size="14" fill="#495057">摒弃盲目试错，通过精准数学推导建立 6Φ 训练算力、16Φ 静态显存与 2×(N-1)/N 通信量的三账本定量准则</text>
+  </g>
+
+  <!-- 3-Column Swiss Grid Layout -->
+  <g id="three-ledgers" data-pptx-bounds="60 135 1160 525">
+    <!-- Ledger 1: Compute Ledger (FLOPs) -->
+    <rect x="60" y="135" width="365" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="60" y="135" width="365" height="4" fill="#0B0D12"/>
+    
+    <text x="85" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">LEDGER 01 · COMPUTE BUDGET</text>
+    <text x="85" y="200" font-size="20" font-weight="900" fill="#0B0D12">算力账本：6Φ FLOPs 定律</text>
+    <line x1="85" y1="218" x2="400" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Formula Display Box -->
+    <rect x="85" y="235" width="315" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="105" y="260" font-size="11" font-weight="700" fill="#6C757D">TOTAL TRAINING FLOPS PER TOKEN</text>
+    <text x="105" y="295" font-size="28" font-weight="900" fill="#0038FF">C ≈ 6Φ · FLOPs</text>
+    <text x="105" y="312" font-size="11" fill="#495057">其中 Φ 为模型非嵌入参数总量</text>
+
+    <!-- Derivation Details -->
+    <text x="85" y="348" font-size="14" font-weight="700" fill="#0B0D12">正向计算 (Forward Pass)：2Φ FLOPs</text>
+    <text x="85" y="370" font-size="13" fill="#495057">每个 Token 经过线性层矩阵乘 GEMM，<tspan x="85" dy="20">乘加操作（MAC）对应 2 次浮点运算。</tspan></text>
+
+    <text x="85" y="425" font-size="14" font-weight="700" fill="#0B0D12">反向传播 (Backward Pass)：4Φ FLOPs</text>
+    <text x="85" y="447" font-size="13" fill="#495057">包含激活值梯度计算（2Φ）与权重梯度计算（2Φ），<tspan x="85" dy="20">算力消耗恰好是正向过程的 2 倍。</tspan></text>
+
+    <text x="85" y="502" font-size="14" font-weight="700" fill="#0B0D12">训练总耗时定量推导公式：</text>
+    <rect x="85" y="515" width="315" height="55" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="100" y="548" font-size="13" font-weight="700" fill="#0B0D12">T = (6 × Φ × Tokens) / (N × Peak × MFU)</text>
+
+    <rect x="85" y="590" width="315" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="100" y="618" font-size="12" font-weight="700" fill="#0038FF">✓ 实现万卡训练周期天级精确推演与保交付</text>
+
+    <!-- Ledger 2: Memory Ledger (16Φ) -->
+    <rect x="455" y="135" width="365" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="455" y="135" width="365" height="4" fill="#0038FF"/>
+    
+    <text x="480" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">LEDGER 02 · MEMORY BUDGET</text>
+    <text x="480" y="200" font-size="20" font-weight="900" fill="#0B0D12">显存账本：16Φ 静态底座</text>
+    <line x1="480" y1="218" x2="795" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Formula Display Box -->
+    <rect x="480" y="235" width="315" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="500" y="260" font-size="11" font-weight="700" fill="#6C757D">STATIC MEMORY CONSUMPTION (BYTES)</text>
+    <text x="500" y="295" font-size="28" font-weight="900" fill="#0038FF">M_static = 16Φ</text>
+    <text x="500" y="312" font-size="11" fill="#495057">70B 模型裸显存静态需求即达 1120 GB</text>
+
+    <!-- Breakdown Details -->
+    <text x="480" y="348" font-size="14" font-weight="700" fill="#0B0D12">四账本静态切分拆解：</text>
+    <text x="480" y="370" font-size="13" fill="#495057">• 模型权重 (FP16/BF16)：2 字节 × Φ = 2Φ</text>
+    <text x="480" y="390" font-size="13" fill="#495057">• 梯度状态 (FP16/BF16)：2 字节 × Φ = 2Φ</text>
+    <text x="480" y="410" font-size="13" fill="#495057">• AdamW 优化器：Master(4Φ) + 一阶(4Φ) + 二阶(4Φ) = 12Φ</text>
+
+    <text x="480" y="445" font-size="14" font-weight="700" fill="#0B0D12">动态激活值显存优化：</text>
+    <text x="480" y="467" font-size="13" fill="#495057">采用 Selective Activation Checkpointing 选择性重计算，<tspan x="480" dy="20">仅增加 30% 正向计算量，换取显存占用骤降 75%。</tspan></text>
+
+    <rect x="480" y="515" width="315" height="55" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="495" y="540" font-size="12" font-weight="700" fill="#0B0D12">动态 KV Cache 防爆保护机制：</text>
+    <text x="495" y="558" font-size="11" fill="#495057">M_kv = 2 × b × s × l × h × bytes，毫秒级配额限制</text>
+
+    <rect x="480" y="590" width="315" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="495" y="618" font-size="12" font-weight="700" fill="#0038FF">✓ 支撑 70B/405B 超大模型显存零 OOM 稳定运行</text>
+
+    <!-- Ledger 3: Comm Ledger -->
+    <rect x="850" y="135" width="370" height="525" fill="#F8F9FA" stroke="#DEE2E6" stroke-width="1"/>
+    <rect x="850" y="135" width="370" height="4" fill="#0B0D12"/>
+    
+    <text x="875" y="170" font-size="12" font-weight="700" fill="#0038FF" letter-spacing="1">LEDGER 03 · COMM SCALING</text>
+    <text x="875" y="200" font-size="20" font-weight="900" fill="#0B0D12">通信账本：Ring 拓扑无衰减</text>
+    <line x1="875" y1="218" x2="1195" y2="218" stroke="#DEE2E6" stroke-width="1"/>
+
+    <!-- Formula Display Box -->
+    <rect x="875" y="235" width="320" height="85" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="895" y="260" font-size="11" font-weight="700" fill="#6C757D">RING ALLREDUCE TRANSMISSION VOLUME</text>
+    <text x="895" y="295" font-size="28" font-weight="900" fill="#0038FF">S = 2 · [(N-1)/N] · M</text>
+    <text x="895" y="312" font-size="11" fill="#495057">单卡总传输量恒定趋近于 2M，与节点数 N 无关</text>
+
+    <!-- Details -->
+    <text x="875" y="348" font-size="14" font-weight="700" fill="#0B0D12">环形集合通信核心特性：</text>
+    <text x="875" y="370" font-size="13" fill="#495057">由 (N-1) 步 Scatter-Reduce 与 Allgather 组成，<tspan x="875" dy="20">每卡数据传输量仅与模型量 M 相关，具高扩展性。</tspan></text>
+
+    <text x="875" y="425" font-size="14" font-weight="700" fill="#0B0D12">计算通信隐藏黄金定理 (Overlap)：</text>
+    <text x="875" y="447" font-size="13" fill="#495057">当 T_comm ≤ T_comp 时，通信时间被完全掩盖；<tspan x="875" dy="20">通过梯度分桶 (Bucket Size=25MB) 与 CUDA Stream，</tspan><tspan x="875" dy="20">前向计算与后向通信无缝重叠。</tspan></text>
+
+    <rect x="875" y="515" width="320" height="55" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="890" y="540" font-size="12" font-weight="700" fill="#0B0D12">网络拥塞阈值警戒线：</text>
+    <text x="890" y="558" font-size="11" fill="#495057">有效带宽饱和率维持在 92% 以上，零微秒微突发丢包</text>
+
+    <rect x="875" y="590" width="320" height="45" fill="#FFFFFF" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="890" y="618" font-size="12" font-weight="700" fill="#0038FF">✓ 确立万卡集群线性扩展性能上界的理论极值</text>
+  </g>
+
+  <!-- Bottom Global Status -->
+  <g id="system-footer" data-pptx-bounds="60 680 1160 30" data-pptx-role="decoration">
+    <line x1="60" y1="685" x2="1220" y2="685" stroke="#DEE2E6" stroke-width="1"/>
+    <text x="60" y="703" font-size="11" fill="#6C757D">ENTERPRISE LARGE MODEL COMPUTING PLATFORM DELIVERY REPORT</text>
+    <text x="1220" y="703" font-size="11" font-weight="700" fill="#0B0D12" text-anchor="end">03 / 09</text>
+  </g>
+</svg>
